@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>组合案例实验：10 只股票的收益与风险 – 金融计量经济学</title>
+<title>组合实操 – 金融计量经济学</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -119,7 +119,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/intro.html">第一讲</a></li><li class="breadcrumb-item"><a href="../../notebooks/intro/portfolio-python.html">组合案例实验：10 只股票的收益与风险</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../../notebooks/intro/portfolio-python.html">组合实操</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
@@ -155,25 +155,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">课程首页</span></a>
+ <span class="menu-text">🏠 前言</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📚 课程资料</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../getting-started.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">如何使用讲义与 GitHub 仓库</span></a>
+ <span class="menu-text">📌 课件使用</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../syllabus.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">课程介绍与安排</span></a>
+ <span class="menu-text">📅 课程安排</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">第一讲</span></a>
+ <span class="menu-text">环境配置</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -181,20 +187,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../lectures/intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">课程导览与实证金融研究流程</span></span></a>
+  <a href="../../settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">软件配置</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notebooks/intro/portfolio-python.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">组合案例实验：10 只股票的收益与风险</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notebooks/intro/policy-stata.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">政策案例实验：从四个均值到 DID</span></a>
+  <a href="../../publishing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">同步与发布</span></a>
   </div>
 </li>
       </ul>
@@ -202,7 +202,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">学习与实践</span></a>
+ <span class="menu-text">研究基础</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -210,20 +210,54 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../settings.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">环境准备：让 Agent 帮你配置并验收</span></a>
+  <a href="../../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">研究流程</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../exercises/research-plan.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">第一讲作业：一页研究计划</span></a>
+  <a href="../../notebooks/intro/portfolio-python.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">组合实操</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/intro/policy-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">政策实操</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">作业</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../homework.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🚀 作业</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">附录</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../resources/references.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">参考资料与数据说明</span></a>
+ <span class="menu-text">参考资料</span></a>
   </div>
 </li>
       </ul>
@@ -248,9 +282,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/intro.html">第一讲</a></li><li class="breadcrumb-item"><a href="../../notebooks/intro/portfolio-python.html">组合案例实验：10 只股票的收益与风险</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../../notebooks/intro/portfolio-python.html">组合实操</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">组合案例实验：10 只股票的收益与风险</h1>
+<h1 class="title">组合实操</h1>
 </div>
 
 
@@ -998,7 +1032,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>本实验完成了从数据检查到方案评价的闭环。继续扩展前，先说清自己的“好组合”标准，并指出哪一步最可能产生偏差。后续课程再加入滚动估计、波动预测和更严格的交易约束。</p>
-<p>数据来源与接口：<a href="https://akshare.akfamily.xyz/data/stock/stock.html">AKShare 官方文档</a>，查询日期 2026-09-09。<a href="../../exercises/research-plan.html">一页研究计划</a>仍按原作业要求提交。</p>
+<p>数据来源与接口：<a href="https://akshare.akfamily.xyz/data/stock/stock.html">AKShare 官方文档</a>，查询日期 2026-09-09。<a href="../../homework.html#hw-01">一页研究计划</a>仍按原作业要求提交。</p>
 
 
 </section>
@@ -1428,13 +1462,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../lectures/intro.html" class="pagination-link" aria-label="课程导览与实证金融研究流程">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">课程导览与实证金融研究流程</span></span>
+      <a href="../../lectures/intro.html" class="pagination-link" aria-label="研究流程">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">研究流程</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../notebooks/intro/policy-stata.html" class="pagination-link" aria-label="政策案例实验：从四个均值到 DID">
-        <span class="nav-page-text">政策案例实验：从四个均值到 DID</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../../notebooks/intro/policy-stata.html" class="pagination-link" aria-label="政策实操">
+        <span class="nav-page-text">政策实操</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

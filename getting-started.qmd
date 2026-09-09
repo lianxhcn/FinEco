@@ -1,54 +1,53 @@
-# 如何使用讲义与 GitHub 仓库 {.unnumbered}
+# 📌 课件使用 {.unnumbered}
 
-本课程希望你完成三件事：读懂课堂分析，复现主要结果，再提出并检验自己的小改动。在线讲义适合阅读和跟课，GitHub 仓库保存源文件、代码和数据快照；下载仓库是为了把同一项分析带到自己的电脑上。
+本课程要求你读懂课堂分析，复现主要结果，再检验自己的小改动。在线讲义用于阅读，GitHub 仓库提供源文件、代码和冻结数据。
 
-你可以先在线阅读，也可以手动下载或让 Agent 协助。三种方式通向同一套材料，不要求先学会 Git 才能做实验。
+第一次课可以直接阅读[研究流程](lectures/intro.qmd)。后续每次课前都应准备好本地课件：**首次克隆，以后更新**，不用反复建立同一仓库。
 
-## 选择适合自己的入口
+## 先分开两个目录
 
-| 当前目标 | 从哪里开始 | 完成标志 |
-|---|---|---|
-| 跟课、查看公式和结果 | [第一讲](lectures/intro.qmd)及其两个实验页 | 能说明研究问题与主要结果 |
-| 第一次在本地复现 | 下方手动下载路线，再读[环境准备](settings.qmd) | 从头运行 Notebook，核对输出 |
-| 希望 Agent 帮忙准备 | 下方 Agent 提示词 | 得到本地材料、环境检查和执行记录 |
+::: {.callout-warning title="教师课件与个人作业分开保存"}
 
-阅读本站和下载公开仓库通常无需 GitHub 账号。提交 Issue 需要登录；如果暂时不能登录，可以先整理问题，通过教师指定渠道反馈。
+- **教师课件副本 `FinEco`**：跟随教师更新，用来阅读和复现基准。不要把唯一一份作业保存在这里。
+- **个人仓库 `fineco-homework`**：保存整个学期的研究计划、实验、作业和网站。与 `FinEco` 平级，不能放在它的内部。
 
-## 手动下载：先拿到完整材料 {#sec-guide-download}
-
-Notebook 会读取旁边的数据和项目配置。只下载一个 `.ipynb`，常会遇到“找不到文件”；第一次建议下载整个仓库，保留原有目录关系。
-
-1. **Step 1**: 打开 [FinEco 仓库](https://github.com/lianxhcn/FinEco)，点击 **Code → Download ZIP**；也可使用[完整 ZIP 下载链接](https://github.com/lianxhcn/FinEco/archive/refs/heads/main.zip)。
-2. **Step 2**: 将 ZIP 解压到自己的学习目录。进入含有 `README.md`、`RULES.md` 和 `data/` 的那一层文件夹；这一层就是项目根目录，不是在压缩包里直接打开文件。
-3. **Step 3**: 在 VS Code 中用“打开文件夹”打开项目根目录，阅读[环境准备](settings.qmd)，完成 Python 和 Stata 的最小检查。
-4. **Step 4**: 打开 `notebooks/intro/portfolio-python.ipynb` 或 `notebooks/intro/policy-stata.ipynb`，选择相应内核，重启内核后从头运行全部单元格。
-5. **Step 5**: 核对下方验收清单，保存运行结果，并记录下载日期。暂时没有 Stata 时，先复现 Python，Stata 部分可阅读网页中的已有输出。
-
-ZIP 是下载时的一个快照，不会自动更新。[GitHub 下载说明](https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives)解释了快照与克隆的区别。已安装 Git 的同学，也可在自己选择的父目录运行：
-
-```bash
-git clone https://github.com/lianxhcn/FinEco.git
-```
-
-若本地已经有 `FinEco`，先检查现有文件，勿将新下载内容覆盖到自己的实验上。ZIP 用户更新时可重新解压到另一个文件夹；Git 用户更新前先检查并保存本地改动，再处理同步。为了复现某次课堂结果，应记录所用提交版本；主分支和网站会随课程更新。
-
-## 让 Agent 帮你准备 {#sec-guide-agent}
-
-Agent 需要知道资料来源、允许写入的目录和任务完成的标准。下面的提示词可以直接使用，但要把本地目录占位符替换成自己的路径。
-
-::: {.callout-note title="提示词：获取课程材料并验证环境"}
-
-我正在学习金融计量经济学。课程网站是 https://lianxhcn.github.io/FinEco/，仓库是 https://github.com/lianxhcn/FinEco。请把课程材料准备到我指定的本地目录「填写自己的目录」，按下面顺序执行：
-
-1. 检查目标目录是否存在及是否已有个人文件。已有仓库时先报告版本和未保存的改动，不覆盖它们；没有仓库时，优先用已有 Git 克隆，未安装 Git 则下载并解压完整 ZIP。
-2. 阅读 README、AGENTS、RULES、环境准备页和 requirements.txt。解释讲义、Notebook、数据和输出的位置，记录下载日期及能确认的提交版本。
-3. 检查已有 Python、Stata、Jupyter 内核及实际路径。先完成最小示例，再运行第一讲 Notebook。系统级安装和全局配置变更先向我说明，不读取账户凭据。
-4. 使用仓库内的冻结数据，不重新下载行情、不改变模型和参数。保留实际错误与输出，不把命令已发出当作运行成功。
-5. 报告已运行的文件、主要结果是否与对应版本讲义一致、失败步骤和建议。暂时无法运行 Stata 时明确记录，先完成 Python 部分。
+教师课件强制更新时可能覆盖本地修改。个人仓库不执行这种强制对齐操作；作业提交和推送都指向你自己的仓库。
 
 :::
 
-网页是供阅读的结果，Notebook 内核才负责执行代码。Agent 完成后，请你亲自指出当前选用哪个内核、数据从哪个文件读取、结果保存在哪里；能回答这三项，才方便继续排错和扩展。
+## 选择一种获取方式
+
+下面 **A、B 二选一**，完成其中一条即可。不需要先用 Desktop 克隆，再让 Agent 克隆第二遍。尚未建立个人仓库时，先建立独立的个人练习目录，之后再将它纳入自己的 Git 仓库。
+
+### A. GitHub Desktop {#sec-guide-download}
+
+适合希望通过图形界面操作的同学。推荐使用 GitHub Desktop 持续同步，不建议整个学期依赖手动 ZIP 下载。
+
+1. 在 GitHub Desktop 中选择 File → Clone repository → URL，输入 `https://github.com/lianxhcn/FinEco.git`。
+2. 选择学习目录，克隆为 `FinEco`。已有同名仓库时先检查它，不覆盖原目录。
+3. 在 VS Code 中打开含 `README.md` 和 `data` 的项目根目录，按[软件配置](settings.qmd)检查内核与依赖。
+4. 使用冻结数据，重启内核后顺序运行第一讲 Notebook，按下方清单核对结果。
+5. 以后每次课前按[同步步骤](publishing.qmd)更新；作业和扩展实验保存到个人仓库。
+
+[Download ZIP](https://github.com/lianxhcn/FinEco/archive/refs/heads/main.zip) 仅作临时备用。它没有 Git 历史，不能直接拉取更新；以后使用 Desktop 或 Agent 克隆时，应保留原有练习，避免直接覆盖。操作参考 [GitHub Desktop 官方说明](https://docs.github.com/en/desktop/adding-and-cloning-repositories/cloning-and-forking-repositories-from-github-desktop)。
+
+### B. Agent，推荐 {#sec-guide-agent}
+
+把下面的路径占位符换成自己的目录，再交给 Agent。已有仓库时让它更新，不能把“获取资料”理解成每次重新克隆。
+
+::: {.callout-note title="提示词：准备课件并验收"}
+
+我正在学习 FinEco，仓库为 https://github.com/lianxhcn/FinEco。教师课件目录是「填写路径」，个人作业目录是「填写另一个平级路径」。请按以下顺序执行：
+
+1. 检查两个目录，确认互不包含。教师课件目录已有仓库时报告远程地址、分支、提交版本和本地改动，再正常同步；没有仓库时使用 Git 克隆。缺少 Git 时说明安装步骤，不擅自修改全局环境。
+2. 阅读 README、AGENTS、RULES、requirements.txt 和软件配置页。说明讲义、数据、Notebook 与输出的位置，记录所用提交版本。
+3. 检查实际 Python、Stata 和内核路径。先跑最小示例，再从头运行第一讲 Notebook；使用冻结数据，不重新抓行情。无法运行 Stata 时如实记录，先完成 Python。
+4. 保留真实输出与错误，核对基准结果。把个人实验放进独立作业目录，维护数据相对路径，不把作业推送到教师仓库。
+5. 汇报运行文件、环境、结果、失败步骤和下一步。遇到本地修改或同步冲突，先检查和备份，不能直接强制覆盖。
+
+:::
+
+完成后请亲自确认：当前内核是什么、数据来自哪个文件、结果保存在哪里。Agent 可以帮助操作，这三项仍需要你自己说清楚。
 
 ## 从复现到自己的小实验 {#sec-guide-practice}
 
@@ -65,12 +64,12 @@ Agent 需要知道资料来源、允许写入的目录和任务完成的标准�
 
 接下来做一项受控改动：
 
-1. **保留基准**：另行解压同一份 ZIP 作为独立练习项目，或让 Agent 创建保留目录结构的练习副本。已有 Python 内核可以继续选用，不必再次安装系统软件。
+1. **保留基准**：在个人作业仓库中创建保留数据相对路径的练习副本。已有 Python 内核可以继续选用，不必再次安装系统软件。
 2. **先作预测**：只选择一个条件。例如，提高交易成本后，同一配置的净收益应怎样变化？
 3. **运行并比较**：在练习副本中修改，从头运行。分别保存基准与修改后结果，注明改变了什么。
 4. **解释差异**：写出观察到的变化、与预测是否一致、尚不能回答的问题。不要因为结果不合预期就删掉它。
 
-股票实验提供交易成本比较；政策实验提供已知效应大小的修改。完成后再考虑更有挑战的假设变化。具体步骤见两个实验页的末尾；这些拓展是课后练习，不改变[一页研究计划](exercises/research-plan.qmd)的提交要求。
+股票实验提供交易成本比较；政策实验提供已知效应大小的修改。完成后再考虑更有挑战的假设变化。具体步骤见两个实验页的末尾；这些拓展是课后练习，不改变[一页研究计划](homework.qmd#hw-01)的提交要求。
 
 可以继续给 Agent 以下指令：
 

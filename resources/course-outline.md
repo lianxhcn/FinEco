@@ -13,14 +13,13 @@
 
 ## 全书主题
 
-| 模块 | 主题 |
+| Part | 章节安排 |
 |---|---|
-| 研究与数据 | 课程导览、金融数据与样本构造 |
-| 回归与推断 | OLS、模型设定与 FWL、Bootstrap、蒙特卡洛模拟 |
-| 资产收益与风险 | CAPM、投资组合、ARMA、GARCH 与 VaR |
-| 面板与政策 | 静态面板、DID、IV 与 GMM |
-| 机器学习与推断 | Lasso 基本原理、交叉验证、双重机器学习 DDML |
-| 弹性授课专题 | 动态面板、离散选择、样本选择、合成控制、RDD |
+| 研究基础 | 01 研究流程；02 金融数据；03 OLS；04 模型设定；05 Bootstrap；06 蒙特卡洛 |
+| 收益与风险 | 07 CAPM；08 投资组合；09 ARMA；10 GARCH与VaR |
+| 面板与因果 | 11 静态面板；12 DID；13 IV与GMM；14 动态面板 |
+| 机器学习 | 15 Lasso与交叉验证；16 DDML |
+| 扩展专题 | 17 离散选择；18 样本选择；19 合成控制；20 RDD |
 
 CAPM 与投资组合分章；ARMA 与 GARCH/VaR 分讲。Lasso 和交叉验证为必讲内容，DDML 单列重点章。动态面板独立写章，由教师决定课堂时间。不安排事件研究法章节。
 
@@ -30,3 +29,11 @@ CAPM 与投资组合分章；ARMA 与 GARCH/VaR 分讲。Lasso 和交叉验证�
 
 当前版本包含首页、课程安排、第一讲、已执行实验、环境说明和作业入口。其余主题随后逐章加入。
 
+
+## 网站模块与文件名
+
+前置页面依次为 `index.qmd` (前言)、`resources.qmd` (课程资料)、`getting-started.qmd` (课件使用)、`syllabus.qmd` (课程安排)。环境配置 Part 包含 `settings.qmd` 与 `publishing.qmd`，先于正式讲义。作业统一由 `homework.qmd` 维护，使用 `hw-01` 等锚点；旧研究计划已迁入该页。附录当前为 `resources/references.qmd`。
+
+未完成章节不加入公开导航。后续主题文件名依次规划为 `financial-data`、`ols`、`model-specification`、`bootstrap`、`monte-carlo`、`capm`、`portfolio`、`arma`、`garch-var`、`static-panel`、`did`、`iv-gmm`、`dynamic-panel`、`lasso-cv`、`ddml`、`discrete-choice`、`sample-selection`、`synthetic-control`、`rdd`，放入 `lectures/`。实验页使用主题短标题，不占理论章节编号。
+
+学生每学期维护一个 `fineco-homework` 仓库，与教师课件副本平级。`hw-01` 暂不强制 Pages，原则上从 `hw-02` 过渡，具体启用时间由教师通知。

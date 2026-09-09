@@ -19,7 +19,7 @@ preflight:
   ignore_checked: true
   sensitive_content_checked: true
   large_files_checked: true
-  minimal_verification: "两个 Notebook 已从头运行；9 个 HTML 页面渲染成功；内部链接与锚点检查通过；浏览器检查首页、公式、实验页和新增使用指南"
+  minimal_verification: "两个 Notebook 已从头运行；11 个 HTML 页面渲染成功；内部链接与锚点检查通过；浏览器检查首页、公式、实验页和课件使用、统一作业与提交模板"
 approval:
   create_remote: true
   commit: true

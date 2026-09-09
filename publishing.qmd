@@ -1,0 +1,79 @@
+# 同步与发布 {.unnumbered}
+
+本页连接两件日常工作：把教师的新课件同步到电脑，以及把自己的作业发布为网站。开始前先按[课件使用](getting-started.qmd)分开建立教师课件副本与个人作业目录。
+
+## 每次课前同步
+
+仓库只需克隆一次。以后在教师课件副本中更新，不需要每次重新下载。
+
+1. **确认位置**：在 GitHub Desktop 中选中教师课件仓库，核对远程地址为 `https://github.com/lianxhcn/FinEco.git`。
+2. **保存改动**：检查 Changes。若有自己的实验，先完整保存到个人作业目录，保留相对路径与依赖文件。
+3. **获取更新**：点击 Fetch origin；出现 Pull origin 时拉取更新。有冲突时先停下，让 Agent 检查改动来源。
+4. **核对版本**：查看最新提交，再打开本次课的 Notebook。沿用冻结数据，先复现基准结果。
+
+## 必要时强制对齐
+
+如果教师课件副本已被改乱，希望恢复到教师最新版本，可以让 Agent 执行下面的任务。强制对齐会丢弃已跟踪文件的本地修改；个人作业必须事先保存到另一个目录。
+
+::: {.callout-warning title="只对教师课件副本执行"}
+
+请检查我指定的教师课件目录，报告绝对路径、远程地址、当前分支、未提交改动和未推送提交。只有远程地址确认为 `lianxhcn/FinEco`、当前分支为 `main`，且个人工作已备份到仓库之外后，才把本地分支对齐 `origin/main`。列出将丢弃的内容让我确认；不要操作个人作业仓库，不执行 `git clean`，不删除虚拟环境或未跟踪文件，不执行强制推送。完成后报告提交版本和剩余改动。
+
+:::
+
+熟悉终端的同学可以按以下顺序检查；命令应在已核实的教师课件根目录执行。
+
+```bash
+git remote -v
+git branch --show-current
+git status --short
+git fetch origin
+git log --oneline origin/main..HEAD
+```
+
+确认本地修改和额外提交均已备份、允许舍弃后，再单独执行：
+
+```bash
+git reset --hard origin/main
+git status --short
+git rev-parse HEAD
+```
+
+这只重置本地副本，不更新教师远程仓库。未跟踪文件通常仍会保留，但妨碍检出目标版本的文件可能被覆盖，因此备份范围也要包括未跟踪文件。具体语义见 [Git reset 官方说明](https://git-scm.com/docs/git-reset)。
+
+## 一学期一个作业仓库
+
+个人仓库建议命名为 `fineco-homework`。每次作业使用独立目录，整个学期共用一个网站首页：
+
+```text
+study/
+  FinEco/                    教师课件副本
+  fineco-homework/            个人仓库，与 FinEco 平级
+    _quarto.yml
+    index.qmd                首页，链接各次作业
+    hw-01/
+      index.qmd              一页研究计划
+    hw-02/                   任务公布后再建立
+    docs/                    渲染结果
+```
+
+`hw-01` 是固定作业编号，也是文件夹名；不使用空格、中文姓名或特殊符号命名作业目录。文字说明和公式用 `.qmd`，实际代码及输出用 `.ipynb`。案例依赖的相对路径要一起维护，不能只移动一个 Notebook 后省略它需要的数据。
+
+## 发布个人网站
+
+`hw-01` 暂不强制要求网站。原则上从 `hw-02` 起过渡到 GitHub Pages，正式启用时间以教师通知为准。届时按以下步骤完成：
+
+1. **建仓库**：在自己的 GitHub 账号下建立 `fineco-homework`，克隆到个人作业目录。检查 `origin` 指向自己的仓库。
+2. **组织内容**：用 Quarto 建立网站或 Book，首页列出各次作业入口。配置输出目录为 `docs`；Notebook 先运行保存结果，再渲染。
+3. **本地检查**：运行 `quarto render`，检查首页和本次作业的公式、图表、代码与输出。在 `docs` 中放置空文件 `.nojekyll`。
+4. **提交并推送**：提交源文件与 `docs`，确认不含凭据、个人身份信息或不能公开的数据。作业不得只提交没有结果的代码。
+5. **启用 Pages**：在个人仓库 Settings → Pages 中选择从分支发布，指定实际使用的分支及 `/docs`。等待部署成功。
+6. **验收与提交**：用未登录浏览器打开网站，检查首页能进入本次作业。按[作业页面](homework.qmd)的入口提交网站首页及本次作业链接。
+
+::: {.callout-tip title="交给 Agent 的发布任务"}
+
+请在我的个人作业仓库中组织 Quarto 网站，保留 `hw-01` 等作业编号，首页提供各次作业链接。检查远程地址属于我的账号，不能推送到教师仓库。修改代码后先运行并保存真实输出，再渲染到 `docs`；检查首页及本次作业页面。使用我已登录的 GitHub 工具完成获准的提交与推送，账户登录和 Pages 设置若需要我操作，请给出具体步骤，不索取密钥。最后报告网站首页、本次作业地址和完整提交哈希。不要把教师课件仓库的远程地址直接改成我的地址。
+
+:::
+
+操作参考：[GitHub Desktop 克隆说明](https://docs.github.com/en/desktop/adding-and-cloning-repositories/cloning-and-forking-repositories-from-github-desktop)、[Quarto GitHub Pages 发布说明](https://quarto.org/docs/publishing/github-pages.html)。核对日期：2026-09-09。

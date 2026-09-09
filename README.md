@@ -8,7 +8,7 @@
 
 ## 学员入口
 
-第一次使用请读[讲义与仓库使用指南](https://lianxhcn.github.io/FinEco/getting-started.html)：提供手动下载、Agent 准备提示词、基准复现、小实验和 Issue 反馈方法。可以直接读网页，无需先掌握 Git 或构建网站。
+第一次使用请读[讲义与仓库使用指南](https://lianxhcn.github.io/FinEco/getting-started.html)：提供 GitHub Desktop 与 Agent 两条可选路线。第一次课可直接读网页，之后克隆一次、课前更新。教师课件副本与个人作业仓库分开保存；一学期一个个人仓库，各次作业使用 hw-01 等目录。
 
 ## 执行与网站维护
 

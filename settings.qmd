@@ -1,4 +1,4 @@
-# 环境准备：让 Agent 帮你配置并验收 {.unnumbered}
+# 软件配置 {.unnumbered}
 
 第一次使用本课程，请先按[讲义与仓库使用指南](getting-started.qmd)把完整资料准备到本地。本页解决下一步：让同一份 Notebook 找到正确的软件和依赖，能够从头运行。
 

@@ -1,0 +1,33 @@
+# 📚 课程资料 {.unnumbered}
+
+本在线讲义是课程主教材。遇到某项操作或概念需要补充时，再查阅下面的资料；不要求把所有参考书从头读完，也不要求购买全部教材。
+
+## 配套课程
+
+| 资料 | 什么时候使用 |
+|---|---|
+| [ds2026](https://lianxhcn.github.io/ds2026/) | 补充 Python、Jupyter、数据处理和可视化基础 |
+| [PXa2026a](https://lianxhcn.github.io/PXa2026a/) | 参考在线课件的使用和实证研究工作流程 |
+| [ci-policy](https://lianxhcn.github.io/ci-policy/) | 学习政策评估、因果推断及后续 DDML 内容 |
+| [stata-ai](https://lianxhcn.github.io/stata-ai/) | 衔接 Stata、Notebook 与 Agent 的实际操作 |
+
+## 数据处理与金融应用
+
+1. **[Python for Data Analysis](https://wesmckinney.com/book/)**：查阅 pandas 数据整理、合并和缺失处理。配套 [代码仓库](https://github.com/wesm/pydata-book) 可用于练习。
+2. **[Tidy Finance with Python](https://www.tidy-finance.org/python/index.html)**：结合金融问题学习数据处理和资产定价分析，供 CAPM 与投资组合章节延伸阅读。
+
+以上入口参考 ds2026 的课程资料页选取。具体计量教材与本讲引用见[参考资料](resources/references.qmd)，本课程的数据来源、冻结快照与复权口径也在该页说明。
+
+## 先读什么
+
+- **第一次上课**：读[研究流程](lectures/intro.qmd)，看懂两个案例要回答的问题。
+- **准备复现**：按[课件使用](getting-started.qmd)取得完整仓库，再读[软件配置](settings.qmd)。
+- **准备提交作业**：查看[作业](homework.qmd)，需要发布网站时读[同步与发布](publishing.qmd)。
+
+::: {.callout-note title="环境配置扩展阅读"}
+
+安装和内核问题的补充链接统一放在[软件配置页末尾](settings.qmd#sec-settings-reading)。按遇到的问题选读，不必重复配置多个课程环境。
+
+:::
+
+资料整理日期：2026-09-09。外部课程的考核要求、软件路径和许可证不自动适用于 FinEco。
