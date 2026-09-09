@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>参考资料与数据说明 – 金融计量经济学</title>
+<title>如何使用讲义与 GitHub 仓库 – 金融计量经济学</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,26 +20,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<link href="../exercises/research-plan.html" rel="prev">
-<script src="../site_libs/quarto-html/quarto.js"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0626ff4d7a71b55c8707dcae1d04a9b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-d59a9bb4a0246dd4330968064f99cf3e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./syllabus.html" rel="next">
+<link href="./index.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-0626ff4d7a71b55c8707dcae1d04a9b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-d59a9bb4a0246dd4330968064f99cf3e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -69,7 +104,7 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="nav-sidebar docked">
@@ -81,7 +116,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../settings.html">学习与实践</a></li><li class="breadcrumb-item"><a href="../resources/references.html">参考资料与数据说明</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./getting-started.html">如何使用讲义与 GitHub 仓库</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
@@ -96,7 +131,7 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="../">金融计量经济学</a> 
+      <a href="./">金融计量经济学</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/lianxhcn/FinEco" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
   <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="切换阅读器模式">
@@ -116,19 +151,19 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">课程首页</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../getting-started.html" class="sidebar-item-text sidebar-link">
+  <a href="./getting-started.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">如何使用讲义与 GitHub 仓库</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../syllabus.html" class="sidebar-item-text sidebar-link">
+  <a href="./syllabus.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">课程介绍与安排</span></a>
   </div>
 </li>
@@ -143,19 +178,19 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../lectures/intro.html" class="sidebar-item-text sidebar-link">
+  <a href="./lectures/intro.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">课程导览与实证金融研究流程</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notebooks/intro/portfolio-python.html" class="sidebar-item-text sidebar-link">
+  <a href="./notebooks/intro/portfolio-python.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">组合案例实验：10 只股票的收益与风险</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notebooks/intro/policy-stata.html" class="sidebar-item-text sidebar-link">
+  <a href="./notebooks/intro/policy-stata.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">政策案例实验：从四个均值到 DID</span></a>
   </div>
 </li>
@@ -172,19 +207,19 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../settings.html" class="sidebar-item-text sidebar-link">
+  <a href="./settings.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">环境准备：让 Agent 帮你配置并验收</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../exercises/research-plan.html" class="sidebar-item-text sidebar-link">
+  <a href="./exercises/research-plan.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">第一讲作业：一页研究计划</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../resources/references.html" class="sidebar-item-text sidebar-link active">
+  <a href="./resources/references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">参考资料与数据说明</span></a>
   </div>
 </li>
@@ -200,19 +235,21 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">目录</h2>
    
   <ul>
-  <li><a href="#方法阅读" id="toc-方法阅读" class="nav-link active" data-scroll-target="#方法阅读">方法阅读</a></li>
-  <li><a href="#教材入口" id="toc-教材入口" class="nav-link" data-scroll-target="#教材入口">教材入口</a></li>
-  <li><a href="#首讲数据与政策" id="toc-首讲数据与政策" class="nav-link" data-scroll-target="#首讲数据与政策">首讲数据与政策</a></li>
-  <li><a href="#软件与复现资料" id="toc-软件与复现资料" class="nav-link" data-scroll-target="#软件与复现资料">软件与复现资料</a></li>
+  <li><a href="#选择适合自己的入口" id="toc-选择适合自己的入口" class="nav-link active" data-scroll-target="#选择适合自己的入口">选择适合自己的入口</a></li>
+  <li><a href="#sec-guide-download" id="toc-sec-guide-download" class="nav-link" data-scroll-target="#sec-guide-download">手动下载：先拿到完整材料</a></li>
+  <li><a href="#sec-guide-agent" id="toc-sec-guide-agent" class="nav-link" data-scroll-target="#sec-guide-agent">让 Agent 帮你准备</a></li>
+  <li><a href="#sec-guide-practice" id="toc-sec-guide-practice" class="nav-link" data-scroll-target="#sec-guide-practice">从复现到自己的小实验</a></li>
+  <li><a href="#sec-guide-feedback" id="toc-sec-guide-feedback" class="nav-link" data-scroll-target="#sec-guide-feedback">发现问题怎样反馈</a></li>
+  <li><a href="#文件放在哪里" id="toc-文件放在哪里" class="nav-link" data-scroll-target="#文件放在哪里">文件放在哪里</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/resources/references.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/getting-started.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../settings.html">学习与实践</a></li><li class="breadcrumb-item"><a href="../resources/references.html">参考资料与数据说明</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">参考资料与数据说明</h1>
+<h1 class="title">如何使用讲义与 GitHub 仓库</h1>
 </div>
 
 
@@ -229,35 +266,171 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="方法阅读" class="level2">
-<h2 class="anchored" data-anchor-id="方法阅读">方法阅读</h2>
-<p>第一讲先理解问题与流程，以下材料用于按兴趣延伸。读者不需要在课前精读全部文献。</p>
+<p>本课程希望你完成三件事：读懂课堂分析，复现主要结果，再提出并检验自己的小改动。在线讲义适合阅读和跟课，GitHub 仓库保存源文件、代码和数据快照；下载仓库是为了把同一项分析带到自己的电脑上。</p>
+<p>你可以先在线阅读，也可以手动下载或让 Agent 协助。三种方式通向同一套材料，不要求先学会 Git 才能做实验。</p>
+<section id="选择适合自己的入口" class="level2">
+<h2 class="anchored" data-anchor-id="选择适合自己的入口">选择适合自己的入口</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>当前目标</th>
+<th>从哪里开始</th>
+<th>完成标志</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>跟课、查看公式和结果</td>
+<td><a href="./lectures/intro.html">第一讲</a>及其两个实验页</td>
+<td>能说明研究问题与主要结果</td>
+</tr>
+<tr class="even">
+<td>第一次在本地复现</td>
+<td>下方手动下载路线，再读<a href="./settings.html">环境准备</a></td>
+<td>从头运行 Notebook，核对输出</td>
+</tr>
+<tr class="odd">
+<td>希望 Agent 帮忙准备</td>
+<td>下方 Agent 提示词</td>
+<td>得到本地材料、环境检查和执行记录</td>
+</tr>
+</tbody>
+</table>
+<p>阅读本站和下载公开仓库通常无需 GitHub 账号。提交 Issue 需要登录；如果暂时不能登录，可以先整理问题，通过教师指定渠道反馈。</p>
+</section>
+<section id="sec-guide-download" class="level2">
+<h2 class="anchored" data-anchor-id="sec-guide-download">手动下载：先拿到完整材料</h2>
+<p>Notebook 会读取旁边的数据和项目配置。只下载一个 <code>.ipynb</code>，常会遇到“找不到文件”；第一次建议下载整个仓库，保留原有目录关系。</p>
 <ol type="1">
-<li>Chernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., &amp; Robins, J. (<strong>2018</strong>). Double/debiased machine learning for treatment and structural parameters. <em>The Econometrics Journal</em>, 21(1), C1–C68. <a href="https://doi.org/10.1111/ectj.12097">Link</a>, <a href="https://arxiv.org/pdf/1608.00060">PDF</a>, <a href="https://scholar.google.com/scholar?q=Double%2Fdebiased+machine+learning+for+treatment+and+structural+parameters">Google</a>.</li>
-<li>Markowitz, H. (<strong>1952</strong>). Portfolio selection. <em>The Journal of Finance</em>, 7(1), 77–91. <a href="https://doi.org/10.1111/j.1540-6261.1952.tb01525.x">Link</a>, <a href="https://doi.org/10.1111/j.1540-6261.1952.tb01525.x">PDF</a>, <a href="https://scholar.google.com/scholar?q=Harry+Markowitz+Portfolio+Selection+1952">Google</a>.</li>
-<li>Sharpe, W. F. (<strong>1994</strong>). The Sharpe ratio. <em>The Journal of Portfolio Management</em>, 21(1), 49–58. <a href="https://doi.org/10.3905/jpm.1994.409501">Link</a>, <a href="https://doi.org/10.3905/jpm.1994.409501">PDF</a>, <a href="https://scholar.google.com/scholar?q=William+Sharpe+The+Sharpe+Ratio+1994">Google</a>. 作者提供的<a href="https://web.stanford.edu/~wfsharpe/art/sr/SR.htm">公开网页版本</a>适合直接阅读。</li>
+<li><strong>Step 1</strong>: 打开 <a href="https://github.com/lianxhcn/FinEco">FinEco 仓库</a>，点击 <strong>Code → Download ZIP</strong>；也可使用<a href="https://github.com/lianxhcn/FinEco/archive/refs/heads/main.zip">完整 ZIP 下载链接</a>。</li>
+<li><strong>Step 2</strong>: 将 ZIP 解压到自己的学习目录。进入含有 <code>README.md</code>、<code>RULES.md</code> 和 <code>data/</code> 的那一层文件夹；这一层就是项目根目录，不是在压缩包里直接打开文件。</li>
+<li><strong>Step 3</strong>: 在 VS Code 中用“打开文件夹”打开项目根目录，阅读<a href="./settings.html">环境准备</a>，完成 Python 和 Stata 的最小检查。</li>
+<li><strong>Step 4</strong>: 打开 <code>notebooks/intro/portfolio-python.ipynb</code> 或 <code>notebooks/intro/policy-stata.ipynb</code>，选择相应内核，重启内核后从头运行全部单元格。</li>
+<li><strong>Step 5</strong>: 核对下方验收清单，保存运行结果，并记录下载日期。暂时没有 Stata 时，先复现 Python，Stata 部分可阅读网页中的已有输出。</li>
 </ol>
-<p>PDF 标签采用 DOI 兜底时，不表示一定可直接下载 PDF；DDML 的 arXiv 版本为工作论文版本，可能与最终刊发版有差异。</p>
+<p>ZIP 是下载时的一个快照，不会自动更新。<a href="https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives">GitHub 下载说明</a>解释了快照与克隆的区别。已安装 Git 的同学，也可在自己选择的父目录运行：</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/lianxhcn/FinEco.git</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>若本地已经有 <code>FinEco</code>，先检查现有文件，勿将新下载内容覆盖到自己的实验上。ZIP 用户更新时可重新解压到另一个文件夹；Git 用户更新前先检查并保存本地改动，再处理同步。为了复现某次课堂结果，应记录所用提交版本；主分支和网站会随课程更新。</p>
 </section>
-<section id="教材入口" class="level2">
-<h2 class="anchored" data-anchor-id="教材入口">教材入口</h2>
+<section id="sec-guide-agent" class="level2">
+<h2 class="anchored" data-anchor-id="sec-guide-agent">让 Agent 帮你准备</h2>
+<p>Agent 需要知道资料来源、允许写入的目录和任务完成的标准。下面的提示词可以直接使用，但要把本地目录占位符替换成自己的路径。</p>
+<div class="callout callout-style-default callout-note callout-titled" title="提示词：获取课程材料并验证环境">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+提示词：获取课程材料并验证环境
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>我正在学习金融计量经济学。课程网站是 https://lianxhcn.github.io/FinEco/，仓库是 https://github.com/lianxhcn/FinEco。请把课程材料准备到我指定的本地目录「填写自己的目录」，按下面顺序执行：</p>
+<ol type="1">
+<li>检查目标目录是否存在及是否已有个人文件。已有仓库时先报告版本和未保存的改动，不覆盖它们；没有仓库时，优先用已有 Git 克隆，未安装 Git 则下载并解压完整 ZIP。</li>
+<li>阅读 README、AGENTS、RULES、环境准备页和 requirements.txt。解释讲义、Notebook、数据和输出的位置，记录下载日期及能确认的提交版本。</li>
+<li>检查已有 Python、Stata、Jupyter 内核及实际路径。先完成最小示例，再运行第一讲 Notebook。系统级安装和全局配置变更先向我说明，不读取账户凭据。</li>
+<li>使用仓库内的冻结数据，不重新下载行情、不改变模型和参数。保留实际错误与输出，不把命令已发出当作运行成功。</li>
+<li>报告已运行的文件、主要结果是否与对应版本讲义一致、失败步骤和建议。暂时无法运行 Stata 时明确记录，先完成 Python 部分。</li>
+</ol>
+</div>
+</div>
+<p>网页是供阅读的结果，Notebook 内核才负责执行代码。Agent 完成后，请你亲自指出当前选用哪个内核、数据从哪个文件读取、结果保存在哪里；能回答这三项，才方便继续排错和扩展。</p>
+</section>
+<section id="sec-guide-practice" class="level2">
+<h2 class="anchored" data-anchor-id="sec-guide-practice">从复现到自己的小实验</h2>
+<p>先跑通未改动的案例，是为了建立可以比较的起点。如果一开始就同时换股票、改时间窗口和换模型，结果变化后就很难判断原因。</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="基准复现的验收清单">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+基准复现的验收清单
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
-<li>Hansen 的 <em>Econometrics</em>：<a href="https://www.ssc.wisc.edu/~bhansen/econometrics/">作者页面</a>。课程内部备课材料包括 2021 年版本，引用具体章节时应核对手中版本。</li>
-<li>James、Witten、Hastie、Tibshirani 与 Taylor 的 <em>An Introduction to Statistical Learning: with Applications in Python</em> (2023)：<a href="https://www.statlearning.com/">教材官网</a>，<a href="https://intro-stat-learning.github.io/ISLP/">Python 配套资料</a>。</li>
-<li>Tatsat、Puri 与 Lookabaugh 的 <em>Machine Learning and Data Science Blueprints for Finance</em> (2020)为课程大纲所列参考书。本网站不分发教材全文。</li>
+<li>重启内核后能顺序运行，代码单元格没有错误输出。</li>
+<li>Python 实验能读入 10 只股票，报告缺失情况，并生成权重表和训练、验证、测试结果。</li>
+<li>Stata 实验生成 800 家企业、10 年的模拟面板，手算 DID 与交乘项回归一致，固定效应估计接近已写入的 -0.4 个百分点。</li>
+<li>使用相同数据和版本时，关键结果应一致或只有可解释的数值舍入差异；图片文件名和执行日期可以不同。</li>
 </ul>
+</div>
+</div>
+<p>接下来做一项受控改动：</p>
+<ol type="1">
+<li><strong>保留基准</strong>：另行解压同一份 ZIP 作为独立练习项目，或让 Agent 创建保留目录结构的练习副本。已有 Python 内核可以继续选用，不必再次安装系统软件。</li>
+<li><strong>先作预测</strong>：只选择一个条件。例如，提高交易成本后，同一配置的净收益应怎样变化？</li>
+<li><strong>运行并比较</strong>：在练习副本中修改，从头运行。分别保存基准与修改后结果，注明改变了什么。</li>
+<li><strong>解释差异</strong>：写出观察到的变化、与预测是否一致、尚不能回答的问题。不要因为结果不合预期就删掉它。</li>
+</ol>
+<p>股票实验提供交易成本比较；政策实验提供已知效应大小的修改。完成后再考虑更有挑战的假设变化。具体步骤见两个实验页的末尾；这些拓展是课后练习，不改变<a href="./exercises/research-plan.html">一页研究计划</a>的提交要求。</p>
+<p>可以继续给 Agent 以下指令：</p>
+<blockquote class="blockquote">
+<p>请保留课程基准文件，在独立练习项目中只改变我指定的一个条件，其他数据、参数和随机种子保持一致。先解释预期影响，再修改并运行。记录修改位置，生成前后结果对照，解释差异。不要修改其他课程目录，不向课程仓库推送我的练习结果。</p>
+</blockquote>
 </section>
-<section id="首讲数据与政策" class="level2">
-<h2 class="anchored" data-anchor-id="首讲数据与政策">首讲数据与政策</h2>
-<p>市场案例由 AKShare 的 <code>stock_zh_a_hist_tx</code> 接口获取腾讯历史行情，使用后复权收盘价，冻结区间为 2018—2025 年。股票池为事后选定的固定教学篮子；数据不是课程原创，不为上游数据声明新的许可。大规模再分发或商业使用前应核查来源条款。</p>
-<p><a href="../data/intro/README.md">数据说明</a> · <a href="../data/intro/source-manifest.json">来源和哈希清单</a> · <a href="../data/intro/prices-long.csv">合并行情快照</a></p>
-<p>政策背景来自<a href="https://policy.mofcom.gov.cn/claw/clawContent.shtml?id=62349">浙江省湖州市、衢州市绿色金融改革创新试验区总体方案</a>。Stata 案例完全使用模拟企业和模拟城市，不含真实融资成本数据，也不估计真实政策效应。</p>
-<p>CSMAR 是后续企业研究的数据候选，具体获取范围以学校权限和<a href="https://www.csmar.com/channels/31.html">产品说明</a>为准。本次未使用或公开 CSMAR 导出数据。</p>
+<section id="sec-guide-feedback" class="level2">
+<h2 class="anchored" data-anchor-id="sec-guide-feedback">发现问题怎样反馈</h2>
+<p>读不懂一个符号、发现链接失效、同样数据无法复现，都是有价值的反馈。Issue 是仓库中的公开问题记录，方便教师追踪、讨论并在修订后告知大家。</p>
+<ol type="1">
+<li>打开 <a href="https://github.com/lianxhcn/FinEco/issues">已有 Issues</a>，先看是否已有相同问题。</li>
+<li>登录 GitHub，点击 <a href="https://github.com/lianxhcn/FinEco/issues/new">New issue</a>，用“页面或文件 + 具体问题”写标题。</li>
+<li>按下面清单描述情况，检查内容后提交。操作可参考 <a href="https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/creating-an-issue">GitHub Issue 说明</a>。</li>
+</ol>
+<pre class="text"><code>问题类型：文字/公式/链接/代码/结果解释
+页面链接与小节，或 Notebook 文件与单元格：
+所用材料的下载日期或提交版本：
+我做了哪些操作：
+我预期看到什么：
+实际看到什么 (保留必要错误信息)：
+相关环境版本 (仅代码问题需要)：
+我的理解或建议：</code></pre>
+<p>文字问题不必填写软件环境；代码问题尽量提供能重复出现问题的最小步骤。截图或日志中隐去个人路径、账号和凭据，不上传受限数据。可以让 Agent 帮你整理 Issue 草稿，由你核对后提交。</p>
 </section>
-<section id="软件与复现资料" class="level2">
-<h2 class="anchored" data-anchor-id="软件与复现资料">软件与复现资料</h2>
-<p><a href="https://akshare.akfamily.xyz/data/stock/stock.html">AKShare 行情文档</a> · <a href="https://hugetim.github.io/nbstata/user_guide.html">nbstata 使用说明</a> · <a href="https://quarto.org/docs/projects/code-execution.html">Quarto 执行说明</a> · <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html">时间顺序验证</a></p>
-<p>第一讲 Notebook 的依赖版本与执行器在 GitHub 仓库提供。本文外部网页信息查询日期 <code>retrieved_date: 2026-09-09</code>；来源网页的未来版本变化不应覆盖已经保存的教学快照。</p>
+<section id="文件放在哪里" class="level2">
+<h2 class="anchored" data-anchor-id="文件放在哪里">文件放在哪里</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>目录或文件</th>
+<th>学习时的用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>lectures/</code></td>
+<td>理论讲义源文件，网页中的公式和解释来自这里</td>
+</tr>
+<tr class="even">
+<td><code>notebooks/intro/</code></td>
+<td>第一讲代码及已保存的输出</td>
+</tr>
+<tr class="odd">
+<td><code>data/intro/</code></td>
+<td>冻结行情、来源清单和案例结果表</td>
+</tr>
+<tr class="even">
+<td><code>exercises/</code></td>
+<td>作业要求</td>
+</tr>
+<tr class="odd">
+<td><code>settings.qmd</code>、<code>requirements.txt</code></td>
+<td>环境说明和依赖版本</td>
+</tr>
+<tr class="even">
+<td><code>tools/</code></td>
+<td>取数、批量执行与构建工具；常规复现不必重新取数</td>
+</tr>
+<tr class="odd">
+<td><code>docs/</code></td>
+<td>发布网站的生成文件；学生运行案例不用修改这里</td>
+</tr>
+</tbody>
+</table>
+<p>第一次练习做到“下载完整材料—环境验收—复现一个案例—解释一个改动”即可。无需先掌握网站构建或所有 Git 操作。</p>
+<p>GitHub 操作资料核对日期：2026-09-09。</p>
 
 
 </section>
@@ -687,11 +860,14 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../exercises/research-plan.html" class="pagination-link" aria-label="第一讲作业：一页研究计划">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">第一讲作业：一页研究计划</span>
+      <a href="./index.html" class="pagination-link" aria-label="课程首页">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">课程首页</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="./syllabus.html" class="pagination-link" aria-label="课程介绍与安排">
+        <span class="nav-page-text">课程介绍与安排</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->
@@ -702,7 +878,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/resources/references.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/getting-started.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p><a href="https://www.lianxh.cn">连享会</a> · Quarto Book</p>
 </div>

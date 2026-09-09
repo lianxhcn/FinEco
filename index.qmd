@@ -13,8 +13,19 @@ FINANCIAL ECONOMETRICS · LN429 · 2026 秋季
 ::: {.course-actions}
 [开始第一讲](lectures/intro.qmd)
 [课程介绍与安排](syllabus.qmd)
+[使用指南](getting-started.qmd)
 [环境准备](settings.qmd)
 :::
+
+## 怎样使用这本讲义 {#sec-home-use}
+
+课堂从网页阅读问题、公式和已运行结果；课后把仓库资料带到本地，先复现，再尝试自己的改动。你可以按当前目标选择：
+
+- **先跟课**：直接进入[第一讲](lectures/intro.qmd)，无需安装软件。
+- **手动准备**：按[下载与复现步骤](getting-started.qmd#sec-guide-download)取得完整材料，再完成环境检查。
+- **Agent 协助**：复制[准备材料提示词](getting-started.qmd#sec-guide-agent)，让 Agent 检查目录、配置与运行结果。
+
+跑通后做一个[单条件小实验](getting-started.qmd#sec-guide-practice)；发现文字、公式或代码问题，可按[反馈说明](getting-started.qmd#sec-guide-feedback)提交 Issue，帮助讲义持续改进。
 
 ## 课程基本信息
 

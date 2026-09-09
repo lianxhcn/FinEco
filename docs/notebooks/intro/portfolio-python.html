@@ -160,6 +160,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../getting-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">如何使用讲义与 GitHub 仓库</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../syllabus.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">课程介绍与安排</span></a>
   </div>
@@ -264,9 +270,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>本实验使用 AKShare 获取的腾讯历史行情，读取已经冻结的快照，<strong>执行分析不联网</strong>。固定篮子为事后选定的 10 只股票，仅用于教学，不是历史选股策略、投资建议或全部 A 股的代表样本。</p>
 <p><a href="../../lectures/intro.html#sec-intro-portfolio">回到第一讲</a> · <a href="https://raw.githubusercontent.com/lianxhcn/FinEco/main/notebooks/intro/portfolio-python.ipynb">下载本 Notebook</a></p>
 <p>任务：用 2018—2023 年训练，2024 年作验证，2025 年作保留测试。比较等权、最小方差与年化预期收益至少 8% 的最小方差组合。验证结果用于报告稳定性，本例不依据验证或测试收益更换规则。</p>
+<p>先想清楚我们在比较什么：同一个股票篮子中，只改变配置规则，观察收益与风险怎样变化。这样能把复杂优化与简单等权放在同一条件下比较。时间划分的理由和全部数学符号见<a href="../../lectures/intro.html#eq-intro-optimization">第一讲</a>。第一次运行请按<a href="../../getting-started.html">使用指南</a>取得完整仓库，不能只下载本文件。</p>
+<p>本页按“检查数据—估计权重—评价表现—改变一个条件”展开。代码已运行，你可以先看解释和输出，再逐段阅读实现。</p>
 <section id="路径与数据检查" class="level2">
 <h2 class="anchored" data-anchor-id="路径与数据检查">1. 路径与数据检查</h2>
 <p>原始获取脚本是 <code>tools/fetch_intro_prices.py</code>；它调用 <code>ak.stock_zh_a_hist_tx(..., adjust="hfq")</code>。获取与分析分离，避免网络故障改变课堂输出。快照含后复权收盘价，不能直接用作历史实际成交价。</p>
+<p>这段代码的任务是确认我们将计算的究竟是哪批记录：</p>
+<ol type="1">
+<li>找到含 <code>RULES.md</code> 的项目根目录，读取 <code>prices-long.csv</code> 和来源清单。</li>
+<li>检查“股票代码 + 日期”是否唯一、复权价格是否为正。</li>
+<li>把长表转换为“行是日期、列是股票”的价格表，报告每只股票的可用记录和缺失。</li>
+</ol>
+<p>输出的缺失交易日数以这份行情表的日期并集为参照，不是另行取得的交易所日历。程序断言失败时应停下来查数据，不能跳过检查直接优化。</p>
 <div id="0b987cef" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:28:52.885337Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:28:52.884339Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:00.498380Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:00.497230Z&quot;}" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
@@ -383,7 +398,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>阅读检查表：如果出现缺失，不能直接填零收益。我们先计算各股票相邻交易日收益，再只保留十只股票都有有效收益的日期，报告删去的行数。此处是课堂简化；若删除很多行，或者需要真实交易回测，应先研究停牌、估值与可交易性，不能直接沿用。</p>
+<p>阅读检查表后，需要将价格变成可比较的日收益。相邻日期收益是本期价格除以上期价格再减 1；两个价格都有效才可计算。下一段不自动填补缺失，只保留 10 只股票共同有效的收益日期。</p>
+<p>这项简化会删除部分日期，因而后面累计的是保留序列的收益，未完整计入被删日期的持有损益。它适合说明配置与评价流程；正式交易回测还需处理停牌估值和可交易性，不能直接沿用。</p>
+<p>随后按时间顺序划分样本：前段用于估计参数，2024 年报告验证表现，2025 年保留评价；本例不按后两段的收益修改方案。只用训练期计算均值、标准差和相关性图，避免未来数据进入权重估计。</p>
+<p>读输出时看三处：</p>
+<ul>
+<li><strong>删除数量</strong>：包括第一天没有前一期价格而无法算收益的情况，不能全解释为停牌。</li>
+<li><strong>训练期均值和波动</strong>：分别由日收益均值乘 252、日标准差乘平方根 252 得到。</li>
+<li><strong>相关性图</strong>：看对角线之外的股票对，判断风险是否倾向于共同变化。</li>
+</ul>
 <div id="534e71b1" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:00.501084Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:00.500556Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:01.714385Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:01.713065Z&quot;}" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>returns_all <span class="op">=</span> prices.pct_change(fill_method<span class="op">=</span><span class="va">None</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>returns <span class="op">=</span> returns_all.dropna(how<span class="op">=</span><span class="st">'any'</span>)</span>
@@ -504,6 +527,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="在约束下求权重">2. 在约束下求权重</h2>
 <p>共同限制：不卖空、不加杠杆、权重之和为 1、单只股票不超过 20%。8% 是训练期估计均值上的年化算术预期收益约束，不保证未来实现；不可行时程序会明确报告。</p>
 <p>算法：先用训练期估计均值与协方差，再解约束优化；随后冻结权重目标。收益估计误差和样本选择问题仍然存在。</p>
+<p>代码中的 <code>mu</code> 对应正文估计年化均值向量，<code>cov</code> 对应估计年化协方差矩阵，<code>base</code> 是每只 10% 的等权起点。<code>bounds</code> 给每个权重设置 0 到 0.2 的范围，<code>constraints</code> 要求权重和为 1；<code>target=0.08</code> 时额外要求估计收益达到 8%。<code>w@cov@w</code> 与 <code>w@mu</code> 分别计算正文的方差和加权均值。</p>
+<p>求解器 SLSQP 用于在限制条件下寻找数值解，本讲不要求掌握其算法细节。程序会检查求解状态与约束，失败时报告“目标不可行或优化失败”；求解失败并不单独证明数学问题不可行，还需排查数值条件。</p>
+<p>权重表每一列是一种配置。先核对每列合计 100% 和单只上限，再看哪些股票接近边界。某只权重较高，表示它在当前样本估计与约束中被选中，不等于它未来一定表现最好。</p>
 <div id="aef8fe40" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:01.718382Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:01.718382Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:01.828210Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:01.827225Z&quot;}" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="bu">len</span>(train.columns)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> train.mean().to_numpy()<span class="op">*</span><span class="dv">252</span></span>
@@ -614,8 +640,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="先规定回测规则再看结果" class="level2">
 <h2 class="anchored" data-anchor-id="先规定回测规则再看结果">3. 先规定回测规则，再看结果</h2>
-<p>每月首个有效收益日期开始前再平衡，月内权重随价格变化漂移。所有目标权重只由 2018—2023 年估计；各评价区间从目标权重重新开始。连续权重忽略整数股与滑点，交易成本设为单边成交额的 10 个基点，买卖都计成本。</p>
-<p>代码中的换手是买入和卖出权重变化绝对值之和。初次建仓计满仓买入成本，区间末不假定清仓。2025 年测试表现用于评估，不再回头选择股票或调参。</p>
+<p>权重表只是一项配置建议，还不是投资业绩。要模拟持有过程，需要规定何时调整、怎样扣费，以及不同方案是否处在相同条件下。回测是在历史收益上按这些规则计算路径，并不保证当时每笔交易都能执行。</p>
+<p>本例统一使用以下规则：</p>
+<ol type="1">
+<li><strong>调整时间</strong>：每月首个有效收益日期开始前回到目标权重，月内允许比例漂移。</li>
+<li><strong>信息范围</strong>：所有目标权重只由 2018—2023 年估计，验证和测试不重新选权重。</li>
+<li><strong>区间起点</strong>：训练、验证和测试各自从 10 万元及目标权重重新开始，互不接续资金。</li>
+<li><strong>交易成本</strong>：按买入或卖出金额分别计单边 10 个基点，即 0.1%；1 个基点等于 0.01 个百分点。忽略整数股与滑点，即成交价格偏离设想价格的额外影响。</li>
+</ol>
+<p>代码中的双边换手是买入和卖出权重变动绝对值之和。例如，从一只股票转移 10% 的资金到另一只，会同时产生 10% 卖出和 10% 买入，合计 20%。初次满仓买入计一次建仓成本，区间末不假定清仓。</p>
+<p><code>backtest</code> 接收日收益表、目标权重和成本率，返回扣费后的日收益与累计换手；<code>metrics</code> 将它们转成评价表。净收益计算同时反映扣费后剩余资金与当天涨跌，净值从 1 起按日累计，再乘 10 万元转成金额。Sharpe 与最大回撤定义见<a href="../../lectures/intro.html#eq-intro-performance">正文指标说明</a>。</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="先判断，再看表">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+先判断，再看表
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>在同一股票池中，最小方差方案的波动更小，是否就意味着收益也更高？想好理由，再比较下面三种方案。</p>
+</div>
+</div>
 <div id="10c80ee5" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:01.833210Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:01.832209Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:03.080325Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:03.079273Z&quot;}" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> backtest(r,w,cost<span class="op">=</span><span class="fl">0.001</span>):</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    current<span class="op">=</span>w.copy()<span class="op">;</span> result<span class="op">=</span>[]<span class="op">;</span> turnovers<span class="op">=</span>[]<span class="op">;</span> previous<span class="op">=</span><span class="va">None</span></span>
@@ -790,8 +837,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
-<p>结果应先看“测试”三行：CAGR 是复合增长率，不能与 8% 的训练期算术预期目标直接等同。Sharpe 使用明确假设的年有效无风险利率 2%，不冒充真实无风险行情。最大回撤是已发生路径上的损失幅度，不是未来损失上限。</p>
-<p>再看训练与验证：排名改变并不奇怪，优化依赖不稳定的估计值。对今天选定的固定股票篮子进行时间划分，仍不能消除股票选择带来的幸存者偏差。</p>
+<p>结果先看“测试”三行，以相同评价区间比较不同方案：</p>
+<ol type="1">
+<li><strong>读收益</strong>：CAGR 按有效日数折成年复合增长率，考虑收益的乘法累计；“年化算术均值”则是日均收益乘 252，两者不必相同。</li>
+<li><strong>读风险</strong>：年化波动描述收益分散程度；最大回撤描述这条路径从历史高点的最大跌幅。</li>
+<li><strong>读相对表现</strong>：Sharpe 使用年有效无风险利率 2% 的教学假设；它为负不等于累计收益必然为负。</li>
+</ol>
+<p>当前输出中，最小方差方案的测试期波动为 7.52%，等权为 9.06%；但三个测试 Sharpe 均为负。这个比较支持“在本例测试期降低了波动”，不足以支持“满足所有投资目标”。“双边换手”是区间累计比例，不是平均每天的比例。</p>
+<p>再比较训练与验证的同一指标，观察方案是否稳定。历史表现变化不奇怪，且今天选定的股票篮子仍有样本选择问题。接下来的两张图把表中的净收益展开为金额路径和正的回撤幅度；回撤越高，损失越深，10% 虚线只是情境阈值。</p>
 <div id="02ad2367" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:03.082899Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:03.082899Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:05.046119Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:05.045110Z&quot;}" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>net_returns<span class="op">=</span>pd.DataFrame(paths)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>wealth<span class="op">=</span>(<span class="dv">1</span><span class="op">+</span>net_returns).cumprod()</span>
@@ -824,7 +877,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="成本敏感性与练习" class="level2">
 <h2 class="anchored" data-anchor-id="成本敏感性与练习">4. 成本敏感性与练习</h2>
-<p>把成本从零提高到单边 30 个基点，看看排名和收益变化。本例权重固定、月度再平衡，因此换手可能不高；结果不能外推到高频交易。后续课程会加入滚动估计、波动预测和更严格的交易约束。</p>
+<p>复杂配置可能依赖交易，因此还要问：结论是否依赖过于便宜的交易假设？下面保持数据、权重和再平衡频率不变，只比较单边成本为零、10 和 30 个基点的情况。分别对应代码中的 0、0.001 和 0.003。</p>
+<p>这是一项单条件敏感性分析。先预测同一方案在成本提高后净收益怎样变化，再读表核对；方案间排名未必必然改变。本例目标权重冻结、月度调整，不能把成本影响外推到高频交易。</p>
 <div id="f5a239ec" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:05.048119Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:05.048119Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:05.365870Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:05.364862Z&quot;}" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sensitivity<span class="op">=</span>[]</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fee <span class="kw">in</span> [<span class="dv">0</span>,<span class="fl">0.001</span>,<span class="fl">0.003</span>]:</span>
@@ -925,9 +979,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
-<p>请写下三句话：你的“好组合”标准是什么？哪一步最可能产生偏差？如果结果不支持你的原先判断，你愿意修改什么？</p>
-<p>不要先让 Agent 搜索最漂亮的净值图。请让它列出数据检查、基准方案和失败条件，再执行。数据来源与接口：<a href="https://akshare.akfamily.xyz/data/stock/stock.html">AKShare 官方文档</a>，查询日期 2026-09-09。</p>
-<p><a href="../../exercises/research-plan.html">一页研究计划</a></p>
+<div class="callout callout-style-default callout-tip callout-titled" title="课后小实验：只改交易成本">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+课后小实验：只改交易成本
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>按<a href="../../getting-started.html#sec-guide-practice">练习副本说明</a>保留基准，另开独立练习项目。</li>
+<li>在最后一个成本列表中增加单边 50 个基点，即 <code>0.005</code>，其他设置保持一致。</li>
+<li>重启内核从头运行，比较同一方案在各成本下的 CAGR、Sharpe 和回撤，保留输出。</li>
+<li>用三句话记录：你的预测、观察到的变化、这次比较仍未覆盖的交易限制。</li>
+</ol>
+</div>
+</div>
+<p>本实验完成了从数据检查到方案评价的闭环。继续扩展前，先说清自己的“好组合”标准，并指出哪一步最可能产生偏差。后续课程再加入滚动估计、波动预测和更严格的交易约束。</p>
+<p>数据来源与接口：<a href="https://akshare.akfamily.xyz/data/stock/stock.html">AKShare 官方文档</a>，查询日期 2026-09-09。<a href="../../exercises/research-plan.html">一页研究计划</a>仍按原作业要求提交。</p>
 
 
 </section>

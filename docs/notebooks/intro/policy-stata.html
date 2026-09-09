@@ -160,6 +160,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../getting-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">如何使用讲义与 GitHub 仓库</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../syllabus.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">课程介绍与安排</span></a>
   </div>
@@ -264,10 +270,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>本实验使用<strong>模拟数据</strong>。政策背景来自绿色金融改革创新试验区，但城市编号、企业和融资成本全部由代码生成，不代表湖州、衢州或任何真实企业。</p>
 <p>目标是看懂：只比较政策前后为什么不够；加入对照组后系数在算什么；复杂模型为什么仍需识别假设。</p>
 <p><a href="../../lectures/intro.html#sec-intro-policy">回到第一讲</a> · <a href="https://raw.githubusercontent.com/lianxhcn/FinEco/main/notebooks/intro/policy-stata.ipynb">下载本 Notebook</a></p>
+<p>真实政策的效果未知，不便直接检验一个计算步骤是否恢复了正确答案。模拟允许我们先写入已知效果，再检查手算和回归是否接近它；这能帮助理解计算，但不能替代真实研究的识别论证。</p>
+<p>本页按“生成面板—手算变化差—回归核对—改变一个条件”展开。第一次运行请先按<a href="../../getting-started.html">使用指南</a>获取完整资料并完成环境检查。</p>
 <section id="建立可复现的教学面板" class="level2">
 <h2 class="anchored" data-anchor-id="建立可复现的教学面板">1. 建立可复现的教学面板</h2>
 <p>设置 40 个城市、每城 20 家企业、2013—2022 年共 10 年。前 20 个城市在 2018 年开始处理；样本大小和分组仅服务教学。真实试点若只有少数处理地区，不能照搬这里的显著性推断。</p>
 <p>生成过程中明确写入企业差异、共同年份变化和 -0.4 个百分点的处理效应。随机种子固定，所以从头运行可得到同一份数据。</p>
+<p>面板中的每一行是“某企业、某一年”。同一企业有 10 行，企业编号与年份一起必须唯一，代码 <code>isid firm_id year</code> 就检查这个条件。处理标记 <code>treat</code> 区分城市组别，<code>post</code> 区分政策前后，<code>did</code> 是二者乘积。</p>
+<p>生成 <code>cost</code> 时，各部分的作用是：</p>
+<ul>
+<li><code>6</code> 设定基准成本水平，<code>0.3*treat</code> 让处理组初始水平较高。</li>
+<li><code>firm_effect</code> 是不随年份变化的企业差异，用均值 0、标准差 0.25 的正态随机数生成。</li>
+<li><code>-0.08*(year-2013)</code> 让两组每年都下降 0.08 个百分点，表示共同时间趋势。</li>
+<li><code>-0.4*did</code> 只在处理组进入政策后生效；最后的正态随机扰动均值为 0、标准差为 0.3。</li>
+</ul>
+<p>这些常数都服务于教学，没有从真实融资数据估计。因为 <code>cost</code> 用百分数记录，随机差异和趋势也在百分点尺度上。<code>summarize</code> 输出应有 8,000 条企业年度记录；随机种子固定用于保持同一套随机数。</p>
 <div id="e290d276" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:34:58.301115Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:34:58.300576Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:34:59.474228Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:34:59.473218Z&quot;}" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">clear</span> <span class="ot">all</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">set</span> <span class="kw">more</span> <span class="kw">off</span></span>
@@ -318,7 +335,15 @@ Number of observations (_N) was 0, now 800.
 </section>
 <section id="手算两次差分" class="level2">
 <h2 class="anchored" data-anchor-id="手算两次差分">2. 手算两次差分</h2>
-<p>读取 <code>treat=1</code> 和 <code>treat=0</code> 两行的政策前后均值。共同时间变化让两组成本都下降。只有把对照组的变化扣掉，才得到 DID 对应的比较；把这个比较解释为因果效应，还需要平行趋势等假设。</p>
+<p>政策前后成本下降，可能只是两组共同经历的时间变化。我们先把面板压缩为四个均值：处理组和对照组分别在政策前、政策后各有一个均值，再计算两次差分。</p>
+<p>下面的 <code>preserve</code> 暂存完整数据，<code>collapse</code> 计算分组均值，<code>reshape</code> 将政策前后放到两列，<code>restore</code> 恢复面板，避免后面的回归误用四行汇总数据。</p>
+<p>读输出时按三步：</p>
+<ol type="1">
+<li><code>treat=0</code> 是对照组，<code>treat=1</code> 是处理组；<code>cost0</code>、<code>cost1</code> 分别是政策前、后的平均成本。</li>
+<li><code>change</code> 是政策后减政策前。处理组约下降 0.8068 个百分点，对照组约下降 0.3985 个百分点。</li>
+<li>处理组变化减去对照组变化，输出 <code>DID (percentage points)</code> 约为 -0.4083。</li>
+</ol>
+<p>将这项比较解释为因果效应，还需要平行趋势等条件；只有算出一个差值，不能自动获得因果解释。</p>
 <div id="be667cf8" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:34:59.476251Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:34:59.476251Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:34:59.571480Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:34:59.570471Z&quot;}" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">preserve</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">collapse</span> (<span class="kw">mean</span>) cost, <span class="kw">by</span>(treat <span class="kw">post</span>)</span>
@@ -381,7 +406,13 @@ DID (percentage points) =  -0.4083
 </section>
 <section id="同一个比较写成回归" class="level2">
 <h2 class="anchored" data-anchor-id="同一个比较写成回归">3. 同一个比较写成回归</h2>
-<p>回归中的交乘项系数应与手算一致。然后加入企业和年份固定效应，并按城市聚类。我们的模拟设计包含足够多的城市，且政策赋值在城市层面；这不是对真实政策研究的自动推断方案。</p>
+<p>手算能直观看清比较对象，回归则让我们进一步组织企业与年份差异。先用同一四格比较的交乘项回归核对手算，再进入固定效应模型。</p>
+<ol type="1">
+<li><code>i.treat##i.post</code> 同时包含组别、时期和交乘项，交乘项系数应与手算一致；<code>assert</code> 检查二者差异是否小于数值容差。</li>
+<li><code>xtset firm_id year</code> 声明面板结构；<code>xtreg ... , fe</code> 控制每家企业不随时间变化的差异，<code>i.year</code> 控制共同年度变化。</li>
+<li><code>vce(cluster city_id)</code> 按城市计算聚类标准误，允许同城企业误差相关。它调整不确定性的计算，不会自动修复不可信的对照组。</li>
+</ol>
+<p>本例包含 40 个城市、20 个处理城市，且没有在固定效应回归中另加企业财务控制。现实中若只有极少数处理地区，不能据企业数多就照搬这里的显著性推断。全部公式符号见<a href="../../lectures/intro.html#eq-intro-did">正文 DID 说明</a>。</p>
 <div id="448f88bb" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:34:59.573478Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:34:59.573478Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:35:00.704110Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:35:00.703042Z&quot;}" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">regress</span> cost i.treat##i.<span class="kw">post</span>, <span class="kw">vce</span>(<span class="kw">cluster</span> city_id)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> did_reg = _b[1.treat#1.<span class="kw">post</span>]</span>
@@ -456,7 +487,14 @@ Known simulated effect = -0.4000 pp
 Estimated FE effect =  -0.4083</code></pre>
 </div>
 </div>
-<p>查看 <code>did</code> 这一行：它的单位是<strong>百分点</strong>。估计值接近 -0.4，是因为数据生成过程已经写入这个效应，不能据此证明真实绿色金融试点有效。标准误也只描述这套模拟样本及其推断设定。</p>
+<p>查看固定效应结果的 <code>did</code> 这一行：</p>
+<ul>
+<li><strong>Coefficient</strong> 是估计的变化差，约 -0.4083 个百分点，与写入的 -0.4 接近。</li>
+<li><strong>std. err.</strong> 是聚类标准误，描述这套样本和推断条件下的估计不确定性；它不表示政策的经济影响大小。</li>
+<li><strong>95% conf. interval</strong> 是按本模型计算的置信区间；即使区间不含零，也不能单靠这一点证明真实政策有效。</li>
+</ul>
+<p>估计接近已知值，是对本模拟机制下计算逻辑的检查。固定效应并不能自动消除随时间变化、又与政策选择相关的遗漏因素。</p>
+<p>接下来按年份画两组均值，观察处理前的共同变化与处理后的相对差异。图中虚线位于 2017 和 2018 年之间，表示模拟处理开始的分界，不是实际试点实施日期。</p>
 <div id="27fc91a4" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:35:00.706778Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:35:00.706257Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:35:04.643280Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:35:04.641282Z&quot;}" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">preserve</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">collapse</span> (<span class="kw">mean</span>) cost, <span class="kw">by</span>(treat <span class="fu">year</span>)</span>
@@ -500,9 +538,28 @@ file figs/raw/fineco-intro-fig04-policy-20260909-083500.png written in PNG form
 </section>
 <section id="改变假设观察结果" class="level2">
 <h2 class="anchored" data-anchor-id="改变假设观察结果">4. 改变假设，观察结果</h2>
-<p>课后把处理组额外的政策前趋势加入 DGP，再运行相同 DID。系数还能恢复原来的 -0.4 吗？请先写下预测，再让 Agent 修改代码并对照结果。</p>
-<p>正式政策研究还要核查：试点边界、政策年过渡、迁址、其他政策、银行跨地区溢出，以及谁的融资成本能被观察。若只有已获贷企业的利率，结论不自动适用于所有企业。</p>
-<p><a href="../../exercises/research-plan.html">提交一页研究计划</a></p>
+<p>先做一个容易理解的改动：保持城市、企业、年份、噪声和随机种子不变，只把写入的政策效应减小。这样可以检查自己是否理解系数单位与数据生成机制。</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="课后小实验：只改已知效应">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+课后小实验：只改已知效应
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>在独立练习项目中，把生成 <code>cost</code> 那一行的 <code>-0.4*did</code> 改为 <code>-0.2*did</code>。</li>
+<li>将结果提示文字 <code>Known simulated effect</code> 和相关说明同步改为 -0.2，避免旧标签误导读者；不改变其他生成参数和随机种子。</li>
+<li>先预测手算和固定效应系数的变化，再重启内核从头运行。</li>
+<li>比较新的估计与 -0.2 的差距，解释为什么它不必恰好等于 -0.2。</li>
+</ol>
+</div>
+</div>
+<p>进阶时再研究识别条件：让处理组从 2013 年开始、在整个观测期持续拥有一条额外趋势，保持已知政策效应不变，观察原 DID 会不会将趋势差异混入政策系数。此时已经改变反事实变化规律，需要重新讨论平行趋势，不应只追求显著性。</p>
+<p>真实政策研究还要核查试点边界、政策年过渡、迁址、其他政策、跨地区溢出，以及谁的融资成本能被观察。模拟帮助我们理解怎样比较；这些制度与数据问题决定真实比较是否可信。</p>
+<p><a href="../../getting-started.html#sec-guide-practice">返回练习路线</a> · <a href="../../exercises/research-plan.html">提交一页研究计划</a></p>
 
 
 </section>

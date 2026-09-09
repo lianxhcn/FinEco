@@ -152,6 +152,12 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../getting-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">如何使用讲义与 GitHub 仓库</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../syllabus.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">课程介绍与安排</span></a>
   </div>
@@ -317,7 +323,9 @@ window.Quarto = {
 <h2 data-number="1.2" class="anchored" data-anchor-id="sec-intro-portfolio"><span class="header-section-number">1.2</span> 案例一：怎样配置 10 只股票</h2>
 <section id="把收益高改写成任务书" class="level3" data-number="1.2.1">
 <h3 data-number="1.2.1" class="anchored" data-anchor-id="把收益高改写成任务书"><span class="header-section-number">1.2.1</span> 把“收益高”改写成任务书</h3>
+<p>配置股票之前，需要先确定怎样才算完成任务。收益更高、波动更小、资金随时可取，并不总能同时实现；我们必须把偏好写成目标，把不能违反的要求写成约束。</p>
 <p>先用一组教学设定固定讨论范围。假设 10 万元是一年内不需要取用的资金，准备配置到一个预先约定的 10 只股票篮子，每月检查并再平衡，不卖空、不加杠杆，每只股票权重不超过 20%。</p>
+<p>这里的“配置”是决定每只股票占资金的比例，即权重。10 万元中有 1 万元投向某只股票，它的权重就是 10%。再平衡是定期买卖，使漂移后的比例回到目标权重；不卖空表示不借入股票卖出，不加杠杆表示不借钱扩大投资金额。</p>
 <p>现在问：我们要最大化收益，还是希望在预期年化收益达到 8% 的条件下尽量降低波动？这是两个不同的问题。若投资者无法承受超过 10% 的回撤，还需要另行检查路径风险。不能把“方差最小”直接解释为“未来不会亏到 10%”。</p>
 <table class="caption-top table">
 <thead>
@@ -377,12 +385,13 @@ window.Quarto = {
 </section>
 <section id="数据来源要服务分析目标" class="level3" data-number="1.2.2">
 <h3 data-number="1.2.2" class="anchored" data-anchor-id="数据来源要服务分析目标"><span class="header-section-number">1.2.2</span> 数据来源要服务分析目标</h3>
+<p>目标已经明确，接下来要把任务书翻译成数据要求：为了计算收益和风险，我们需要连续的价格；为了判断这些收益能否实际获得，还需要知道权益调整和交易限制。</p>
 <p>我们需要的至少有股票代码、日期、价格、权益事件与可交易状态。要解释企业特征，还会需要财务数据与披露时间。数据库是来源，API 是访问方式，AKShare 是封装接口的工具；它们并非完全互斥的选项。</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 5%">
+<col style="width: 28%">
+<col style="width: 66%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -419,23 +428,56 @@ window.Quarto = {
 </section>
 <section id="清洗会改变经济含义" class="level3" data-number="1.2.3">
 <h3 data-number="1.2.3" class="anchored" data-anchor-id="清洗会改变经济含义"><span class="header-section-number">1.2.3</span> 清洗会改变经济含义</h3>
-<p>价格下降不一定是投资损失。拆分、分红和配股会改变原始报价，计算收益时必须说明复权和现金分红的处理。如果已经用包含权益调整的序列计算收益，又另外加上同一笔分红，可能重复计算。<a href="https://akshare.akfamily.xyz/data/stock/stock.html">AKShare 文档</a>说明了不同复权口径，且前复权历史值可能随以后发生的权益事件变化。</p>
-<p>但复权也不是一个万能修复按钮。并购重组可能改变企业的资产组合和经营风险；数据错误、停牌、涨跌停与真实尾部冲击需要不同处理。直接把所有极端收益缩尾，会把风险研究最想理解的部分一起删掉。</p>
-<p>处理缺失也需要判断。上市前没有价格，停牌期间没有成交，接口漏掉一天报价，是不同的问题。本实验报告每只股票的可用天数，再取共同有效收益日期；这种课堂简化不能不加审查地扩展到有大量停牌或退市的股票池。</p>
-<p><strong>样本选择同样属于研究设计。</strong> 这 10 只股票是今天为教学选择的固定篮子。即使之后严格按时间划分训练和测试，也不能宣称消除了幸存者偏差，更不能把结果当成当时可以实施的完整选股策略。</p>
+<p>下载完成后，一张价格表还不能直接回答投资问题。数据清洗要把原始记录整理成与研究目标一致的样本和变量：某个价格变化是否对应投资损益，缺少记录意味着什么，最后留下了哪些股票和日期？这些判断决定我们实际分析的对象。</p>
+<p>本例集中看三个方面。每处理一项，都要记录理由、处理方式和对结果解释的影响，避免只留下“清洗完成”的结论。</p>
+<ol type="1">
+<li><p><strong>复权：价格变化是否代表收益？</strong></p>
+<p><strong>遇到的情况。</strong> 拆分、分红和配股可能改变报价。例如，一股拆成两股后，每股报价大约减半，但持有股数翻倍，不能把报价减半直接记成损失 50%。</p>
+<p><strong>本例的处理。</strong> 使用后复权价格计算收益，保留接口和复权参数。复权把不同时点的价格调整到可比较口径；如果已经包含某项分红调整，就不能再把同一笔分红重复加入收益。具体口径见 <a href="https://akshare.akfamily.xyz/data/stock/stock.html">AKShare 文档</a>。</p>
+<p><strong>仍需判断。</strong> 复权价格不是当时实际成交价。并购重组还可能改变企业经营风险，复权无法消除这种结构变化。极端收益要回查事件和原始记录，不能一律缩尾；否则可能删掉风险分析最关心的尾部冲击。</p></li>
+<li><p><strong>缺失值：没有记录意味着什么？</strong></p>
+<p><strong>遇到的情况。</strong> 上市前无价格、停牌期间无成交和接口漏掉报价，形成缺失的原因不同。直接把缺失收益填成零，相当于假设这一天资产价值没有变化，需要另外的估值依据。</p>
+<p><strong>本例的处理。</strong> 先报告每只股票的有效价格数，再计算相邻行情日期的收益，只保留 10 只股票都有有效收益的日期。不跨过缺失记录拼接收益，也不自动补零。</p>
+<p><strong>仍需判断。</strong> 共同样本会丢弃部分日期，不能完整追踪这些日期的持有损益。因此本例净值是在保留的共同收益序列上累计的教学路径，不能当成经过完整停牌估值与可交易性处理的实盘回测。正式研究需要先查明缺失原因，再确定估值和交易规则。</p></li>
+<li><p><strong>样本选择：结论适用于谁？</strong></p>
+<p><strong>遇到的情况。</strong> 今天还在交易、知名度较高的股票更容易被选中；已经退市或表现不佳的股票可能被遗漏。这会使研究对象偏离当时投资者实际面对的股票池。</p>
+<p><strong>本例的处理。</strong> 明确把这 10 只股票称为“事后选定的教学篮子”，只比较这个篮子内的不同配置，不把结果推广为 A 股选股策略。</p>
+<p><strong>仍需判断。</strong> 按时间划分训练和测试，不能修复事后选股造成的幸存者偏差。要评价历史可实施策略，还必须依据当时可得信息构建股票池，纳入退出、退市和交易限制。</p></li>
+</ol>
+<p>经过这三步，我们得到的是有明确口径和适用范围的收益样本。后面的优化只能在这个样本基础上工作，模型复杂并不会自动弥补数据定义的问题。</p>
 </section>
 <section id="从单只收益到组合风险" class="level3" data-number="1.2.4">
 <h3 data-number="1.2.4" class="anchored" data-anchor-id="从单只收益到组合风险"><span class="header-section-number">1.2.4</span> 从单只收益到组合风险</h3>
-<p>用 <span class="math inline">\(R_{i,t}\)</span> 表示第 <span class="math inline">\(i\)</span> 只股票在第 <span class="math inline">\(t\)</span> 期的简单收益，用期初权重 <span class="math inline">\(w_{i,t-1}\)</span> 计算组合收益：</p>
+<p>有了可比较的价格，我们要把它转成两类信息：这项配置赚了多少，以及为了获得收益承受了怎样的风险。下面按“单只收益—组合收益—组合风险—评价指标”逐步计算。</p>
+<p><strong>从价格到收益。</strong> 简单收益是本期价格相对上期价格的变化比例：</p>
+<p><span id="eq-intro-stock-return"><span class="math display">\[
+R_{i,t}=\frac{P_{i,t}}{P_{i,t-1}}-1.
+\tag{1.1}\]</span></span></p>
+<ul>
+<li><span class="math inline">\(i\)</span> 表示股票，取值为 1 至 10；<span class="math inline">\(t\)</span> 表示按时间排序的行情日期，<span class="math inline">\(t-1\)</span> 是前一个行情日期。</li>
+<li><span class="math inline">\(P_{i,t}\)</span> 是股票 <span class="math inline">\(i\)</span> 在日期 <span class="math inline">\(t\)</span> 的后复权收盘价；两个相邻价格均有效时才计算收益。</li>
+<li><span class="math inline">\(R_{i,t}\)</span> 是该股票的日简单收益，以小数存储。例如，价格从 100 升到 102，对应收益 0.02，即 2%。</li>
+</ul>
+<p><strong>从单只收益到组合收益。</strong> 资金投得越多的股票，对组合的贡献越大。忽略交易成本时，组合收益是按期初资金比例加权的收益：</p>
 <p><span id="eq-intro-return"><span class="math display">\[
 R_{p,t}=\sum_{i=1}^{10}w_{i,t-1}R_{i,t}.
-\tag{1.1}\]</span></span></p>
-<p>权重时间下标很重要：不能用当天收盘后才知道的最优权重解释当天收益。月度再平衡之间，权重会随着股票价格变化而漂移。</p>
-<p>给定权重下，组合方差为：</p>
+\tag{1.2}\]</span></span></p>
+<ul>
+<li>下标 <span class="math inline">\(p\)</span> 表示整个组合，<span class="math inline">\(R_{p,t}\)</span> 是组合在日期 <span class="math inline">\(t\)</span> 的成本前收益。</li>
+<li><span class="math inline">\(w_{i,t-1}\)</span> 是当天收益实现前，股票 <span class="math inline">\(i\)</span> 占组合资金的比例；所有权重之和为 1。</li>
+<li><span class="math inline">\(\sum_{i=1}^{10}\)</span> 表示把 10 只股票的收益贡献相加。权重使用期初值，不能用当天收盘后才知道的信息倒推当天配置。</li>
+</ul>
+<p>例如，暂用两只股票帮助理解：各配置一半资金，一只上涨 2%、另一只下跌 1%，成本前组合收益就是 <span class="math inline">\(0.5\times 2\%+0.5\times(-1\%)=0.5\%\)</span>。回到 10 只股票时，计算逻辑相同。两次再平衡之间，股票涨跌不同，资金比例也会漂移。</p>
+<p><strong>从单只风险到组合风险。</strong> 风险不能只看每只股票波动大不大，还要看它们是否一起涨跌。对一组给定权重，组合收益方差为：</p>
 <p><span id="eq-intro-risk"><span class="math display">\[
 \sigma_{p}^{2}=w^{\prime}\Sigma w.
-\tag{1.2}\]</span></span></p>
-<p>矩阵 <span class="math inline">\(\Sigma\)</span> 不只包含每只股票自己的方差，还包含它们之间的协方差。组合风险的关键因此是股票怎样共同变化。下面的相关性图来自训练样本。</p>
+\tag{1.3}\]</span></span></p>
+<ul>
+<li><span class="math inline">\(w\)</span> 是把 10 个权重排成的列向量；<span class="math inline">\(w^{\prime}\)</span> 是转置，即把这一列横过来。这里讨论同一组固定权重，暂不写时间下标。</li>
+<li><span class="math inline">\(\Sigma\)</span> 是同一日频口径的 <span class="math inline">\(10\times10\)</span> 收益协方差矩阵。对角线上是各股票的收益方差；非对角线上是两只股票收益共同变动的协方差。</li>
+<li><span class="math inline">\(\sigma_{p}^{2}\)</span> 是组合收益的方差；其平方根 <span class="math inline">\(\sigma_{p}\)</span> 是标准差，通常称为波动率。收益以小数计，标准差也以小数计，展示时可转成百分数。</li>
+</ul>
+<p>协方差为正，表示两只股票倾向于同向变化；负值表示更倾向于反向变化。方差和协方差都需要从数据估计，下一小节说明估计口径。相关系数是把协方差按各自波动标准化后的量，范围为 -1 至 1，便于比较不同股票对。</p>
 <div id="fig-intro-correlation" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-intro-correlation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -446,25 +488,157 @@ R_{p,t}=\sum_{i=1}^{10}w_{i,t-1}R_{i,t}.
 </figcaption>
 </figure>
 </div>
-<p>Sharpe 比率把超额收益与其波动联系起来。实验采用年有效无风险利率 2% 的<strong>教学假设</strong>，转成同频日收益，再计算年化 Sharpe；这个假设不能冒充真实无风险利率数据。以 252 个交易日年化是课程约定，存在显著时间依赖时还要审查这种换算。</p>
-<p>具体计算时，令日超额收益 <span class="math inline">\(e_{t}=R_{p,t}-R_{f,t}\)</span>，日末净值为 <span class="math inline">\(V_{t}\)</span>，则：</p>
+<p>读图时先看对角线以外的格子：相关性越接近 1，两只股票越倾向于同涨同跌，单纯增加持有数量未必能充分分散风险。</p>
+<p><strong>怎样评价收益与风险。</strong> 单看收益率，容易忽略达到这项收益所经历的波动。Sharpe 比率用“平均超额收益除以超额收益的标准差”来衡量二者的关系。超额收益是组合收益减去同频无风险收益。本例所有评价指标采用扣除教学交易成本后的收益。计算时把当前区间保留的收益日期依次编号为 1 至 <span class="math inline">\(N\)</span>，<span class="math inline">\(N\)</span> 的具体含义见下表；这些编号不代表日历中没有间断。</p>
 <p><span id="eq-intro-performance"><span class="math display">\[
-SR_{\mathrm{ann}}=\sqrt{252}\frac{\overline{e}}{s_{e}},\qquad
-MDD=\max_{t}\left(1-\frac{V_{t}}{\max_{0\leq s\leq t}V_{s}}\right).
-\tag{1.3}\]</span></span></p>
-<p>实验从初始资金 <span class="math inline">\(V_{0}\)</span> 开始追踪高点，回撤以正的损失比例报告；图中画负的水下路径，二者符号不同、含义一致。</p>
-<p>最大回撤则看净值从此前高点下跌了多少。它依赖整条路径，与标准差回答的问题不同。正收益也可能对应负 Sharpe，因为收益未超过所设的无风险基准；低波动也不能保证未来回撤不超过阈值。</p>
+\begin{aligned}
+e_{t}&amp;=r_{t}-R_{f,t},\\
+\overline{e}&amp;=\frac{1}{N}\sum_{t=1}^{N}e_{t},\qquad
+s_{e}=\sqrt{\frac{1}{N-1}\sum_{t=1}^{N}(e_{t}-\overline{e})^{2}},\\
+SR_{\mathrm{ann}}&amp;=\sqrt{252}\frac{\overline{e}}{s_{e}}.
+\end{aligned}
+\tag{1.4}\]</span></span></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 70%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>符号</th>
+<th>含义和本例口径</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(r_{t}\)</span></td>
+<td>组合在日期 <span class="math inline">\(t\)</span> 的扣费后简单收益；本例先从期初资金扣除买卖费用，再计算剩余资金当天的涨跌。买入与卖出金额均按单边 0.1% 计费</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(R_{f,t}\)</span></td>
+<td>同频无风险日收益；本例假设年有效利率为 2%，按 <span class="math inline">\((1.02)^{1/252}-1\)</span> 转换成固定日收益</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(e_{t}\)</span></td>
+<td>日超额收益，即两种同频收益之差</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(N\)</span></td>
+<td>当前评价区间内保留的有效日收益数量，须大于 1</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\overline{e}\)</span></td>
+<td><span class="math inline">\(N\)</span> 个日超额收益的算术平均值，上横线表示样本平均</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(s_{e}\)</span></td>
+<td>日超额收益的样本标准差，分母为 <span class="math inline">\(N-1\)</span>；标准差为零时该比率无法按此式定义</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(SR_{\mathrm{ann}}\)</span></td>
+<td>年化 Sharpe 比率，无单位；下标 <span class="math inline">\(\mathrm{ann}\)</span> 表示年化</td>
+</tr>
+</tbody>
+</table>
+<p>252 是本课程采用的每年交易日数量约定；<span class="math inline">\(\sqrt{252}\)</span> 表示用平方根规则进行波动尺度换算。存在显著时间依赖时，这种年化需要重新审查。2% 是教学假设，不能当成下载的真实无风险利率。</p>
+<p><strong>再看路径上的损失。</strong> 投资者还会问：“从已经达到的高点，最多跌下来多少？”最大回撤回答这个问题。它需要逐日追踪净值，而不仅是计算收益的平均值和标准差：</p>
+<p><span id="eq-intro-drawdown"><span class="math display">\[
+\begin{aligned}
+V_{t}&amp;=V_{t-1}(1+r_{t}),\qquad V_{0}=100000,\\
+H_{t}&amp;=\max_{0\leq s\leq t}V_{s},\\
+MDD&amp;=\max_{1\leq t\leq N}\left(1-\frac{V_{t}}{H_{t}}\right).
+\end{aligned}
+\tag{1.5}\]</span></span></p>
+<ul>
+<li><span class="math inline">\(V_{t}\)</span> 是日期 <span class="math inline">\(t\)</span> 结束时的组合金额，单位为元；<span class="math inline">\(V_{0}\)</span> 是开始投资前的 10 万元。收益留在组合内，因此金额按乘法累计。</li>
+<li><span class="math inline">\(H_{t}\)</span> 是从初始时点到日期 <span class="math inline">\(t\)</span> 达到过的最高金额；<span class="math inline">\(s\)</span> 是用于遍历这些历史时点的索引，<span class="math inline">\(\max\)</span> 表示取最大值。</li>
+<li><span class="math inline">\(1-V_{t}/H_{t}\)</span> 是当天相对历史高点的回撤比例。<span class="math inline">\(MDD\)</span> 是当前 <span class="math inline">\(N\)</span> 个有效收益日期中最大的回撤，按非负损失比例报告。</li>
+</ul>
+<p>例如，金额从 10 万元升至 11 万元，再跌至 9.9 万元，则此时相对高点的回撤为 <span class="math inline">\(1-99000/110000=10\%\)</span>。本例回撤图也画正的损失幅度，数值越大，回撤越深。</p>
+<div class="callout callout-style-default callout-note callout-titled" title="三个指标，三个问题">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+三个指标，三个问题
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>收益</strong>：这段时间赚了多少？</li>
+<li><strong>Sharpe</strong>：相对无风险基准，平均超额收益与波动的关系怎样？</li>
+<li><strong>最大回撤</strong>：经历的路径上，从高点下跌最多达到多少？</li>
+</ul>
+<p>正收益也可能对应负 Sharpe；低波动并不保证未来回撤不超过给定阈值。</p>
+</div>
+</div>
 </section>
 <section id="先建立简单基准再做优化" class="level3" data-number="1.2.5">
 <h3 data-number="1.2.5" class="anchored" data-anchor-id="先建立简单基准再做优化"><span class="header-section-number">1.2.5</span> 先建立简单基准，再做优化</h3>
-<p>我们保留等权配置，再比较全局最小方差与 8% 目标收益下的最小方差。目标收益方案可写为：</p>
+<p>现在已经能够计算组合表现，接下来才是选择权重。我们先保留一个不需要估计最优权重的参照方案，再判断优化是否值得采用。“基准”就是用于比较的起点，本例选择同一股票池的等权组合。</p>
+<p>三个方案只改变配置规则，便于比较：</p>
+<ol type="1">
+<li><strong>等权</strong>：10 只股票各占 10%，不根据历史表现调整目标比例。</li>
+<li><strong>全局最小方差</strong>：在共同权重限制下，寻找估计方差最小的组合，不另设收益门槛。“全局”在这里指共同约束允许的全部权重组合。</li>
+<li><strong>目标收益下的最小方差</strong>：再加上估计年化预期收益至少 8% 的要求，在满足要求的组合中降低估计方差。</li>
+</ol>
+<p>第三个方案可以直白地读成：“在资金全部投入、不能卖空、单只不过度集中的条件下，找到估计收益达到目标且估计波动最小的配置。”写成公式为：</p>
 <p><span id="eq-intro-optimization"><span class="math display">\[
 \begin{aligned}
 \min_{w}\quad &amp;w^{\prime}\widehat{\Sigma}_{\mathrm{ann}}w\\
 \mathrm{s.t.}\quad &amp;w^{\prime}\widehat{\mu}_{\mathrm{ann}}\geq 0.08,\\
 &amp;\sum_{i=1}^{10}w_{i}=1,\quad 0\leq w_{i}\leq 0.20.
 \end{aligned}
-\tag{1.4}\]</span></span></p>
+\tag{1.6}\]</span></span></p>
+<p>公式分成目标和约束两部分，读的时候逐行对照任务书：</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 70%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>表达式或符号</th>
+<th>直白解释与构造方法</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\min_{w}\)</span></td>
+<td>把权重向量 <span class="math inline">\(w\)</span> 作为待选择的对象，让后面的数值尽量小</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\widehat{\Sigma}_{\mathrm{ann}}\)</span></td>
+<td>用训练期日收益计算样本协方差矩阵，再乘 252 得到年化估计；帽子表示由样本估计</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(w^{\prime}\widehat{\Sigma}_{\mathrm{ann}}w\)</span></td>
+<td>给定配置的估计年化收益方差；最小化方差与最小化其正平方根的排序相同</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\widehat{\mu}_{\mathrm{ann}}\)</span></td>
+<td>10 个股票估计年化算术均值构成的列向量；每项为训练期日收益均值乘 252</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(w^{\prime}\widehat{\mu}_{\mathrm{ann}}\geq0.08\)</span></td>
+<td>把各股票估计均值按权重加总，要求不少于 8%；0.08 是事先设定的目标</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\sum_{i=1}^{10}w_{i}=1\)</span></td>
+<td>10 个权重合计 100%，本例没有另留现金头寸</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(0\leq w_{i}\leq0.20\)</span></td>
+<td>每只权重非负且不超过 20%；<span class="math inline">\(w_{i}\)</span> 是向量中的第 <span class="math inline">\(i\)</span> 项</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\mathrm{s.t.}\)</span></td>
+<td>“满足以下约束”的缩写</td>
+</tr>
+</tbody>
+</table>
+<p>这些均值与协方差均由同一训练样本估计，不能用测试期表现替换。样本协方差的计算以日收益偏离各自样本均值的乘积为基础，把这些乘积加总，再除以训练期有效观测数减 1；Python 的 <code>train.cov()</code> 完成这一步。年化仍沿用上一小节的交易日与时间依赖约定。</p>
 <p>这里优化的是<strong>样本估计值下的目标</strong>。历史均值估得不准，未来收益结构发生变化，或者成本被低估，都可能让这个解表现不好。这是后续 Bootstrap、模拟与稳健性分析要研究的问题。投资组合思想可参阅 Markowitz (<a href="https://doi.org/10.1111/j.1540-6261.1952.tb01525.x">1952</a>)。</p>
 <p>打开<a href="../notebooks/intro/portfolio-python.html">Python 实验</a>，按顺序检查：</p>
 <ol type="1">
@@ -475,14 +649,31 @@ MDD=\max_{t}\left(1-\frac{V_{t}}{\max_{0\leq s\leq t}V_{s}}\right).
 </section>
 <section id="将未来留在模型外面" class="level3" data-number="1.2.6">
 <h3 data-number="1.2.6" class="anchored" data-anchor-id="将未来留在模型外面"><span class="header-section-number">1.2.6</span> 将未来留在模型外面</h3>
-<p>三个时期各有任务：</p>
+<p>如果先在全部历史数据中寻找最好的权重，再用同一段历史证明它很好，评价就可能偏向我们刚刚选出的方案。真正投资时只能知道过去；为了模拟这种信息限制，需要把一段后来发生的数据留在模型估计之外。</p>
+<p>训练、验证和测试分别承担“形成方案”“选择或检查方案”“最终评价”的角色。验证期通常用于选择模型或超参数，即控制模型拟合方式、需要事先选择的设置，例如允许模型有多复杂；测试期要保留到这些选择完成后再使用。时间序列中的日期有先后，不能随意打乱，让未来信息进入过去的决策。</p>
+<p>划分时需要权衡：训练期是否足以估计参数，后续窗口是否接近计划持有期限，以及市场结构是否发生变化。本例可用数据从 2018 年开始，保留最近两个完整年度分别作验证和测试，较长的前段用于估计；这是一组便于教学的一次性划分，不是已证明最优的年份分界。</p>
+<p>本例三个时期的具体任务是：</p>
 <ol type="1">
 <li><strong>训练期 (2018—2023 年)</strong>：估计收益均值与协方差，确定目标权重。</li>
 <li><strong>验证期 (2024 年)</strong>：展示规则的稳定性；本例不据此调整方案。</li>
 <li><strong>测试期 (2025 年)</strong>：评价保留样本表现，不据此更换股票或调整模型。</li>
 </ol>
 <p>每月再平衡使用同一组冻结的目标权重，以便第一讲集中理解“估计—决策—评价”。后续才加入滚动估计。</p>
-<p>交叉验证也要符合数据结构。预测时间序列时，不能任意打散日期，让模型先见到未来再预测过去。训练、验证、测试是不同角色；验证期可以支持事先规定的模型选择，保留测试用于最终评价。本例不根据验证结果改变方案，只用它展示稳定性。</p>
+<p>当一次划分不足以判断稳定性时，可以设置多个保持时间顺序的训练和验证窗口，这就是后续时间序列交叉验证要解决的问题。本例尚未据验证结果调参，也未执行多窗口交叉验证，只展示三种预先规定方案在不同时期的表现。</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="看结果前先判断">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+看结果前先判断
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>最小方差组合可能降低波动，但它一定会比等权组合赚得更多吗？先说明理由，再看净值曲线与风险表。</p>
+</div>
+</div>
+<p>下面先画测试期净值，再报告评价指标。“净值”在图中以组合金额展示；每个评价区间均从 10 万元重新开始，不是把验证期金额接到测试期。</p>
 <div id="fig-intro-wealth" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-intro-wealth-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -493,6 +684,7 @@ MDD=\max_{t}\left(1-\frac{V_{t}}{\max_{0\leq s\leq t}V_{s}}\right).
 </figcaption>
 </figure>
 </div>
+<p>表中的 CAGR 是按有效收益日期数折算的年复合增长率：<span class="math inline">\((V_{N}/V_{0})^{252/N}-1\)</span>。<span class="math inline">\(V_{N}\)</span> 是该区间最后一天的金额，<span class="math inline">\(V_{0}\)</span> 和 <span class="math inline">\(N\)</span> 的定义见前文；它考虑收益的乘法累计，区别于把日收益均值乘 252 的年化算术均值。缺失日期处理使本例更需要区分有效收益序列与完整日历持有期。</p>
 <p>本表由已执行 Notebook 的结果文件自动整理。年化采用 252 个交易日约定，因此 CAGR 与单个日历年的累计收益不完全相同。</p>
 <table class="caption-top table">
 <thead>
@@ -532,6 +724,7 @@ MDD=\max_{t}\left(1-\frac{V_{t}}{\max_{0\leq s\leq t}V_{s}}\right).
 </tr>
 </tbody>
 </table>
+<p>读表时先选指标，再比较同一列。例如，最小方差方案的测试期年化波动为 7.52%，低于等权的 9.06%；但三个 Sharpe 都为负，说明在本例设定下平均净超额收益都没有超过零。仅凭较小波动，不能得出“全面优于基准”的结论。</p>
 <div class="callout callout-style-default callout-warning callout-titled" title="易错点：目标收益不等于实现收益">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -580,8 +773,15 @@ MDD=\max_{t}\left(1-\frac{V_{t}}{\max_{0\leq s\leq t}V_{s}}\right).
 </section>
 <section id="从政策文件到企业年度面板" class="level3" data-number="1.3.2">
 <h3 data-number="1.3.2" class="anchored" data-anchor-id="从政策文件到企业年度面板"><span class="header-section-number">1.3.2</span> 从政策文件到企业年度面板</h3>
+<p>为了比较同一批企业在政策前后的变化，需要把单年的横截面连成面板。企业年度面板的每一行是一家企业在某一年的记录，企业编号与年份一起标识这行数据。</p>
 <p>政策在地区层面实施，财务结果通常在企业层面观察。需要将政策地区和时间表，与企业历史所在地、行业和财务表合并。试点覆盖范围是否等于整座城市、企业是否迁址、总部与实际经营地是否一致，都会影响处理标签。</p>
-<p>融资成本也不是直接下载一个变量就结束。可考虑用利息支出除以平均有息负债，但这是会计代理量，不是某笔贷款利率；净财务费用含其他项目，不能不核对就替代利息支出。没有借款和利息数据缺失，不能都记成零成本。</p>
+<p>构造面板时依次完成：</p>
+<ol type="1">
+<li><strong>定义处理</strong>：核对政策覆盖地区、生效时间与企业历史所在地。</li>
+<li><strong>定义结果</strong>：确定融资成本的分子、分母和计量单位。</li>
+<li><strong>选择比较样本</strong>：说明哪些企业进入处理组、哪些进入对照组，跟踪缺失和退出。</li>
+</ol>
+<p>融资成本也不是直接下载一个变量就结束。可考虑用利息支出除以平均有息负债，但这是会计代理量，不是某笔贷款利率；平均有息负债可用同年度期初与期末余额的平均值构造，分子分母使用一致货币单位；比值乘 100 后以百分数报告。净财务费用含其他项目，不能不核对就替代利息支出。没有借款和利息数据缺失，不能都记成零成本。</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -616,7 +816,9 @@ MDD=\max_{t}\left(1-\frac{V_{t}}{\max_{0\leq s\leq t}V_{s}}\right).
 </section>
 <section id="先看均值再写-did" class="level3" data-number="1.3.3">
 <h3 data-number="1.3.3" class="anchored" data-anchor-id="先看均值再写-did"><span class="header-section-number">1.3.3</span> 先看均值，再写 DID</h3>
-<p><a href="../notebooks/intro/policy-stata.html">Stata 实验</a>使用可复现的模拟面板。代码生成 40 个城市、800 家企业和 10 年数据，并人为写入 -0.4 个百分点的处理效应。城市和企业都是虚构的，结果不代表真实试点。</p>
+<p>只有处理组的前后变化，还不能判断政策贡献，因为没有政策也可能发生变化。DID 是 difference-in-differences，即双重差分：用对照组的同期变化，帮助估计处理组在没有政策时可能发生的变化。</p>
+<p>这种比较依赖“平行趋势”：若没有政策，两组的平均结果应具有相同的变化趋势。两组初始水平可以不同，但需要有理由认为对照组的变化能够代表处理组的反事实变化；政策前走势相近只是支持性证据，不能证明这一条件。</p>
+<p>为了先看懂计算，<a href="../notebooks/intro/policy-stata.html">Stata 实验</a>使用已知生成机制的可复现模拟面板。代码生成 40 个城市、800 家企业和 10 年数据，并人为写入 -0.4 个百分点的处理效应。城市和企业都是虚构的，结果不代表真实试点。</p>
 <p>实验按三步组织比较：</p>
 <ol type="1">
 <li><strong>组内差分</strong>：分别计算处理组、对照组政策后均值减去政策前均值。</li>
@@ -627,8 +829,64 @@ MDD=\max_{t}\left(1-\frac{V_{t}}{\max_{0\leq s\leq t}V_{s}}\right).
 Y_{it}=\alpha_{i}+\lambda_{t}
 +\beta\bigl(Treat_{c(i)}\times Post_{t}\bigr)
 +X_{it}^{\prime}\gamma+\varepsilon_{it}.
-\tag{1.5}\]</span></span></p>
-<p><span class="math inline">\(i\)</span> 是企业，<span class="math inline">\(c(i)\)</span> 是所属地区，<span class="math inline">\(t\)</span> 是年份。<span class="math inline">\(\alpha_{i}\)</span> 吸收企业不随时间变化的差异，<span class="math inline">\(\lambda_{t}\)</span> 吸收共同年份变化。核心是交乘项系数 <span class="math inline">\(\beta\)</span>：它来自处理组相对对照组的变化差。实验结果的单位是百分点。</p>
+\tag{1.7}\]</span></span></p>
+<p>这个方程把融资成本拆成企业固有差异、共同年度变化、政策项和其他部分。各符号定义如下：</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 70%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>符号</th>
+<th>含义和本例界定</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(i,t,c(i)\)</span></td>
+<td>分别为企业、年份及企业所属城市；本例企业不迁址，2013—2022 年逐年观察</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(Y_{it}\)</span></td>
+<td>企业 <span class="math inline">\(i\)</span> 在年份 <span class="math inline">\(t\)</span> 的融资成本，模拟变量为 <code>cost</code>；数值 6 表示 6%</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(Treat_{c(i)}\)</span></td>
+<td>处理组标记；模拟中城市编号 1—20 为 1，其余城市为 0</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(Post_{t}\)</span></td>
+<td>政策后标记；模拟中 2018 年及以后为 1，之前为 0</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(Treat_{c(i)}\times Post_{t}\)</span></td>
+<td>两个标记的乘积，只有处理组进入政策后才为 1，对应代码 <code>did</code></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\beta\)</span></td>
+<td>核心政策项系数，反映控制其他项后的两组变化差；由于结果以百分数记录，系数单位为百分点</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\alpha_{i}\)</span></td>
+<td>企业固定效应，每家企业一个不随时间变化的截距，控制稳定的企业差异</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\lambda_{t}\)</span></td>
+<td>年份固定效应，每年一个共同项，控制所有企业共同经历的年度变化</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(X_{it}\)</span>、<span class="math inline">\(\gamma\)</span></td>
+<td>可选控制变量列向量及其系数列向量；<span class="math inline">\(X_{it}^{\prime}\gamma\)</span> 为逐项乘积之和，转置含义同前文</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\varepsilon_{it}\)</span></td>
+<td>方程未解释的企业年度扰动，包括偶然变化和未被其他项描述的因素</td>
+</tr>
+</tbody>
+</table>
+<p>当前 <code>xtreg</code> 模拟回归只加入 <code>did</code>、企业固定效应和年份固定效应，<strong>没有加入通式中的 <span class="math inline">\(X_{it}^{\prime}\gamma\)</span></strong>。真实研究是否加入控制变量，需依据因果关系和测量时间决定，不能把政策后的中介变量随意当作普通控制。</p>
+<p>模拟写入的政策效应是 -0.4 个百分点，估计约为 -0.4083 个百分点。例如，成本从 6% 降到 5.6% 是下降 0.4 个百分点，不是下降 0.4%。有限样本含随机扰动，估计值不必恰好等于写入值。</p>
 <div id="fig-intro-policy" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-intro-policy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -650,25 +908,32 @@ Y_{it}=\alpha_{i}+\lambda_{t}
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>政策按地区实施，误差也可能在地区内相关。实验按城市聚类，但真实研究若只有极少数处理地区，即使有许多企业，也不能照搬常规显著性判断。本讲展示计算逻辑，后续 DID 章节再讨论政策批次、异质效应与推断。</p>
+<p>标准误用来衡量系数估计的不确定性；同一城市的企业可能共同受到银行信贷或地方冲击，不能简单当成完全独立的观测。按城市聚类计算标准误，允许同一城市内部的误差相关，并仍依赖适当的跨城市独立性等推断条件。实验按城市聚类，但真实研究若只有极少数处理地区，即使有许多企业，也不能照搬常规显著性判断。本讲展示计算逻辑，后续 DID 章节再讨论政策批次、异质效应与推断。</p>
 </div>
 </div>
 </section>
 <section id="复杂控制与-ddml" class="level3" data-number="1.3.4">
 <h3 data-number="1.3.4" class="anchored" data-anchor-id="复杂控制与-ddml"><span class="header-section-number">1.3.4</span> 复杂控制与 DDML</h3>
 <p>规模、杠杆率、盈利能力与地区条件可能很多，关系也未必线性。手工增加平方项和交乘项是一种做法，机器学习提供了更灵活的辅助拟合方式。但预测融资成本准确，并不自动给出正确的政策系数。</p>
-<p>后续 DDML 章节将沿着“FWL 双侧残差化—正交化—交叉拟合”的路线解释怎样使用灵活学习器估计辅助关系，并对目标参数推断。交叉验证主要用于选择超参数，交叉拟合用于构造样本外辅助预测，两者不是同一个步骤。</p>
+<p>双重机器学习 (DDML) 试图把灵活预测用于辅助关系，同时保留对研究目标系数的推断。第一讲先理解它的任务，后续再讲实现条件：</p>
+<ol type="1">
+<li><strong>残差化</strong>：先解释结果和处理变量中能由控制变量预测的部分，再研究剩余部分的关系。这与回归中的 FWL 分解思想相连，但是否适用于当前政策设定须另行论证。</li>
+<li><strong>正交化</strong>：构造对辅助关系的小幅估计误差不那么敏感的估计条件，而非要求机器学习把每一项都预测得完美。</li>
+<li><strong>交叉拟合</strong>：在一部分样本上训练辅助模型，对另一部分样本预测，再交换角色，减少同一观测同时参与训练和评价产生的问题。</li>
+</ol>
+<p>这里的“辅助关系”指预测结果或处理变量与控制变量之间的关系，服务于最终目标参数。交叉验证主要用于选择超参数，交叉拟合用于构造样本外辅助预测，两者任务不同；面板数据如何分组、何时允许这些操作，要服从相应方法假设。</p>
 <p>DDML 仍依赖具体模型的识别条件，不能自动补救不可观测混杂或无效对照组。本课程将重点参考已有 <code>ci-policy</code> 讲义，并核对原始方法文献 Chernozhukov et al.&nbsp;(<a href="https://doi.org/10.1111/ectj.12097">2018</a>)，不把普通部分线性模型直接套到所有政策面板上。</p>
 </section>
 </section>
 <section id="sec-intro-workflow" class="level2" data-number="1.4">
 <h2 data-number="1.4" class="anchored" data-anchor-id="sec-intro-workflow"><span class="header-section-number">1.4</span> 把分析组织成可复现项目</h2>
+<p>做到这里，研究已经产生多种文件：原始快照、清洗记录、代码、表格和解释。若它们分散在不同位置，下一次就很难知道哪个结果来自哪段代码。工程化思维是把研究拆成输入、操作与可验收产物，使别人也能沿着记录重复分析。</p>
 <p>两个案例共享一条工程流程：目标 → 数据要求与研究设计 → 任务拆分 → 检查 → 基准模型 → 扩展与验证 → 解释与交付。每一步都要有可检查的产物。</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 5%">
+<col style="width: 28%">
+<col style="width: 66%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -719,7 +984,7 @@ Y_{it}=\alpha_{i}+\lambda_{t}
 <section id="本课程的阅读与练习方式" class="level2" data-number="1.5">
 <h2 data-number="1.5" class="anchored" data-anchor-id="本课程的阅读与练习方式"><span class="header-section-number">1.5</span> 本课程的阅读与练习方式</h2>
 <p>理论页面使用 <code>.qmd</code> 组织公式和交叉引用，实验页面使用 <code>.ipynb</code> 保存代码、表格和图形。网页中已经有执行结果，学生课后可下载 Notebook 从头重跑。Stata 和 Python 分别使用明确内核，通过文件衔接，不依赖隐藏的运行状态。</p>
-<p>下一步阅读<a href="../settings.html">环境准备</a>。课堂只讲约 10 分钟要点，详细安装和检查交给课后；可以让 Agent 协助，但软件路径、内核和实际输出都要核对。</p>
+<p>如果准备第一次运行，请从<a href="../getting-started.html">讲义与仓库使用指南</a>获取完整材料，再阅读<a href="../settings.html">环境准备</a>。课堂只讲约 10 分钟要点，详细安装和检查交给课后；可以让 Agent 协助，但软件路径、内核和实际输出都要核对。</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="离开课堂前：用四个问题检查研究计划">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">

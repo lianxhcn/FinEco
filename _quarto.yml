@@ -33,6 +33,7 @@ book:
     right: "[连享会](https://www.lianxh.cn) · Quarto Book"
   chapters:
     - index.qmd
+    - getting-started.qmd
     - syllabus.qmd
     - part: "第一讲"
       chapters:
