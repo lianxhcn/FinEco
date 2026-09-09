@@ -37,6 +37,9 @@ book:
     - resources.qmd
     - getting-started.qmd
     - syllabus.qmd
+    - part: homework.qmd
+      chapters:
+        - exercises/hw-01.qmd
     - part: "环境配置"
       chapters:
         - settings.qmd
@@ -46,9 +49,6 @@ book:
         - lectures/intro.qmd
         - notebooks/intro/portfolio-python.ipynb
         - notebooks/intro/policy-stata.ipynb
-    - part: "作业"
-      chapters:
-        - homework.qmd
     - part: "附录"
       chapters:
         - resources/references.qmd

@@ -419,7 +419,7 @@ DDML 仍依赖具体模型的识别条件，不能自动补救不可观测混杂
 
 ::: {.callout-tip title="离开课堂前：用四个问题检查研究计划"}
 
-提交一页[研究计划](../homework.qmd#hw-01)，逐项回答：
+提交一页[研究计划](../exercises/hw-01.qmd)，逐项回答：
 
 1. 研究目标是什么？
 2. 需要什么数据？
@@ -433,3 +433,28 @@ DDML 仍依赖具体模型的识别条件，不能自动补救不可观测混杂
 环境配置的详细步骤见[本课程环境准备](../settings.qmd)。下面是已有课程中的补充入口，按需课后阅读。
 
 {{< include ../resources/setup-reading.md >}}
+
+## 数据与复现 {#sec-intro-sources}
+
+市场案例由 AKShare 的 `stock_zh_a_hist_tx` 接口获取腾讯历史行情，使用后复权收盘价，冻结区间为 2018—2025 年。股票池为事后选定的固定教学篮子；数据不是课程原创，不为上游数据声明新的许可。大规模再分发或商业使用前应核查来源条款。
+
+[数据说明](../data/intro/README.md) · [来源和哈希清单](../data/intro/source-manifest.json) · [合并行情快照](../data/intro/prices-long.csv)
+
+政策背景来自[浙江省湖州市、衢州市绿色金融改革创新试验区总体方案](https://policy.mofcom.gov.cn/claw/clawContent.shtml?id=62349)。Stata 案例完全使用模拟企业和模拟城市，不含真实融资成本数据，也不估计真实政策效应。
+
+CSMAR 是后续企业研究的数据候选，具体获取范围以学校权限和[产品说明](https://www.csmar.com/channels/31.html)为准。本次未使用或公开 CSMAR 导出数据。
+
+[AKShare 行情文档](https://akshare.akfamily.xyz/data/stock/stock.html) · [nbstata 使用说明](https://hugetim.github.io/nbstata/user_guide.html) · [Quarto 执行说明](https://quarto.org/docs/projects/code-execution.html) · [时间顺序验证](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html)
+
+第一讲 Notebook 的依赖版本与执行器在 GitHub 仓库提供。本文外部网页信息查询日期 `retrieved_date: 2026-09-09`；来源网页的未来版本变化不应覆盖已经保存的教学快照。
+
+## 参考文献 {#sec-intro-references}
+
+本讲的组合配置、Sharpe 比率和 DDML 分别对应以下文献。按当前问题选读，不要求第一次课前精读全部内容。
+
+1. Chernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., & Robins, J. (**2018**). Double/debiased machine learning for treatment and structural parameters. *The Econometrics Journal*, 21(1), C1–C68. [Link](https://doi.org/10.1111/ectj.12097), [PDF](https://arxiv.org/pdf/1608.00060), [Google](<https://scholar.google.com/scholar?q=Double%2Fdebiased+machine+learning+for+treatment+and+structural+parameters>).
+2. Markowitz, H. (**1952**). Portfolio selection. *The Journal of Finance*, 7(1), 77–91. [Link](https://doi.org/10.1111/j.1540-6261.1952.tb01525.x), [PDF](https://doi.org/10.1111/j.1540-6261.1952.tb01525.x), [Google](<https://scholar.google.com/scholar?q=Harry+Markowitz+Portfolio+Selection+1952>).
+3. Sharpe, W. F. (**1994**). The Sharpe ratio. *The Journal of Portfolio Management*, 21(1), 49–58. [Link](https://doi.org/10.3905/jpm.1994.409501), [PDF](https://doi.org/10.3905/jpm.1994.409501), [Google](<https://scholar.google.com/scholar?q=William+Sharpe+The+Sharpe+Ratio+1994>). 作者提供的[公开网页版本](https://web.stanford.edu/~wfsharpe/art/sr/SR.htm)适合直接阅读。
+
+PDF 标签采用 DOI 兜底时，不表示一定可直接下载 PDF；DDML 的 arXiv 版本为工作论文版本，可能与最终刊发版有差异。
+

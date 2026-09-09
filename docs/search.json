@@ -74,7 +74,7 @@
     "href": "resources.html#数据处理与金融应用",
     "title": "📚 课程资料",
     "section": "数据处理与金融应用",
-    "text": "数据处理与金融应用\n\nPython for Data Analysis：查阅 pandas 数据整理、合并和缺失处理。配套 代码仓库 可用于练习。\nTidy Finance with Python：结合金融问题学习数据处理和资产定价分析，供 CAPM 与投资组合章节延伸阅读。\n\n以上入口参考 ds2026 的课程资料页选取。具体计量教材与本讲引用见参考资料，本课程的数据来源、冻结快照与复权口径也在该页说明。",
+    "text": "数据处理与金融应用\n\nPython for Data Analysis：查阅 pandas 数据整理、合并和缺失处理。配套 代码仓库 可用于练习。\nTidy Finance with Python：结合金融问题学习数据处理和资产定价分析，供 CAPM 与投资组合章节延伸阅读。\n\n以上入口参考 ds2026 的课程资料页选取。跨章节使用的教材与经典文献见公共书目。本讲具体引用见章末参考文献，数据来源和冻结快照见数据与复现。",
     "crumbs": [
       "📚 课程资料"
     ]
@@ -194,9 +194,93 @@
     "href": "syllabus.html#教材与阅读",
     "title": "📅 课程安排",
     "section": "教材与阅读",
-    "text": "教材与阅读\n主教材是本在线讲义。理论组织参考 Hansen 的 Econometrics、James 等的 An Introduction to Statistical Learning: with Applications in Python，金融应用亦可参考 Tatsat、Puri 与 Lookabaugh 的 Machine Learning and Data Science Blueprints for Finance。本书不要求学生购买全部参考书。\n参考资料与数据说明提供可核查入口。教材原文和需要数据库权限的材料不随课程仓库公开分发。",
+    "text": "教材与阅读\n主教材是本在线讲义。理论组织参考 Hansen 的 Econometrics、James 等的 An Introduction to Statistical Learning: with Applications in Python，金融应用亦可参考 Tatsat、Puri 与 Lookabaugh 的 Machine Learning and Data Science Blueprints for Finance。本书不要求学生购买全部参考书。\n公共书目提供可核查入口。教材原文和需要数据库权限的材料不随课程仓库公开分发。",
     "crumbs": [
       "📅 课程安排"
+    ]
+  },
+  {
+    "objectID": "homework.html",
+    "href": "homework.html",
+    "title": "🚀 作业",
+    "section": "",
+    "text": "作业目录\n本页说明所有作业的共同要求，并提供各次作业入口。固定编号为 hw-01、hw-02 等，与个人仓库中的文件夹名一致；请先阅读对应任务，再提交成果。\n后续作业公布后在这里增加入口，具体任务、截止日期与评分说明放在各次作业页面。",
+    "crumbs": [
+      "🚀 作业"
+    ]
+  },
+  {
+    "objectID": "homework.html#作业目录",
+    "href": "homework.html#作业目录",
+    "title": "🚀 作业",
+    "section": "",
+    "text": "编号\n内容\n提交成果\n\n\n\n\nhw-01\n一页研究计划\n一页 Markdown 或 PDF；暂不强制 Pages",
+    "crumbs": [
+      "🚀 作业"
+    ]
+  },
+  {
+    "objectID": "homework.html#仓库与提交",
+    "href": "homework.html#仓库与提交",
+    "title": "🚀 作业",
+    "section": "仓库与提交",
+    "text": "仓库与提交\n\n一个学期一个仓库：个人仓库建议为 fineco-homework，各次作业分别放在 hw-01、hw-02 等目录。网站首页要能进入每次作业。\n与教师课件分开：个人仓库放在教师课件目录之外，更新教师课件不能覆盖个人作业。具体方法见课件使用。\n提交网站成果：启用 Pages 后，通过统一入口提交网站首页和本次作业直达链接，并附仓库地址与完整提交哈希，便于定位提交时版本。课程内编号按教师通知填写，不在公开网页填写学号或联系方式。\n提交前验收：确认部署完成，用未登录浏览器检查页面能打开、代码有结果、图表完整，首页能找到本次作业。不要求大家共同编辑教师仓库或提交登记表的 Pull Request。\n\n网站是可阅读的成果，仓库是可复现的来源。保留两类链接及提交版本，方便后续核对。发布步骤见同步与发布。",
+    "crumbs": [
+      "🚀 作业"
+    ]
+  },
+  {
+    "objectID": "homework.html#提交说明文件",
+    "href": "homework.html#提交说明文件",
+    "title": "🚀 作业",
+    "section": "提交说明文件",
+    "text": "提交说明文件\n现有入口是坚果云文件收集页。为了通过文件收集网站链接，发布作业网站后，请下载提交说明模板，填好并命名为 hw-02-submission.md (编号随本次作业变化)，再上传到统一入口。可以让 Agent 根据实际发布结果生成该文件，但需要亲自打开链接核对。\n\n平台字段：按页面要求填写姓名、作业编号和版本号。作业编号使用本课程的 hw-01 等编号；平台说明中的旧示例不作为本课程编号。\n文件内容：记录作业编号、仓库地址、网站首页、本次作业直达链接，以及完整 Git 提交哈希。\n修改后重交：平台版本号按 v1、v2 递增；Git 提交哈希从个人仓库中读取。前者是提交次数标记，后者定位具体文件版本，两者不能互相替代。\n\nhw-01 尚未建立网站的同学直接上传一页研究计划，不需要为了填写模板而编造链接或哈希。姓名通过收集平台填写，无需放进公开仓库的提交说明。教师汇总通过收到的文件完成，学生不编辑全班共享登记页。",
+    "crumbs": [
+      "🚀 作业"
+    ]
+  },
+  {
+    "objectID": "exercises/hw-01.html",
+    "href": "exercises/hw-01.html",
+    "title": "hw-01",
+    "section": "",
+    "text": "任务\n一页研究计划。选择一个金融问题，把目标、数据、方法和验证步骤连接起来。\n研究计划让你在写大量代码之前，先检查问题、数据与方法能否衔接。第一周重在作出有理由的选择，后续再用数据检验和修订。\n从股票组合或金融政策案例中选择一个，也可以提出规模相近的金融问题。先交研究计划，不要求第一周就完成全部估计。 正文限制一页，使用 Markdown、PDF 或教师指定格式；通过本页顶部的提交入口提交；截止时间以课堂通知为准。",
+    "crumbs": [
+      "🚀 作业",
+      "hw-01"
+    ]
+  },
+  {
+    "objectID": "exercises/hw-01.html#一页模板",
+    "href": "exercises/hw-01.html#一页模板",
+    "title": "hw-01",
+    "section": "一页模板",
+    "text": "一页模板\n\n\n\n项目\n需要写清楚的内容\n\n\n\n\n问题\n一句话说明要解决什么，研究谁、在哪个时期\n\n\n目标\n投资决策的目标与约束，或政策研究的目标参数\n\n\n数据\n来源、获取权限、观测单位、频率、样本范围\n\n\n变量\n三个核心变量及构造口径，哪些信息在分析时已经可得\n\n\n基准方法\n一个最简单且有意义的模型，以及选择理由\n\n\n评价\n样本外检验或识别检查，什么证据会推翻原结论\n\n\n执行\n三个步骤、每步产物、Agent 做什么、你检查什么\n\n\n\n组合题可以问：在固定资金、持有期和单股权重上限下，复杂配置是否优于等权？政策题可以问：如何避免把市场利率普遍下降误认为试点作用？",
+    "crumbs": [
+      "🚀 作业",
+      "hw-01"
+    ]
+  },
+  {
+    "objectID": "exercises/hw-01.html#自查与评分",
+    "href": "exercises/hw-01.html#自查与评分",
+    "title": "hw-01",
+    "section": "自查与评分",
+    "text": "自查与评分\n写完后遮住模型名称，看看别人能否理解你的研究目标。再逐项检查：\n\n数据的选择是否来自研究需要，而非仅仅因为容易下载？\n过去时点的投资决策是否使用了当时尚不可得的信息？\n政策对照组能代表怎样的反事实，有何依据？\n每一步是否有能检查的产物，无法完成时怎样调整？\n\n建议按目标可操作性 30%、数据与变量 25%、模型和评价匹配 30%、执行计划 15% 评价本次作业。此为单次作业标准，不改变课程总评比例。\n允许 Agent 辅助措辞、检索与规划，但你必须能够自己解释每一项选择。附上最关键的一条指令，以及你纠正过的一个问题；不需要提交全部聊天记录。",
+    "crumbs": [
+      "🚀 作业",
+      "hw-01"
+    ]
+  },
+  {
+    "objectID": "exercises/hw-01.html#下次课之前",
+    "href": "exercises/hw-01.html#下次课之前",
+    "title": "hw-01",
+    "section": "下次课之前",
+    "text": "下次课之前\n完成环境准备中的 Python 与 Stata 最小检查。暂时没有 Stata 使用条件时，先阅读已发布结果、完成 Python 部分，并向教师说明情况。\n若希望多练一步，可按小实验路线复现并改变一个条件；这是自选练习，无需在一页计划中塞入完整结果。\n\n返回作业总览 课程主页 提交作业",
+    "crumbs": [
+      "🚀 作业",
+      "hw-01"
     ]
   },
   {
@@ -420,6 +504,28 @@
     ]
   },
   {
+    "objectID": "lectures/intro.html#sec-intro-sources",
+    "href": "lectures/intro.html#sec-intro-sources",
+    "title": "1  研究流程",
+    "section": "1.7 数据与复现",
+    "text": "1.7 数据与复现\n市场案例由 AKShare 的 stock_zh_a_hist_tx 接口获取腾讯历史行情，使用后复权收盘价，冻结区间为 2018—2025 年。股票池为事后选定的固定教学篮子；数据不是课程原创，不为上游数据声明新的许可。大规模再分发或商业使用前应核查来源条款。\n数据说明 · 来源和哈希清单 · 合并行情快照\n政策背景来自浙江省湖州市、衢州市绿色金融改革创新试验区总体方案。Stata 案例完全使用模拟企业和模拟城市，不含真实融资成本数据，也不估计真实政策效应。\nCSMAR 是后续企业研究的数据候选，具体获取范围以学校权限和产品说明为准。本次未使用或公开 CSMAR 导出数据。\nAKShare 行情文档 · nbstata 使用说明 · Quarto 执行说明 · 时间顺序验证\n第一讲 Notebook 的依赖版本与执行器在 GitHub 仓库提供。本文外部网页信息查询日期 retrieved_date: 2026-09-09；来源网页的未来版本变化不应覆盖已经保存的教学快照。",
+    "crumbs": [
+      "研究基础",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>研究流程</span>"
+    ]
+  },
+  {
+    "objectID": "lectures/intro.html#sec-intro-references",
+    "href": "lectures/intro.html#sec-intro-references",
+    "title": "1  研究流程",
+    "section": "1.8 参考文献",
+    "text": "1.8 参考文献\n本讲的组合配置、Sharpe 比率和 DDML 分别对应以下文献。按当前问题选读，不要求第一次课前精读全部内容。\n\nChernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., & Robins, J. (2018). Double/debiased machine learning for treatment and structural parameters. The Econometrics Journal, 21(1), C1–C68. Link, PDF, Google.\nMarkowitz, H. (1952). Portfolio selection. The Journal of Finance, 7(1), 77–91. Link, PDF, Google.\nSharpe, W. F. (1994). The Sharpe ratio. The Journal of Portfolio Management, 21(1), 49–58. Link, PDF, Google. 作者提供的公开网页版本适合直接阅读。\n\nPDF 标签采用 DOI 兜底时，不表示一定可直接下载 PDF；DDML 的 arXiv 版本为工作论文版本，可能与最终刊发版有差异。",
+    "crumbs": [
+      "研究基础",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>研究流程</span>"
+    ]
+  },
+  {
     "objectID": "notebooks/intro/portfolio-python.html",
     "href": "notebooks/intro/portfolio-python.html",
     "title": "组合实操",
@@ -530,102 +636,47 @@
     ]
   },
   {
-    "objectID": "homework.html",
-    "href": "homework.html",
-    "title": "🚀 作业",
-    "section": "",
-    "text": "仓库与提交\n本页集中更新历次作业。固定编号为 hw-01、hw-02 等，与个人仓库中的文件夹名一致；请先阅读对应任务，再提交成果。\n网站是可阅读的成果，仓库是可复现的来源。保留两类链接及提交版本，方便后续核对。发布步骤见同步与发布。",
-    "crumbs": [
-      "作业",
-      "🚀 作业"
-    ]
-  },
-  {
-    "objectID": "homework.html#仓库与提交",
-    "href": "homework.html#仓库与提交",
-    "title": "🚀 作业",
-    "section": "",
-    "text": "一个学期一个仓库：个人仓库建议为 fineco-homework，各次作业分别放在 hw-01、hw-02 等目录。网站首页要能进入每次作业。\n与教师课件分开：个人仓库放在教师课件目录之外，更新教师课件不能覆盖个人作业。具体方法见课件使用。\n提交网站成果：启用 Pages 后，通过统一入口提交网站首页和本次作业直达链接，并附仓库地址与完整提交哈希，便于定位提交时版本。课程内编号按教师通知填写，不在公开网页填写学号或联系方式。\n提交前验收：确认部署完成，用未登录浏览器检查页面能打开、代码有结果、图表完整，首页能找到本次作业。不要求大家共同编辑教师仓库或提交登记表的 Pull Request。",
-    "crumbs": [
-      "作业",
-      "🚀 作业"
-    ]
-  },
-  {
-    "objectID": "homework.html#提交说明文件",
-    "href": "homework.html#提交说明文件",
-    "title": "🚀 作业",
-    "section": "提交说明文件",
-    "text": "提交说明文件\n现有入口是坚果云文件收集页。为了通过文件收集网站链接，发布作业网站后，请下载提交说明模板，填好并命名为 hw-02-submission.md (编号随本次作业变化)，再上传到统一入口。可以让 Agent 根据实际发布结果生成该文件，但需要亲自打开链接核对。\n\n平台字段：按页面要求填写姓名、作业编号和版本号。作业编号使用本课程的 hw-01 等编号；平台说明中的旧示例不作为本课程编号。\n文件内容：记录作业编号、仓库地址、网站首页、本次作业直达链接，以及完整 Git 提交哈希。\n修改后重交：平台版本号按 v1、v2 递增；Git 提交哈希从个人仓库中读取。前者是提交次数标记，后者定位具体文件版本，两者不能互相替代。\n\nhw-01 尚未建立网站的同学直接上传一页研究计划，不需要为了填写模板而编造链接或哈希。姓名通过收集平台填写，无需放进公开仓库的提交说明。教师汇总通过收到的文件完成，学生不编辑全班共享登记页。",
-    "crumbs": [
-      "作业",
-      "🚀 作业"
-    ]
-  },
-  {
-    "objectID": "homework.html#hw-01",
-    "href": "homework.html#hw-01",
-    "title": "🚀 作业",
-    "section": "hw-01",
-    "text": "hw-01\n一页研究计划。选择一个金融问题，把目标、数据、方法和验证步骤连接起来。\n\n任务\n研究计划让你在写大量代码之前，先检查问题、数据与方法能否衔接。第一周重在作出有理由的选择，后续再用数据检验和修订。\n从股票组合或金融政策案例中选择一个，也可以提出规模相近的金融问题。先交研究计划，不要求第一周就完成全部估计。 正文限制一页，使用 Markdown、PDF 或教师指定格式；通过本页顶部的提交入口提交；截止时间以课堂通知为准。\n\n\n一页模板\n\n\n\n项目\n需要写清楚的内容\n\n\n\n\n问题\n一句话说明要解决什么，研究谁、在哪个时期\n\n\n目标\n投资决策的目标与约束，或政策研究的目标参数\n\n\n数据\n来源、获取权限、观测单位、频率、样本范围\n\n\n变量\n三个核心变量及构造口径，哪些信息在分析时已经可得\n\n\n基准方法\n一个最简单且有意义的模型，以及选择理由\n\n\n评价\n样本外检验或识别检查，什么证据会推翻原结论\n\n\n执行\n三个步骤、每步产物、Agent 做什么、你检查什么\n\n\n\n组合题可以问：在固定资金、持有期和单股权重上限下，复杂配置是否优于等权？政策题可以问：如何避免把市场利率普遍下降误认为试点作用？\n\n\n自查与评分\n写完后遮住模型名称，看看别人能否理解你的研究目标。再逐项检查：\n\n数据的选择是否来自研究需要，而非仅仅因为容易下载？\n过去时点的投资决策是否使用了当时尚不可得的信息？\n政策对照组能代表怎样的反事实，有何依据？\n每一步是否有能检查的产物，无法完成时怎样调整？\n\n建议按目标可操作性 30%、数据与变量 25%、模型和评价匹配 30%、执行计划 15% 评价本次作业。此为单次作业标准，不改变课程总评比例。\n允许 Agent 辅助措辞、检索与规划，但你必须能够自己解释每一项选择。附上最关键的一条指令，以及你纠正过的一个问题；不需要提交全部聊天记录。\n\n\n下次课之前\n完成环境准备中的 Python 与 Stata 最小检查。暂时没有 Stata 使用条件时，先阅读已发布结果、完成 Python 部分，并向教师说明情况。\n若希望多练一步，可按小实验路线复现并改变一个条件；这是自选练习，无需在一页计划中塞入完整结果。",
-    "crumbs": [
-      "作业",
-      "🚀 作业"
-    ]
-  },
-  {
     "objectID": "resources/references.html",
     "href": "resources/references.html",
-    "title": "参考资料",
+    "title": "公共书目",
     "section": "",
-    "text": "方法阅读\n第一讲先理解问题与流程，以下材料用于按兴趣延伸。读者不需要在课前精读全部文献。\nPDF 标签采用 DOI 兜底时，不表示一定可直接下载 PDF；DDML 的 arXiv 版本为工作论文版本，可能与最终刊发版有差异。",
+    "text": "参考书\n本页收录跨章节使用的参考书和经典文献，作为整个学期的阅读入口。各章直接引用的方法论文、软件文档与数据来源放在该章末尾；阅读某章时，无需跳到这里查找该章的完整书目。",
     "crumbs": [
       "附录",
-      "参考资料"
+      "公共书目"
     ]
   },
   {
-    "objectID": "resources/references.html#方法阅读",
-    "href": "resources/references.html#方法阅读",
-    "title": "参考资料",
+    "objectID": "resources/references.html#参考书",
+    "href": "resources/references.html#参考书",
+    "title": "公共书目",
     "section": "",
-    "text": "Chernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., & Robins, J. (2018). Double/debiased machine learning for treatment and structural parameters. The Econometrics Journal, 21(1), C1–C68. Link, PDF, Google.\nMarkowitz, H. (1952). Portfolio selection. The Journal of Finance, 7(1), 77–91. Link, PDF, Google.\nSharpe, W. F. (1994). The Sharpe ratio. The Journal of Portfolio Management, 21(1), 49–58. Link, PDF, Google. 作者提供的公开网页版本适合直接阅读。",
+    "text": "Hansen 的 Econometrics：作者页面。课程内部备课材料包括 2021 年版本，引用具体章节时应核对手中版本。\nJames、Witten、Hastie、Tibshirani 与 Taylor 的 An Introduction to Statistical Learning: with Applications in Python (2023)：教材官网，Python 配套资料。\nTatsat、Puri 与 Lookabaugh 的 Machine Learning and Data Science Blueprints for Finance (2020)为课程大纲所列参考书。本网站不分发教材全文。",
     "crumbs": [
       "附录",
-      "参考资料"
+      "公共书目"
     ]
   },
   {
-    "objectID": "resources/references.html#教材入口",
-    "href": "resources/references.html#教材入口",
-    "title": "参考资料",
-    "section": "教材入口",
-    "text": "教材入口\n\nHansen 的 Econometrics：作者页面。课程内部备课材料包括 2021 年版本，引用具体章节时应核对手中版本。\nJames、Witten、Hastie、Tibshirani 与 Taylor 的 An Introduction to Statistical Learning: with Applications in Python (2023)：教材官网，Python 配套资料。\nTatsat、Puri 与 Lookabaugh 的 Machine Learning and Data Science Blueprints for Finance (2020)为课程大纲所列参考书。本网站不分发教材全文。",
+    "objectID": "resources/references.html#经典文献",
+    "href": "resources/references.html#经典文献",
+    "title": "公共书目",
+    "section": "经典文献",
+    "text": "经典文献\n下面两篇文献构成资产配置与风险调整评价的基础，供资产收益相关章节共同参考。\n\nMarkowitz, H. (1952). Portfolio selection. The Journal of Finance, 7(1), 77–91. Link, PDF, Google.\nSharpe, W. F. (1994). The Sharpe ratio. The Journal of Portfolio Management, 21(1), 49–58. Link, PDF, Google. 作者提供的公开网页版本适合直接阅读。\n\nPDF 标签以 DOI 兜底时，不表示一定能直接下载全文。具体应用与符号解释请结合相关章节阅读。",
     "crumbs": [
       "附录",
-      "参考资料"
+      "公共书目"
     ]
   },
   {
-    "objectID": "resources/references.html#首讲数据与政策",
-    "href": "resources/references.html#首讲数据与政策",
-    "title": "参考资料",
-    "section": "首讲数据与政策",
-    "text": "首讲数据与政策\n市场案例由 AKShare 的 stock_zh_a_hist_tx 接口获取腾讯历史行情，使用后复权收盘价，冻结区间为 2018—2025 年。股票池为事后选定的固定教学篮子；数据不是课程原创，不为上游数据声明新的许可。大规模再分发或商业使用前应核查来源条款。\n数据说明 · 来源和哈希清单 · 合并行情快照\n政策背景来自浙江省湖州市、衢州市绿色金融改革创新试验区总体方案。Stata 案例完全使用模拟企业和模拟城市，不含真实融资成本数据，也不估计真实政策效应。\nCSMAR 是后续企业研究的数据候选，具体获取范围以学校权限和产品说明为准。本次未使用或公开 CSMAR 导出数据。",
+    "objectID": "resources/references.html#各章书目入口",
+    "href": "resources/references.html#各章书目入口",
+    "title": "公共书目",
+    "section": "各章书目入口",
+    "text": "各章书目入口\n\n研究流程：参考文献：投资组合、Sharpe 比率和 DDML。\n研究流程：数据与复现：第一讲的行情、政策背景、模拟数据及软件资料。\n\n随着章节发布，这里增加对应书目入口。完整的章节书目在章节末尾维护，避免两份列表分别更新后出现遗漏。在线课程和数据处理资源见课程资料。",
     "crumbs": [
       "附录",
-      "参考资料"
-    ]
-  },
-  {
-    "objectID": "resources/references.html#软件与复现资料",
-    "href": "resources/references.html#软件与复现资料",
-    "title": "参考资料",
-    "section": "软件与复现资料",
-    "text": "软件与复现资料\nAKShare 行情文档 · nbstata 使用说明 · Quarto 执行说明 · 时间顺序验证\n第一讲 Notebook 的依赖版本与执行器在 GitHub 仓库提供。本文外部网页信息查询日期 retrieved_date: 2026-09-09；来源网页的未来版本变化不应覆盖已经保存的教学快照。",
-    "crumbs": [
-      "附录",
-      "参考资料"
+      "公共书目"
     ]
   }
 ]

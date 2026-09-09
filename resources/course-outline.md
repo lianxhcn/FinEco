@@ -32,7 +32,7 @@ CAPM 与投资组合分章；ARMA 与 GARCH/VaR 分讲。Lasso 和交叉验证�
 
 ## 网站模块与文件名
 
-前置页面依次为 `index.qmd` (前言)、`resources.qmd` (课程资料)、`getting-started.qmd` (课件使用)、`syllabus.qmd` (课程安排)。环境配置 Part 包含 `settings.qmd` 与 `publishing.qmd`，先于正式讲义。作业统一由 `homework.qmd` 维护，使用 `hw-01` 等锚点；旧研究计划已迁入该页。附录当前为 `resources/references.qmd`。
+前置页面依次为 `index.qmd` (前言)、`resources.qmd` (课程资料)、`getting-started.qmd` (课件使用)、`syllabus.qmd` (课程安排)。环境配置 Part 包含 `settings.qmd` 与 `publishing.qmd`，先于正式讲义。`homework.qmd` 为作业总览，放在课程安排下方；各次作业分别使用 `exercises/hw-01.qmd` 等文件。附录 `resources/references.qmd` 保存公共书目与各章书目入口，具体引用在每章末尾维护。
 
 未完成章节不加入公开导航。后续主题文件名依次规划为 `financial-data`、`ols`、`model-specification`、`bootstrap`、`monte-carlo`、`capm`、`portfolio`、`arma`、`garch-var`、`static-panel`、`did`、`iv-gmm`、`dynamic-panel`、`lasso-cv`、`ddml`、`discrete-choice`、`sample-selection`、`synthetic-control`、`rdd`，放入 `lectures/`。实验页使用主题短标题，不占理论章节编号。
 

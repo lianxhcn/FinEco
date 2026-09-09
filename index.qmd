@@ -54,12 +54,12 @@ FINANCIAL ECONOMETRICS · LN429 · 2026 秋季
 | 金融政策：比较、样本与识别 | 25 分钟 | [Stata 实验与结果](notebooks/intro/policy-stata.ipynb) |
 | 工程化工作流程 | 10 分钟 | [任务拆分](lectures/intro.qmd#sec-intro-workflow) |
 | 环境准备要点 | 10 分钟 | [Agent 与手动步骤](settings.qmd) |
-| 一页研究计划 | 5 分钟 | [作业要求](homework.qmd#hw-01) |
+| 一页研究计划 | 5 分钟 | [作业要求](exercises/hw-01.qmd) |
 
 本网站当前完整提供第一讲及其配套内容。其余主题列在[课程安排](syllabus.qmd#sec-course-topics)中，将随授课陆续加入。网页已经包含运行后的代码与结果，课堂阅读不需要启动 Stata 或 Python。
 
 ## 课前与课后
 
-课前读[环境准备](settings.qmd)，让 Agent 先检查已有软件，再按需要配置；暂时不能运行代码也可先阅读输出。课后提交[一页研究计划](homework.qmd#hw-01)：说清问题、数据、模型和最可能失败的一步。
+课前读[环境准备](settings.qmd)，让 Agent 先检查已有软件，再按需要配置；暂时不能运行代码也可先阅读输出。课后提交[一页研究计划](exercises/hw-01.qmd)：说清问题、数据、模型和最可能失败的一步。
 
 课程资料及代码见 [GitHub 仓库](https://github.com/lianxhcn/FinEco)。时间、教室和截止日期以课堂通知为准；提交入口见[作业](homework.qmd)。

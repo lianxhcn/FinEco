@@ -16,7 +16,7 @@
 1. **[Python for Data Analysis](https://wesmckinney.com/book/)**：查阅 pandas 数据整理、合并和缺失处理。配套 [代码仓库](https://github.com/wesm/pydata-book) 可用于练习。
 2. **[Tidy Finance with Python](https://www.tidy-finance.org/python/index.html)**：结合金融问题学习数据处理和资产定价分析，供 CAPM 与投资组合章节延伸阅读。
 
-以上入口参考 ds2026 的课程资料页选取。具体计量教材与本讲引用见[参考资料](resources/references.qmd)，本课程的数据来源、冻结快照与复权口径也在该页说明。
+以上入口参考 ds2026 的课程资料页选取。跨章节使用的教材与经典文献见[公共书目](resources/references.qmd)。本讲具体引用见[章末参考文献](lectures/intro.qmd#sec-intro-references)，数据来源和冻结快照见[数据与复现](lectures/intro.qmd#sec-intro-sources)。
 
 ## 先读什么
 

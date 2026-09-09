@@ -52,4 +52,4 @@ CAPM 与投资组合分别写章，ARMA 与 GARCH/VaR 分为两讲。环境配�
 
 主教材是本在线讲义。理论组织参考 Hansen 的 *Econometrics*、James 等的 *An Introduction to Statistical Learning: with Applications in Python*，金融应用亦可参考 Tatsat、Puri 与 Lookabaugh 的 *Machine Learning and Data Science Blueprints for Finance*。本书不要求学生购买全部参考书。
 
-[参考资料与数据说明](resources/references.qmd)提供可核查入口。教材原文和需要数据库权限的材料不随课程仓库公开分发。
+[公共书目](resources/references.qmd)提供可核查入口。教材原文和需要数据库权限的材料不随课程仓库公开分发。
