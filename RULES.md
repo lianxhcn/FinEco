@@ -47,7 +47,7 @@
 
 ## 并行窗口的操作要求
 
-这些要求用于避免覆盖共享文件；章节分配、是否采用 worktree 仍须按 PROJECT_PLAN.md 中的待讨论事项确定。
+这些要求用于避免覆盖共享文件；首批已确定为金融数据、OLS、Bootstrap，各使用独立 worktree；后续批次分工以 PROJECT_PLAN.md 为准。
 
 1. 开始前读 AGENTS.md、RULES.md、PROJECT_PLAN.md、_quarto.yml 和本章相关文件，并检查 git status。用户指定本章后，记录负责的文件范围；不要自行认领其他章。
 2. 章节窗口只编辑本章 lectures/<topic>.qmd、notebooks/<topic>/、data/<topic>/、tools/<topic>/ 等明确范围。共享数据快照只读；衍生数据写入本章目录，记录来源版本与构造步骤。
