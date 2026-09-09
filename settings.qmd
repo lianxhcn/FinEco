@@ -1,0 +1,111 @@
+# 环境准备：让 Agent 帮你配置并验收 {.unnumbered}
+
+## 先分清阅读与运行
+
+阅读本站不需要安装软件。网页已经包含课前执行的代码与结果。课后重跑 Python 实验需要 Python 和相应包；重跑 Stata 实验需要可用且有授权的 Stata 与 `nbstata`。Quarto 主要用于生成整本网站，学生第一次做数据分析可以稍后安装。
+
+本书已验证的教师执行环境为 Python 3.11.14、Stata 19、`nbstata 0.8.6`、AKShare 1.18.39 和 Quarto 1.6.39，记录日期 2026-09-09。这是验证组合，不是说其他版本一定不支持。学生应使用自己的安装路径，不复制教师电脑路径。
+
+## 把检查任务交给 Agent
+
+在下载的课程项目根目录打开你使用的 Agent，先提供以下任务。也可下载[纯文本指令](resources/environment-agent.md)。
+
+> 我正在学习 FinEco。请阅读 README 与 requirements.txt，检查已有的 Python、Jupyter、Stata 和内核，输出路径、版本、缺少的依赖和最小修复计划。不要读取凭据，不要先重装软件或修改全局 PATH。优先使用项目环境。Stata 路径须检查确认，不要猜测。修复后分别运行 Python 与 Stata 最小示例，保存输出，重启内核后再从头运行。遇到错误保留原始信息，不把“包已安装”当成“案例已跑通”。系统级安装或全局变更先向我说明。
+
+检查结果应是一份简短表格：Python 在哪里、Notebook 选哪个内核、Stata 是否能启动、还有哪一步失败。Agent 可以执行命令，但你要看懂每一项是否真的通过。
+
+## Windows 手动步骤
+
+以下命令在 **PowerShell** 中从课程项目根目录执行。已经有可用项目环境时直接使用，不重复创建。尚未安装 Python 或 Stata 时，先按学校软件安排安装合法版本；本页面不提供 Stata 安装包。
+
+1. **Step 1**: 确认 Python，再建立项目环境。
+
+   ```powershell
+   py -0p
+   py -3.11 -m venv .venv
+   .\.venv\Scripts\python.exe --version
+   ```
+
+   `py -0p` 列出已安装解释器。没有 Python 3.11 时，不要反复执行同一个命令；请 Agent 检查现有版本或协助安装课程验证版本。
+
+2. **Step 2**: 用同一个解释器安装依赖并注册 Python 内核。
+
+   ```powershell
+   .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+   .\.venv\Scripts\python.exe -m ipykernel install --user --name fineco --display-name "Python (FinEco)"
+   .\.venv\Scripts\python.exe -m jupyter kernelspec list
+   ```
+
+   这里注册的是当前用户的内核，便于 VS Code/Jupyter 选择。不要混用另一个环境中的 `pip`。网络或安装失败时保留错误，由 Agent 判断，勿无目的地升级全部软件。
+
+3. **Step 3**: 安装 Stata 内核并检查设置。
+
+   ```powershell
+   .\.venv\Scripts\python.exe -m nbstata.install
+   .\.venv\Scripts\python.exe -m jupyter kernelspec list
+   ```
+
+   在 VS Code 中安装或启用 Jupyter 扩展，打开 Stata Notebook 后选择 Stata/nbstata 内核。若无法自动定位 Stata，依据[nbstata 官方说明](https://hugetim.github.io/nbstata/user_guide.html)配置 `stata_dir` 和 `edition`。`stata_dir` 指向安装目录，版本类型按你的授权选择 `be`、`se` 或 `mp`。不要把示例版本类型当作你的实际授权。
+
+4. **Step 4**: 验证环境能够计算，而非只看安装提示。
+
+   在 Python Notebook 中执行：
+
+   ```python
+   import sys
+   import pandas as pd
+   print(sys.executable)
+   print(pd.Series([1, 2, 3]).mean())
+   ```
+
+   最后一项应为 `2.0`。在 Stata Notebook 中执行：
+
+   ```stata
+   sysuse auto, clear
+   count
+   regress price mpg
+   ```
+
+   应读入 74 条观测并显示回归表。看到命令文本但没有输出，不算验证成功。重启内核，从头运行一次，检查是否依赖旧状态。
+
+5. **Step 5**: 再运行第一讲案例。
+
+   Python 选 `Python (FinEco)` 内核，Stata 选对应 `nbstata` 内核。项目根目录应包含 `data/intro/`。Stata 中可用 `pwd` 检查位置，再用 `cd "你的 FinEco 项目路径"` 设置工作目录。不要把自己的绝对路径写进公共代码。
+
+## 项目自带的批量执行器
+
+如果 Agent 已确认你的 Stata 程序路径，可在当前 PowerShell 会话设置 `STATA_EXE`，然后运行：
+
+```powershell
+# 先检查并替换成自己电脑的实际程序路径。
+$env:STATA_EXE = "实际 Stata 可执行文件路径"
+Test-Path $env:STATA_EXE
+.\.venv\Scripts\python.exe tools/run_notebooks.py
+```
+
+必须先得到 `True`。执行器使用当前 Python，在 `002-working/runtime/` 创建临时内核和配置，分别执行两个 Notebook；不改全局 Stata 配置。该目录不进入仓库。Stata 在 Windows 上若无法加载或导出文件，先检查当前权限与工作目录。
+
+macOS/Linux 用户也可采用 `python3 -m venv .venv`，使用 `.venv/bin/python` 执行相同 Python 模块；Stata 安装路径与 edition 按实际系统配置，不能复制 Windows 的 `.exe` 路径。本轮端到端验证在 Windows 完成。
+
+## 常见错误从哪里查
+
+| 现象 | 优先检查 |
+|---|---|
+| `ModuleNotFoundError` | Notebook 内核与安装包所用 Python 是否一致 |
+| Python 正常，Stata 内核启动失败 | 内核解释器、Stata 路径、版本类型和授权是否有效 |
+| Stata `r(601)` 或 `r(603)` | `pwd`、目标目录是否存在、文件写权限 |
+| 读不到行情 CSV | 是否完整下载仓库，工作目录是否在项目内 |
+| AKShare 请求失败 | 阅读分析无需重新取数；先用冻结快照，再检查接口 |
+| 页面有结果，自己的 Notebook 没结果 | 网页是预执行版本；检查本地内核后从头运行 |
+
+## 生成本书网页
+
+需要自己修改和渲染整本讲义时再安装 [Quarto](https://quarto.org/docs/get-started/)。先执行 Notebook 并保存输出，然后在项目根目录运行：
+
+```powershell
+quarto render
+```
+
+输出位于 `docs/`。本书设置为渲染时不重新执行代码；修改了代码就必须先重跑对应 Notebook，再渲染，避免新代码配上旧结果。[Quarto 的执行说明](https://quarto.org/docs/projects/code-execution.html)也区分这两个环节。
+
+本页官方资料查询日期为 2026-09-09；可执行依赖版本见 `requirements.txt`。这些软件不替代对计量假设、变量口径与结果的判断。

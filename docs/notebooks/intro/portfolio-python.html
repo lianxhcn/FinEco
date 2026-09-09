@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" xml:lang="zh-CN"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>组合案例实验：10 只股票的收益与风险 – 金融计量经济学</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../notebooks/intro/policy-stata.html" rel="next">
+<link href="../../lectures/intro.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-0626ff4d7a71b55c8707dcae1d04a9b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-d59a9bb4a0246dd4330968064f99cf3e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/intro.html">第一讲</a></li><li class="breadcrumb-item"><a href="../../notebooks/intro/portfolio-python.html">组合案例实验：10 只股票的收益与风险</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">金融计量经济学</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/lianxhcn/FinEco" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="切换阅读器模式">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">课程首页</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../syllabus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">课程介绍与安排</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">第一讲</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">课程导览与实证金融研究流程</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/intro/portfolio-python.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">组合案例实验：10 只股票的收益与风险</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/intro/policy-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">政策案例实验：从四个均值到 DID</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">学习与实践</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">环境准备：让 Agent 帮你配置并验收</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../exercises/research-plan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">第一讲作业：一页研究计划</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../resources/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">参考资料与数据说明</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目录</h2>
+   
+  <ul>
+  <li><a href="#路径与数据检查" id="toc-路径与数据检查" class="nav-link active" data-scroll-target="#路径与数据检查">1. 路径与数据检查</a></li>
+  <li><a href="#在约束下求权重" id="toc-在约束下求权重" class="nav-link" data-scroll-target="#在约束下求权重">2. 在约束下求权重</a></li>
+  <li><a href="#先规定回测规则再看结果" id="toc-先规定回测规则再看结果" class="nav-link" data-scroll-target="#先规定回测规则再看结果">3. 先规定回测规则，再看结果</a></li>
+  <li><a href="#成本敏感性与练习" id="toc-成本敏感性与练习" class="nav-link" data-scroll-target="#成本敏感性与练习">4. 成本敏感性与练习</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.dev/lianxhcn/FinEco/blob/main/notebooks/intro/portfolio-python.ipynb" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/intro.html">第一讲</a></li><li class="breadcrumb-item"><a href="../../notebooks/intro/portfolio-python.html">组合案例实验：10 只股票的收益与风险</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">组合案例实验：10 只股票的收益与风险</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>本实验使用 AKShare 获取的腾讯历史行情，读取已经冻结的快照，<strong>执行分析不联网</strong>。固定篮子为事后选定的 10 只股票，仅用于教学，不是历史选股策略、投资建议或全部 A 股的代表样本。</p>
+<p><a href="../../lectures/intro.html#sec-intro-portfolio">回到第一讲</a> · <a href="https://raw.githubusercontent.com/lianxhcn/FinEco/main/notebooks/intro/portfolio-python.ipynb">下载本 Notebook</a></p>
+<p>任务：用 2018—2023 年训练，2024 年作验证，2025 年作保留测试。比较等权、最小方差与年化预期收益至少 8% 的最小方差组合。验证结果用于报告稳定性，本例不依据验证或测试收益更换规则。</p>
+<section id="路径与数据检查" class="level2">
+<h2 class="anchored" data-anchor-id="路径与数据检查">1. 路径与数据检查</h2>
+<p>原始获取脚本是 <code>tools/fetch_intro_prices.py</code>；它调用 <code>ak.stock_zh_a_hist_tx(..., adjust="hfq")</code>。获取与分析分离，避免网络故障改变课堂输出。快照含后复权收盘价，不能直接用作历史实际成交价。</p>
+<div id="0b987cef" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:28:52.885337Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:28:52.884339Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:00.498380Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:00.497230Z&quot;}" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datetime <span class="im">import</span> datetime</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> minimize</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 支持从项目根目录或 Notebook 所在目录运行。</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>ROOT <span class="op">=</span> <span class="bu">next</span>(p <span class="cf">for</span> p <span class="kw">in</span> [Path.cwd(), <span class="op">*</span>Path.cwd().parents] <span class="cf">if</span> (p<span class="op">/</span><span class="st">'RULES.md'</span>).exists())</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>DATA <span class="op">=</span> ROOT<span class="op">/</span><span class="st">'data/intro'</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>FIG <span class="op">=</span> ROOT<span class="op">/</span><span class="st">'figs/raw'</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>FIG.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>STAMP <span class="op">=</span> datetime.now().strftime(<span class="st">'%Y%m</span><span class="sc">%d</span><span class="st">-%H%M%S'</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>plt.rcParams.update({<span class="st">'font.sans-serif'</span>:[<span class="st">'Microsoft YaHei'</span>,<span class="st">'DejaVu Sans'</span>],</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>                     <span class="st">'axes.unicode_minus'</span>:<span class="va">False</span>,<span class="st">'figure.dpi'</span>:<span class="dv">120</span>})</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>raw <span class="op">=</span> pd.read_csv(DATA<span class="op">/</span><span class="st">'prices-long.csv'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>manifest <span class="op">=</span> json.loads((DATA<span class="op">/</span><span class="st">'source-manifest.json'</span>).read_text(encoding<span class="op">=</span><span class="st">'utf-8'</span>))</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'数据来源：'</span>, manifest[<span class="st">'source'</span>], <span class="st">'；抓取日期：'</span>, manifest[<span class="st">'retrieved_date'</span>])</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> raw.duplicated([<span class="st">'symbol'</span>,<span class="st">'date'</span>]).<span class="bu">any</span>(), <span class="st">'主键重复'</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> raw[<span class="st">'close'</span>].gt(<span class="dv">0</span>).<span class="bu">all</span>(), <span class="st">'发现非正复权价格'</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>prices <span class="op">=</span> raw.pivot(index<span class="op">=</span><span class="st">'date'</span>, columns<span class="op">=</span><span class="st">'symbol'</span>, values<span class="op">=</span><span class="st">'close'</span>).sort_index()</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>names <span class="op">=</span> raw.drop_duplicates(<span class="st">'symbol'</span>).set_index(<span class="st">'symbol'</span>)[<span class="st">'name'</span>]</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>check <span class="op">=</span> pd.DataFrame({<span class="st">'股票'</span>:names, <span class="st">'有效价格数'</span>:prices.count(), <span class="st">'缺失交易日数'</span>:prices.isna().<span class="bu">sum</span>()})</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>display(check)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>数据来源： Tencent Finance via AKShare ；抓取日期： 2026-09-09</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">股票</th>
+<th data-quarto-table-cell-role="th">有效价格数</th>
+<th data-quarto-table-cell-role="th">缺失交易日数</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">sh600028</td>
+<td>中国石化</td>
+<td>1942</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">sh600030</td>
+<td>中信证券</td>
+<td>1925</td>
+<td>17</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">sh600036</td>
+<td>招商银行</td>
+<td>1942</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">sh600050</td>
+<td>中国联通</td>
+<td>1942</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">sh600519</td>
+<td>贵州茅台</td>
+<td>1942</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">sh600900</td>
+<td>长江电力</td>
+<td>1931</td>
+<td>11</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">sh601398</td>
+<td>工商银行</td>
+<td>1942</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">sz000333</td>
+<td>美的集团</td>
+<td>1902</td>
+<td>40</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">sz000651</td>
+<td>格力电器</td>
+<td>1936</td>
+<td>6</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">sz000858</td>
+<td>五粮液</td>
+<td>1942</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>阅读检查表：如果出现缺失，不能直接填零收益。我们先计算各股票相邻交易日收益，再只保留十只股票都有有效收益的日期，报告删去的行数。此处是课堂简化；若删除很多行，或者需要真实交易回测，应先研究停牌、估值与可交易性，不能直接沿用。</p>
+<div id="534e71b1" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:00.501084Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:00.500556Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:01.714385Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:01.713065Z&quot;}" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>returns_all <span class="op">=</span> prices.pct_change(fill_method<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>returns <span class="op">=</span> returns_all.dropna(how<span class="op">=</span><span class="st">'any'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'价格日期数：</span><span class="sc">{</span><span class="bu">len</span>(prices)<span class="sc">}</span><span class="ss">；共同有效收益日期：</span><span class="sc">{</span><span class="bu">len</span>(returns)<span class="sc">}</span><span class="ss">；删除：</span><span class="sc">{</span><span class="bu">len</span>(prices)<span class="op">-</span><span class="bu">len</span>(returns)<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'绝对日收益超过 20% 的记录：'</span>, <span class="bu">int</span>(returns.<span class="bu">abs</span>().gt(<span class="fl">0.2</span>).<span class="bu">sum</span>().<span class="bu">sum</span>()))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 不把真实尾部一律缩尾；异常记录应回查原始价格及权益事件。</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>train <span class="op">=</span> returns.loc[<span class="st">'2018'</span>:<span class="st">'2023'</span>]</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>valid <span class="op">=</span> returns.loc[<span class="st">'2024'</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>test <span class="op">=</span> returns.loc[<span class="st">'2025'</span>]</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">len</span>(train)<span class="op">&gt;</span><span class="dv">1000</span> <span class="kw">and</span> <span class="bu">len</span>(valid)<span class="op">&gt;</span><span class="dv">200</span> <span class="kw">and</span> <span class="bu">len</span>(test)<span class="op">&gt;</span><span class="dv">200</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>summary <span class="op">=</span> pd.DataFrame({<span class="st">'股票'</span>:names,<span class="st">'训练期年化均值'</span>:train.mean()<span class="op">*</span><span class="dv">252</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'训练期年化波动'</span>:train.std()<span class="op">*</span>np.sqrt(<span class="dv">252</span>)})</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>display(summary.style.<span class="bu">format</span>({<span class="st">'训练期年化均值'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>,<span class="st">'训练期年化波动'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>}))</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>fig, ax<span class="op">=</span>plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">6</span>))</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>im<span class="op">=</span>ax.imshow(train.corr(),vmin<span class="op">=-</span><span class="dv">1</span>,vmax<span class="op">=</span><span class="dv">1</span>,cmap<span class="op">=</span><span class="st">'RdBu_r'</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>labels<span class="op">=</span>[names[c] <span class="cf">for</span> c <span class="kw">in</span> train.columns]</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>ax.set_xticks(<span class="bu">range</span>(<span class="dv">10</span>),labels,rotation<span class="op">=</span><span class="dv">55</span>,ha<span class="op">=</span><span class="st">'right'</span>)<span class="op">;</span> ax.set_yticks(<span class="bu">range</span>(<span class="dv">10</span>),labels)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'训练期收益相关性：10 只股票不等于 10 份独立风险'</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>fig.colorbar(im,ax<span class="op">=</span>ax,shrink<span class="op">=</span><span class="fl">0.8</span>)<span class="op">;</span> fig.tight_layout()</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>fig.savefig(FIG<span class="op">/</span><span class="ss">f'fineco-intro-fig01-correlation-</span><span class="sc">{</span>STAMP<span class="sc">}</span><span class="ss">.png'</span>)<span class="op">;</span> plt.show()</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>价格日期数：1942；共同有效收益日期：1857；删除：85
+绝对日收益超过 20% 的记录： 0</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<style type="text/css">
+</style>
+
+<table id="T_00da0" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
+<th id="T_00da0_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">股票</th>
+<th id="T_00da0_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">训练期年化均值</th>
+<th id="T_00da0_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">训练期年化波动</th>
+</tr>
+<tr class="even">
+<th class="index_name level0" data-quarto-table-cell-role="th">symbol</th>
+<th class="blank col0" data-quarto-table-cell-role="th">&nbsp;</th>
+<th class="blank col1" data-quarto-table-cell-role="th">&nbsp;</th>
+<th class="blank col2" data-quarto-table-cell-role="th">&nbsp;</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td id="T_00da0_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">sh600028</td>
+<td id="T_00da0_row0_col0" class="data row0 col0">中国石化</td>
+<td id="T_00da0_row0_col1" class="data row0 col1">5.25%</td>
+<td id="T_00da0_row0_col2" class="data row0 col2">13.54%</td>
+</tr>
+<tr class="even">
+<td id="T_00da0_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">sh600030</td>
+<td id="T_00da0_row1_col0" class="data row1 col0">中信证券</td>
+<td id="T_00da0_row1_col1" class="data row1 col1">4.38%</td>
+<td id="T_00da0_row1_col2" class="data row1 col2">27.78%</td>
+</tr>
+<tr class="odd">
+<td id="T_00da0_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">sh600036</td>
+<td id="T_00da0_row2_col0" class="data row2 col0">招商银行</td>
+<td id="T_00da0_row2_col1" class="data row2 col1">4.58%</td>
+<td id="T_00da0_row2_col2" class="data row2 col2">26.05%</td>
+</tr>
+<tr class="even">
+<td id="T_00da0_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">sh600050</td>
+<td id="T_00da0_row3_col0" class="data row3 col0">中国联通</td>
+<td id="T_00da0_row3_col1" class="data row3 col1">1.50%</td>
+<td id="T_00da0_row3_col2" class="data row3 col2">29.68%</td>
+</tr>
+<tr class="odd">
+<td id="T_00da0_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">sh600519</td>
+<td id="T_00da0_row4_col0" class="data row4 col0">贵州茅台</td>
+<td id="T_00da0_row4_col1" class="data row4 col1">21.39%</td>
+<td id="T_00da0_row4_col2" class="data row4 col2">28.75%</td>
+</tr>
+<tr class="even">
+<td id="T_00da0_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">sh600900</td>
+<td id="T_00da0_row5_col0" class="data row5 col0">长江电力</td>
+<td id="T_00da0_row5_col1" class="data row5 col1">10.09%</td>
+<td id="T_00da0_row5_col2" class="data row5 col2">14.13%</td>
+</tr>
+<tr class="odd">
+<td id="T_00da0_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">sh601398</td>
+<td id="T_00da0_row6_col0" class="data row6 col0">工商银行</td>
+<td id="T_00da0_row6_col1" class="data row6 col1">0.37%</td>
+<td id="T_00da0_row6_col2" class="data row6 col2">11.77%</td>
+</tr>
+<tr class="even">
+<td id="T_00da0_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">sz000333</td>
+<td id="T_00da0_row7_col0" class="data row7 col0">美的集团</td>
+<td id="T_00da0_row7_col1" class="data row7 col1">3.52%</td>
+<td id="T_00da0_row7_col2" class="data row7 col2">29.44%</td>
+</tr>
+<tr class="odd">
+<td id="T_00da0_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">sz000651</td>
+<td id="T_00da0_row8_col0" class="data row8 col0">格力电器</td>
+<td id="T_00da0_row8_col1" class="data row8 col1">-0.81%</td>
+<td id="T_00da0_row8_col2" class="data row8 col2">24.69%</td>
+</tr>
+<tr class="even">
+<td id="T_00da0_level0_row9" class="row_heading level0 row9" data-quarto-table-cell-role="th">sz000858</td>
+<td id="T_00da0_row9_col0" class="data row9 col0">五粮液</td>
+<td id="T_00da0_row9_col1" class="data row9 col1">17.85%</td>
+<td id="T_00da0_row9_col2" class="data row9 col2">35.89%</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="portfolio-python_files/figure-html/cell-3-output-3.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="在约束下求权重" class="level2">
+<h2 class="anchored" data-anchor-id="在约束下求权重">2. 在约束下求权重</h2>
+<p>共同限制：不卖空、不加杠杆、权重之和为 1、单只股票不超过 20%。8% 是训练期估计均值上的年化算术预期收益约束，不保证未来实现；不可行时程序会明确报告。</p>
+<p>算法：先用训练期估计均值与协方差，再解约束优化；随后冻结权重目标。收益估计误差和样本选择问题仍然存在。</p>
+<div id="aef8fe40" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:01.718382Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:01.718382Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:01.828210Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:01.827225Z&quot;}" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="bu">len</span>(train.columns)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> train.mean().to_numpy()<span class="op">*</span><span class="dv">252</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>cov <span class="op">=</span> train.cov().to_numpy()<span class="op">*</span><span class="dv">252</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>base <span class="op">=</span> np.repeat(<span class="dv">1</span><span class="op">/</span>n,n)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>bounds <span class="op">=</span> [(<span class="dv">0</span>,<span class="fl">0.2</span>)]<span class="op">*</span>n</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>constraints <span class="op">=</span> [{<span class="st">'type'</span>:<span class="st">'eq'</span>,<span class="st">'fun'</span>:<span class="kw">lambda</span> w:w.<span class="bu">sum</span>()<span class="op">-</span><span class="dv">1</span>}]</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> solve(target<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    cons<span class="op">=</span>constraints.copy()</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> target <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        cons.append({<span class="st">'type'</span>:<span class="st">'ineq'</span>,<span class="st">'fun'</span>:<span class="kw">lambda</span> w:w<span class="op">@</span>mu<span class="op">-</span>target})</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    fit<span class="op">=</span>minimize(<span class="kw">lambda</span> w:w<span class="op">@</span>cov<span class="op">@</span>w,base,method<span class="op">=</span><span class="st">'SLSQP'</span>,bounds<span class="op">=</span>bounds,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>                 constraints<span class="op">=</span>cons,options<span class="op">=</span>{<span class="st">'ftol'</span>:<span class="fl">1e-12</span>,<span class="st">'maxiter'</span>:<span class="dv">1000</span>})</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> fit.success <span class="kw">or</span> <span class="bu">abs</span>(fit.x.<span class="bu">sum</span>()<span class="op">-</span><span class="dv">1</span>)<span class="op">&gt;</span><span class="fl">1e-6</span>:</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="ss">f'目标不可行或优化失败：</span><span class="sc">{</span>fit<span class="sc">.</span>message<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> fit.x.<span class="bu">min</span>()<span class="op">&gt;-</span><span class="fl">1e-7</span> <span class="kw">and</span> fit.x.<span class="bu">max</span>()<span class="op">&lt;</span><span class="fl">0.200001</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> target <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>: <span class="cf">assert</span> fit.x<span class="op">@</span>mu<span class="op">&gt;=</span>target<span class="op">-</span><span class="fl">1e-6</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> fit.x</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>weights<span class="op">=</span>{<span class="st">'等权'</span>:base,<span class="st">'最小方差'</span>:solve()}</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    weights[<span class="st">'目标8%'</span>]<span class="op">=</span>solve(<span class="fl">0.08</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">ValueError</span> <span class="im">as</span> err:</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(err)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>weight_table<span class="op">=</span>pd.DataFrame(weights,index<span class="op">=</span>[names[c] <span class="cf">for</span> c <span class="kw">in</span> train.columns])</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>display(weight_table.style.<span class="bu">format</span>(<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>))</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'训练期估计年化收益：'</span>, {k:<span class="bu">round</span>(<span class="bu">float</span>(w<span class="op">@</span>mu),<span class="dv">4</span>) <span class="cf">for</span> k,w <span class="kw">in</span> weights.items()})</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<style type="text/css">
+</style>
+
+<table id="T_c18f2" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
+<th id="T_c18f2_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">等权</th>
+<th id="T_c18f2_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">最小方差</th>
+<th id="T_c18f2_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">目标8%</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td id="T_c18f2_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">中国石化</td>
+<td id="T_c18f2_row0_col0" class="data row0 col0">10.00%</td>
+<td id="T_c18f2_row0_col1" class="data row0 col1">20.00%</td>
+<td id="T_c18f2_row0_col2" class="data row0 col2">20.00%</td>
+</tr>
+<tr class="even">
+<td id="T_c18f2_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">中信证券</td>
+<td id="T_c18f2_row1_col0" class="data row1 col0">10.00%</td>
+<td id="T_c18f2_row1_col1" class="data row1 col1">2.35%</td>
+<td id="T_c18f2_row1_col2" class="data row1 col2">3.24%</td>
+</tr>
+<tr class="odd">
+<td id="T_c18f2_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">招商银行</td>
+<td id="T_c18f2_row2_col0" class="data row2 col0">10.00%</td>
+<td id="T_c18f2_row2_col1" class="data row2 col1">3.26%</td>
+<td id="T_c18f2_row2_col2" class="data row2 col2">2.79%</td>
+</tr>
+<tr class="even">
+<td id="T_c18f2_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">中国联通</td>
+<td id="T_c18f2_row3_col0" class="data row3 col0">10.00%</td>
+<td id="T_c18f2_row3_col1" class="data row3 col1">8.69%</td>
+<td id="T_c18f2_row3_col2" class="data row3 col2">7.29%</td>
+</tr>
+<tr class="odd">
+<td id="T_c18f2_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">贵州茅台</td>
+<td id="T_c18f2_row4_col0" class="data row4 col0">10.00%</td>
+<td id="T_c18f2_row4_col1" class="data row4 col1">10.30%</td>
+<td id="T_c18f2_row4_col2" class="data row4 col2">20.00%</td>
+</tr>
+<tr class="even">
+<td id="T_c18f2_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">长江电力</td>
+<td id="T_c18f2_row5_col0" class="data row5 col0">10.00%</td>
+<td id="T_c18f2_row5_col1" class="data row5 col1">20.00%</td>
+<td id="T_c18f2_row5_col2" class="data row5 col2">20.00%</td>
+</tr>
+<tr class="odd">
+<td id="T_c18f2_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">工商银行</td>
+<td id="T_c18f2_row6_col0" class="data row6 col0">10.00%</td>
+<td id="T_c18f2_row6_col1" class="data row6 col1">20.00%</td>
+<td id="T_c18f2_row6_col2" class="data row6 col2">20.00%</td>
+</tr>
+<tr class="even">
+<td id="T_c18f2_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">美的集团</td>
+<td id="T_c18f2_row7_col0" class="data row7 col0">10.00%</td>
+<td id="T_c18f2_row7_col1" class="data row7 col1">0.00%</td>
+<td id="T_c18f2_row7_col2" class="data row7 col2">0.00%</td>
+</tr>
+<tr class="odd">
+<td id="T_c18f2_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">格力电器</td>
+<td id="T_c18f2_row8_col0" class="data row8 col0">10.00%</td>
+<td id="T_c18f2_row8_col1" class="data row8 col1">15.40%</td>
+<td id="T_c18f2_row8_col2" class="data row8 col2">5.32%</td>
+</tr>
+<tr class="even">
+<td id="T_c18f2_level0_row9" class="row_heading level0 row9" data-quarto-table-cell-role="th">五粮液</td>
+<td id="T_c18f2_row9_col0" class="data row9 col0">10.00%</td>
+<td id="T_c18f2_row9_col1" class="data row9 col1">0.00%</td>
+<td id="T_c18f2_row9_col2" class="data row9 col2">1.36%</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>训练期估计年化收益： {'等权': 0.0681, '最小方差': 0.056, '目标8%': 0.08}</code></pre>
+</div>
+</div>
+</section>
+<section id="先规定回测规则再看结果" class="level2">
+<h2 class="anchored" data-anchor-id="先规定回测规则再看结果">3. 先规定回测规则，再看结果</h2>
+<p>每月首个有效收益日期开始前再平衡，月内权重随价格变化漂移。所有目标权重只由 2018—2023 年估计；各评价区间从目标权重重新开始。连续权重忽略整数股与滑点，交易成本设为单边成交额的 10 个基点，买卖都计成本。</p>
+<p>代码中的换手是买入和卖出权重变化绝对值之和。初次建仓计满仓买入成本，区间末不假定清仓。2025 年测试表现用于评估，不再回头选择股票或调参。</p>
+<div id="10c80ee5" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:01.833210Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:01.832209Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:03.080325Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:03.079273Z&quot;}" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> backtest(r,w,cost<span class="op">=</span><span class="fl">0.001</span>):</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    current<span class="op">=</span>w.copy()<span class="op">;</span> result<span class="op">=</span>[]<span class="op">;</span> turnovers<span class="op">=</span>[]<span class="op">;</span> previous<span class="op">=</span><span class="va">None</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> date,row <span class="kw">in</span> r.iterrows():</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        month<span class="op">=</span>(date.year,date.month)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> previous <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>            turnover<span class="op">=</span><span class="fl">1.0</span>  <span class="co"># 从现金建立股票头寸。</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            current<span class="op">=</span>w.copy()</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> month<span class="op">!=</span>previous:</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>            turnover<span class="op">=</span><span class="bu">float</span>(np.<span class="bu">abs</span>(w<span class="op">-</span>current).<span class="bu">sum</span>())<span class="op">;</span> current<span class="op">=</span>w.copy()</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>            turnover<span class="op">=</span><span class="fl">0.0</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        gross<span class="op">=</span><span class="bu">float</span>(current<span class="op">@</span>row.to_numpy())</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        net<span class="op">=</span>(<span class="dv">1</span><span class="op">-</span>cost<span class="op">*</span>turnover)<span class="op">*</span>(<span class="dv">1</span><span class="op">+</span>gross)<span class="op">-</span><span class="dv">1</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        result.append(net)<span class="op">;</span> turnovers.append(turnover)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        current<span class="op">=</span>current<span class="op">*</span>(<span class="dv">1</span><span class="op">+</span>row.to_numpy())<span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>gross)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">assert</span> np.isclose(current.<span class="bu">sum</span>(),<span class="dv">1</span>)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        previous<span class="op">=</span>month</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.Series(result,index<span class="op">=</span>r.index),<span class="bu">sum</span>(turnovers)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> metrics(r,turnover):</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    wealth<span class="op">=</span>(<span class="dv">1</span><span class="op">+</span>r).cumprod()</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 纳入期初净值 1，避免遗漏一开仓即下跌形成的回撤。</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    peak<span class="op">=</span>wealth.cummax().clip(lower<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    rf<span class="op">=</span>(<span class="fl">1.02</span>)<span class="op">**</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">252</span>)<span class="op">-</span><span class="dv">1</span>  <span class="co"># 明确的教学无风险利率假设：年有效 2%。</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    excess<span class="op">=</span>r<span class="op">-</span>rf</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">'CAGR'</span>:wealth.iloc[<span class="op">-</span><span class="dv">1</span>]<span class="op">**</span>(<span class="dv">252</span><span class="op">/</span><span class="bu">len</span>(r))<span class="op">-</span><span class="dv">1</span>,</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>            <span class="st">'年化算术均值'</span>:r.mean()<span class="op">*</span><span class="dv">252</span>, <span class="st">'年化波动'</span>:r.std()<span class="op">*</span>np.sqrt(<span class="dv">252</span>),</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>            <span class="st">'Sharpe'</span>:excess.mean()<span class="op">/</span>excess.std()<span class="op">*</span>np.sqrt(<span class="dv">252</span>),</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>            <span class="st">'最大回撤'</span>:(<span class="dv">1</span><span class="op">-</span>wealth<span class="op">/</span>peak).<span class="bu">max</span>(),<span class="st">'双边换手'</span>:turnover,</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>            <span class="st">'期末金额'</span>:<span class="dv">100000</span><span class="op">*</span>wealth.iloc[<span class="op">-</span><span class="dv">1</span>]}</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>rows<span class="op">=</span>[]<span class="op">;</span> paths<span class="op">=</span>{}</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> period,r <span class="kw">in</span> [(<span class="st">'训练'</span>,train),(<span class="st">'验证'</span>,valid),(<span class="st">'测试'</span>,test)]:</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> name,w <span class="kw">in</span> weights.items():</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>        net,turn<span class="op">=</span>backtest(r,w)</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>        rows.append({<span class="st">'区间'</span>:period,<span class="st">'方案'</span>:name,<span class="op">**</span>metrics(net,turn)})</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> period<span class="op">==</span><span class="st">'测试'</span>: paths[name]<span class="op">=</span>net</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>results<span class="op">=</span>pd.DataFrame(rows)</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>display(results.style.<span class="bu">format</span>({<span class="st">'CAGR'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>,<span class="st">'年化算术均值'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>,</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a> <span class="st">'年化波动'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>,<span class="st">'Sharpe'</span>:<span class="st">'</span><span class="sc">{:.2f}</span><span class="st">'</span>,<span class="st">'最大回撤'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>,<span class="st">'双边换手'</span>:<span class="st">'</span><span class="sc">{:.2f}</span><span class="st">'</span>,<span class="st">'期末金额'</span>:<span class="st">'</span><span class="sc">{:,.0f}</span><span class="st">'</span>}))</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>results.to_csv(DATA<span class="op">/</span><span class="st">'portfolio-results.csv'</span>,index<span class="op">=</span><span class="va">False</span>,encoding<span class="op">=</span><span class="st">'utf-8-sig'</span>)</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>weight_table.to_csv(DATA<span class="op">/</span><span class="st">'portfolio-weights.csv'</span>,encoding<span class="op">=</span><span class="st">'utf-8-sig'</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<style type="text/css">
+</style>
+
+<table id="T_24f2a" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
+<th id="T_24f2a_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">区间</th>
+<th id="T_24f2a_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">方案</th>
+<th id="T_24f2a_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">CAGR</th>
+<th id="T_24f2a_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">年化算术均值</th>
+<th id="T_24f2a_level0_col4" class="col_heading level0 col4" data-quarto-table-cell-role="th">年化波动</th>
+<th id="T_24f2a_level0_col5" class="col_heading level0 col5" data-quarto-table-cell-role="th">Sharpe</th>
+<th id="T_24f2a_level0_col6" class="col_heading level0 col6" data-quarto-table-cell-role="th">最大回撤</th>
+<th id="T_24f2a_level0_col7" class="col_heading level0 col7" data-quarto-table-cell-role="th">双边换手</th>
+<th id="T_24f2a_level0_col8" class="col_heading level0 col8" data-quarto-table-cell-role="th">期末金额</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td id="T_24f2a_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">0</td>
+<td id="T_24f2a_row0_col0" class="data row0 col0">训练</td>
+<td id="T_24f2a_row0_col1" class="data row0 col1">等权</td>
+<td id="T_24f2a_row0_col2" class="data row0 col2">5.19%</td>
+<td id="T_24f2a_row0_col3" class="data row0 col3">6.42%</td>
+<td id="T_24f2a_row0_col4" class="data row0 col4">16.47%</td>
+<td id="T_24f2a_row0_col5" class="data row0 col5">0.27</td>
+<td id="T_24f2a_row0_col6" class="data row0 col6">31.05%</td>
+<td id="T_24f2a_row0_col7" class="data row0 col7">3.65</td>
+<td id="T_24f2a_row0_col8" class="data row0 col8">131,709</td>
+</tr>
+<tr class="even">
+<td id="T_24f2a_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">1</td>
+<td id="T_24f2a_row1_col0" class="data row1 col0">训练</td>
+<td id="T_24f2a_row1_col1" class="data row1 col1">最小方差</td>
+<td id="T_24f2a_row1_col2" class="data row1 col2">4.64%</td>
+<td id="T_24f2a_row1_col3" class="data row1 col3">5.26%</td>
+<td id="T_24f2a_row1_col4" class="data row1 col4">12.00%</td>
+<td id="T_24f2a_row1_col5" class="data row1 col5">0.27</td>
+<td id="T_24f2a_row1_col6" class="data row1 col6">16.16%</td>
+<td id="T_24f2a_row1_col7" class="data row1 col7">3.02</td>
+<td id="T_24f2a_row1_col8" class="data row1 col8">128,007</td>
+</tr>
+<tr class="odd">
+<td id="T_24f2a_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">2</td>
+<td id="T_24f2a_row2_col0" class="data row2 col0">训练</td>
+<td id="T_24f2a_row2_col1" class="data row2 col1">目标8%</td>
+<td id="T_24f2a_row2_col2" class="data row2 col2">7.22%</td>
+<td id="T_24f2a_row2_col3" class="data row2 col3">7.75%</td>
+<td id="T_24f2a_row2_col4" class="data row2 col4">12.42%</td>
+<td id="T_24f2a_row2_col5" class="data row2 col5">0.46</td>
+<td id="T_24f2a_row2_col6" class="data row2 col6">15.77%</td>
+<td id="T_24f2a_row2_col7" class="data row2 col7">3.26</td>
+<td id="T_24f2a_row2_col8" class="data row2 col8">146,189</td>
+</tr>
+<tr class="even">
+<td id="T_24f2a_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">3</td>
+<td id="T_24f2a_row3_col0" class="data row3 col0">验证</td>
+<td id="T_24f2a_row3_col1" class="data row3 col1">等权</td>
+<td id="T_24f2a_row3_col2" class="data row3 col2">23.54%</td>
+<td id="T_24f2a_row3_col3" class="data row3 col3">22.06%</td>
+<td id="T_24f2a_row3_col4" class="data row3 col4">13.63%</td>
+<td id="T_24f2a_row3_col5" class="data row3 col5">1.47</td>
+<td id="T_24f2a_row3_col6" class="data row3 col6">7.28%</td>
+<td id="T_24f2a_row3_col7" class="data row3 col7">1.32</td>
+<td id="T_24f2a_row3_col8" class="data row3 col8">122,504</td>
+</tr>
+<tr class="odd">
+<td id="T_24f2a_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">4</td>
+<td id="T_24f2a_row4_col0" class="data row4 col0">验证</td>
+<td id="T_24f2a_row4_col1" class="data row4 col1">最小方差</td>
+<td id="T_24f2a_row4_col2" class="data row4 col2">21.93%</td>
+<td id="T_24f2a_row4_col3" class="data row4 col3">20.45%</td>
+<td id="T_24f2a_row4_col4" class="data row4 col4">11.15%</td>
+<td id="T_24f2a_row4_col5" class="data row4 col5">1.66</td>
+<td id="T_24f2a_row4_col6" class="data row4 col6">6.59%</td>
+<td id="T_24f2a_row4_col7" class="data row4 col7">1.25</td>
+<td id="T_24f2a_row4_col8" class="data row4 col8">120,972</td>
+</tr>
+<tr class="even">
+<td id="T_24f2a_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">5</td>
+<td id="T_24f2a_row5_col0" class="data row5 col0">验证</td>
+<td id="T_24f2a_row5_col1" class="data row5 col1">目标8%</td>
+<td id="T_24f2a_row5_col2" class="data row5 col2">17.73%</td>
+<td id="T_24f2a_row5_col3" class="data row5 col3">17.00%</td>
+<td id="T_24f2a_row5_col4" class="data row5 col4">11.65%</td>
+<td id="T_24f2a_row5_col5" class="data row5 col5">1.29</td>
+<td id="T_24f2a_row5_col6" class="data row5 col6">6.26%</td>
+<td id="T_24f2a_row5_col7" class="data row5 col7">1.29</td>
+<td id="T_24f2a_row5_col8" class="data row5 col8">116,966</td>
+</tr>
+<tr class="odd">
+<td id="T_24f2a_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">6</td>
+<td id="T_24f2a_row6_col0" class="data row6 col0">测试</td>
+<td id="T_24f2a_row6_col1" class="data row6 col1">等权</td>
+<td id="T_24f2a_row6_col2" class="data row6 col2">0.27%</td>
+<td id="T_24f2a_row6_col3" class="data row6 col3">0.68%</td>
+<td id="T_24f2a_row6_col4" class="data row6 col4">9.06%</td>
+<td id="T_24f2a_row6_col5" class="data row6 col5">-0.14</td>
+<td id="T_24f2a_row6_col6" class="data row6 col6">5.94%</td>
+<td id="T_24f2a_row6_col7" class="data row6 col7">1.29</td>
+<td id="T_24f2a_row6_col8" class="data row6 col8">100,257</td>
+</tr>
+<tr class="even">
+<td id="T_24f2a_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">7</td>
+<td id="T_24f2a_row7_col0" class="data row7 col0">测试</td>
+<td id="T_24f2a_row7_col1" class="data row7 col1">最小方差</td>
+<td id="T_24f2a_row7_col2" class="data row7 col2">1.03%</td>
+<td id="T_24f2a_row7_col3" class="data row7 col3">1.31%</td>
+<td id="T_24f2a_row7_col4" class="data row7 col4">7.52%</td>
+<td id="T_24f2a_row7_col5" class="data row7 col5">-0.09</td>
+<td id="T_24f2a_row7_col6" class="data row7 col6">4.77%</td>
+<td id="T_24f2a_row7_col7" class="data row7 col7">1.23</td>
+<td id="T_24f2a_row7_col8" class="data row7 col8">100,994</td>
+</tr>
+<tr class="odd">
+<td id="T_24f2a_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">8</td>
+<td id="T_24f2a_row8_col0" class="data row8 col0">测试</td>
+<td id="T_24f2a_row8_col1" class="data row8 col1">目标8%</td>
+<td id="T_24f2a_row8_col2" class="data row8 col2">0.49%</td>
+<td id="T_24f2a_row8_col3" class="data row8 col3">0.79%</td>
+<td id="T_24f2a_row8_col4" class="data row8 col4">7.80%</td>
+<td id="T_24f2a_row8_col5" class="data row8 col5">-0.15</td>
+<td id="T_24f2a_row8_col6" class="data row8 col6">4.26%</td>
+<td id="T_24f2a_row8_col7" class="data row8 col7">1.23</td>
+<td id="T_24f2a_row8_col8" class="data row8 col8">100,472</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>结果应先看“测试”三行：CAGR 是复合增长率，不能与 8% 的训练期算术预期目标直接等同。Sharpe 使用明确假设的年有效无风险利率 2%，不冒充真实无风险行情。最大回撤是已发生路径上的损失幅度，不是未来损失上限。</p>
+<p>再看训练与验证：排名改变并不奇怪，优化依赖不稳定的估计值。对今天选定的固定股票篮子进行时间划分，仍不能消除股票选择带来的幸存者偏差。</p>
+<div id="02ad2367" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:03.082899Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:03.082899Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:05.046119Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:05.045110Z&quot;}" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>net_returns<span class="op">=</span>pd.DataFrame(paths)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>wealth<span class="op">=</span>(<span class="dv">1</span><span class="op">+</span>net_returns).cumprod()</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>fig,ax<span class="op">=</span>plt.subplots(figsize<span class="op">=</span>(<span class="dv">9</span>,<span class="fl">4.4</span>))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>(wealth<span class="op">*</span><span class="dv">100000</span>).plot(ax<span class="op">=</span>ax,linewidth<span class="op">=</span><span class="fl">1.8</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'2025 年保留测试：扣除教学交易成本后的净值'</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'组合金额 / 元'</span>)<span class="op">;</span> ax.set_xlabel(<span class="st">'日期'</span>)<span class="op">;</span> ax.grid(alpha<span class="op">=</span><span class="fl">0.2</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()<span class="op">;</span> fig.savefig(FIG<span class="op">/</span><span class="ss">f'fineco-intro-fig02-wealth-</span><span class="sc">{</span>STAMP<span class="sc">}</span><span class="ss">.png'</span>)<span class="op">;</span> plt.show()</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>fig,ax<span class="op">=</span>plt.subplots(figsize<span class="op">=</span>(<span class="dv">9</span>,<span class="dv">4</span>))</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>(<span class="dv">1</span><span class="op">-</span>wealth<span class="op">/</span>wealth.cummax().clip(lower<span class="op">=</span><span class="dv">1</span>)).plot(ax<span class="op">=</span>ax)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>ax.axhline(<span class="fl">0.1</span>,color<span class="op">=</span><span class="st">'gray'</span>,linestyle<span class="op">=</span><span class="st">'--'</span>,label<span class="op">=</span><span class="st">'10% 情境阈值'</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'最大回撤取决于路径，低方差不保证回撤小于 10%'</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'回撤幅度'</span>)<span class="op">;</span> ax.set_xlabel(<span class="st">'日期'</span>)<span class="op">;</span> ax.legend()<span class="op">;</span> ax.grid(alpha<span class="op">=</span><span class="fl">0.2</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()<span class="op">;</span> fig.savefig(FIG<span class="op">/</span><span class="ss">f'fineco-intro-fig03-drawdown-</span><span class="sc">{</span>STAMP<span class="sc">}</span><span class="ss">.png'</span>)<span class="op">;</span> plt.show()</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="portfolio-python_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="portfolio-python_files/figure-html/cell-6-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="成本敏感性与练习" class="level2">
+<h2 class="anchored" data-anchor-id="成本敏感性与练习">4. 成本敏感性与练习</h2>
+<p>把成本从零提高到单边 30 个基点，看看排名和收益变化。本例权重固定、月度再平衡，因此换手可能不高；结果不能外推到高频交易。后续课程会加入滚动估计、波动预测和更严格的交易约束。</p>
+<div id="f5a239ec" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:05.048119Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:05.048119Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:05.365870Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:05.364862Z&quot;}" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sensitivity<span class="op">=</span>[]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fee <span class="kw">in</span> [<span class="dv">0</span>,<span class="fl">0.001</span>,<span class="fl">0.003</span>]:</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> name,w <span class="kw">in</span> weights.items():</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        net,turn<span class="op">=</span>backtest(test,w,fee)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        sensitivity.append({<span class="st">'单边成本'</span>:fee,<span class="st">'方案'</span>:name,<span class="op">**</span>metrics(net,turn)})</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame(sensitivity)[[<span class="st">'单边成本'</span>,<span class="st">'方案'</span>,<span class="st">'CAGR'</span>,<span class="st">'Sharpe'</span>,<span class="st">'最大回撤'</span>]].style.<span class="bu">format</span>(</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    {<span class="st">'单边成本'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>,<span class="st">'CAGR'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>,<span class="st">'Sharpe'</span>:<span class="st">'</span><span class="sc">{:.2f}</span><span class="st">'</span>,<span class="st">'最大回撤'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>}))</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<style type="text/css">
+</style>
+
+<table id="T_56d81" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
+<th id="T_56d81_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">单边成本</th>
+<th id="T_56d81_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">方案</th>
+<th id="T_56d81_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">CAGR</th>
+<th id="T_56d81_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">Sharpe</th>
+<th id="T_56d81_level0_col4" class="col_heading level0 col4" data-quarto-table-cell-role="th">最大回撤</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td id="T_56d81_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">0</td>
+<td id="T_56d81_row0_col0" class="data row0 col0">0.00%</td>
+<td id="T_56d81_row0_col1" class="data row0 col1">等权</td>
+<td id="T_56d81_row0_col2" class="data row0 col2">0.40%</td>
+<td id="T_56d81_row0_col3" class="data row0 col3">-0.13</td>
+<td id="T_56d81_row0_col4" class="data row0 col4">5.94%</td>
+</tr>
+<tr class="even">
+<td id="T_56d81_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">1</td>
+<td id="T_56d81_row1_col0" class="data row1 col0">0.00%</td>
+<td id="T_56d81_row1_col1" class="data row1 col1">最小方差</td>
+<td id="T_56d81_row1_col2" class="data row1 col2">1.16%</td>
+<td id="T_56d81_row1_col3" class="data row1 col3">-0.07</td>
+<td id="T_56d81_row1_col4" class="data row1 col4">4.76%</td>
+</tr>
+<tr class="odd">
+<td id="T_56d81_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">2</td>
+<td id="T_56d81_row2_col0" class="data row2 col0">0.00%</td>
+<td id="T_56d81_row2_col1" class="data row2 col1">目标8%</td>
+<td id="T_56d81_row2_col2" class="data row2 col2">0.62%</td>
+<td id="T_56d81_row2_col3" class="data row2 col3">-0.14</td>
+<td id="T_56d81_row2_col4" class="data row2 col4">4.16%</td>
+</tr>
+<tr class="even">
+<td id="T_56d81_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">3</td>
+<td id="T_56d81_row3_col0" class="data row3 col0">0.10%</td>
+<td id="T_56d81_row3_col1" class="data row3 col1">等权</td>
+<td id="T_56d81_row3_col2" class="data row3 col2">0.27%</td>
+<td id="T_56d81_row3_col3" class="data row3 col3">-0.14</td>
+<td id="T_56d81_row3_col4" class="data row3 col4">5.94%</td>
+</tr>
+<tr class="odd">
+<td id="T_56d81_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">4</td>
+<td id="T_56d81_row4_col0" class="data row4 col0">0.10%</td>
+<td id="T_56d81_row4_col1" class="data row4 col1">最小方差</td>
+<td id="T_56d81_row4_col2" class="data row4 col2">1.03%</td>
+<td id="T_56d81_row4_col3" class="data row4 col3">-0.09</td>
+<td id="T_56d81_row4_col4" class="data row4 col4">4.77%</td>
+</tr>
+<tr class="even">
+<td id="T_56d81_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">5</td>
+<td id="T_56d81_row5_col0" class="data row5 col0">0.10%</td>
+<td id="T_56d81_row5_col1" class="data row5 col1">目标8%</td>
+<td id="T_56d81_row5_col2" class="data row5 col2">0.49%</td>
+<td id="T_56d81_row5_col3" class="data row5 col3">-0.15</td>
+<td id="T_56d81_row5_col4" class="data row5 col4">4.26%</td>
+</tr>
+<tr class="odd">
+<td id="T_56d81_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">6</td>
+<td id="T_56d81_row6_col0" class="data row6 col0">0.30%</td>
+<td id="T_56d81_row6_col1" class="data row6 col1">等权</td>
+<td id="T_56d81_row6_col2" class="data row6 col2">-0.00%</td>
+<td id="T_56d81_row6_col3" class="data row6 col3">-0.17</td>
+<td id="T_56d81_row6_col4" class="data row6 col4">5.95%</td>
+</tr>
+<tr class="even">
+<td id="T_56d81_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">7</td>
+<td id="T_56d81_row7_col0" class="data row7 col0">0.30%</td>
+<td id="T_56d81_row7_col1" class="data row7 col1">最小方差</td>
+<td id="T_56d81_row7_col2" class="data row7 col2">0.77%</td>
+<td id="T_56d81_row7_col3" class="data row7 col3">-0.12</td>
+<td id="T_56d81_row7_col4" class="data row7 col4">4.78%</td>
+</tr>
+<tr class="odd">
+<td id="T_56d81_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">8</td>
+<td id="T_56d81_row8_col0" class="data row8 col0">0.30%</td>
+<td id="T_56d81_row8_col1" class="data row8 col1">目标8%</td>
+<td id="T_56d81_row8_col2" class="data row8 col2">0.23%</td>
+<td id="T_56d81_row8_col3" class="data row8 col3">-0.18</td>
+<td id="T_56d81_row8_col4" class="data row8 col4">4.45%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>请写下三句话：你的“好组合”标准是什么？哪一步最可能产生偏差？如果结果不支持你的原先判断，你愿意修改什么？</p>
+<p>不要先让 Agent 搜索最漂亮的净值图。请让它列出数据检查、基准方案和失败条件，再执行。数据来源与接口：<a href="https://akshare.akfamily.xyz/data/stock/stock.html">AKShare 官方文档</a>，查询日期 2026-09-09。</p>
+<p><a href="../../exercises/research-plan.html">一页研究计划</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "已复制");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "已复制");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../lectures/intro.html" class="pagination-link" aria-label="课程导览与实证金融研究流程">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">课程导览与实证金融研究流程</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../notebooks/intro/policy-stata.html" class="pagination-link" aria-label="政策案例实验：从四个均值到 DID">
+        <span class="nav-page-text">政策案例实验：从四个均值到 DID</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>LN429 · 中山大学岭南学院</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.dev/lianxhcn/FinEco/blob/main/notebooks/intro/portfolio-python.ipynb" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p><a href="https://www.lianxh.cn">连享会</a> · Quarto Book</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

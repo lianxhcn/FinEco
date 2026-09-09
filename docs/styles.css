@@ -1,0 +1,15 @@
+:root { --bs-link-color:#176185; }
+body { color:#23333e; }
+h1,h2,h3 { color:#173f57; }
+h1 { font-weight:700; }
+h2 { margin-top:2.2rem; }
+.sidebar-title { font-weight:700; }
+.course-lead { font-size:1.22rem; color:#385465; max-width:46rem; }
+.course-tag { letter-spacing:.12em; font-size:.83rem; color:#567482; margin-bottom:.7rem; }
+.course-actions { display:flex; gap:.7rem; flex-wrap:wrap; margin:1.5rem 0 2rem; }
+.course-actions a { border:1px solid #1e607f; padding:.55rem 1rem; border-radius:4px; text-decoration:none; }
+.course-actions a:first-child { background:#1e607f;color:white; }
+table { font-size:.92rem; }
+.cell-output { overflow-x:auto; }
+.callout { margin:1.5rem 0; }
+@media print { .course-actions { display:none; } }

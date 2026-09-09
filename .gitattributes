@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.csv -text
+*.png binary
+*.woff binary
+*.ps1 text eol=crlf

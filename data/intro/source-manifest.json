@@ -1,0 +1,94 @@
+{
+  "retrieved_date": "2026-09-09",
+  "akshare_version": "1.18.39",
+  "interface": "stock_zh_a_hist_tx",
+  "source": "Tencent Finance via AKShare",
+  "adjust": "hfq",
+  "window": [
+    "2018-01-01",
+    "2025-12-31"
+  ],
+  "selection": "固定教学篮子，事后选定；不是历史可投资股票池或荐股名单",
+  "records": [
+    {
+      "symbol": "sh600036",
+      "name": "招商银行",
+      "rows": 1942,
+      "start": "2018-01-02",
+      "end": "2025-12-31",
+      "sha256": "2b7fade36ebc1383ef1e9d808001e4b94c2775809add09ea598759d8f4cb1d0a"
+    },
+    {
+      "symbol": "sh601398",
+      "name": "工商银行",
+      "rows": 1942,
+      "start": "2018-01-02",
+      "end": "2025-12-31",
+      "sha256": "7c9b9ebf1cdf655351ba3d03cfb9e1785826af09bafb667b40e47af3143e8625"
+    },
+    {
+      "symbol": "sh600519",
+      "name": "贵州茅台",
+      "rows": 1942,
+      "start": "2018-01-02",
+      "end": "2025-12-31",
+      "sha256": "1ebb4a941d4192fd54f9942a6b7021dcccd604e7d944d4a69b7fe4933591a510"
+    },
+    {
+      "symbol": "sz000858",
+      "name": "五粮液",
+      "rows": 1942,
+      "start": "2018-01-02",
+      "end": "2025-12-31",
+      "sha256": "7b5e8ebeab2d60b1b73237b41255c7a86c04c856a308ef80ba2bf42cc14eb83a"
+    },
+    {
+      "symbol": "sz000333",
+      "name": "美的集团",
+      "rows": 1902,
+      "start": "2018-01-02",
+      "end": "2025-12-31",
+      "sha256": "833783a5906621d651a5cf95b6bb28711a624fbd7a1d21d85c5a95d43ecd6b8b"
+    },
+    {
+      "symbol": "sz000651",
+      "name": "格力电器",
+      "rows": 1936,
+      "start": "2018-01-02",
+      "end": "2025-12-31",
+      "sha256": "2bce62ddadcc241ad00cc69a3dbb2d6d7f7ce796892f40861932e8039f85df7f"
+    },
+    {
+      "symbol": "sh600900",
+      "name": "长江电力",
+      "rows": 1931,
+      "start": "2018-01-02",
+      "end": "2025-12-31",
+      "sha256": "8e162a8544060fea857297b23635c9c7f3931cb9052a5f0bbb5aaf88844763aa"
+    },
+    {
+      "symbol": "sh600030",
+      "name": "中信证券",
+      "rows": 1925,
+      "start": "2018-01-02",
+      "end": "2025-12-31",
+      "sha256": "92d2b37def539c03cdf57bc0f3950ba59d233970118bfb236c6d7afed99705d1"
+    },
+    {
+      "symbol": "sh600028",
+      "name": "中国石化",
+      "rows": 1942,
+      "start": "2018-01-02",
+      "end": "2025-12-31",
+      "sha256": "c3664ece95c60fc9eb47d8f92731e5e9a093ed1d1a41ecb3921ce0550ce1a87f"
+    },
+    {
+      "symbol": "sh600050",
+      "name": "中国联通",
+      "rows": 1942,
+      "start": "2018-01-02",
+      "end": "2025-12-31",
+      "sha256": "1709acbfc32daff7734080d4e4cc0250d73e75e3e2888c98ef0a629a06d5581d"
+    }
+  ]
+}

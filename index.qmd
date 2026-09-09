@@ -1,0 +1,52 @@
+# 课程首页 {.unnumbered}
+
+::: {.course-tag}
+FINANCIAL ECONOMETRICS · LN429 · 2026 秋季
+:::
+
+::: {.course-lead}
+把一个金融问题，做成一项有目标、有证据、可检查的分析。
+:::
+
+本课程从真实金融数据出发，学习如何定义问题、构造样本、选择模型，并把估计结果写成有边界的结论。Stata 是主要计量软件，Python 用于数据获取、处理和必要分析；Agent 协助规划与执行，学生负责理解方法和核验结果。
+
+::: {.course-actions}
+[开始第一讲](lectures/intro.qmd)
+[课程介绍与安排](syllabus.qmd)
+[环境准备](settings.qmd)
+:::
+
+## 课程基本信息
+
+| 项目 | 内容 |
+|---|---|
+| 课程名称 | 金融计量经济学 (含实验教学) / Financial Econometrics |
+| 课程编号与类别 | LN429 / 专业选修课 |
+| 开课单位 | 中山大学岭南学院 |
+| 授课教师 | 连玉君 |
+| 学分与学时 | 2 学分，36 学时；每次课约 90 分钟 |
+| 面向对象 | 金融学、经济与金融等专业大三及以上本科生 |
+| 授课学期与语言 | 秋季学期 / 中文 |
+| 先修基础 | 计量经济学、概率统计；具备微观、宏观与线性代数基础 |
+| 教材 | 自编在线讲义，配套可运行 Notebook |
+
+## 今天的课堂路线
+
+**第一讲：课程导览与实证金融研究流程。** 先看一份投资任务：10 万元配置到 10 只股票，如何权衡收益、波动和回撤？再看一个政策问题：绿色金融试点后的融资成本变化，有多少能够归因于政策？
+
+| 内容 | 时间 | 课堂入口 |
+|---|---:|---|
+| 两类问题与课程目标 | 5 分钟 | [第一讲开场](lectures/intro.qmd) |
+| 10 只股票组合：任务、数据、模型与评价 | 35 分钟 | [Python 实验与结果](notebooks/intro/portfolio-python.ipynb) |
+| 金融政策：比较、样本与识别 | 25 分钟 | [Stata 实验与结果](notebooks/intro/policy-stata.ipynb) |
+| 工程化工作流程 | 10 分钟 | [任务拆分](lectures/intro.qmd#sec-intro-workflow) |
+| 环境准备要点 | 10 分钟 | [Agent 与手动步骤](settings.qmd) |
+| 一页研究计划 | 5 分钟 | [作业要求](exercises/research-plan.qmd) |
+
+本网站当前完整提供第一讲及其配套内容。其余主题列在[课程安排](syllabus.qmd#sec-course-topics)中，将随授课陆续加入。网页已经包含运行后的代码与结果，课堂阅读不需要启动 Stata 或 Python。
+
+## 课前与课后
+
+课前读[环境准备](settings.qmd)，让 Agent 先检查已有软件，再按需要配置；暂时不能运行代码也可先阅读输出。课后提交[一页研究计划](exercises/research-plan.qmd)：说清问题、数据、模型和最可能失败的一步。
+
+课程资料及代码见 [GitHub 仓库](https://github.com/lianxhcn/FinEco)。时间、教室和提交平台以教师课堂通知为准。

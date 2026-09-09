@@ -1,0 +1,69 @@
+project:
+  type: book
+  output-dir: docs
+  resources:
+    - .nojekyll
+    - data/intro/*.csv
+    - data/intro/source-manifest.json
+    - data/intro/README.md
+    - notebooks/intro/*.ipynb
+    - tools/fetch_intro_prices.py
+    - tools/run_notebooks.py
+    - requirements.txt
+    - resources/environment-agent.md
+execute:
+  enabled: false
+book:
+  title: "金融计量经济学"
+  subtitle: "从研究问题到可复现的金融分析"
+  author: "连玉君 · 中山大学岭南学院"
+  date: "2026-09-09"
+  date-format: iso
+  site-url: https://lianxhcn.github.io/FinEco/
+  repo-url: https://github.com/lianxhcn/FinEco
+  repo-branch: main
+  repo-actions: [edit, issue]
+  reader-mode: true
+  sidebar:
+    title: "金融计量经济学"
+    style: docked
+    search: true
+  page-footer:
+    left: "LN429 · 中山大学岭南学院"
+    right: "[连享会](https://www.lianxh.cn) · Quarto Book"
+  chapters:
+    - index.qmd
+    - syllabus.qmd
+    - part: "第一讲"
+      chapters:
+        - lectures/intro.qmd
+        - notebooks/intro/portfolio-python.ipynb
+        - notebooks/intro/policy-stata.ipynb
+    - part: "学习与实践"
+      chapters:
+        - settings.qmd
+        - exercises/research-plan.qmd
+        - resources/references.qmd
+format:
+  html:
+    theme: cosmo
+    lang: zh-CN
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    fontsize: 17px
+    linestretch: 1.7
+    code-fold: false
+    code-overflow: wrap
+    code-line-numbers: false
+    highlight-style: github
+    link-external-newwindow: true
+    css: styles.css
+crossref:
+  chapters: true
+  fig-title: "图"
+  tbl-title: "表"
+  fig-prefix: "图"
+  tbl-prefix: "表"
+  eq-prefix: "式"
+
