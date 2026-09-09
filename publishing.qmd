@@ -77,3 +77,9 @@ study/
 :::
 
 操作参考：[GitHub Desktop 克隆说明](https://docs.github.com/en/desktop/adding-and-cloning-repositories/cloning-and-forking-repositories-from-github-desktop)、[Quarto GitHub Pages 发布说明](https://quarto.org/docs/publishing/github-pages.html)。核对日期：2026-09-09。
+
+::: {.callout-note title="进一步学习"}
+
+参阅连玉君的 [Quarto Book](https://lianxhcn.github.io/quarto_book/)；可直接复制[软件配置页的 Codex／CC 编译与发布提示词](settings.qmd#用-codex-或-cc-编译与发布)，让 Agent 完成检查、构建和发布。
+
+:::

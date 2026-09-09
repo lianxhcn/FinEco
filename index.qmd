@@ -1,5 +1,7 @@
 # 🏠 前言 {.unnumbered}
 
+![](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig01-cover-20260909-152237.png){.course-cover fig-alt="金融计量经济学：从研究问题到可复现的金融分析，连玉君，中山大学岭南学院"}
+
 ::: {.course-tag}
 FINANCIAL ECONOMETRICS · LN429 · 2026 秋季
 :::

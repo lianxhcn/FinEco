@@ -13,3 +13,22 @@ table { font-size:.92rem; }
 .cell-output { overflow-x:auto; }
 .callout { margin:1.5rem 0; }
 @media print { .course-actions { display:none; } }
+
+/* Part headings remain distinct from ordinary chapter links. */
+#quarto-sidebar .sidebar-item-section > .sidebar-item-container > .sidebar-item-text {
+  font-weight: 700;
+  color: #173f57;
+}
+#quarto-sidebar .sidebar-logo {
+  width: 40px;
+  height: 40px;
+  max-width: 40px;
+  object-fit: contain;
+}
+.course-cover {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: .5rem 0 1.5rem;
+  border-radius: 6px;
+}

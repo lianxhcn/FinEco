@@ -26,6 +26,7 @@ book:
   repo-actions: [edit, issue]
   reader-mode: true
   sidebar:
+    logo: https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png
     title: "金融计量经济学"
     style: docked
     search: true
@@ -40,7 +41,7 @@ book:
     - part: homework.qmd
       chapters:
         - exercises/hw-01.qmd
-    - part: "环境配置"
+    - part: "🛠️ 环境配置"
       chapters:
         - settings.qmd
         - publishing.qmd
@@ -54,6 +55,9 @@ book:
         - resources/references.qmd
 format:
   html:
+    include-in-header:
+      text: |
+        <link rel="icon" type="image/png" sizes="40x40" href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png">
     theme: cosmo
     lang: zh-CN
     toc: true

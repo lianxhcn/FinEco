@@ -290,7 +290,7 @@
     "section": "",
     "text": "先分清阅读与运行\n第一次使用本课程，请先按讲义与仓库使用指南把完整资料准备到本地。本页解决下一步：让同一份 Notebook 找到正确的软件和依赖，能够从头运行。\n按你准备完成的任务选择环境：\n本书已验证的教师执行环境为 Python 3.11.14、Stata 19、nbstata 0.8.6、AKShare 1.18.39 和 Quarto 1.6.39，记录日期 2026-09-09。这是验证组合，不是说其他版本一定不支持。学生应使用自己的安装路径，不复制教师电脑路径。",
     "crumbs": [
-      "环境配置",
+      "🛠️ 环境配置",
       "软件配置"
     ]
   },
@@ -301,7 +301,7 @@
     "section": "",
     "text": "阅读讲义：无需安装软件，网页已包含运行结果。\n重跑 Python 实验：需要 Python 和相应包。\n重跑 Stata 实验：需要可用且有授权的 Stata 与 nbstata。\n生成整本网站：需要 Quarto；第一次做数据分析可以稍后安装。",
     "crumbs": [
-      "环境配置",
+      "🛠️ 环境配置",
       "软件配置"
     ]
   },
@@ -312,7 +312,7 @@
     "section": "把检查任务交给 Agent",
     "text": "把检查任务交给 Agent\n先分清各工具的角色，才能判断故障发生在哪里：\n\nPython 与 Stata 负责计算；Anaconda 是包含 Python 和包管理工具的发行版。\nVS Code 与 Jupyter 提供编辑和交互界面；Notebook 是由说明、代码单元格与输出组成的文件。\n内核 (kernel) 是实际执行单元格的进程。nbstata 把 Notebook 中的代码交给 Stata；Python Notebook 则需要 Python 内核。\n依赖包与项目环境 决定代码能调用什么功能。同一台电脑可以有多个 Python，因此“已经安装 pandas”仍需要确认装在哪个环境。\n\n接下来先检查已有环境，再补缺项，最后通过计算验收。\n在下载的课程项目根目录打开你使用的 Agent，先提供以下任务。也可下载纯文本指令。\n\n我正在学习 FinEco。请阅读 README 与 requirements.txt，检查已有的 Python、Jupyter、Stata 和内核，输出路径、版本、缺少的依赖和最小修复计划。不要读取凭据，不要先重装软件或修改全局 PATH。优先使用项目环境。Stata 路径须检查确认，不要猜测。修复后分别运行 Python 与 Stata 最小示例，保存输出，重启内核后再从头运行。遇到错误保留原始信息，不把“包已安装”当成“案例已跑通”。系统级安装或全局变更先向我说明。\n\n\n\n\n\n\n\n验收：确认这四项\n\n\n\n\nPython 的实际路径和版本已查明。\nNotebook 所选内核与安装依赖的环境一致。\nStata 能启动，最小示例能显示结果。\n失败步骤有原始错误信息，修复后已重新验证。\n\nAgent 可以执行命令，你要核对实际输出；“安装完成”还不等于“案例跑通”。",
     "crumbs": [
-      "环境配置",
+      "🛠️ 环境配置",
       "软件配置"
     ]
   },
@@ -323,7 +323,7 @@
     "section": "Windows 手动步骤",
     "text": "Windows 手动步骤\n以下命令在 PowerShell 中从课程项目根目录执行。已经有可用项目环境时直接使用，不重复创建。尚未安装 Python 或 Stata 时，先按学校软件安排安装合法版本；本页面不提供 Stata 安装包。\n\nStep 1: 确认 Python，再建立项目环境。\npy -0p\npy -3.11 -m venv .venv\n.\\.venv\\Scripts\\python.exe --version\npy -0p 列出已安装解释器。没有 Python 3.11 时，不要反复执行同一个命令；请 Agent 检查现有版本或协助安装课程验证版本。\nStep 2: 用同一个解释器安装依赖并注册 Python 内核。\n.\\.venv\\Scripts\\python.exe -m pip install -r requirements.txt\n.\\.venv\\Scripts\\python.exe -m ipykernel install --user --name fineco --display-name \"Python (FinEco)\"\n.\\.venv\\Scripts\\python.exe -m jupyter kernelspec list\n这里注册的是当前用户的内核，便于 VS Code/Jupyter 选择。不要混用另一个环境中的 pip。网络或安装失败时保留错误，由 Agent 判断，勿无目的地升级全部软件。\nStep 3: 安装 Stata 内核并检查设置。\n.\\.venv\\Scripts\\python.exe -m nbstata.install\n.\\.venv\\Scripts\\python.exe -m jupyter kernelspec list\n在 VS Code 中安装或启用 Jupyter 扩展，打开 Stata Notebook 后选择 Stata/nbstata 内核。若无法自动定位 Stata，依据nbstata 官方说明配置 stata_dir 和 edition。stata_dir 指向安装目录，版本类型按你的授权选择 be、se 或 mp。不要把示例版本类型当作你的实际授权。\nStep 4: 验证环境能够计算，而非只看安装提示。\n在 Python Notebook 中执行：\nimport sys\nimport pandas as pd\nprint(sys.executable)\nprint(pd.Series([1, 2, 3]).mean())\n最后一项应为 2.0。在 Stata Notebook 中执行：\nsysuse auto, clear\ncount\nregress price mpg\n应读入 74 条观测并显示回归表。看到命令文本但没有输出，不算验证成功。重启内核，从头运行一次，检查是否依赖旧状态。\nStep 5: 再运行第一讲案例。\nPython 选 Python (FinEco) 内核，Stata 选对应 nbstata 内核。项目根目录应包含 data/intro/。Stata 中可用 pwd 检查位置，再用 cd \"你的 FinEco 项目路径\" 设置工作目录。不要把自己的绝对路径写进公共代码。",
     "crumbs": [
-      "环境配置",
+      "🛠️ 环境配置",
       "软件配置"
     ]
   },
@@ -334,7 +334,7 @@
     "section": "项目自带的批量执行器",
     "text": "项目自带的批量执行器\n如果 Agent 已确认你的 Stata 程序路径，可在当前 PowerShell 会话设置 STATA_EXE，然后运行：\n# 先检查并替换成自己电脑的实际程序路径。\n$env:STATA_EXE = \"实际 Stata 可执行文件路径\"\nTest-Path $env:STATA_EXE\n.\\.venv\\Scripts\\python.exe tools/run_notebooks.py\n必须先得到 True。执行器使用当前 Python，在 002-working/runtime/ 创建临时内核和配置，分别执行两个 Notebook；不改全局 Stata 配置。该目录不进入仓库。Stata 在 Windows 上若无法加载或导出文件，先检查当前权限与工作目录。\nmacOS/Linux 用户也可采用 python3 -m venv .venv，使用 .venv/bin/python 执行相同 Python 模块；Stata 安装路径与 edition 按实际系统配置，不能复制 Windows 的 .exe 路径。本轮端到端验证在 Windows 完成。",
     "crumbs": [
-      "环境配置",
+      "🛠️ 环境配置",
       "软件配置"
     ]
   },
@@ -345,7 +345,7 @@
     "section": "常见错误从哪里查",
     "text": "常见错误从哪里查\n\n\n\n\n\n\n\n现象\n优先检查\n\n\n\n\nModuleNotFoundError\nNotebook 内核与安装包所用 Python 是否一致\n\n\nPython 正常，Stata 内核启动失败\n内核解释器、Stata 路径、版本类型和授权是否有效\n\n\nStata r(601) 或 r(603)\npwd、目标目录是否存在、文件写权限\n\n\n读不到行情 CSV\n是否完整下载仓库，工作目录是否在项目内\n\n\nAKShare 请求失败\n阅读分析无需重新取数；先用冻结快照，再检查接口\n\n\n页面有结果，自己的 Notebook 没结果\n网页是预执行版本；检查本地内核后从头运行",
     "crumbs": [
-      "环境配置",
+      "🛠️ 环境配置",
       "软件配置"
     ]
   },
@@ -354,9 +354,9 @@
     "href": "settings.html#生成本书网页",
     "title": "软件配置",
     "section": "生成本书网页",
-    "text": "生成本书网页\n需要自己修改和渲染整本讲义时再安装 Quarto。先执行 Notebook 并保存输出，然后在项目根目录运行：\nquarto render\n输出位于 docs/。本书设置为渲染时不重新执行代码；修改了代码就必须先重跑对应 Notebook，再渲染，避免新代码配上旧结果。Quarto 的执行说明也区分这两个环节。\n本页官方资料查询日期为 2026-09-09；可执行依赖版本见 requirements.txt。这些软件不替代对计量假设、变量口径与结果的判断。",
+    "text": "生成本书网页\n需要自己修改和渲染整本讲义时再安装 Quarto。先执行 Notebook 并保存输出，然后在项目根目录运行：\nquarto render\n输出位于 docs/。本书设置为渲染时不重新执行代码；修改了代码就必须先重跑对应 Notebook，再渲染，避免新代码配上旧结果。Quarto 的执行说明也区分这两个环节。\n\n\n\n\n\n\n参考教程：Quarto Book\n\n\n\n连玉君的 Quarto Book 介绍创建流程、环境配置、_quarto.yml、GitHub Pages 发布，以及 Markdown 和 Jupyter Notebook 的组织方式。希望了解配置细节时可按需查阅；本课程的发布流程见同步与发布。\n\n\n\n用 Codex 或 CC 编译与发布\n下面的任务描述可交给自己的 Codex 或 Claude Code (CC)。先替换目录和仓库占位符；不要把个人作业发布到教师仓库。\n\n\n\n\n\n\n提示词：先本地验收，再发布网站\n\n\n\n请帮助我编译并发布个人 Quarto Book。项目目录为「填写个人作业目录」，目标 GitHub 仓库为「填写自己的仓库地址」。参考 https://lianxhcn.github.io/quarto_book/，并优先遵守当前项目说明。\n\n检查目录、Git 远程地址和分支，确认这是我的个人仓库；检查 Quarto、Python、Stata 和 Notebook 内核的实际路径与版本。保留已有文件与修改，不重装已经可用的软件。\n检查 _quarto.yml 的 Book 目录、相对链接和 docs 输出目录。先运行有代码变更的 Notebook，保留真实输出；渲染时禁止重新执行代码或实时取数。\n执行 quarto render，检查首页、各章、公式、图片、下载链接和作业入口。错误需修复后重新验证，不能用旧网页充当本次成功结果。\n本地检查通过后，只提交本次源文件和渲染结果，推送到我的仓库。检查公开范围，不包含凭据或受限数据，不强制推送。GitHub 尚未登录时指导我自行登录，不索取令牌。\n按 main 分支的 /docs 配置 GitHub Pages；若实际分支不同则使用已核实的分支。添加 .nojekyll，等待部署完成；如需我在仓库 Settings → Pages 操作，请列出具体步骤。\n用公开访问方式检查网站首页和本次作业，报告首页网址、作业直达链接、提交哈希和部署状态。按课程模板生成提交说明文件，交给我核对后通过统一作业入口上传。\n\n\n\n完成后，你需要亲自打开首页和本次作业页，确认代码结果与本地一致。具体的目录隔离、更新和 Pages 设置见同步与发布。\n本页官方资料查询日期为 2026-09-09；可执行依赖版本见 requirements.txt。这些软件不替代对计量假设、变量口径与结果的判断。",
     "crumbs": [
-      "环境配置",
+      "🛠️ 环境配置",
       "软件配置"
     ]
   },
@@ -367,7 +367,7 @@
     "section": "扩展阅读",
     "text": "扩展阅读\n\n\n\n\n\n\n扩展阅读：已有课程的环境配置指南\n\n\n\n按当前遇到的问题选读，不必逐页完成：\n\nds2026 · Python：安装和环境配置：从 Anaconda、VS Code 到 Stata 内核的手动配置。\nds2026 · Jupyter Notebook 的使用：熟悉笔记本界面、单元格和日常操作。\nds2026 · Python 安装常见问题：安装或启动遇到问题时查阅。\nstata-ai · 环境配置：了解 Stata、VS Code、nbstata 与 AI 工具的衔接。\nci-policy · 课前准备：环境配置：参考已有软件的检查、路径记录和 Agent 验收流程。\n\n这些页面服务于不同课程；版本、路径和环境变更以 FinEco 环境准备页说明与本机检查结果为准，不直接照搬其他课程的配置。链接核对日期：2026-09-09。",
     "crumbs": [
-      "环境配置",
+      "🛠️ 环境配置",
       "软件配置"
     ]
   },
@@ -378,7 +378,7 @@
     "section": "",
     "text": "每次课前同步\n本页连接两件日常工作：把教师的新课件同步到电脑，以及把自己的作业发布为网站。开始前先按课件使用分开建立教师课件副本与个人作业目录。\n仓库只需克隆一次。以后在教师课件副本中更新，不需要每次重新下载。",
     "crumbs": [
-      "环境配置",
+      "🛠️ 环境配置",
       "同步与发布"
     ]
   },
@@ -389,7 +389,7 @@
     "section": "",
     "text": "确认位置：在 GitHub Desktop 中选中教师课件仓库，核对远程地址为 https://github.com/lianxhcn/FinEco.git。\n保存改动：检查 Changes。若有自己的实验，先完整保存到个人作业目录，保留相对路径与依赖文件。\n获取更新：点击 Fetch origin；出现 Pull origin 时拉取更新。有冲突时先停下，让 Agent 检查改动来源。\n核对版本：查看最新提交，再打开本次课的 Notebook。沿用冻结数据，先复现基准结果。",
     "crumbs": [
-      "环境配置",
+      "🛠️ 环境配置",
       "同步与发布"
     ]
   },
@@ -400,7 +400,7 @@
     "section": "必要时强制对齐",
     "text": "必要时强制对齐\n如果教师课件副本已被改乱，希望恢复到教师最新版本，可以让 Agent 执行下面的任务。强制对齐会丢弃已跟踪文件的本地修改；个人作业必须事先保存到另一个目录。\n\n\n\n\n\n\n只对教师课件副本执行\n\n\n\n请检查我指定的教师课件目录，报告绝对路径、远程地址、当前分支、未提交改动和未推送提交。只有远程地址确认为 lianxhcn/FinEco、当前分支为 main，且个人工作已备份到仓库之外后，才把本地分支对齐 origin/main。列出将丢弃的内容让我确认；不要操作个人作业仓库，不执行 git clean，不删除虚拟环境或未跟踪文件，不执行强制推送。完成后报告提交版本和剩余改动。\n\n\n熟悉终端的同学可以按以下顺序检查；命令应在已核实的教师课件根目录执行。\ngit remote -v\ngit branch --show-current\ngit status --short\ngit fetch origin\ngit log --oneline origin/main..HEAD\n确认本地修改和额外提交均已备份、允许舍弃后，再单独执行：\ngit reset --hard origin/main\ngit status --short\ngit rev-parse HEAD\n这只重置本地副本，不更新教师远程仓库。未跟踪文件通常仍会保留，但妨碍检出目标版本的文件可能被覆盖，因此备份范围也要包括未跟踪文件。具体语义见 Git reset 官方说明。",
     "crumbs": [
-      "环境配置",
+      "🛠️ 环境配置",
       "同步与发布"
     ]
   },
@@ -411,7 +411,7 @@
     "section": "一学期一个作业仓库",
     "text": "一学期一个作业仓库\n个人仓库建议命名为 fineco-homework。每次作业使用独立目录，整个学期共用一个网站首页：\nstudy/\n  FinEco/                    教师课件副本\n  fineco-homework/            个人仓库，与 FinEco 平级\n    _quarto.yml\n    index.qmd                首页，链接各次作业\n    hw-01/\n      index.qmd              一页研究计划\n    hw-02/                   任务公布后再建立\n    docs/                    渲染结果\nhw-01 是固定作业编号，也是文件夹名；不使用空格、中文姓名或特殊符号命名作业目录。文字说明和公式用 .qmd，实际代码及输出用 .ipynb。案例依赖的相对路径要一起维护，不能只移动一个 Notebook 后省略它需要的数据。",
     "crumbs": [
-      "环境配置",
+      "🛠️ 环境配置",
       "同步与发布"
     ]
   },
@@ -420,9 +420,9 @@
     "href": "publishing.html#发布个人网站",
     "title": "同步与发布",
     "section": "发布个人网站",
-    "text": "发布个人网站\nhw-01 暂不强制要求网站。原则上从 hw-02 起过渡到 GitHub Pages，正式启用时间以教师通知为准。届时按以下步骤完成：\n\n建仓库：在自己的 GitHub 账号下建立 fineco-homework，克隆到个人作业目录。检查 origin 指向自己的仓库。\n组织内容：用 Quarto 建立网站或 Book，首页列出各次作业入口。配置输出目录为 docs；Notebook 先运行保存结果，再渲染。\n本地检查：运行 quarto render，检查首页和本次作业的公式、图表、代码与输出。在 docs 中放置空文件 .nojekyll。\n提交并推送：提交源文件与 docs，确认不含凭据、个人身份信息或不能公开的数据。作业不得只提交没有结果的代码。\n启用 Pages：在个人仓库 Settings → Pages 中选择从分支发布，指定实际使用的分支及 /docs。等待部署成功。\n验收与提交：用未登录浏览器打开网站，检查首页能进入本次作业。按作业页面的入口提交网站首页及本次作业链接。\n\n\n\n\n\n\n\n交给 Agent 的发布任务\n\n\n\n请在我的个人作业仓库中组织 Quarto 网站，保留 hw-01 等作业编号，首页提供各次作业链接。检查远程地址属于我的账号，不能推送到教师仓库。修改代码后先运行并保存真实输出，再渲染到 docs；检查首页及本次作业页面。使用我已登录的 GitHub 工具完成获准的提交与推送，账户登录和 Pages 设置若需要我操作，请给出具体步骤，不索取密钥。最后报告网站首页、本次作业地址和完整提交哈希。不要把教师课件仓库的远程地址直接改成我的地址。\n\n\n操作参考：GitHub Desktop 克隆说明、Quarto GitHub Pages 发布说明。核对日期：2026-09-09。",
+    "text": "发布个人网站\nhw-01 暂不强制要求网站。原则上从 hw-02 起过渡到 GitHub Pages，正式启用时间以教师通知为准。届时按以下步骤完成：\n\n建仓库：在自己的 GitHub 账号下建立 fineco-homework，克隆到个人作业目录。检查 origin 指向自己的仓库。\n组织内容：用 Quarto 建立网站或 Book，首页列出各次作业入口。配置输出目录为 docs；Notebook 先运行保存结果，再渲染。\n本地检查：运行 quarto render，检查首页和本次作业的公式、图表、代码与输出。在 docs 中放置空文件 .nojekyll。\n提交并推送：提交源文件与 docs，确认不含凭据、个人身份信息或不能公开的数据。作业不得只提交没有结果的代码。\n启用 Pages：在个人仓库 Settings → Pages 中选择从分支发布，指定实际使用的分支及 /docs。等待部署成功。\n验收与提交：用未登录浏览器打开网站，检查首页能进入本次作业。按作业页面的入口提交网站首页及本次作业链接。\n\n\n\n\n\n\n\n交给 Agent 的发布任务\n\n\n\n请在我的个人作业仓库中组织 Quarto 网站，保留 hw-01 等作业编号，首页提供各次作业链接。检查远程地址属于我的账号，不能推送到教师仓库。修改代码后先运行并保存真实输出，再渲染到 docs；检查首页及本次作业页面。使用我已登录的 GitHub 工具完成获准的提交与推送，账户登录和 Pages 设置若需要我操作，请给出具体步骤，不索取密钥。最后报告网站首页、本次作业地址和完整提交哈希。不要把教师课件仓库的远程地址直接改成我的地址。\n\n\n操作参考：GitHub Desktop 克隆说明、Quarto GitHub Pages 发布说明。核对日期：2026-09-09。\n\n\n\n\n\n\n进一步学习\n\n\n\n参阅连玉君的 Quarto Book；可直接复制软件配置页的 Codex／CC 编译与发布提示词，让 Agent 完成检查、构建和发布。",
     "crumbs": [
-      "环境配置",
+      "🛠️ 环境配置",
       "同步与发布"
     ]
   },
