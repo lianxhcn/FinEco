@@ -1,0 +1,27 @@
+project_title: "金融计量经济学在线讲义"
+repository_mode: single
+recommendation: single
+decision_reason: "长期课程需要独立网址、版本历史与维护周期，沿用用户指定 FinEco 名称。"
+confidence: high
+local_root: "D:/github_lianxh"
+project_path: "D:/github_lianxh/FinEco"
+work_scope: "首次基础提交：README.md、RULES.md、repo-plan.yml、.gitignore、resources/course-outline.md"
+repository_name: "FinEco"
+remote_owner: lianxhcn
+visibility: public
+license: pending
+github_pages:
+  required: true
+  source: "已确认本地执行与渲染 docs 后静态发布；平台部署设置实施时检查"
+  expected_url: "https://lianxhcn.github.io/FinEco/"
+preflight:
+  readme_required: true
+  ignore_checked: true
+  sensitive_content_checked: true
+  large_files_checked: true
+  minimal_verification: "已检查待提交的 5 个文本文件与排除规则；无可执行书稿，渲染不适用；Pages 未启用"
+approval:
+  create_remote: true
+  commit: true
+  push: true
+notes: "retrieved_date: 2026-09-09；用户授权本次提交；公开仓库已创建，main 分支。00#- 目录与日志不推送。本次提交项目基础文件，网站部署后续执行，许可证待定。"

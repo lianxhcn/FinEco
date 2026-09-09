@@ -1,0 +1,12 @@
+# Local planning, source materials, drafts and private notes
+/00[0-9]-*/
+/logs/
+/.venv/
+/.quarto/
+**/.ipynb_checkpoints/
+**/__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+/env/local_paths.ps1
