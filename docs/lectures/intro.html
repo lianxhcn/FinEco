@@ -243,6 +243,7 @@ window.Quarto = {
   </ul></li>
   <li><a href="#sec-intro-workflow" id="toc-sec-intro-workflow" class="nav-link" data-scroll-target="#sec-intro-workflow"><span class="header-section-number">1.4</span> 把分析组织成可复现项目</a></li>
   <li><a href="#本课程的阅读与练习方式" id="toc-本课程的阅读与练习方式" class="nav-link" data-scroll-target="#本课程的阅读与练习方式"><span class="header-section-number">1.5</span> 本课程的阅读与练习方式</a></li>
+  <li><a href="#sec-intro-reading" id="toc-sec-intro-reading" class="nav-link" data-scroll-target="#sec-intro-reading"><span class="header-section-number">1.6</span> 扩展阅读</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/lectures/intro.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></nav>
     </div>
@@ -278,7 +279,12 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>把宽泛想法改写成有目标和约束的任务；理解数据、模型与评价之间的关系；完成一页可执行的研究计划。课堂阅读代码和已运行结果，不要求现场安装或执行。</p>
+<ol type="1">
+<li>把宽泛想法改写成有目标和约束的任务。</li>
+<li>理解数据、模型与评价之间的关系。</li>
+<li>完成一页可执行的研究计划。</li>
+</ol>
+<p>课堂阅读代码和已运行结果，不要求现场安装或执行。</p>
 </div>
 </div>
 <section id="从两个问题开始" class="level2" data-number="1.1">
@@ -286,7 +292,25 @@ window.Quarto = {
 <p>“手上有 10 万元，帮我挑 10 只股票。”</p>
 <p>“某个城市成为绿色金融试点后，企业融资成本下降了，政策是不是有效？”</p>
 <p>这两句话都像一个研究题目，却都还缺少关键内容。前一句没有说明资金什么时候要用、能承受多大损失、怎样判断组合好坏。后一句没有说明企业是什么样的样本、成本怎样测量、没有政策时又会发生什么。</p>
-<p>金融计量要把这些缺口逐一补上。我们会遇到三类任务：<strong>描述</strong>回答发生了什么，<strong>预测</strong>回答未来或未观测结果可能怎样，<strong>因果推断</strong>回答改变某项条件会产生什么影响。投资决策还需要在预测之外加入偏好、约束与成本。任务不同，证据标准也不同。</p>
+<p>金融计量要把这些缺口逐一补上。</p>
+<div class="callout callout-style-default callout-note callout-titled" title="核心概念：三类任务">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+核心概念：三类任务
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>描述</strong>：发生了什么？</li>
+<li><strong>预测</strong>：未来或未观测的结果可能怎样？</li>
+<li><strong>因果推断</strong>：改变某项条件会产生什么影响？</li>
+</ul>
+<p>投资决策还需要加入偏好、约束与成本。任务不同，证据标准也不同。</p>
+</div>
+</div>
 <p>本讲用两个案例走过完整流程。组合案例重点看目标、数据和样本外评价；政策案例重点看样本、比较对象和识别条件。你不需要立刻记住所有模型名，但要能说明下一步为什么这样做。</p>
 </section>
 <section id="sec-intro-portfolio" class="level2" data-number="1.2">
@@ -442,11 +466,22 @@ MDD=\max_{t}\left(1-\frac{V_{t}}{\max_{0\leq s\leq t}V_{s}}\right).
 \end{aligned}
 \tag{1.4}\]</span></span></p>
 <p>这里优化的是<strong>样本估计值下的目标</strong>。历史均值估得不准，未来收益结构发生变化，或者成本被低估，都可能让这个解表现不好。这是后续 Bootstrap、模拟与稳健性分析要研究的问题。投资组合思想可参阅 Markowitz (<a href="https://doi.org/10.1111/j.1540-6261.1952.tb01525.x">1952</a>)。</p>
-<p>第一讲不展开优化算法推导，而是查看实验的三件产物：约束是否满足、权重是否集中、测试表现是否支持采用复杂模型。整个流程见<a href="../notebooks/intro/portfolio-python.html">Python 实验</a>。</p>
+<p>打开<a href="../notebooks/intro/portfolio-python.html">Python 实验</a>，按顺序检查：</p>
+<ol type="1">
+<li><strong>约束</strong>：权重非负、和为 1，且单只不超过 20% 吗？</li>
+<li><strong>配置</strong>：权重是否集中在少数股票上？</li>
+<li><strong>评价</strong>：测试表现是否支持采用复杂模型？</li>
+</ol>
 </section>
 <section id="将未来留在模型外面" class="level3" data-number="1.2.6">
 <h3 data-number="1.2.6" class="anchored" data-anchor-id="将未来留在模型外面"><span class="header-section-number">1.2.6</span> 将未来留在模型外面</h3>
-<p>本实验使用 2018—2023 年估计参数，2024 年展示验证表现，2025 年保留测试。规则预先固定，测试结果不参与更换股票或调整模型。每月再平衡使用同一组冻结的目标权重，以便第一讲集中理解“估计—决策—评价”。后续才加入滚动估计。</p>
+<p>三个时期各有任务：</p>
+<ol type="1">
+<li><strong>训练期 (2018—2023 年)</strong>：估计收益均值与协方差，确定目标权重。</li>
+<li><strong>验证期 (2024 年)</strong>：展示规则的稳定性；本例不据此调整方案。</li>
+<li><strong>测试期 (2025 年)</strong>：评价保留样本表现，不据此更换股票或调整模型。</li>
+</ol>
+<p>每月再平衡使用同一组冻结的目标权重，以便第一讲集中理解“估计—决策—评价”。后续才加入滚动估计。</p>
 <p>交叉验证也要符合数据结构。预测时间序列时，不能任意打散日期，让模型先见到未来再预测过去。训练、验证、测试是不同角色；验证期可以支持事先规定的模型选择，保留测试用于最终评价。本例不根据验证结果改变方案，只用它展示稳定性。</p>
 <div id="fig-intro-wealth" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -497,7 +532,19 @@ MDD=\max_{t}\left(1-\frac{V_{t}}{\max_{0\leq s\leq t}V_{s}}\right).
 </tr>
 </tbody>
 </table>
+<div class="callout callout-style-default callout-warning callout-titled" title="易错点：目标收益不等于实现收益">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+易错点：目标收益不等于实现收益
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>这组结果不支持“设置 8% 目标就能实现 8% 收益”。训练期的年化算术预期约束与测试期 CAGR 本来就是不同的量，后者还受到新行情、权重漂移和成本影响。基于今天选出的固定股票篮子，这些比较只支持本案例范围内的教学判断。</p>
+</div>
+</div>
 <div id="fig-intro-drawdown" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-intro-drawdown-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -570,7 +617,12 @@ MDD=\max_{t}\left(1-\frac{V_{t}}{\max_{0\leq s\leq t}V_{s}}\right).
 <section id="先看均值再写-did" class="level3" data-number="1.3.3">
 <h3 data-number="1.3.3" class="anchored" data-anchor-id="先看均值再写-did"><span class="header-section-number">1.3.3</span> 先看均值，再写 DID</h3>
 <p><a href="../notebooks/intro/policy-stata.html">Stata 实验</a>使用可复现的模拟面板。代码生成 40 个城市、800 家企业和 10 年数据，并人为写入 -0.4 个百分点的处理效应。城市和企业都是虚构的，结果不代表真实试点。</p>
-<p>实验先计算两组政策前后的均值。处理组成本下降多少，还要减去对照组同期下降多少；这样得到两次差分。再用回归核对手算结果，并加入企业与年份固定效应。</p>
+<p>实验按三步组织比较：</p>
+<ol type="1">
+<li><strong>组内差分</strong>：分别计算处理组、对照组政策后均值减去政策前均值。</li>
+<li><strong>两次差分</strong>：处理组的变化减去对照组的变化，得到手算 DID。</li>
+<li><strong>回归核对</strong>：核对交乘项系数与手算结果，再加入企业与年份固定效应。</li>
+</ol>
 <p><span id="eq-intro-did"><span class="math display">\[
 Y_{it}=\alpha_{i}+\lambda_{t}
 +\beta\bigl(Treat_{c(i)}\times Post_{t}\bigr)
@@ -588,13 +640,13 @@ Y_{it}=\alpha_{i}+\lambda_{t}
 </figure>
 </div>
 <p>已知效应与估计值接近，是因为模拟设计满足相应条件。它不能证明真实政策满足平行趋势。政策为什么选择这些地区、是否有其他政策、银行信贷是否跨地区溢出，都仍需研究。</p>
-<div class="callout callout-style-default callout-note callout-titled" title="不要把企业数当成独立政策实验数">
+<div class="callout callout-style-default callout-warning callout-titled" title="推断边界：企业数不等于独立政策实验数">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-不要把企业数当成独立政策实验数
+推断边界：企业数不等于独立政策实验数
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -653,7 +705,13 @@ Y_{it}=\alpha_{i}+\lambda_{t}
 </tr>
 </tbody>
 </table>
-<p>使用 Agent 时，也按这个顺序拆任务。第一次让它读资料并写计划；第二次让它按计划获取和检查数据；第三次运行模型并解释指定表格。每次指令说明输入文件、允许修改的范围、预期输出和验收条件。</p>
+<p>使用 Agent 时，也按顺序拆任务：</p>
+<ol type="1">
+<li><strong>规划</strong>：读资料，说明目标、数据要求和分析计划。</li>
+<li><strong>准备</strong>：按计划获取数据，完成检查并保存记录。</li>
+<li><strong>分析</strong>：运行模型，解释指定表格，核对验收条件。</li>
+</ol>
+<p>每次指令写清输入文件、允许修改的范围、预期输出和验收条件。</p>
 <p>例如，先要求“检查价格是否重复、复权口径是否一致，保存检查表”，比“帮我做最优投资组合”更容易发现错误。对因果案例，先让 Agent 整理政策对象与生效时间，再由你决定处理组，能避免把网页摘要直接变成处理标签。</p>
 <p>代码出错时保留日志；结论改变时记录原因。不要删除失败模型只保留显著结果，也不要把 Agent 生成的解释当作已经核实的事实。</p>
 <p>两个案例也给出了后续课程的阅读路线。CAPM 解释组合的市场风险暴露；ARMA 讨论均值动态，GARCH 与 VaR 研究条件波动和尾部风险；Bootstrap 与模拟检查估计不确定性。加入大量预测变量后，需要 Lasso 与交叉验证；转向政策效应时，则进入面板、DID、IV 和 DDML。若融资成本具有持续性、滞后结果又进入回归，动态面板会进一步提出估计问题。每次增加模型，都应说明它在原有任务中补上了哪个环节。</p>
@@ -662,7 +720,50 @@ Y_{it}=\alpha_{i}+\lambda_{t}
 <h2 data-number="1.5" class="anchored" data-anchor-id="本课程的阅读与练习方式"><span class="header-section-number">1.5</span> 本课程的阅读与练习方式</h2>
 <p>理论页面使用 <code>.qmd</code> 组织公式和交叉引用，实验页面使用 <code>.ipynb</code> 保存代码、表格和图形。网页中已经有执行结果，学生课后可下载 Notebook 从头重跑。Stata 和 Python 分别使用明确内核，通过文件衔接，不依赖隐藏的运行状态。</p>
 <p>下一步阅读<a href="../settings.html">环境准备</a>。课堂只讲约 10 分钟要点，详细安装和检查交给课后；可以让 Agent 协助，但软件路径、内核和实际输出都要核对。</p>
-<p>本讲作业是一页<a href="../exercises/research-plan.html">研究计划</a>。请回答：研究目标是什么？需要什么数据？最简单的基准是什么？什么证据会推翻你的结论？这些问题会伴随后续所有模型。</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="离开课堂前：用四个问题检查研究计划">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+离开课堂前：用四个问题检查研究计划
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>提交一页<a href="../exercises/research-plan.html">研究计划</a>，逐项回答：</p>
+<ol type="1">
+<li>研究目标是什么？</li>
+<li>需要什么数据？</li>
+<li>最简单的基准是什么？</li>
+<li>什么证据会推翻你的结论？</li>
+</ol>
+</div>
+</div>
+</section>
+<section id="sec-intro-reading" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="sec-intro-reading"><span class="header-section-number">1.6</span> 扩展阅读</h2>
+<p>环境配置的详细步骤见<a href="../settings.html">本课程环境准备</a>。下面是已有课程中的补充入口，按需课后阅读。</p>
+<div class="callout callout-style-default callout-note callout-titled" title="扩展阅读：已有课程的环境配置指南">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+扩展阅读：已有课程的环境配置指南
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>按当前遇到的问题选读，不必逐页完成：</p>
+<ul>
+<li><a href="https://lianxhcn.github.io/ds2026/Lecture/00-setup/01_01_install_anaconda.html">ds2026 · Python：安装和环境配置</a>：从 Anaconda、VS Code 到 Stata 内核的手动配置。</li>
+<li><a href="https://lianxhcn.github.io/ds2026/Lecture/00-setup/01_02_jupyter_notebook.html">ds2026 · Jupyter Notebook 的使用</a>：熟悉笔记本界面、单元格和日常操作。</li>
+<li><a href="https://lianxhcn.github.io/ds2026/Lecture/00-setup/01_03_install_FAQs.html">ds2026 · Python 安装常见问题</a>：安装或启动遇到问题时查阅。</li>
+<li><a href="https://lianxhcn.github.io/stata-ai/settings.html">stata-ai · 环境配置</a>：了解 Stata、VS Code、nbstata 与 AI 工具的衔接。</li>
+<li><a href="https://lianxhcn.github.io/ci-policy/settings.html">ci-policy · 课前准备：环境配置</a>：参考已有软件的检查、路径记录和 Agent 验收流程。</li>
+</ul>
+<p>这些页面服务于不同课程；版本、路径和环境变更以 FinEco 环境准备页说明与本机检查结果为准，不直接照搬其他课程的配置。链接核对日期：2026-09-09。</p>
+</div>
+</div>
 
 
 </section>

@@ -235,6 +235,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#项目自带的批量执行器" id="toc-项目自带的批量执行器" class="nav-link" data-scroll-target="#项目自带的批量执行器">项目自带的批量执行器</a></li>
   <li><a href="#常见错误从哪里查" id="toc-常见错误从哪里查" class="nav-link" data-scroll-target="#常见错误从哪里查">常见错误从哪里查</a></li>
   <li><a href="#生成本书网页" id="toc-生成本书网页" class="nav-link" data-scroll-target="#生成本书网页">生成本书网页</a></li>
+  <li><a href="#sec-settings-reading" id="toc-sec-settings-reading" class="nav-link" data-scroll-target="#sec-settings-reading">扩展阅读</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/settings.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></nav>
     </div>
@@ -262,7 +263,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="先分清阅读与运行" class="level2">
 <h2 class="anchored" data-anchor-id="先分清阅读与运行">先分清阅读与运行</h2>
-<p>阅读本站不需要安装软件。网页已经包含课前执行的代码与结果。课后重跑 Python 实验需要 Python 和相应包；重跑 Stata 实验需要可用且有授权的 Stata 与 <code>nbstata</code>。Quarto 主要用于生成整本网站，学生第一次做数据分析可以稍后安装。</p>
+<p>按你准备完成的任务选择环境：</p>
+<ul>
+<li><strong>阅读讲义</strong>：无需安装软件，网页已包含运行结果。</li>
+<li><strong>重跑 Python 实验</strong>：需要 Python 和相应包。</li>
+<li><strong>重跑 Stata 实验</strong>：需要可用且有授权的 Stata 与 <code>nbstata</code>。</li>
+<li><strong>生成整本网站</strong>：需要 Quarto；第一次做数据分析可以稍后安装。</li>
+</ul>
 <p>本书已验证的教师执行环境为 Python 3.11.14、Stata 19、<code>nbstata 0.8.6</code>、AKShare 1.18.39 和 Quarto 1.6.39，记录日期 2026-09-09。这是验证组合，不是说其他版本一定不支持。学生应使用自己的安装路径，不复制教师电脑路径。</p>
 </section>
 <section id="把检查任务交给-agent" class="level2">
@@ -271,7 +278,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <blockquote class="blockquote">
 <p>我正在学习 FinEco。请阅读 README 与 requirements.txt，检查已有的 Python、Jupyter、Stata 和内核，输出路径、版本、缺少的依赖和最小修复计划。不要读取凭据，不要先重装软件或修改全局 PATH。优先使用项目环境。Stata 路径须检查确认，不要猜测。修复后分别运行 Python 与 Stata 最小示例，保存输出，重启内核后再从头运行。遇到错误保留原始信息，不把“包已安装”当成“案例已跑通”。系统级安装或全局变更先向我说明。</p>
 </blockquote>
-<p>检查结果应是一份简短表格：Python 在哪里、Notebook 选哪个内核、Stata 是否能启动、还有哪一步失败。Agent 可以执行命令，但你要看懂每一项是否真的通过。</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="验收：确认这四项">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+验收：确认这四项
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Python 的实际路径和版本已查明。</li>
+<li>Notebook 所选内核与安装依赖的环境一致。</li>
+<li>Stata 能启动，最小示例能显示结果。</li>
+<li>失败步骤有原始错误信息，修复后已重新验证。</li>
+</ol>
+<p>Agent 可以执行命令，你要核对实际输出；“安装完成”还不等于“案例跑通”。</p>
+</div>
+</div>
 </section>
 <section id="windows-手动步骤" class="level2">
 <h2 class="anchored" data-anchor-id="windows-手动步骤">Windows 手动步骤</h2>
@@ -363,6 +388,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode" id="cb7"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>quarto render</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>输出位于 <code>docs/</code>。本书设置为渲染时不重新执行代码；修改了代码就必须先重跑对应 Notebook，再渲染，避免新代码配上旧结果。<a href="https://quarto.org/docs/projects/code-execution.html">Quarto 的执行说明</a>也区分这两个环节。</p>
 <p>本页官方资料查询日期为 2026-09-09；可执行依赖版本见 <code>requirements.txt</code>。这些软件不替代对计量假设、变量口径与结果的判断。</p>
+</section>
+<section id="sec-settings-reading" class="level2">
+<h2 class="anchored" data-anchor-id="sec-settings-reading">扩展阅读</h2>
+<div class="callout callout-style-default callout-note callout-titled" title="扩展阅读：已有课程的环境配置指南">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+扩展阅读：已有课程的环境配置指南
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>按当前遇到的问题选读，不必逐页完成：</p>
+<ul>
+<li><a href="https://lianxhcn.github.io/ds2026/Lecture/00-setup/01_01_install_anaconda.html">ds2026 · Python：安装和环境配置</a>：从 Anaconda、VS Code 到 Stata 内核的手动配置。</li>
+<li><a href="https://lianxhcn.github.io/ds2026/Lecture/00-setup/01_02_jupyter_notebook.html">ds2026 · Jupyter Notebook 的使用</a>：熟悉笔记本界面、单元格和日常操作。</li>
+<li><a href="https://lianxhcn.github.io/ds2026/Lecture/00-setup/01_03_install_FAQs.html">ds2026 · Python 安装常见问题</a>：安装或启动遇到问题时查阅。</li>
+<li><a href="https://lianxhcn.github.io/stata-ai/settings.html">stata-ai · 环境配置</a>：了解 Stata、VS Code、nbstata 与 AI 工具的衔接。</li>
+<li><a href="https://lianxhcn.github.io/ci-policy/settings.html">ci-policy · 课前准备：环境配置</a>：参考已有软件的检查、路径记录和 Agent 验收流程。</li>
+</ul>
+<p>这些页面服务于不同课程；版本、路径和环境变更以 FinEco 环境准备页说明与本机检查结果为准，不直接照搬其他课程的配置。链接核对日期：2026-09-09。</p>
+</div>
+</div>
 
 
 </section>
