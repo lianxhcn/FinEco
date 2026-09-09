@@ -37,3 +37,7 @@ CAPM 与投资组合分章；ARMA 与 GARCH/VaR 分讲。Lasso 和交叉验证�
 未完成章节不加入公开导航。后续主题文件名依次规划为 `financial-data`、`ols`、`model-specification`、`bootstrap`、`monte-carlo`、`capm`、`portfolio`、`arma`、`garch-var`、`static-panel`、`did`、`iv-gmm`、`dynamic-panel`、`lasso-cv`、`ddml`、`discrete-choice`、`sample-selection`、`synthetic-control`、`rdd`，放入 `lectures/`。实验页使用主题短标题，不占理论章节编号。
 
 学生每学期维护一个 `fineco-homework` 仓库，与教师课件副本平级。`hw-01` 暂不强制 Pages，原则上从 `hw-02` 过渡，具体启用时间由教师通知。
+
+## 维护入口
+
+本页保留课程主题概览。详细章节状态、并行窗口边界与未决事项见仓库根目录 PROJECT_PLAN.md；已确认的讲义风格与网站约定见 RULES.md。
