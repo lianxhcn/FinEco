@@ -1,0 +1,1265 @@
+---
+lang: zh
+number-sections: true
+execute:
+  enabled: false
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-overflow: scroll
+    lightbox: true
+    css: ../tools/bootstrap/bootstrap.css
+---
+
+# Bootstrap：从重复抽样到统计推断 {#sec-bootstrap}
+
+> **课程：** 金融计量经济学  
+> **作者：** 连玉君 (中山大学)  
+> **版本：** v10-final  
+> **状态：** 教师确认 v10 定稿；本地 Python 与 Stata 执行结果见配套 Notebook。概念图保留交接包原图。
+> **配套材料：** [Python 实验](../notebooks/bootstrap/bootstrap-demo.ipynb)、[Stata 完整实验](../notebooks/bootstrap/bootstrap-stata.ipynb)、[均值推断 Stata 程序](../tools/bootstrap/01-tiny-bootstrap.do)、[组间系数差异 Stata 程序](../tools/bootstrap/02-group-bootstrap.do)。
+
+
+
+
+
+
+在此前的章节中，我们已经习惯了“先估计，再看标准误”的做法。以 Stata 自带的 `auto.dta` 为例，样本均值和均值的标准误可以直接由软件给出：
+
+```stata
+. sysuse "auto.dta", clear
+(1978 automobile data)
+
+. summarize price
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       price |         74    6165.257     2949.496      3291      15906
+
+. mean price
+
+Mean estimation                             Number of obs = 74
+
+--------------------------------------------------------------
+             |       Mean   Std. err.     [95% conf. interval]
+-------------+------------------------------------------------
+       price |   6165.257     342.872       5481.914   6848.600
+--------------------------------------------------------------
+```
+
+这里，`6165.257` 是这 74 辆汽车价格的样本均值，`2949.496` 是单辆汽车价格在样本中的标准差，而 `342.872` 是**样本均值的标准误**。在独立同分布且方差有限的简单情形下，它由
+
+$$
+\widehat{SE}(\bar X)=\frac{s}{\sqrt{n}}
+=\frac{2949.496}{\sqrt{74}}
+\approx342.872
+$$
+
+得到。二者描述的对象不同：$s$ 衡量单个观测值的离散程度，$s/\sqrt{n}$ 衡量“如果重新抽一份同样大小的样本，样本均值会变化多少”。
+
+回归分析也是同一逻辑。例如下面的 OLS 输出中，每个系数后面都有一个标准误：
+
+```stata
+. regress price weight mpg, noheader
+
+------------------------------------------------------------------------------
+       price | Coefficient   Std. err.      [95% conf. interval]
+-------------+----------------------------------------------------------------
+      weight |       1.747       0.641          0.468       3.025
+         mpg |     -49.512      86.156       -221.302     122.278
+       _cons |    1946.069    3597.050      -5226.245    9118.382
+------------------------------------------------------------------------------
+```
+
+在经典同方差线性模型下，OLS 的方差矩阵可以写为
+
+$$
+\operatorname{Var}(\hat\beta\mid X)
+=\sigma^{2}(X'X)^{-1},
+$$
+
+实际计算时再用残差估计 $\sigma^{2}$；各系数标准误就是估计方差矩阵对角元素的平方根。使用 `vce(robust)` 时，方差矩阵的计算公式会改变，但基本目标没有改变：**刻画估计量在重复抽样中的波动。**
+
+这些熟悉的例子都有现成公式。真正需要 Bootstrap 的地方，通常出现在公式不方便、抽样分布非标准，或者统计量来自复杂多步程序时。我们可能关心两个回归系数之差、一个非线性函数、一个门槛参数，或者带有聚类、异方差和时间依赖的数据。此时，核心问题仍然是同一个：
+
+**如果重新获得一份同样方式产生的样本，这个估计结果会波动多大？**
+
+回答这个问题需要回到**数据生成过程 (data-generating process, DGP)**。DGP 不是眼前这份数据本身，而是我们对“数据如何随机产生”的描述和假设。若 DGP 已知，就可以按照这个机制反复生成样本，通过模拟观察统计量的抽样分布；这就是蒙特卡洛模拟的基本思路。但实证研究通常只有一份已经获得的随机样本。重新回到现实世界，按照完全相同的条件再收集几百或几千份样本，往往成本很高，甚至没有可能。
+
+Bootstrap 的思路是：不要求现实世界真的重来几百次，而是利用手头样本构造一个对未知 DGP 的近似，再在这个近似机制下反复生成伪样本。Jackknife、Permutation 和 Bootstrap 都属于广义的**再抽样 (resampling)** 方法，但它们改变数据的方式和回答的问题并不相同。本章重点介绍 Bootstrap：它用估计的 DGP 近似统计量的抽样不确定性。这一“由抽样分布进入重抽样分布”的路线是 Bootstrap 教学中的经典入口 (Efron and Tibshirani, 1993, Ch. 2–6; Hesterberg, 2015)。
+
+::: {.callout-note title="本讲要点"}
+
+- Bootstrap 的目标不是制造更多独立信息，而是近似“重新抽样时统计量会怎样变化”。
+- 普通非参数 Bootstrap 用经验分布替代未知总体分布，这是 plug-in principle 的直接应用。
+- 原始样本量 $n$ 决定我们掌握多少总体信息；Bootstrap 重复次数 $B$ 主要决定数值近似的稳定程度。增加 $B$ 不能弥补过小的 $n$。
+- Bootstrap 不是单一的“逐行有放回抽样”。Pairs、residual、wild、cluster 和 block Bootstrap 分别对应不同的 DGP 和数据依赖结构。
+- 置信区间、假设检验、组间系数比较、面板门槛模型和 Bagging/Random Forest 都可能使用重抽样，但必须先说明每次重抽样到底改变什么。
+
+:::
+
+本章前四节先用一个很小的收益率样本把基本机制走通：从 DGP、抽样分布和标准误，到经验分布、Bootstrap 分布、置信区间和检验。 @sec-bootstrap-schemes 系统比较不同数据结构下的 Bootstrap 方案。 @sec-bootstrap-applications 从最常见的 Stata 用法开始，再讨论组间系数差异、面板门槛模型和 Random Forest。 @sec-bootstrap-limits 集中说明小样本、依赖结构和 DGP 误设下的局限。
+
+![获得抽样分布的四条路线](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig01-bootstrap-concept-01-four-routes-20260915-155423.png){#fig-bootstrap-01 width="100%" fig-alt="获得抽样分布的四条路线"}
+
+*图注：理论推导、现实重复抽样、蒙特卡洛模拟和 Bootstrap 都试图描述统计量在重复抽样中的变化，关键区别在于“新样本从哪里来”。*
+
+## 从一份样本到抽样不确定性 {#sec-bootstrap-sampling}
+
+这一节先不急着“做 Bootstrap”。我们先把它要解决的问题说清楚：一份样本给出了一个估计值，但统计推断真正关心的是这个估计值在重复抽样中的波动。
+
+### DGP、随机样本与抽样分布 {#sec-bootstrap-sampling-1}
+
+假设某个教学案例记录了 5 个收益率观测：
+
+$$
+2\%,\quad 4\%,\quad 5\%,\quad 7\%,\quad 12\%.
+$$
+
+为了后面计算方便，记为
+
+$$
+x=(2,4,5,7,12),
+$$
+
+其中数值单位都是百分点。这里使用圆括号，是因为样本是一个包含 $n$ 个记录的观测列；后面的 Bootstrap 样本允许同一个数重复出现，用通常的集合花括号会把重复元素的含义掩盖掉。
+
+这 5 个数不是实际金融资产数据，只用于解释算法。为了从最简单的情形进入，我们暂时假定它们来自同一个独立同分布 (independent and identically distributed, iid) 的 DGP。金融时间序列通常不能如此简单处理， @sec-bootstrap-schemes 会专门讨论。
+
+样本均值为
+
+$$
+\bar X=\frac{2+4+5+7+12}{5}=6.
+$$
+
+如果研究目标是总体平均收益率，$6\%$ 是当前样本给出的点估计。但点估计本身还没有告诉我们它有多稳定。若重新从同一个 DGP 抽取 5 个观测，新样本的均值一般不会仍然等于 $6\%$。有时可能是 $4.8\%$，有时可能是 $7.1\%$。**这种“换一份样本，估计值也会变化”的现象，就是抽样不确定性的来源。**
+
+一般地，设
+
+$$
+X_{1},\ldots,X_{n}\overset{iid}{\sim}F,
+$$
+
+其中 $F$ 表示未知总体分布。研究参数记为 $\theta=t(F)$，样本统计量记为
+
+$$
+\hat\theta=T(X_{1},\ldots,X_{n}).
+$$
+
+如果从同一个 $F$ 反复抽取大小为 $n$ 的随机样本，每次都重新计算 $\hat\theta$，这些可能的估计值及其概率就构成了**抽样分布 (sampling distribution)**。样本均值、中位数、相关系数、回归系数和两个系数之差，都有自己的抽样分布。
+
+### 标准误衡量的是“估计量怎样波动” {#sec-bootstrap-sampling-2}
+
+当方差存在时，**标准误 (standard error, SE)** 是估计量抽样分布的标准差：
+
+$$
+SE_{F}(\hat\theta)
+=\sqrt{\operatorname{Var}_{F}(\hat\theta)}.
+$$
+
+标准差和标准误容易混淆。样本标准差描述的是一组观测值本身有多分散；标准误描述的是**统计量在重复样本之间有多分散**。以 iid 样本均值为例，若总体标准差为 $\sigma$，则
+
+$$
+SE_{F}(\bar X)=\frac{\sigma}{\sqrt{n}}.
+$$
+
+实际不知道 $\sigma$ 时，常用样本标准差 $s$ 替代，得到 $s/\sqrt{n}$。这个公式之所以方便，是因为均值的抽样性质已经有成熟的解析理论。
+
+但如果统计量换成两个回归系数之差、一个复杂的非线性函数或一条拟合曲线，解析标准误可能很难推导。Efron and Tibshirani (1993) 正是从“如何衡量估计精度”这个问题进入 Bootstrap：计算机可以用大量重复计算替代一部分专门的标准误公式。
+
+### 三条获得抽样分布的路线 {#sec-bootstrap-sampling-3}
+
+现在回到核心问题：怎样知道 $\hat\theta$ 的抽样分布？把几种做法放在一起看，Bootstrap 所处的位置就比较清楚了。
+
+一种路线是**理论推导**。如果模型足够简单，可以直接得到标准误公式，或者利用中心极限定理等大样本结果近似抽样分布。样本均值的 $s/\sqrt{n}$、OLS 系数的常规标准误都属于这条路线。
+
+另一种路线是**蒙特卡洛模拟**。如果 DGP 已知或由研究者明确设定，例如规定 $X_{i}\sim N(6,14.5)$，就可以在计算机中反复生成样本，每次重新计算 $\hat\theta$。许多次模拟得到的统计量分布可以逼近这个已知 DGP 下的抽样分布。这里的关键是：我们知道用什么机制产生新数据。
+
+现实中还可以真的**重新从总体抽样**。例如，我们希望估计广州居民的边际消费倾向，随机调查了 400 名居民并估计一条消费—收入回归。如果经费和时间都没有限制，可以重新独立调查 400 名居民，再估计一次回归；如此重复几百次，就会得到几百个边际消费倾向估计值。它们的标准差正是我们想知道的重复抽样波动。问题在于，真正重复几百轮调查的成本通常无法承受。对于已经发生的金融市场历史，更不能让同一段历史重新发生几百次。
+
+这个思想实验说明了标准误的本质：理想情况下，我们想看“很多份真实随机样本上的估计值如何变化”；Bootstrap 只是用计算机中的伪样本去近似这件现实中难以反复完成的事情。
+
+Bootstrap 采取的是另一条路线：**先用现有样本估计 DGP，再从估计出来的 DGP 中反复生成伪样本。** 对最基本的非参数 Bootstrap 而言，这个“估计出来的 DGP”就是经验分布。对回归、聚类和时间序列，估计 DGP 以及生成伪样本的方式会相应改变。
+
+
+::: {.callout-note title="三种重复不是一回事"}
+
+- **现实重复抽样**：真的回到总体重新收集数据，目标是直接观察真实抽样波动。
+- **蒙特卡洛模拟**：从研究者已知或设定的 DGP 生成数据，用来研究统计方法在这个 DGP 下的表现。
+- **Bootstrap**：从已经观察到的一份样本出发，用样本估计未知 DGP，再从这个估计机制中重抽样。
+
+三者都可以产生很多个统计量，但“新样本从哪里来”不同，因此所回答的问题也不同。
+
+:::
+
+需要说明的是，Bootstrap 与蒙特卡洛模拟共享“反复生成数据并重新计算统计量”的计算框架，但不能把两者混为一谈。后面的已知 DGP 核验实验属于蒙特卡洛思路；正文中的五点重抽样则属于 Bootstrap。
+
+## Bootstrap 的核心：让样本暂时代替总体 {#sec-bootstrap-core}
+
+上一节说明了为什么需要 Bootstrap。现在进入它最核心的一步：未知总体 $F$ 无法直接拿来反复抽样，但我们可以先用样本构造一个经验分布 $\hat F_{n}$，把它当作当前能够使用的总体近似。
+
+### 经验分布与 plug-in principle {#sec-bootstrap-core-1}
+
+对样本 $x=(2,4,5,7,12)$，最直接的做法是给每一个原始观测赋予概率 $1/5$。于是 $2,4,5,7,12$ 各以 $0.2$ 的概率出现。这就得到一个离散的**经验分布 (empirical distribution)**。
+
+它的经验分布函数 (empirical distribution function, EDF) 为
+
+$$
+\hat F_{n}(z)=\frac{1}{n}\sum_{i=1}^{n}I(X_{i}\leq z),
+$$
+
+其中 $I(\cdot)$ 是指示函数，条件成立时取 1，否则取 0。对当前样本，$\hat F_{5}(5)=3/5=0.6$，因为 5 个观测中有 3 个不超过 5。
+
+![五个数构造的经验分布函数](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig02-edf-tiny-20260915-155423.png){#fig-bootstrap-02 width="100%" fig-alt="五个数构造的经验分布函数"}
+
+*图注：经验分布在每个样本点处跳跃。横轴左端延伸到样本最小值以外，右端延伸到最大值以外，因此显示累计概率从 0 到 1 的完整变化。本图不绘制未知的真实总体分布。*
+
+![现实抽样世界与 Bootstrap 世界](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig03-bootstrap-concept-02-two-worlds-20260915-155423.png){#fig-bootstrap-03 width="100%" fig-alt="现实抽样世界与 Bootstrap 世界"}
+
+*图注：上半部分表示现实抽样世界 $F\to S\to\hat\theta$；下半部分表示 Bootstrap 世界 $S\to\hat F_{n}\to S^{*}\to\hat\theta^{*}$。Bootstrap 用后者近似前者的抽样波动。*
+
+为什么可以这样做？这里用到的是一个很一般的 **plug-in principle** (Efron and Tibshirani, 1993, Ch. 4)：如果总体参数可以写成分布 $F$ 的某个函数 $\theta=t(F)$，那么不知道 $F$ 时，可以先用 $\hat F_{n}$ 替代 $F$，得到
+
+$$
+\hat\theta=t(\hat F_{n}).
+$$
+
+例如，总体均值是 $F$ 的均值，代入经验分布以后得到的就是样本均值；总体相关系数用样本联合经验分布代替后，得到的是样本相关系数。Bootstrap 再向前走一步：不仅用 $\hat F_{n}$ 估计参数，还从 $\hat F_{n}$ 中抽样，近似“如果从 $F$ 重新抽样会怎样”。
+
+### 一份 Bootstrap 样本是怎样产生的 {#sec-bootstrap-core-2}
+
+从经验分布 $\hat F_{n}$ 中独立抽取 $n$ 次，就等价于从原样本中**有放回**抽取 $n$ 个记录。抽到一个数以后立即放回，因此同一个记录可能出现多次，也可能一次都没有出现。
+
+对 $x=(2,4,5,7,12)$，下面是几份可能的 Bootstrap 样本。为了看清“哪些原始记录被抽中了几次”，第三列按原始顺序 $(2,4,5,7,12)$ 记录每个观测被抽中的次数。
+
+| 重抽样轮次 | Bootstrap 样本 | 各原始观测被抽中的次数 $(N_{1}^{*},\ldots,N_{5}^{*})$ | 均值 |
+|:---:|---|---|---:|
+| 1 | $(2,2,5,12,12)$ | $(2,0,1,0,2)$ | 6.6 |
+| 2 | $(4,4,5,5,7)$ | $(0,2,2,1,0)$ | 5.0 |
+| 3 | $(2,4,7,7,12)$ | $(1,1,0,2,1)$ | 6.4 |
+| $\vdots$ | $\vdots$ | $\vdots$ | $\vdots$ |
+| 500 | $(12,4,7,5,12)$ | $(0,1,1,1,2)$ | 8.0 |
+
+
+
+令 $N_{i}^{*}$ 表示原样本第 $i$ 个记录在某一份 Bootstrap 样本中被抽中的次数，令
+
+$$
+W_{i}^{*}=\frac{N_{i}^{*}}{n}
+$$
+
+表示它在伪样本中的相对权重。于是 Bootstrap 均值可以写成
+
+$$
+\bar X^{*}=\sum_{i=1}^{n}W_{i}^{*}X_{i},
+\qquad W_{i}^{*}\geq0,
+\qquad \sum_{i=1}^{n}W_{i}^{*}=1.
+$$
+
+第一份伪样本的权重是 $(0.4,0,0.2,0,0.4)$，因此
+
+$$
+\bar X^{*}=0.4\times2+0.2\times5+0.4\times12=6.6.
+$$
+
+Bootstrap 的随机性可以理解成：原样本中的记录不变，但每轮给它们分配了不同的随机权重。
+
+为什么一定要有放回？普通非参数 Bootstrap 要模拟的是从经验分布独立抽取 $n$ 次，因此采用有放回抽样 (Efron and Tibshirani, 1993, Ch. 6)。如果从 5 个记录中无放回地抽满 5 个，得到的只是原样本的一个重新排列。均值、方差和通常的回归系数都不会因此改变，也就没有办法观察统计量的抽样波动。
+
+### 从一份伪样本到 Bootstrap 分布 {#sec-bootstrap-core-3}
+
+对第 $b$ 份 Bootstrap 样本 $S^{*(b)}$，重新计算同一个统计量：
+
+$$
+\hat\theta^{*(b)}=T(S^{*(b)}).
+$$
+
+重复 $B$ 次以后，就得到
+
+$$
+\hat\theta^{*(1)},\ldots,\hat\theta^{*(B)}.
+$$
+
+这些值的经验分布就是实际计算中看到的 Bootstrap 分布近似 (Efron and Tibshirani, 1993, Ch. 6; Hesterberg, 2015)。这里有三个不同对象，需要一直区分：
+
+- $\hat F_{n}$ 是**观测值**的经验分布；
+- $\mathcal L^{*}(\hat\theta^{*}\mid S)$ 是给定原样本以后，**统计量**的理想 Bootstrap 分布；
+- 有限 $B$ 次得到的直方图，只是对这个理想 Bootstrap 分布的数值近似。
+
+整个逻辑可以写成两个平行世界。
+
+现实抽样世界是
+
+$$
+F\longrightarrow S\longrightarrow\hat\theta,
+$$
+
+Bootstrap 世界是
+
+$$
+\hat F_{n}\longrightarrow S^{*}\longrightarrow\hat\theta^{*}.
+$$
+
+![从一份样本到 Bootstrap 分布](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig04-bootstrap-concept-03-resampling-distribution-20260915-155423.png){#fig-bootstrap-04 width="100%" fig-alt="从一份样本到 Bootstrap 分布"}
+
+*图注：从同一份原样本反复有放回重抽，每次重新计算统计量；许多次统计量的取值共同形成 Bootstrap 分布。*
+
+Bootstrap 希望第二条链条能够模仿第一条链条中估计误差的变化。更准确地说，对于适用的统计量，我们希望
+
+$$
+\mathcal L^{*}(\hat\theta^{*}-\hat\theta\mid S)
+\approx
+\mathcal L_{F}(\hat\theta-\theta).
+$$
+
+右边是现实抽样中“估计值减真实参数”的误差分布；左边是 Bootstrap 世界中“重抽样估计值减原估计值”的误差分布。Bootstrap 不是说 $\hat\theta$ 已经等于 $\theta$，而是希望围绕 $\hat\theta$ 的重抽样波动能够近似围绕 $\theta$ 的真实抽样波动。
+
+这一步需要理论条件。经验分布能够逼近总体分布只是基础，还要求目标统计量对这种分布扰动足够稳定，而且重抽样方案与实际数据结构一致。 @sec-bootstrap-schemes 会看到，一旦数据有聚类或时间依赖，就不能机械地逐行抽样。
+
+## 从重抽样分布到标准误和置信区间 {#sec-bootstrap-inference}
+
+理解一份 Bootstrap 样本以后，后面的计算并不神秘：重复很多次，把每次的统计量保存下来，再从这些统计量的分布中读取标准误、偏差和分位数。
+
+### Bootstrap 标准误 {#sec-bootstrap-inference-1}
+
+记
+
+$$
+\bar\theta^{*}=\frac{1}{B}\sum_{b=1}^{B}\hat\theta^{*(b)}.
+$$
+
+有限 $B$ 下，用 $B$ 个 Bootstrap 统计量的样本标准差估计理想 Bootstrap 分布的标准差 (Efron and Tibshirani, 1993, Ch. 6; Guan, 2003)：
+
+$$
+\widehat{SE}_{\mathrm{boot}}(\hat\theta)
+=\sqrt{\frac{1}{B-1}\sum_{b=1}^{B}
+\left(\hat\theta^{*(b)}-\bar\theta^{*}\right)^{2}}.
+$$
+
+这里**不再除以 $\sqrt{B}$**。我们关心的是 $\hat\theta^{*}$ 本身在重抽样中的离散程度，而不是 $B$ 个 Bootstrap 估计值平均数的标准误。增加 $B$ 应让这个标准误估计更稳定，但不应让原统计量的不确定性趋于零。
+
+同一批重抽样结果还可以估计 Bootstrap 偏差：
+
+$$
+\widehat{\operatorname{Bias}}_{\mathrm{boot}}
+=\bar\theta^{*}-\hat\theta.
+$$
+
+它衡量的是统计量在所估计 DGP 下的偏差，不会自动识别样本选择偏差、遗漏变量偏差或内生性。
+
+### 四个步骤，以及对应的 Stata 和 Python 代码 {#sec-bootstrap-inference-2}
+
+普通 iid Bootstrap 可以概括为四步：
+
+1. **Step 1**: 从原样本有放回抽取 $n$ 个记录，得到一份 Bootstrap 样本。
+2. **Step 2**: 在这份样本上重新计算目标统计量 $\hat\theta^{*}$。
+3. **Step 3**: 独立重复前两步 $B$ 次，并保存每一次的统计量。
+4. **Step 4**: 用保存下来的 $B$ 个统计量计算标准误、偏差、分位数或其他推断量。
+
+下面的 Stata 代码故意不用最简短的 `bootstrap` 前缀，而是把“抽样—计算—重复—保存”四步暴露出来，便于理解算法。该程序已在本地 Stata 19.5 执行，保存了 9999 次重抽样结果。
+
+```stata
+clear
+input double x
+2
+4
+5
+7
+12
+end
+
+* 定义一次 Bootstrap 重抽样：bsample 会有放回地抽取与原样本同样多的记录。
+capture program drop boot_mean_once
+program define boot_mean_once, rclass
+    preserve
+    bsample
+    quietly summarize x
+    return scalar xbar = r(mean)
+    restore
+end
+
+* 重复 9999 次，并把每次均值保存为变量 xbar_star。
+simulate xbar_star=r(xbar), reps(9999) seed(12345): ///
+    boot_mean_once
+
+* 第 4 步：查看 9999 个 Bootstrap 均值的分布。
+summarize xbar_star, detail
+```
+
+Python 的对应逻辑更直接：
+
+```python
+import numpy as np
+
+x = np.array([2., 4., 5., 7., 12.])
+n = len(x)
+B = 9999
+rng = np.random.default_rng(12345)
+
+boot_means = np.empty(B)
+
+for b in range(B):
+    # Step 1: 有放回抽取 n 个观测
+    x_star = rng.choice(x, size=n, replace=True)
+
+    # Step 2: 重新计算目标统计量
+    boot_means[b] = x_star.mean()
+
+# Step 3 已由循环完成；Step 4 读取重抽样分布
+boot_se = boot_means.std(ddof=1)
+boot_bias = boot_means.mean() - x.mean()
+```
+
+实际研究中通常不会手写循环。Stata 的 `bootstrap` 前缀和许多估计命令的 `vce(bootstrap)` 选项会自动完成这些步骤， @sec-bootstrap-applications 再讨论常规用法。
+
+### 五个数的精确结果 {#sec-bootstrap-inference-3}
+
+当前教学样本只有 5 个观测，因此所有有序 Bootstrap 样本一共只有
+
+$$
+5^{5}=3125
+$$
+
+种，每一种的概率都是 $1/3125$。所以这个例子可以不用随机模拟，直接穷举全部可能结果，得到理想 Bootstrap 分布。
+
+沿用 canonical v05 中已经核验的计算结果：
+
+| 对象 | 精确 Bootstrap 计算 |
+|---|---:|
+| 原样本均值 $\bar X$ | 6.0000 |
+| Bootstrap 均值的期望 $E^{*}(\bar X^{*})$ | 6.0000 |
+| 理想 Bootstrap 标准误 $\sqrt{\operatorname{Var}^{*}(\bar X^{*})}$ | 1.5232 |
+| Bootstrap 偏差 | 0.0000 |
+| 常用解析标准误估计 $s/\sqrt{n}$ | 1.7029 |
+
+这里两种标准误并不完全相同。原样本离差平方和为 58，经验分布按概率 $1/5$ 计算的方差为 $58/5=11.6$，因此
+
+$$
+\operatorname{Var}^{*}(\bar X^{*})=\frac{11.6}{5}=2.32,
+$$
+
+于是 Bootstrap 标准误为 $\sqrt{2.32}=1.5232$。通常无偏样本方差使用分母 $n-1$，所以
+
+$$
+s^{2}=\frac{58}{4}=14.5,
+\qquad
+\frac{s}{\sqrt{n}}=1.7029.
+$$
+
+一般地，对 iid 均值有
+
+$$
+\sqrt{\operatorname{Var}^{*}(\bar X^{*})}
+=\sqrt{\frac{n-1}{n}}\frac{s}{\sqrt{n}}.
+$$
+
+这是一条代数关系，不应被误解为“Bootstrap 已经验证了 iid 假设”。即使原数据其实存在时间依赖，只要错误地逐点 Bootstrap，也仍然会得到这条关系。
+
+### 从 Bootstrap 统计量的排序位置理解百分位数区间 {#sec-bootstrap-inference-4}
+
+标准误只告诉我们 Bootstrap 分布有多宽。要构造区间，还要决定把端点放在哪里。百分位数区间的做法很直接：**先把很多次 Bootstrap 得到的统计量从小到大排序，再取两端指定比例的位置。** 因此，这里应该查看的是 $\bar X^{*}$ 或更一般的 $\hat\theta^{*}$，而不是重新查看原始的 5 个观测值。
+
+前面的 Stata 教学程序已经把每一次重抽样均值保存为 `xbar_star`。完成较多次重抽样以后，可以直接查看这些 Bootstrap 均值的分位数：
+
+```stata
+* 本例保存了 9999 次重抽样均值。
+summarize xbar_star, detail
+centile xbar_star, centile(2.5 97.5)
+```
+
+`xbar_star` 的每一行对应一次 Bootstrap 样本的均值。例如，若一共保存了 9999 个均值，先把它们从小到大排列，2.5% 分位数就是靠近序列左端 2.5% 位置的数值，97.5% 分位数则是靠近右端 2.5% 位置的数值。百分位数置信区间就是把这两个位置直接作为区间端点。
+
+
+
+
+::: {.callout-note title="Stata 19.5 实际输出：9999 次重抽样"}
+
+下面摘录 `summarize xbar_star, detail` 的分布摘要和 `centile` 的端点列 (seed 为 12345)：
+
+```text
+summarize xbar_star, detail
+Obs          9,999       Mean       5.986039
+Std. dev.    1.523227    Median     6
+
+centile xbar_star, centile(2.5 97.5)
+Variable       Obs      Percentile      Centile
+xbar_star      9,999        2.5            3.4
+                          97.5            9.2
+```
+
+读取 `Centile` 列可得百分位数区间 [3.4, 9.2]。`centile` 原输出右侧还报告各分位数估计自身的置信区间，那两组数不是这里要构造的总体均值区间。完整输出保存在配套 Stata Notebook。有限次重抽样的均值和标准误有模拟误差；不同软件的随机数与分位数约定也可能不同，不要求逐位相同。
+
+:::
+
+定义 $Q_{p}(\hat\theta^{*})$ 为 Bootstrap 分布的第 $p$ 分位数，则 $1-\alpha$ 的**百分位数置信区间 (percentile confidence interval)** 为
+
+$$
+CI_{1-\alpha}^{P}
+=\left[
+Q_{\alpha/2}(\hat\theta^{*}),
+Q_{1-\alpha/2}(\hat\theta^{*})
+\right].
+$$
+
+例如，95% 区间取 2.5% 和 97.5% 分位数。百分位数区间是最直观的 Bootstrap 区间之一，但其覆盖精度仍依赖统计量和样本规模，不能把“无需正态分布公式”理解为“无需条件” (Efron and Tibshirani, 1993, Ch. 13; Hesterberg, 2015)。对五点样本的全部 $5^{5}=3125$ 个等概率 Bootstrap 均值进行穷举时，本章统一使用经验分布广义逆的分位数定义，得到端点
+
+$$
+[3.4,9.2].
+$$
+
+![同一份五点样本的精确 Bootstrap 均值分布](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig05-mean-bootstrap-exact-20260915-155423.png){#fig-bootstrap-05 width="100%" fig-alt="同一份五点样本的精确 Bootstrap 均值分布"}
+
+*图注：每根柱的高度是对应均值的概率，不是平滑密度。两条端点线对应百分位数区间，中心线标示原样本均值 6。*
+
+这个精确分布还有一个教学上的好处：它把“分位数”从抽象定义变成了排序问题。随机做 9999 次 Bootstrap 时，我们只是用有限次随机重抽样近似这 3125 种可能结果所构成的理想分布；$B$ 越大，样本分位数通常越稳定，但不会增加原始样本中的信息。
+
+还可以用 Bootstrap 标准误构造正态近似区间：
+
+$$
+CI_{1-\alpha}^{N}
+=\left[
+\hat\theta-z_{1-\alpha/2}\widehat{SE}_{\mathrm{boot}},
+\hat\theta+z_{1-\alpha/2}\widehat{SE}_{\mathrm{boot}}
+\right].
+$$
+
+对五点样本，代入理想 Bootstrap 标准误后约为 $[3.015,8.985]$。百分位数区间允许不对称，正态近似区间则以点估计为中心对称；两者都不是在任何小样本中自动可靠。
+
+“95% 置信区间”的频率学派解释仍然没有改变：如果能够从真实 DGP 反复抽样，并且每次都按同一规则构造区间，那么长期覆盖真实参数的比例希望接近 95%。它不是说已经算出的这一个区间以 95% 概率包含固定参数。
+
+## 假设检验为什么还要加入原假设 {#sec-bootstrap-testing}
+
+置信区间主要描述“估计量在当前估计 DGP 下怎样波动”。假设检验多了一层要求：我们必须问，**如果原假设 $H_{0}$ 为真，统计量应该怎样波动？** 因而，直接从原样本得到的 Bootstrap 分布不能总是拿来数 p 值；必须让重抽样机制与 $H_{0}$ 相容。
+
+### 把参考分布移到原假设下 {#sec-bootstrap-testing-1}
+
+继续使用五点样本，检验总体均值是否高于预先给定的基准 4：
+
+$$
+H_{0}:\mu=4,
+\qquad
+H_{1}:\mu>4.
+$$
+
+观测统计量取
+
+$$
+U_{\mathrm{obs}}=\bar X-4=2.
+$$
+
+原经验分布的均值是 6。如果直接对 $\bar X^{*}$ 的右尾计数，只能回答“从均值为 6 的经验分布重新抽样时，多大的均值常见”，并没有回答“在 $H_{0}:\mu=4$ 下，观察到均值 6 是否异常”。
+
+一个简单的做法是把经验分布平移到原假设下：
+
+$$
+X_{i}^{0}=X_{i}-\bar X+4.
+$$
+
+于是五个数变成 $(0,2,3,5,10)$，经验均值恰好为 4。从这组数据有放回抽样得到 $\bar X^{0*}$，再计算
+
+$$
+U^{*}=\bar X^{0*}-4.
+$$
+
+如果使用同一组重抽样索引，就有
+
+$$
+U^{*}
+=\bar X^{0*}-4
+=\bar X^{*}-\bar X.
+$$
+
+因此可以显式平移数据，也可以把上一节的每个 Bootstrap 均值减去原样本均值。两种写法在这个简单均值问题中等价。
+
+这里的关键不是“所有 Bootstrap 检验都要平移数据”，而是：**检验必须构造一个在原假设下有意义的参考分布。** 对更复杂的模型，可能通过中心化、学生化、受约束估计或其他方式完成。
+
+### 尾部计数与 p 值 {#sec-bootstrap-testing-2}
+
+对于右尾检验，观察到的统计量是 $U_{\mathrm{obs}}=2$。给定 $B$ 次随机重抽样，本章采用
+
+$$
+\hat p^{*}
+=\frac{1+\sum_{b=1}^{B}I(U_{b}^{*}\geq U_{\mathrm{obs}})}{B+1}.
+$$
+
+加一是有限随机重抽样下的一种明确计数约定，避免因为 $B$ 有限而直接报告零概率。它并不能让任意 Bootstrap 检验变成有限样本精确检验；Bootstrap 检验的重复次数和 p 值精度还需结合具体检验设计判断 (Davidson and MacKinnon, 2000)。
+
+沿用 canonical v05 的 Python 核验，$B=9999$ 时右尾计数为 1171，对应 p 值为 0.1172。若穷举全部 3125 个等概率结果，右尾计数为 376，理想经验 DGP 下的尾概率为
+
+$$
+\frac{376}{3125}=0.12032.
+$$
+
+![原假设下中心化均值的参考分布](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig06-null-mean-tail-20260915-155423.png){#fig-bootstrap-06 width="100%" fig-alt="原假设下中心化均值的参考分布"}
+
+*图注：这是上一节全部 Bootstrap 均值减去原样本均值 6 后的参考分布。满足 $U^{*}\geq2$ 的部分构成右尾，概率总和为 0.12032。*
+
+在这个构造下，没有足够证据在 5% 水平拒绝 $H_{0}$。这不等于“证明总体均值就是 4”，也不能把 0.1172 解释为“原假设成立的概率”。
+
+
+::: {.callout-note title="先确定检验方向，再定义 p 值"}
+
+假设某个观测统计量位于原假设参考分布的第 97 百分位，也就是其左侧累计概率约为 0.97。这里的 **0.97 是累计概率，不应直接叫作 p 值**。
+
+- 若事先的备择假设是右尾，例如 $H_{1}:\mu>\mu_{0}$，p 值应取右尾概率，约为 $1-0.97=0.03$。
+- 若事先的备择假设是左尾，同一个观测值对应的左尾 p 值约为 0.97，因此并不支持这个方向的备择假设。
+- 若采用对称的等尾双侧规则，两侧都要计入。连续情形下可直观写成 $2\min(0.97,0.03)=0.06$；实际离散 Bootstrap 分布还要按事先规定的双侧统计量和并列值规则计算。
+
+同理，如果统计量位于第 3 百分位，左尾概率约为 0.03，右尾概率约为 0.97。**“位于分布尾部”与“p 值等于 0.03 还是 0.97”取决于事先定义的备择方向。** 不能看完统计量落在哪一边以后，再临时把检验方向改成能得到较小 p 值的那一侧。
+
+:::
+
+因此，Bootstrap 检验中真正需要保存的不是“一个神秘的 p 值”，而是原假设下的参考分布、观测统计量的位置以及预先定义的尾部规则。
+
+![Bootstrap 检验中的尾部与 p 值](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig07-bootstrap-concept-04-test-tails-pvalue-20260915-155423.png){#fig-bootstrap-07 width="100%" fig-alt="Bootstrap 检验中的尾部与 p 值"}
+
+*图注：同一个观测统计量在参考分布中的位置固定，但 p 值取哪一侧由事先设定的备择方向决定；累计概率 0.97 不能直接称为 p 值。原图左下小图仅示意左尾方向，阴影面积未按 0.97 比例绘制；本例的概率与观测位置请按上方主图及正文读取。*
+
+### Bootstrap 检验与置换检验的区别 {#sec-bootstrap-testing-3}
+
+Permutation test 也属于再抽样推断，但它通常不是“从样本有放回抽数据”。例如两组随机试验中，若 $H_{0}$ 表示处理标签与结果无关，可以在保持观测结果不变的情况下重新分配组别标签，从而构造原假设下的置换分布。
+
+Bootstrap 更常见的思路是先估计 DGP，再从估计 DGP 中生成伪样本；Permutation test 则利用 $H_{0}$ 下的可交换性重新安排观测或标签。二者都依靠计算，但**抽样规则、原假设和概率解释必须分别说明**。 @sec-bootstrap-applications-3 比较组间回归系数时会再次遇到这个区别。
+
+## 常用 Bootstrap 抽样方法 {#sec-bootstrap-schemes}
+
+到目前为止，我们一直假定观测是 iid，因此可以把“一行数据”作为抽样单位。但金融计量中常见的回归、面板和时间序列会打破这个简单结构。选择 Bootstrap 方法，本质上是在回答两个问题：**什么才是近似独立的抽样单位，以及伪样本必须保留原数据中的哪些关系。**
+
+![五种常用 Bootstrap 抽样方法](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig08-bootstrap-concept-05-method-map-20260915-155423.png){#fig-bootstrap-08 width="100%" fig-alt="五种常用 Bootstrap 抽样方法"}
+
+*图注：Pairs、residual、wild、cluster 和 block Bootstrap 的差别，不在于命令名称，而在于抽样单位以及必须保留的数据结构。*
+
+只看文字定义容易把几种方法混在一起。下面先准备一个只有 9 行的教学数据，5.1–5.4 节都用它来说明“每次重抽样到底改了什么”。数据由 3 家企业、3 个时期组成，变量没有实际经济含义，只服务于抽样机制说明。
+
+| 企业 | 时期 | $x$ | $y$ | $\hat y=1+2x$ | 残差 $\hat u=y-\hat y$ |
+|---|---:|---:|---:|---:|---:|
+| A | 2021 | 1 | 3 | 3 | 0 |
+| A | 2022 | 2 | 3 | 5 | -2 |
+| A | 2023 | 3 | 8 | 7 | 1 |
+| B | 2021 | 1 | 4 | 3 | 1 |
+| B | 2022 | 2 | 5 | 5 | 0 |
+| B | 2023 | 3 | 6 | 7 | -1 |
+| C | 2021 | 1 | 2 | 3 | -1 |
+| C | 2022 | 2 | 7 | 5 | 2 |
+| C | 2023 | 3 | 7 | 7 | 0 |
+
+把这 9 行暂时放入一个带常数项的一元回归，OLS 恰好得到 $\hat y=1+2x$，所以残差也很容易手算。这里不是在推荐用 pooled OLS 分析真实面板数据，而是让不同 Bootstrap 方案可以在同一张小表上比较。
+
+### Pairs Bootstrap：整行观测一起抽 {#sec-bootstrap-schemes-1}
+
+如果每一行 $(Y_{i},X_{i})$ 都可以看成独立同分布的联合观测，最直接的方法是把整行作为一个单位，有放回抽取 $n$ 行。这称为**成对 Bootstrap (pairs bootstrap)**。
+
+例如，把上表 9 行暂时当成 9 个独立观测。第一次可能抽到
+
+$$
+(C2,A1,C3,B3,B3,C1,A1,C2,C3),
+$$
+
+第二次也可能抽到
+
+$$
+(B1,A1,A3,B2,B3,B1,C1,C2,A3).
+$$
+
+其中 `A1` 表示企业 A 的第 1 期。第一份伪样本中，`C2`、`B3`、`A1` 和 `C3` 都重复出现，而 `A2`、`A3`、`B1`、`B2` 完全没有出现；第二份伪样本的重复与遗漏模式又不同。这才是有放回随机抽样应有的样子：不存在“先抽 A 公司、再抽 B 公司”的固定顺序。
+
+关键是每次抽到一条记录时，$x$ 与 $y$ 始终整行一起移动；若分别重抽 $x$ 和 $y$，就会破坏原样本中的联合关系。Pairs Bootstrap 的这种整行重抽思想是回归 Bootstrap 的基本方案之一 (Efron and Tibshirani, 1993, Ch. 9; Davison and Hinkley, 1997, Ch. 6)。
+
+这个例子也立刻暴露了 pairs Bootstrap 的边界：如果 A、B、C 真的是 3 家企业的面板记录，那么逐行抽样会把同一企业内部的相关结构拆开。此时“行”不是正确的独立抽样单位， @sec-bootstrap-schemes-4 的 cluster Bootstrap 更合适。
+
+### Residual Bootstrap：固定 $X$，重新抽误差 {#sec-bootstrap-schemes-2}
+
+考虑线性模型
+
+$$
+Y_{i}=X_{i}'\beta+u_{i}.
+$$
+
+如果研究问题采取“给定这一组 $X$，误差项怎样随机变化”的条件推断视角，可以固定原来的 $X$ 和拟合值，只从适当中心化的残差中有放回抽取新的误差 $u_{i}^{*}$，再构造
+
+$$
+Y_{i}^{*}=X_{i}'\hat\beta+u_{i}^{*}.
+$$
+
+用上面的 9 行数据，残差池是
+
+$$
+(0,-2,1,1,0,-1,-1,2,0).
+$$
+
+某一次有放回抽取可能得到
+
+$$
+u^{*}=(2,2,1,0,-1,-2,1,0,-1).
+$$
+
+由于 $\hat y=(3,5,7,3,5,7,3,5,7)$ 保持不变，这次伪样本的因变量变成
+
+$$
+y^{*}=(5,7,8,3,4,5,4,5,6).
+$$
+
+注意，这次没有重新抽 $x$，也没有移动企业或时期标签；改变的是误差实现。
+
+经典 residual Bootstrap 把这些残差视为可以在不同观测之间交换，因此最适合模型设定正确、误差近似 iid 或至少同方差可交换的情形 (Efron and Tibshirani, 1993, Ch. 9; Davison and Hinkley, 1997, Ch. 6)。若真实误差方差随 $X$ 变化，把大残差和小残差混在一起重抽会抹掉异方差结构。
+
+### Wild Bootstrap：残差不换位置，只改变随机方向和幅度规则 {#sec-bootstrap-schemes-3}
+
+异方差明显时，一个常见思路是 **Wild Bootstrap**。它不把第 $i$ 个观测的残差拿到第 $j$ 个观测上，而是让每个观测自己的残差乘一个随机乘子：
+
+$$
+u_{i}^{*}=\tilde u_{i}v_{i},
+$$
+
+其中 $\tilde u_{i}$ 是按所用方案处理后的残差，$v_{i}$ 是独立生成的随机乘子。最基本的要求是
+
+$$
+E^{*}(v_{i})=0,
+\qquad
+E^{*}(v_{i}^{2})=1.
+$$
+
+这两个矩条件使伪误差仍以 0 为中心，并把第 $i$ 条记录自身的残差尺度保留下来。Wild Bootstrap 并不只有一种乘子。常见选择包括 (Mammen, 1993; Davidson and Flachaire, 2008)：
+
+| 乘子 | 定义 | 直观含义 |
+|---|---|---|
+| Rademacher | $P(v_{i}=1)=P(v_{i}=-1)=1/2$ | 每条残差独立地以 1/2 概率保持符号、以 1/2 概率翻转符号；一轮样本中不要求“恰好一半”翻转，但平均而言约有一半翻转 |
+| Mammen two-point | $v_{i}=a=(1-\sqrt5)/2$ 的概率为 $(\sqrt5+1)/(2\sqrt5)$；$v_{i}=b=(1+\sqrt5)/2$ 的概率为 $(\sqrt5-1)/(2\sqrt5)$ | 非对称的两点分布，满足 $E(v)=0$、$E(v^{2})=1$、$E(v^{3})=1$，用于匹配更高阶矩特征 |
+| Standard normal | $v_{i}\sim N(0,1)$ | 连续地改变残差的符号和幅度；概念简单，但有限样本表现并不因此自动优于两点乘子 |
+
+Rademacher 乘子还有一个很直观的性质：由于 $v_{i}^{2}=1$，有
+
+$$
+(u_{i}^{*})^{2}=\tilde u_{i}^{2}.
+$$
+
+也就是说，每条记录的残差平方在这一轮重抽样中保持不变，只改变符号。Mammen 乘子允许幅度也发生两点式变化，并通过三阶矩条件引入非对称性。正态乘子则允许连续幅度变化。**这些分布不是任意装饰；它们决定了伪误差如何模仿原误差的条件异方差和高阶形态。**
+
+实际研究中还要同时考虑残差是否做杠杆修正、统计量是否学生化，以及样本是否存在聚类。Roodman et al. (2019) 对 Wild Cluster Bootstrap 的乘子选择和 Stata 实现给出了更系统的讨论。
+
+
+![Wild Bootstrap 的常用随机乘子](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig09-bootstrap-concept-06-wild-multipliers-20260915-155423.png){#fig-bootstrap-09 width="100%" fig-alt="Wild Bootstrap 的常用随机乘子"}
+
+*图注：Wild Bootstrap 不交换残差位置，而是通过 $u_{i}^{*}=\tilde u_{i}v_{i}$ 改变残差的随机实现。图中列出 Rademacher、Mammen 两点和标准正态三类常见乘子。*
+
+为了只看机制，先用最简单的 Rademacher 乘子，即每个 $v_{i}$ 以相同概率取 $-1$ 或 $1$。假设这 9 行抽到
+
+$$
+v=(1,-1,1,-1,1,-1,1,-1,1).
+$$
+
+那么原残差
+
+$$
+(0,-2,1,1,0,-1,-1,2,0)
+$$
+
+变成
+
+$$
+u^{*}=(0,2,1,-1,0,1,-1,-2,0),
+$$
+
+于是
+
+$$
+y^{*}=(3,7,8,2,5,8,2,3,7).
+$$
+
+这里最值得观察的是：第 2 行原残差的绝对值是 2，重抽后仍然以这条记录自身的尺度 2 为基础；第 1 行残差为 0，也不会从别处“借来”一个大残差。这正是 Wild Bootstrap 用来保留异方差尺度差异的直觉。
+
+实际应用中的 wild Bootstrap 还会涉及其他乘子分布、杠杆修正和学生化。聚类数据中的 Wild Cluster Bootstrap 更是在簇层面使用共同乘子，不能简单理解成逐行乘 $\pm1$。
+
+### Cluster Bootstrap：抽的是企业，而不是企业年份 {#sec-bootstrap-schemes-4}
+
+如果上面的 A、B、C 确实代表 3 家企业，而且企业内部 3 期观测允许相关，那么近似独立的单位是“企业”，不是“企业年份”。**Cluster Bootstrap** 因此有放回抽取企业，并把被抽中企业的全部时期一起带入伪样本。
+
+例如，原来有 3 个企业簇 $(A,B,C)$，一次 cluster Bootstrap 可能抽到
+
+$$
+(A,C,C).
+$$
+
+这份伪样本就由下面 9 行组成：
+
+$$
+(A1,A2,A3,C1,C2,C3,C1,C2,C3).
+$$
+
+企业 B 整组没有出现，企业 C 的三期记录整组出现两次。企业内部的时期顺序和共同波动没有被拆开。
+
+**Cluster Bootstrap 的核心不是“先分组再普通抽样”，而是把整个簇当作一次抽样的最小单位。** 它在簇层面有放回抽样，同时保持被抽中簇内部的记录关系不变；这与 residual Bootstrap 在观测层重抽误差、Wild Bootstrap 在观测层或簇层施加随机乘子的机制不同 (Field and Welsh, 2007)。
+
+这个只有 3 个企业的例子**只用于说明抽样动作，不能拿来做可靠的聚类推断**。真实应用还要考虑独立聚类数 $G$ 是否足够、簇规模是否极不均衡，以及是否需要 Wild Cluster Bootstrap 或其他少聚类修正。
+
+### Block Bootstrap：时间顺序不能被完全打散 {#sec-bootstrap-schemes-5}
+时间序列需要另一种直觉。假设连续 8 个交易日的收益率如下：
+
+| 交易日 | 日收益率 (%) |
+|---:|---:|
+| 1 | 0.4 |
+| 2 | 0.6 |
+| 3 | 0.5 |
+| 4 | -0.3 |
+| 5 | -0.5 |
+| 6 | -0.4 |
+| 7 | 0.7 |
+| 8 | 0.8 |
+
+若逐日 iid 重抽，第 2 日后面原本紧接第 3 日、第 4–6 日连续为负这些局部关系都会被打散。Block Bootstrap 改为抽“连续的一段时间”，其基本思想是让伪样本保留一部分局部时序依赖。Moving Block Bootstrap 的经典理论可追溯至 Künsch (1989)。
+
+![Moving Block Bootstrap 的区块构造与拼接](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig10-bootstrap-concept-07-moving-block-20260915-155423.png){#fig-bootstrap-10 width="100%" fig-alt="Moving Block Bootstrap 的区块构造与拼接"}
+
+*图注：长度为 3 的移动区块保留区块内部的时间顺序；随机抽取若干区块后再拼接成一份伪时间序列。*
+
+以 Moving Block Bootstrap、区块长度 $\ell=3$ 为例，可用的重叠区块包括
+
+$$
+\begin{aligned}
+B_{1}&=(0.4,0.6,0.5),\\
+B_{2}&=(0.6,0.5,-0.3),\\
+B_{3}&=(0.5,-0.3,-0.5),\\
+B_{4}&=(-0.3,-0.5,-0.4),\\
+B_{5}&=(-0.5,-0.4,0.7),\\
+B_{6}&=(-0.4,0.7,0.8).
+\end{aligned}
+$$
+
+如果一次抽到 $(B_{4},B_{1},B_{5})$，依次拼接并截取前 8 个数，可以得到伪序列
+
+$$
+(-0.3,-0.5,-0.4,0.4,0.6,0.5,-0.5,-0.4).
+$$
+
+区块内部的相邻顺序被保留，但区块之间的连接位置可以改变。区块过短会丢失较长依赖，区块过长又会减少可供重抽的有效变化，因此 $\ell$ 本身也是需要选择和检查的参数。
+
+以平稳时间序列均值为例，若第 $k$ 阶自协方差为 $\gamma_{k}$，则
+
+$$
+\operatorname{Var}(\bar X)
+=\frac{1}{n}\left[
+\gamma_{0}
++2\sum_{k=1}^{n-1}
+\left(1-\frac{k}{n}\right)\gamma_{k}
+\right].
+$$
+
+逐点 iid Bootstrap 不能保留后面的协方差项。Block Bootstrap 只是近似保留局部依赖，也仍需要平稳性、弱依赖等条件；单位根、明显结构突变等问题不会因为“切块”自动消失。
+
+### 怎样在这些方案之间做选择 {#sec-bootstrap-schemes-6}
+
+前面的数值例子看起来只是不同的“洗牌方式”，其实每一种方式都对应一套关于 DGP 的判断。面对新的数据，可以先问三件事：
+
+- **独立抽样单位是什么？** 是单个个体、企业、地区，还是时间区块？
+- **希望条件于什么？** 回归中是让 $X$ 一起随机变化，还是固定 $X$ 只模拟误差？
+- **原数据中哪些依赖必须保留？** 异方差、簇内相关、时间依赖是否是统计量抽样波动的一部分？
+
+简化地说，iid 横截面常用 pairs Bootstrap；固定设计且同方差误差可考虑 residual Bootstrap；异方差回归常用 wild 类方法；聚类数据需要在簇层重抽或使用相应乘子方法；时间序列则需要 block 类方法。更系统的回归和相关数据 Bootstrap 讨论可参考 Efron and Tibshirani (1993, Ch. 8–9)、Davison and Hinkley (1997, Ch. 6, 8) 与 Horowitz (2018)。真实问题往往同时包含多个结构，因此不能把方法名当成互不相干的按钮。
+
+## 应用 {#sec-bootstrap-applications}
+
+Bootstrap 并不只用于少数特殊研究设计。对很多 Stata 用户来说，最常见的入口就是“我已经会估计这个模型，但希望用 Bootstrap 得到标准误或置信区间”。在此基础上，才会进一步遇到组间系数差异、面板门槛检验和机器学习中的 Bagging。
+
+### 最常见的用法：Bootstrap 标准误 {#sec-bootstrap-applications-1}
+
+如果一个估计命令支持 `vce(bootstrap)`，最直接的写法是在原命令后更换方差估计方式。例如：
+
+```stata
+* 已在本地 Stata 19.5 核验。
+sysuse auto, clear
+
+regress price weight length, ///
+    vce(bootstrap, reps(5000) seed(13579))
+```
+
+模型本身仍然是同一个 OLS；点估计仍来自原样本回归，改变的是方差估计和相应推断的计算方式。Bootstrap 会反复生成伪样本，并在每份伪样本上重新运行回归。
+
+另一个更通用的命令方式是 `bootstrap` 前缀。它特别适合保存某个系数、系数函数或用户程序返回的统计量：
+
+```stata
+* 已在本地 Stata 19.5 执行。
+bootstrap beta_weight=_b[weight], ///
+    reps(5000) seed(13579): ///
+    regress price weight length
+```
+
+如果目标是某个非线性函数，也可以把它写成待保存的表达式，或者让一个 `rclass`/`eclass` 程序返回统计量，再由 `bootstrap` 前缀负责重抽样和重复估计。由此可以把 Bootstrap 理解成一个**外层推断机制**：里面的估计命令可以变化，但每份伪样本都必须把原估计过程重新跑一遍。
+
+**`vce(robust)` 与 `vce(bootstrap)` 不是“低配版”和“高级版”。**
+
+初学者很容易产生一个疑问：既然 OLS 已经可以写 `vce(robust)`，什么时候还有必要写 `vce(bootstrap)`？两者解决问题的方式不同。
+
+`vce(robust)` 使用异方差稳健的 sandwich 方差公式。它不重抽样，没有随机模拟误差，计算很快；在独立横截面、主要担心异方差、研究对象就是常规回归系数时，通常已经是直接而自然的选择。
+
+`vce(bootstrap)` 则用重抽样近似估计量的抽样分布。它的优势主要不是“比 robust 更稳健”，而是**更灵活**：当目标统计量没有方便的解析方差公式、是多个估计量的非线性函数、来自多步程序，或者研究者希望直接利用重抽样分布构造区间时，Bootstrap 往往更方便。某些非标准检验也必须借助专门的 Bootstrap 参考分布。
+
+| 问题 | 更自然的起点 | 原因 |
+|---|---|---|
+| OLS 系数，独立横截面，主要担心异方差 | `vce(robust)` | 有成熟的异方差稳健解析方差，快速且无模拟误差 |
+| 系数差、比率、分位数、复杂多步统计量 | `bootstrap` / `vce(bootstrap)` | 直接重复完整估计过程，不必为每个统计量单独推导方差 |
+| 聚类、少聚类或时间依赖 | 先确定 cluster/wild/block 等结构 | 普通 `robust` 和普通逐行 Bootstrap 都可能破坏正确的依赖结构 |
+
+因此，不应为了“保险”同时把所有模型都改成 Bootstrap，也不应在 `vce(robust)` 与 `vce(bootstrap)` 得到不同显著性结论后只挑一个更喜欢的结果。Stata 中 Bootstrap 标准误的实现与不同抽样方案可参考 Guan (2003)、Poi (2004) 以及当前版本的 Stata `bootstrap` 手册。**先判断数据的随机结构和目标统计量，再选择方差估计或重抽样方案。**
+
+需要说明的是，普通 pairs Bootstrap 在随机设计、独立观测下可以容许异方差，但这不意味着它在有限样本中一定优于 heteroskedasticity-robust SE；简单 residual Bootstrap 在异方差下反而可能不合适。具体选项和 Stata 当前版本行为由本地整合时核对。
+
+### 自定义统计量：什么时候 `bootstrap` 前缀特别有用 {#sec-bootstrap-applications-2}
+
+很多实证问题的目标不是单个回归系数。例如：
+
+- 两个系数之差 $\beta_{1}-\beta_{2}$；
+- 两个估计量之比；
+- 多步估计得到的某个函数；
+- 分位数、相关系数、Sharpe ratio 等没有简单标准误公式的统计量；
+- 一段程序最终返回的政策效应或预测指标。
+
+这时 Bootstrap 的优势很直观：只要每一份伪样本上能够重新计算这个统计量，就可以收集它在重复样本中的分布，而不必为每一个新统计量单独推导方差公式。
+
+不过“能跑”不等于“有效”。统计量若对少数极端观测非常敏感，或目标参数位于分布边界，普通 Bootstrap 可能失效。 @sec-bootstrap-limits 会专门讨论。
+
+### 组间回归系数差异：直接 Bootstrap 系数差 {#sec-bootstrap-applications-3}
+
+“一组系数显著、另一组不显著”不等于“两组系数显著不同”。正确问题是直接研究系数差
+
+$$
+\Delta=\beta_{0}-\beta_{1}
+$$
+
+的抽样分布。
+
+设两组线性模型为
+
+$$
+Y_{i}=\alpha_{g}+\beta_{g}X_{i}+u_{i},
+\qquad g\in\{0,1\}.
+$$
+
+若两组独立，而且各组内部为 iid 横截面，可以在每一组内部单独重抽相同数量的完整记录，每次重新估计两个回归，再保存
+
+$$
+\hat\Delta^{*}=\hat\beta_{0}^{*}-\hat\beta_{1}^{*}.
+$$
+
+配套模拟数据 `data/bootstrap/two_groups_teaching.csv` 每组 80 条。沿用 canonical v05 已核验结果：
+
+| 对象 | 结果 |
+|---|---:|
+| 第 0 组斜率估计 | 0.2323 |
+| 第 1 组斜率估计 | 0.5849 |
+| 斜率差 $\hat\Delta$ | −0.3527 |
+| 系数差的 Bootstrap 标准误 | 0.1341 |
+| 95% 百分位数区间 | [−0.6144, −0.0905] |
+
+![组内重抽样得到的斜率差分布](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig11-group-difference-20260915-155423.png){#fig-bootstrap-11 width="100%" fig-alt="组内重抽样得到的斜率差分布"}
+
+*图注：每次重抽都保持两组原有身份，并在各组内部有放回抽取 80 条记录。竖线标示原系数差、零值和百分位数区间端点。数据来自教学模拟，不是融资约束的实证证据。*
+
+Stata 中可以把“两次回归并作差”写成一个返回统计量的程序，外面再用 `bootstrap`：
+
+```stata
+* 已在本地 Stata 19.5 执行。
+import delimited "data/bootstrap/two_groups_teaching.csv", clear
+assert inlist(group, 0, 1)
+drop if missing(invest, cash, group)
+
+capture program drop slope_diff
+program define slope_diff, rclass
+    tempname b0
+
+    quietly regress invest cash if group == 0
+    scalar `b0' = _b[cash]
+
+    quietly regress invest cash if group == 1
+    return scalar delta = scalar(`b0') - _b[cash]
+    * 清除最后一组回归留下的 e(sample)，保留两组样本。
+    ereturn clear
+end
+
+bootstrap delta=r(delta), strata(group) ///
+    reps(9999) seed(12345): ///
+    slope_diff
+
+estat bootstrap, percentile normal
+```
+
+这里 `strata(group)` 的作用是保持每组样本量，并在组内独立重抽。阅读的是 `delta` 的 Bootstrap 分布，而不是分别比较两组回归表上的星号。
+
+**组内 Bootstrap 与置换检验。**
+
+如果把全部观测合在一起，然后随机重新分配 `group` 标签，所构造的是另一种参考分布，逻辑更接近置换检验。它回答的是“在相应的原假设和可交换性条件下，重新分组能否产生这么大的差异”，而不是“保持原组别时，系数差在重复抽样中有多大波动”。
+
+连玉君编写的 `bdiff` 把组间系数比较封装成 Stata 命令。公开保存的 1.04 版默认包含 Fisher 置换逻辑，因此不能把它简单当作上面 `strata(group)` 组内 Bootstrap 的快捷替代。具体版本和尾概率定义放在[bdiff 的版本核验](#sec-bootstrap-bdiff)。
+
+本地 Stata 19.5 的 9999 次组内重抽样得到斜率差 -0.35267532、Bootstrap SE 0.13718173、百分位数区间 [-0.6283827, -0.0921835]。点估计与 Python 相同；有限次重抽样的标准误和端点略有差异，两种计算的区间均不包含 0。程序末尾的 `ereturn clear` 用于清除最后一次分组回归的 `e(sample)`，避免外层 `bootstrap` 只留下最后一组。
+
+### 面板门槛模型：Bootstrap 用来处理非标准检验 {#sec-bootstrap-applications-4}
+
+Bootstrap 的一个典型价值，是处理普通渐近检验分布不标准的问题。Hansen (1999) 的面板门槛模型就是金融与公司研究中常见的例子。
+
+设模型中的斜率会随着门槛变量 $q_{it}$ 是否超过某个未知门槛 $\gamma$ 而改变。检验“是否存在门槛效应”时，原假设下两个区间的斜率相同，此时门槛参数 $\gamma$ 本身并没有通常意义上的识别。正因为这个识别问题，不能机械地把常规 Wald、F 或 $\chi^{2}$ 临界值搬过来。
+
+Hansen (1999) 的做法是利用 Bootstrap 构造相应检验统计量的经验参考分布，再据此得到 p 值。这里 Bootstrap 的作用不是“给普通 OLS 换一个标准误”，而是**近似一个非标准检验统计量在原假设下的分布**。
+
+这一应用有两个教学意义。其一，Bootstrap 不只服务于标准误；它还可以解决“理论分布难以直接使用”的检验问题。其二，重抽样方案必须与门槛模型的估计步骤一致，每一份伪样本都需要重新完成门槛搜索和模型估计，而不能只对最终系数加随机扰动。
+
+面板门槛模型的完整设定、门槛搜索和 Stata 实操应放在相应面板专题中。本章只把它放在 Bootstrap 的应用地图中，说明为什么实际金融计量研究会需要这类方法。
+
+### Bagging 与 Random Forest：同样的重抽样，不同的目标 {#sec-bootstrap-applications-5}
+
+Bootstrap 在预测中的一个重要用途不是计算标准误，而是生成不同训练样本。设训练集为 $S$，从中产生 $B$ 份 Bootstrap 样本，每份训练一棵回归树，预测函数记为 $\hat f^{*(b)}(x)$。**Bootstrap Aggregating (Bagging)** 对这些预测取平均：
+
+$$
+\hat f_{\mathrm{bag}}(x)
+=\frac{1}{B}\sum_{b=1}^{B}\hat f^{*(b)}(x).
+$$
+
+树模型对训练样本的小变化很敏感，因此不同 Bootstrap 样本会产生不同的树。把这些树的预测平均起来，通常可以降低单棵树的方差 (Breiman, 1996)。
+
+Random Forest 在观测层 Bootstrap 之外，还会在每个节点随机抽取一部分候选特征，再从中选择切分变量 (Breiman, 2001)。因此，“Bootstrap 样本—多棵树—平均”描述的是 Bagging 的核心；Random Forest 还多了特征随机化这一步。
+
+在普通大小为 $n$ 的 Bootstrap 中，一个特定观测一次都没有被抽中的概率是
+
+$$
+\left(1-\frac{1}{n}\right)^{n}
+\longrightarrow e^{-1}\approx0.368.
+$$
+
+没有参与某棵树训练的观测称为**袋外观测 (out-of-bag, OOB)**。一条记录的 OOB 预测只能由那些没有用它训练过的树给出。OOB 由此提供一种内部预测评估方式。
+
+这里需要把目标分清：统计推断中的 Bootstrap 用重抽样分布描述估计不确定性；Bagging/RF 用 Bootstrap 生成不同训练集以改善预测。二者使用相似的抽样机制，但评价标准和理论问题并不相同。
+
+### 其他金融计量中的使用方式 {#sec-bootstrap-applications-6}
+
+同一个思想还会出现在很多后续章节：
+
+- 对相关系数、Sharpe ratio、VaR 或其他非线性风险统计量构造标准误和区间；如果数据有时间依赖，通常需要 block 类方案，而不是逐日 iid Bootstrap。
+- 在多期 DID 等问题中，用 multiplier/wild 类 Bootstrap 构造同时置信带，控制整条动态效应路径的联合覆盖率。
+- 对复杂多步估计量，只要能够在每份伪样本中完整重复估计流程，就可以用重抽样近似最终统计量的分布。
+
+这些应用的共同点不是“都调用同一个命令”，而是每次都要先问：实际 DGP 中的随机性来自哪里，哪一层结构需要在 Bootstrap 世界里被模仿。
+
+## Bootstrap 不能解决什么 {#sec-bootstrap-limits}
+
+Bootstrap 很灵活，但灵活不等于没有条件。理解它的局限，往往比记住更多命令更重要。
+
+### $n$、$B$ 与 `seed()`：信息量、计算精度和可复现性 {#sec-bootstrap-limits-1}
+
+Bootstrap 有两层随机性容易混在一起。原始样本量 $n$ 决定 $\hat F_{n}$ 中包含多少来自总体的信息；重复次数 $B$ 决定计算机对已经选定的 Bootstrap 分布近似得有多精细。增加 $B$ 不能把原始的 5 个观测变成 5000 个独立信息。
+
+对固定原样本和固定右尾事件，若其理想 Bootstrap 概率为 $p^{*}$，随机重复得到的尾部比例近似有蒙特卡洛标准误
+
+$$
+SE_{\mathrm{MC}}
+\approx
+\sqrt{\frac{p^{*}(1-p^{*})}{B}}.
+$$
+
+例如 $p^{*}\approx0.05$ 时，$B=999$ 的蒙特卡洛标准误约为 0.0069，$B=9999$ 时约为 0.0022。 Bootstrap 重复次数的选择本身就是一个数值精度问题，不能只依赖固定经验数值；相关系统讨论见 Davidson and MacKinnon (2000) 与 Andrews and Buchinsky (2000)。若最终结论依赖 p 值究竟是 0.048 还是 0.052，那么 999 次通常不够稳定；单纯报告更多小数位也没有意义。
+
+在课堂调试或检查程序流程时，可以先用几百次重复缩短运行时间；正式计算标准误时通常使用数千次作为起点；分位数区间、尾部 p 值或结论接近临界值时，往往需要 9999 次甚至更多。**这些数字只是实务起点，不是普适的理论下限。** 更可靠的判断标准是：增加 $B$ 或更换一次种子以后，结果是否已经稳定到研究所需的精度。
+
+![原始样本量、Bootstrap 重复次数与随机种子](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig12-bootstrap-concept-08-n-b-seed-20260915-155423.png){#fig-bootstrap-12 width="100%" fig-alt="原始样本量、Bootstrap 重复次数与随机种子"}
+
+*图注：$n$ 关系到原样本包含多少总体信息，$B$ 关系到给定样本后数值近似的稳定程度，`seed()` 只用于固定伪随机序列并保证可复现。*
+
+`seed()` 解决的是另一个问题：**可复现性**。计算机使用伪随机数发生器，只要初始状态相同，给定同一程序和运行环境，就可以重现同一串随机抽样。例如：
+
+```stata
+* 已在本地 Stata 19.5 执行。
+bootstrap beta_weight=_b[weight], ///
+    reps(5000) seed(13579): ///
+    regress price weight length
+```
+
+这里 `seed(13579)` 不会让 Bootstrap “更随机”或“更准确”；它只是固定随机数序列的起点。不要为了得到显著结果反复试不同 seed，也不要在每一次 replication 内重新设 seed。若为了检查蒙特卡洛误差而换一个 seed，发现结论明显变化，正确反应通常是增加 $B$、检查抽样方案并报告数值不确定性，而不是挑选一个有利的 seed。
+
+### 小样本的主要问题不是“重复次数不够” {#sec-bootstrap-limits-2}
+
+Hesterberg (2015) 的教学图形很好地展示了一点：当原样本很小时，不同原始样本对应的 Bootstrap 分布可以差异很大；相反，在固定同一原样本以后，把重抽样次数从 1000 增加到更多，通常只会减少较小的模拟误差。
+
+这意味着，如果原样本根本没有很好地代表真实 DGP，Bootstrap 只能非常精确地重复一个不够好的经验分布。
+
+极端统计量尤其容易出问题。假设总体支持集是 $(0,1)$，目标参数是总体上界 1，而统计量是样本最大值。普通非参数 Bootstrap 只能从已经观察到的数值中抽样，因此任何伪样本最大值都不可能超过原样本最大值。它无法生成“原样本没有见过但总体可能出现”的更大值。这类边界、极值和不光滑统计量需要专门方法。
+
+同样地，小样本中位数、分位数等统计量的 Bootstrap 分布可能只落在少量离散点上，形状和覆盖率都可能很不稳定。不能因为软件给出了区间，就默认区间已经可靠。
+
+### 错误的抽样单位会精确地重复错误的 DGP {#sec-bootstrap-limits-3}
+
+如果企业内部相关，却逐行抽样；如果时间序列有持续性，却逐日独立抽样；如果回归异方差明显，却用简单 residual Bootstrap 把所有残差互换，那么增加 $B$ 只会让错误方案的数值近似更加稳定。
+
+因此，Bootstrap 的第一步不是 `reps(5000)`，而是明确抽样单位和所保留的依赖结构。
+
+### Bootstrap 不会修复识别问题和系统性偏差 {#sec-bootstrap-limits-4}
+
+Bootstrap 主要描述的是：**在给定数据结构和估计策略下，随机抽样会让统计量怎样变化。** 它不会自动纠正遗漏变量、反向因果、样本选择、测量误差或错误的识别假设。
+
+例如，一个内生回归系数即使 Bootstrap 标准误很小，也仍可能围绕错误的目标值非常稳定。Bootstrap 可以告诉我们“这个估计量在当前设计下波动不大”，但不能把一个不具有因果含义的系数变成因果效应。
+
+### 使用前的检查顺序 {#sec-bootstrap-limits-5}
+
+面对一个新的 Bootstrap 问题，可以按下面顺序检查：
+
+1. **Step 1**: 明确目标参数和统计量。到底要估计均值、回归系数、系数差、分位数，还是一个非线性函数？
+2. **Step 2**: 说明 DGP 中的近似独立单位。是个体、企业、地区还是时间区块？
+3. **Step 3**: 选择与数据结构一致的 Bootstrap 方案。Pairs、residual、wild、cluster 或 block 分别保留了什么？
+4. **Step 4**: 每份伪样本都完整重复原估计步骤，不跳过模型选择、门槛搜索或多步计算。
+5. **Step 5**: 选择足够大的 $B$，设定并记录 `seed()`，在临界 p 值或高精度要求下检查蒙特卡洛误差。
+6. **Step 6**: 检查 Bootstrap 分布是否出现明显偏差、极端离散、退化重复或算法失败，并报告有效重复数。
+
+简言之，Bootstrap 的核心不是“多抽几千次”，而是**把现实抽样问题翻译成一个合理的 Bootstrap 世界，然后让计算机反复运行这个世界。**
+
+
+## 推导与继续学习 {#sec-bootstrap-appendix-theory}
+
+### 随机权重与学生化 {#sec-bootstrap-appendix-theory-1}
+
+普通 iid Bootstrap 的计数向量满足
+
+$$
+(N_{1}^{*},\ldots,N_{n}^{*})
+\sim
+\operatorname{Multinomial}
+\left(n;\frac{1}{n},\ldots,\frac{1}{n}\right).
+$$
+
+因此 $E^{*}(N_{i}^{*})=1$，而且各计数并不独立，因为总次数固定为 $n$。正文的随机权重表达式正是这一多项分布的另一种写法。
+
+区间推断中还常使用**学生化 Bootstrap (bootstrap-t)**。以总体均值为例，每次重抽后同时计算均值和标准误：
+
+$$
+t^{*}
+=\frac{\bar X^{*}-\bar X}{s^{*}/\sqrt{n}}.
+$$
+
+如果 $q_{p}^{*}$ 是 $t^{*}$ 的第 $p$ 分位数，则区间可写为
+
+$$
+CI^{t}_{1-\alpha}
+=\left[
+\bar X-q_{1-\alpha/2}^{*}\frac{s}{\sqrt{n}},
+\bar X-q_{\alpha/2}^{*}\frac{s}{\sqrt{n}}
+\right].
+$$
+
+学生化的思想是把估计误差同时除以一个随机尺度估计，使参考分布对未知方差更稳定。在适当正则条件下，它可能比简单百分位数区间有更好的高阶精度。
+
+当前五点样本有一个教学上的特殊问题：某些 Bootstrap 样本会五个数全相同，于是 $s^{*}=0$，学生化统计量退化。程序必须明确处理这种重复，不能静默删除以后假装没有问题。因此正文不把 bootstrap-t 作为五点例子的主要方法。
+
+### 一个已知 DGP 下的核验 {#sec-bootstrap-appendix-theory-2}
+
+只有现实样本时，我们看不到真正的抽样分布。为了核验 Bootstrap 是否在一个简单环境下接近真实分布，可以另设已知 DGP：
+
+$$
+X_{i}\sim N(6,14.5),
+\qquad n=80,
+$$
+
+其中 14.5 表示方差，即 $\operatorname{Var}(X_{i})=14.5$。
+
+此时样本均值误差的真实分布已知：
+
+$$
+\bar X-6
+\sim
+N\left(0,\frac{14.5}{80}\right),
+$$
+
+真实标准误为 0.4257。canonical v05 的既有模拟使用种子 97531 生成一份样本，样本均值为 5.0489，再做 9999 次普通 Bootstrap，Bootstrap 标准误约为 0.3895。
+
+![已知正态总体下的误差分布核验](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig13-known-dgp-validation-20260915-155423.png){#fig-bootstrap-13 width="100%" fig-alt="已知正态总体下的误差分布核验"}
+
+*图注：光滑线是已知正态 DGP 下样本均值误差的解析密度；直方图来自同一份原样本的中心化 Bootstrap 误差。两者不必完全重合。这个实验是在已知 DGP 下检查近似，不是前面五点样本的“真实总体”。*
+
+这个例子也帮助区分 Monte Carlo 与 Bootstrap：真实误差分布来自我们人为规定的已知 DGP；Bootstrap 分布则只使用其中抽到的一份样本来近似它。
+
+### 阅读入口 {#sec-bootstrap-appendix-theory-3}
+
+| 想进一步解决的问题 | 阅读位置 |
+|---|---|
+| 从抽样精度进入 Bootstrap，经验分布与 plug-in principle | Efron and Tibshirani (1993)，第 2–6 章 |
+| 两样本、相关数据和回归中的重抽样 | 同书第 8–9 章；Davison and Hinkley (1997)，第 3–6、8 章 |
+| 百分位数、bootstrap-t、BCa 等区间 | Efron and Tibshirani (1993)，第 12–14 章；Hesterberg (2015) |
+| Bootstrap 与 permutation 的关系 | Efron and Tibshirani (1993)，第 15–16 章 |
+| Stata 中的 Bootstrap 标准误、重抽样编程与时间序列示例 | Guan (2003)；Poi (2004)；StataCorp `bootstrap` 手册 |
+| Wild/cluster Bootstrap 与 Stata 实现 | Roodman et al. (2019) |
+| Bagging 与 Random Forest | Breiman (1996, 2001)；James et al. (2023)，第 8 章 |
+| 面板门槛模型中的非标准检验 | Hansen (1999) |
+
+## `bdiff` 的版本核验 {#sec-bootstrap-bdiff}
+
+2026-09-15 本地核验：安装文件标注 `Version 1.04 24Nov2020`，已运行 499 次默认随机重分组。源码中的抽样分支和较小尾部比例定义与下面记载一致。该运行只核对接口，不作为两组斜率差的主要推断结果。
+
+命令名称相同，并不表示所有版本的重抽样设定和概率定义都相同。本附录只记录当前 canonical handoff 已经核实的源码事实，实际使用时仍应以本机安装版本为准。
+
+公开仓库保存的 `bdiff.ado` 固定版本首行标注 `Version 1.04 24Nov2020`。SSC 登记页注明修订日期为 25Nov2020，但存档源码不能保证与读者当前安装文件逐字相同。可以用
+
+```stata
+which bdiff
+viewsource bdiff.ado
+```
+
+检查本机文件。
+
+该版本语法声明为 `BSample`，因此 `bs` 是选项缩写，不是另一个独立算法。其无 `bsample` 分支随机重新分组；有 `bsample` 分支先重抽合并样本，再执行相同的重分组逻辑。二者都不等于 @sec-bootstrap-applications-3 的 `strata(group)` 组内 Bootstrap。
+
+设该源码计算的上尾比例为
+
+$$
+q
+=\frac{\#\{\hat\Delta^{*(b)}\geq\hat\Delta\}}{B}.
+$$
+
+该版本报告
+
+$$
+p_{\mathrm{reported}}=\min(q,1-q).
+$$
+
+这不是通常等尾双侧概率中的 $2\min(q,1-q)$，也不同于预先给定方向的一侧检验。若将 `bdiff` 用于正式研究，应在论文中说明实际版本、抽样机制和尾概率定义，或者保存重抽样统计量后按照事先定义的检验重新计算。
+
+## 参考资料 {.unnumbered}
+
+1. Andrews, D. W. K., & Buchinsky, M. (**2000**). A three-step method for choosing the number of bootstrap repetitions. *Econometrica, 68*(1), 23–51. [Link](https://doi.org/10.1111/1468-0262.00092), [PDF](https://doi.org/10.1111/1468-0262.00092), [Google](<https://scholar.google.com/scholar?q=Andrews+Buchinsky+three-step+method+bootstrap+repetitions>).
+
+2. Breiman, L. (**1996**). Bagging predictors. *Machine Learning, 24*, 123–140. [Link](https://doi.org/10.1007/BF00058655), [PDF](https://doi.org/10.1007/BF00058655), [Google](<https://scholar.google.com/scholar?q=Breiman+Bagging+predictors>).
+
+3. Breiman, L. (**2001**). Random forests. *Machine Learning, 45*, 5–32. [Link](https://doi.org/10.1023/A:1010933404324), [PDF](https://doi.org/10.1023/A:1010933404324), [Google](<https://scholar.google.com/scholar?q=Breiman+Random+forests>).
+
+4. Chung, E., & Romano, J. P. (**2013**). Exact and asymptotically robust permutation tests. *The Annals of Statistics, 41*(2), 484–507. [Link](https://doi.org/10.1214/13-AOS1090), [PDF](https://arxiv.org/pdf/1304.5939), [Google](<https://scholar.google.com/scholar?q=Chung+Romano+Exact+and+asymptotically+robust+permutation+tests>).
+
+5. Davidson, R., & Flachaire, E. (**2008**). The wild bootstrap, tamed at last. *Journal of Econometrics, 146*(1), 162–169. [Link](https://doi.org/10.1016/j.jeconom.2008.08.003), [PDF](https://doi.org/10.1016/j.jeconom.2008.08.003), [Google](<https://scholar.google.com/scholar?q=Davidson+Flachaire+The+wild+bootstrap+tamed+at+last>).
+
+6. Davidson, R., & MacKinnon, J. G. (**2000**). Bootstrap tests: How many bootstraps? *Econometric Reviews, 19*(1), 55–68. [Link](https://doi.org/10.1080/07474930008800459), [PDF](https://doi.org/10.1080/07474930008800459), [Google](<https://scholar.google.com/scholar?q=Davidson+MacKinnon+Bootstrap+tests+How+many+bootstraps>).
+
+7. Davidson, R., & MacKinnon, J. G. (**2004**). *Econometric Theory and Methods*. Oxford University Press. §4.6、§5.3. [Link](https://qed.econ.queensu.ca/ETM/), [PDF](https://qed.econ.queensu.ca/ETM/ETM-davidson-mackinnon-2021.pdf), [Google](<https://scholar.google.com/scholar?q=Davidson+MacKinnon+Econometric+Theory+and+Methods>).
+
+8. Davison, A. C., & Hinkley, D. V. (**1997**). *Bootstrap Methods and Their Application*. Cambridge University Press. [Link](https://doi.org/10.1017/CBO9780511802843), [PDF](https://doi.org/10.1017/CBO9780511802843), [Google](<https://scholar.google.com/scholar?q=Davison+Hinkley+Bootstrap+Methods+and+Their+Application>).
+
+9. Efron, B., & Tibshirani, R. J. (**1993**). *An Introduction to the Bootstrap*. Chapman & Hall. [Link](https://doi.org/10.1201/9780429246593), [PDF](https://doi.org/10.1201/9780429246593), [Google](<https://scholar.google.com/scholar?q=Efron+Tibshirani+An+Introduction+to+the+Bootstrap>).
+
+10. Field, C. A., & Welsh, A. H. (**2007**). Bootstrapping clustered data. *Journal of the Royal Statistical Society: Series B, 69*(3), 369–390. [Link](https://doi.org/10.1111/j.1467-9868.2007.00593.x), [PDF](https://doi.org/10.1111/j.1467-9868.2007.00593.x), [Google](<https://scholar.google.com/scholar?q=Field+Welsh+Bootstrapping+clustered+data>).
+
+11. Guan, W. (**2003**). From the help desk: Bootstrapped standard errors. *The Stata Journal, 3*(1), 71–80. [Link](https://doi.org/10.1177/1536867X0300300105), [PDF](https://journals.sagepub.com/doi/pdf/10.1177/1536867X0300300105), [Google](<https://scholar.google.com/scholar?q=Guan+From+the+help+desk+Bootstrapped+standard+errors>).
+
+12. Hansen, B. E. (**1999**). Threshold effects in non-dynamic panels: Estimation, testing, and inference. *Journal of Econometrics, 93*(2), 345–368. [Link](https://doi.org/10.1016/S0304-4076%2899%2900025-1), [PDF](https://www.ssc.wisc.edu/~bhansen/papers/joe_99.pdf), [Google](<https://scholar.google.com/scholar?q=Hansen+Threshold+effects+in+non-dynamic+panels>).
+
+13. Hesterberg, T. C. (**2015**). What teachers should know about the bootstrap: Resampling in the undergraduate statistics curriculum. *The American Statistician, 69*(4), 371–386. [Link](https://doi.org/10.1080/00031305.2015.1089789), [PDF](https://arxiv.org/pdf/1411.5279), [Google](<https://scholar.google.com/scholar?q=Hesterberg+What+teachers+should+know+about+the+bootstrap>).
+
+14. Horowitz, J. L. (**2018**). *Bootstrap methods in econometrics*. arXiv:1809.04016. [Link](https://doi.org/10.48550/arXiv.1809.04016), [PDF](https://arxiv.org/pdf/1809.04016), [Google](<https://scholar.google.com/scholar?q=Horowitz+Bootstrap+Methods+in+Econometrics+2018>).
+
+15. James, G., Witten, D., Hastie, T., Tibshirani, R., & Taylor, J. (**2023**). *An Introduction to Statistical Learning: With Applications in Python*. Springer. [Link](https://doi.org/10.1007/978-3-031-38747-0), [PDF](https://doi.org/10.1007/978-3-031-38747-0), [Google](<https://scholar.google.com/scholar?q=An+Introduction+to+Statistical+Learning+With+Applications+in+Python>).
+
+16. Künsch, H. R. (**1989**). The jackknife and the bootstrap for general stationary observations. *The Annals of Statistics, 17*(3), 1217–1241. [Link](https://doi.org/10.1214/aos/1176347265), [PDF](https://doi.org/10.1214/aos/1176347265), [Google](<https://scholar.google.com/scholar?q=Kunsch+Jackknife+Bootstrap+General+Stationary+Observations>).
+
+17. Lian, Y. (2016; revised 2020). *BDIFF: Stata module to compute Bootstrap and Permutation tests for difference in coefficients between two groups*. Statistical Software Components S458202. [Link](https://ideas.repec.org/c/boc/bocode/s458202.html), [PDF](https://ideas.repec.org/c/boc/bocode/s458202.html), [Google](<https://scholar.google.com/scholar?q=Lian+BDIFF+S458202>).
+
+18. Mammen, E. (**1993**). Bootstrap and wild bootstrap for high dimensional linear models. *The Annals of Statistics, 21*(1), 255–285. [Link](https://doi.org/10.1214/aos/1176349025), [PDF](https://doi.org/10.1214/aos/1176349025), [Google](<https://scholar.google.com/scholar?q=Mammen+Bootstrap+and+wild+bootstrap+for+high+dimensional+linear+models>).
+
+19. Phipson, B., & Smyth, G. K. (**2010**). Permutation p-values should never be zero: Calculating exact p-values when permutations are randomly drawn. *Statistical Applications in Genetics and Molecular Biology, 9*(1), Article 39. [Link](https://doi.org/10.2202/1544-6115.1585), [PDF](https://doi.org/10.2202/1544-6115.1585), [Google](<https://scholar.google.com/scholar?q=Phipson+Smyth+Permutation+p-values+should+never+be+zero>).
+
+20. Poi, B. P. (**2004**). From the help desk: Some bootstrapping techniques. *The Stata Journal, 4*(3), 312–328. [Link](https://doi.org/10.1177/1536867X0400400308), [PDF](https://journals.sagepub.com/doi/pdf/10.1177/1536867X0400400308), [Google](<https://scholar.google.com/scholar?q=Poi+Some+bootstrapping+techniques+Stata+Journal>).
+
+21. Roodman, D., MacKinnon, J. G., Nielsen, M. Ø., & Webb, M. D. (**2019**). Fast and wild: Bootstrap inference in Stata using boottest. *The Stata Journal, 19*(1), 4–60. [Link](https://doi.org/10.1177/1536867X19830877), [PDF](https://doi.org/10.1177/1536867X19830877), [Google](<https://scholar.google.com/scholar?q=Roodman+MacKinnon+Nielsen+Webb+Fast+and+wild>).
+
+22. StataCorp. *bootstrap — Bootstrap sampling and estimation*；*bootstrap postestimation*. [Link](https://www.stata.com/manuals/rbootstrap.pdf), [PDF](https://www.stata.com/manuals/rbootstrappostestimation.pdf), [Google](<https://scholar.google.com/scholar?q=Stata+bootstrap+manual>)。本地 Stata 19 已核验；手册访问日期为 2026-09-15。

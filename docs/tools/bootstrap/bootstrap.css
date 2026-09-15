@@ -1,0 +1,13 @@
+/* 仅本章：图片可点击放大，窄屏表格和代码独立滚动。 */
+.quarto-figure img { max-width: 100%; height: auto; }
+.cell-output pre, pre.sourceCode { overflow-x: auto; white-space: pre; }
+.table { display: block; overflow-x: auto; max-width: 100%; }
+body { font-family: "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; }
+@media (max-width: 600px) {
+  main { min-width: 0; }
+  .math.display { display: block; overflow-x: auto; max-width: 100%; }
+  mjx-container[display="true"] { overflow-x: auto; max-width: 100%; }
+  main p, main li { overflow-wrap: anywhere; }
+  main .quarto-figure figure > div { overflow-x: auto; }
+  main .quarto-figure img { width: 720px; min-width: 720px; max-width: none; }
+}

@@ -1,0 +1,2250 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>2&nbsp; Bootstrap：从重复抽样到统计推断 – 金融计量经济学</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../notebooks/bootstrap/bootstrap-demo.html" rel="next">
+<link href="../notebooks/intro/policy-stata.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0626ff4d7a71b55c8707dcae1d04a9b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-852706e27933cdb6c4c8253e0921ca80.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+<link rel="icon" type="image/png" sizes="40x40" href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../tools/bootstrap/bootstrap.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../lectures/bootstrap.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Bootstrap</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">金融计量经济学</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/lianxhcn/FinEco" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="切换阅读器模式">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🏠 前言</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📚 课程资料</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../getting-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📌 课件使用</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../syllabus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📅 课程安排</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../homework.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🚀 作业</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../exercises/hw-01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">hw-01</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">🛠️ 环境配置</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">软件配置</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../publishing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">同步与发布</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">研究基础</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">研究流程</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/intro/portfolio-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">组合实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/intro/policy-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">政策实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/bootstrap.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Bootstrap</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/bootstrap/bootstrap-demo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Python 实验</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/bootstrap/bootstrap-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Stata 实验</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">附录</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../resources/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">公共书目</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目录</h2>
+   
+  <ul>
+  <li><a href="#sec-bootstrap-sampling" id="toc-sec-bootstrap-sampling" class="nav-link active" data-scroll-target="#sec-bootstrap-sampling"><span class="header-section-number">2.1</span> 从一份样本到抽样不确定性</a>
+  <ul class="collapse">
+  <li><a href="#sec-bootstrap-sampling-1" id="toc-sec-bootstrap-sampling-1" class="nav-link" data-scroll-target="#sec-bootstrap-sampling-1"><span class="header-section-number">2.1.1</span> DGP、随机样本与抽样分布</a></li>
+  <li><a href="#sec-bootstrap-sampling-2" id="toc-sec-bootstrap-sampling-2" class="nav-link" data-scroll-target="#sec-bootstrap-sampling-2"><span class="header-section-number">2.1.2</span> 标准误衡量的是“估计量怎样波动”</a></li>
+  <li><a href="#sec-bootstrap-sampling-3" id="toc-sec-bootstrap-sampling-3" class="nav-link" data-scroll-target="#sec-bootstrap-sampling-3"><span class="header-section-number">2.1.3</span> 三条获得抽样分布的路线</a></li>
+  </ul></li>
+  <li><a href="#sec-bootstrap-core" id="toc-sec-bootstrap-core" class="nav-link" data-scroll-target="#sec-bootstrap-core"><span class="header-section-number">2.2</span> Bootstrap 的核心：让样本暂时代替总体</a>
+  <ul class="collapse">
+  <li><a href="#sec-bootstrap-core-1" id="toc-sec-bootstrap-core-1" class="nav-link" data-scroll-target="#sec-bootstrap-core-1"><span class="header-section-number">2.2.1</span> 经验分布与 plug-in principle</a></li>
+  <li><a href="#sec-bootstrap-core-2" id="toc-sec-bootstrap-core-2" class="nav-link" data-scroll-target="#sec-bootstrap-core-2"><span class="header-section-number">2.2.2</span> 一份 Bootstrap 样本是怎样产生的</a></li>
+  <li><a href="#sec-bootstrap-core-3" id="toc-sec-bootstrap-core-3" class="nav-link" data-scroll-target="#sec-bootstrap-core-3"><span class="header-section-number">2.2.3</span> 从一份伪样本到 Bootstrap 分布</a></li>
+  </ul></li>
+  <li><a href="#sec-bootstrap-inference" id="toc-sec-bootstrap-inference" class="nav-link" data-scroll-target="#sec-bootstrap-inference"><span class="header-section-number">2.3</span> 从重抽样分布到标准误和置信区间</a>
+  <ul class="collapse">
+  <li><a href="#sec-bootstrap-inference-1" id="toc-sec-bootstrap-inference-1" class="nav-link" data-scroll-target="#sec-bootstrap-inference-1"><span class="header-section-number">2.3.1</span> Bootstrap 标准误</a></li>
+  <li><a href="#sec-bootstrap-inference-2" id="toc-sec-bootstrap-inference-2" class="nav-link" data-scroll-target="#sec-bootstrap-inference-2"><span class="header-section-number">2.3.2</span> 四个步骤，以及对应的 Stata 和 Python 代码</a></li>
+  <li><a href="#sec-bootstrap-inference-3" id="toc-sec-bootstrap-inference-3" class="nav-link" data-scroll-target="#sec-bootstrap-inference-3"><span class="header-section-number">2.3.3</span> 五个数的精确结果</a></li>
+  <li><a href="#sec-bootstrap-inference-4" id="toc-sec-bootstrap-inference-4" class="nav-link" data-scroll-target="#sec-bootstrap-inference-4"><span class="header-section-number">2.3.4</span> 从 Bootstrap 统计量的排序位置理解百分位数区间</a></li>
+  </ul></li>
+  <li><a href="#sec-bootstrap-testing" id="toc-sec-bootstrap-testing" class="nav-link" data-scroll-target="#sec-bootstrap-testing"><span class="header-section-number">2.4</span> 假设检验为什么还要加入原假设</a>
+  <ul class="collapse">
+  <li><a href="#sec-bootstrap-testing-1" id="toc-sec-bootstrap-testing-1" class="nav-link" data-scroll-target="#sec-bootstrap-testing-1"><span class="header-section-number">2.4.1</span> 把参考分布移到原假设下</a></li>
+  <li><a href="#sec-bootstrap-testing-2" id="toc-sec-bootstrap-testing-2" class="nav-link" data-scroll-target="#sec-bootstrap-testing-2"><span class="header-section-number">2.4.2</span> 尾部计数与 p 值</a></li>
+  <li><a href="#sec-bootstrap-testing-3" id="toc-sec-bootstrap-testing-3" class="nav-link" data-scroll-target="#sec-bootstrap-testing-3"><span class="header-section-number">2.4.3</span> Bootstrap 检验与置换检验的区别</a></li>
+  </ul></li>
+  <li><a href="#sec-bootstrap-schemes" id="toc-sec-bootstrap-schemes" class="nav-link" data-scroll-target="#sec-bootstrap-schemes"><span class="header-section-number">2.5</span> 常用 Bootstrap 抽样方法</a>
+  <ul class="collapse">
+  <li><a href="#sec-bootstrap-schemes-1" id="toc-sec-bootstrap-schemes-1" class="nav-link" data-scroll-target="#sec-bootstrap-schemes-1"><span class="header-section-number">2.5.1</span> Pairs Bootstrap：整行观测一起抽</a></li>
+  <li><a href="#sec-bootstrap-schemes-2" id="toc-sec-bootstrap-schemes-2" class="nav-link" data-scroll-target="#sec-bootstrap-schemes-2"><span class="header-section-number">2.5.2</span> Residual Bootstrap：固定 <span class="math inline">\(X\)</span>，重新抽误差</a></li>
+  <li><a href="#sec-bootstrap-schemes-3" id="toc-sec-bootstrap-schemes-3" class="nav-link" data-scroll-target="#sec-bootstrap-schemes-3"><span class="header-section-number">2.5.3</span> Wild Bootstrap：残差不换位置，只改变随机方向和幅度规则</a></li>
+  <li><a href="#sec-bootstrap-schemes-4" id="toc-sec-bootstrap-schemes-4" class="nav-link" data-scroll-target="#sec-bootstrap-schemes-4"><span class="header-section-number">2.5.4</span> Cluster Bootstrap：抽的是企业，而不是企业年份</a></li>
+  <li><a href="#sec-bootstrap-schemes-5" id="toc-sec-bootstrap-schemes-5" class="nav-link" data-scroll-target="#sec-bootstrap-schemes-5"><span class="header-section-number">2.5.5</span> Block Bootstrap：时间顺序不能被完全打散</a></li>
+  <li><a href="#sec-bootstrap-schemes-6" id="toc-sec-bootstrap-schemes-6" class="nav-link" data-scroll-target="#sec-bootstrap-schemes-6"><span class="header-section-number">2.5.6</span> 怎样在这些方案之间做选择</a></li>
+  </ul></li>
+  <li><a href="#sec-bootstrap-applications" id="toc-sec-bootstrap-applications" class="nav-link" data-scroll-target="#sec-bootstrap-applications"><span class="header-section-number">2.6</span> 应用</a>
+  <ul class="collapse">
+  <li><a href="#sec-bootstrap-applications-1" id="toc-sec-bootstrap-applications-1" class="nav-link" data-scroll-target="#sec-bootstrap-applications-1"><span class="header-section-number">2.6.1</span> 最常见的用法：Bootstrap 标准误</a></li>
+  <li><a href="#sec-bootstrap-applications-2" id="toc-sec-bootstrap-applications-2" class="nav-link" data-scroll-target="#sec-bootstrap-applications-2"><span class="header-section-number">2.6.2</span> 自定义统计量：什么时候 <code>bootstrap</code> 前缀特别有用</a></li>
+  <li><a href="#sec-bootstrap-applications-3" id="toc-sec-bootstrap-applications-3" class="nav-link" data-scroll-target="#sec-bootstrap-applications-3"><span class="header-section-number">2.6.3</span> 组间回归系数差异：直接 Bootstrap 系数差</a></li>
+  <li><a href="#sec-bootstrap-applications-4" id="toc-sec-bootstrap-applications-4" class="nav-link" data-scroll-target="#sec-bootstrap-applications-4"><span class="header-section-number">2.6.4</span> 面板门槛模型：Bootstrap 用来处理非标准检验</a></li>
+  <li><a href="#sec-bootstrap-applications-5" id="toc-sec-bootstrap-applications-5" class="nav-link" data-scroll-target="#sec-bootstrap-applications-5"><span class="header-section-number">2.6.5</span> Bagging 与 Random Forest：同样的重抽样，不同的目标</a></li>
+  <li><a href="#sec-bootstrap-applications-6" id="toc-sec-bootstrap-applications-6" class="nav-link" data-scroll-target="#sec-bootstrap-applications-6"><span class="header-section-number">2.6.6</span> 其他金融计量中的使用方式</a></li>
+  </ul></li>
+  <li><a href="#sec-bootstrap-limits" id="toc-sec-bootstrap-limits" class="nav-link" data-scroll-target="#sec-bootstrap-limits"><span class="header-section-number">2.7</span> Bootstrap 不能解决什么</a>
+  <ul class="collapse">
+  <li><a href="#sec-bootstrap-limits-1" id="toc-sec-bootstrap-limits-1" class="nav-link" data-scroll-target="#sec-bootstrap-limits-1"><span class="header-section-number">2.7.1</span> <span class="math inline">\(n\)</span>、<span class="math inline">\(B\)</span> 与 <code>seed()</code>：信息量、计算精度和可复现性</a></li>
+  <li><a href="#sec-bootstrap-limits-2" id="toc-sec-bootstrap-limits-2" class="nav-link" data-scroll-target="#sec-bootstrap-limits-2"><span class="header-section-number">2.7.2</span> 小样本的主要问题不是“重复次数不够”</a></li>
+  <li><a href="#sec-bootstrap-limits-3" id="toc-sec-bootstrap-limits-3" class="nav-link" data-scroll-target="#sec-bootstrap-limits-3"><span class="header-section-number">2.7.3</span> 错误的抽样单位会精确地重复错误的 DGP</a></li>
+  <li><a href="#sec-bootstrap-limits-4" id="toc-sec-bootstrap-limits-4" class="nav-link" data-scroll-target="#sec-bootstrap-limits-4"><span class="header-section-number">2.7.4</span> Bootstrap 不会修复识别问题和系统性偏差</a></li>
+  <li><a href="#sec-bootstrap-limits-5" id="toc-sec-bootstrap-limits-5" class="nav-link" data-scroll-target="#sec-bootstrap-limits-5"><span class="header-section-number">2.7.5</span> 使用前的检查顺序</a></li>
+  </ul></li>
+  <li><a href="#sec-bootstrap-appendix-theory" id="toc-sec-bootstrap-appendix-theory" class="nav-link" data-scroll-target="#sec-bootstrap-appendix-theory"><span class="header-section-number">2.8</span> 推导与继续学习</a>
+  <ul class="collapse">
+  <li><a href="#sec-bootstrap-appendix-theory-1" id="toc-sec-bootstrap-appendix-theory-1" class="nav-link" data-scroll-target="#sec-bootstrap-appendix-theory-1"><span class="header-section-number">2.8.1</span> 随机权重与学生化</a></li>
+  <li><a href="#sec-bootstrap-appendix-theory-2" id="toc-sec-bootstrap-appendix-theory-2" class="nav-link" data-scroll-target="#sec-bootstrap-appendix-theory-2"><span class="header-section-number">2.8.2</span> 一个已知 DGP 下的核验</a></li>
+  <li><a href="#sec-bootstrap-appendix-theory-3" id="toc-sec-bootstrap-appendix-theory-3" class="nav-link" data-scroll-target="#sec-bootstrap-appendix-theory-3"><span class="header-section-number">2.8.3</span> 阅读入口</a></li>
+  </ul></li>
+  <li><a href="#sec-bootstrap-bdiff" id="toc-sec-bootstrap-bdiff" class="nav-link" data-scroll-target="#sec-bootstrap-bdiff"><span class="header-section-number">2.9</span> <code>bdiff</code> 的版本核验</a></li>
+  <li><a href="#参考资料" id="toc-参考资料" class="nav-link" data-scroll-target="#参考资料">参考资料</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/lectures/bootstrap.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../lectures/bootstrap.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Bootstrap</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-bootstrap" class="quarto-section-identifier"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Bootstrap：从重复抽样到统计推断</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<blockquote class="blockquote">
+<p><strong>课程：</strong> 金融计量经济学<br>
+<strong>作者：</strong> 连玉君 (中山大学)<br>
+<strong>版本：</strong> v10-final<br>
+<strong>状态：</strong> 教师确认 v10 定稿；本地 Python 与 Stata 执行结果见配套 Notebook。概念图保留交接包原图。 <strong>配套材料：</strong> <a href="../notebooks/bootstrap/bootstrap-demo.html">Python 实验</a>、<a href="../notebooks/bootstrap/bootstrap-stata.html">Stata 完整实验</a>、<a href="../tools/bootstrap/01-tiny-bootstrap.do">均值推断 Stata 程序</a>、<a href="../tools/bootstrap/02-group-bootstrap.do">组间系数差异 Stata 程序</a>。</p>
+</blockquote>
+<p>在此前的章节中，我们已经习惯了“先估计，再看标准误”的做法。以 Stata 自带的 <code>auto.dta</code> 为例，样本均值和均值的标准误可以直接由软件给出：</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>. <span class="kw">sysuse</span> <span class="st">"auto.dta"</span>, <span class="kw">clear</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>(1978 automobile <span class="kw">data</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>. <span class="kw">summarize</span> price</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    Variable |        Obs        Mean    Std. <span class="kw">dev</span>.       Min        Max</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>-------------+---------------------------------------------------------</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>       price |         74    6165.257     2949.496      3291      15906</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>. <span class="kw">mean</span> price</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>Mean estimation                             Number <span class="kw">of</span> <span class="kw">obs</span> = 74</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>--------------------------------------------------------------</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>             |       Mean   Std. err.     [95% conf. interval]</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>-------------+------------------------------------------------</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>       price |   6165.257     342.872       5481.914   6848.600</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>--------------------------------------------------------------</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>这里，<code>6165.257</code> 是这 74 辆汽车价格的样本均值，<code>2949.496</code> 是单辆汽车价格在样本中的标准差，而 <code>342.872</code> 是<strong>样本均值的标准误</strong>。在独立同分布且方差有限的简单情形下，它由</p>
+<p><span class="math display">\[
+\widehat{SE}(\bar X)=\frac{s}{\sqrt{n}}
+=\frac{2949.496}{\sqrt{74}}
+\approx342.872
+\]</span></p>
+<p>得到。二者描述的对象不同：<span class="math inline">\(s\)</span> 衡量单个观测值的离散程度，<span class="math inline">\(s/\sqrt{n}\)</span> 衡量“如果重新抽一份同样大小的样本，样本均值会变化多少”。</p>
+<p>回归分析也是同一逻辑。例如下面的 OLS 输出中，每个系数后面都有一个标准误：</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>. <span class="kw">regress</span> price <span class="kw">weight</span> mpg, <span class="kw">noheader</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------------</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>       price | Coefficient   Std. err.      [95% conf. interval]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>-------------+----------------------------------------------------------------</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>      <span class="kw">weight</span> |       1.747       0.641          0.468       3.025</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>         mpg |     -49.512      86.156       -221.302     122.278</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>       <span class="dt">_cons</span> |    1946.069    3597.050      -5226.245    9118.382</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------------</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>在经典同方差线性模型下，OLS 的方差矩阵可以写为</p>
+<p><span class="math display">\[
+\operatorname{Var}(\hat\beta\mid X)
+=\sigma^{2}(X'X)^{-1},
+\]</span></p>
+<p>实际计算时再用残差估计 <span class="math inline">\(\sigma^{2}\)</span>；各系数标准误就是估计方差矩阵对角元素的平方根。使用 <code>vce(robust)</code> 时，方差矩阵的计算公式会改变，但基本目标没有改变：<strong>刻画估计量在重复抽样中的波动。</strong></p>
+<p>这些熟悉的例子都有现成公式。真正需要 Bootstrap 的地方，通常出现在公式不方便、抽样分布非标准，或者统计量来自复杂多步程序时。我们可能关心两个回归系数之差、一个非线性函数、一个门槛参数，或者带有聚类、异方差和时间依赖的数据。此时，核心问题仍然是同一个：</p>
+<p><strong>如果重新获得一份同样方式产生的样本，这个估计结果会波动多大？</strong></p>
+<p>回答这个问题需要回到<strong>数据生成过程 (data-generating process, DGP)</strong>。DGP 不是眼前这份数据本身，而是我们对“数据如何随机产生”的描述和假设。若 DGP 已知，就可以按照这个机制反复生成样本，通过模拟观察统计量的抽样分布；这就是蒙特卡洛模拟的基本思路。但实证研究通常只有一份已经获得的随机样本。重新回到现实世界，按照完全相同的条件再收集几百或几千份样本，往往成本很高，甚至没有可能。</p>
+<p>Bootstrap 的思路是：不要求现实世界真的重来几百次，而是利用手头样本构造一个对未知 DGP 的近似，再在这个近似机制下反复生成伪样本。Jackknife、Permutation 和 Bootstrap 都属于广义的<strong>再抽样 (resampling)</strong> 方法，但它们改变数据的方式和回答的问题并不相同。本章重点介绍 Bootstrap：它用估计的 DGP 近似统计量的抽样不确定性。这一“由抽样分布进入重抽样分布”的路线是 Bootstrap 教学中的经典入口 (Efron and Tibshirani, 1993, Ch. 2–6; Hesterberg, 2015)。</p>
+<div class="callout callout-style-default callout-note callout-titled" title="本讲要点">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+本讲要点
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Bootstrap 的目标不是制造更多独立信息，而是近似“重新抽样时统计量会怎样变化”。</li>
+<li>普通非参数 Bootstrap 用经验分布替代未知总体分布，这是 plug-in principle 的直接应用。</li>
+<li>原始样本量 <span class="math inline">\(n\)</span> 决定我们掌握多少总体信息；Bootstrap 重复次数 <span class="math inline">\(B\)</span> 主要决定数值近似的稳定程度。增加 <span class="math inline">\(B\)</span> 不能弥补过小的 <span class="math inline">\(n\)</span>。</li>
+<li>Bootstrap 不是单一的“逐行有放回抽样”。Pairs、residual、wild、cluster 和 block Bootstrap 分别对应不同的 DGP 和数据依赖结构。</li>
+<li>置信区间、假设检验、组间系数比较、面板门槛模型和 Bagging/Random Forest 都可能使用重抽样，但必须先说明每次重抽样到底改变什么。</li>
+</ul>
+</div>
+</div>
+<p>本章前四节先用一个很小的收益率样本把基本机制走通：从 DGP、抽样分布和标准误，到经验分布、Bootstrap 分布、置信区间和检验。 <a href="#sec-bootstrap-schemes" class="quarto-xref"><span>小节 2.5</span></a> 系统比较不同数据结构下的 Bootstrap 方案。 <a href="#sec-bootstrap-applications" class="quarto-xref"><span>小节 2.6</span></a> 从最常见的 Stata 用法开始，再讨论组间系数差异、面板门槛模型和 Random Forest。 <a href="#sec-bootstrap-limits" class="quarto-xref"><span>小节 2.7</span></a> 集中说明小样本、依赖结构和 DGP 误设下的局限。</p>
+<div id="fig-bootstrap-01" class="quarto-float quarto-figure quarto-figure-center anchored" alt="获得抽样分布的四条路线">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bootstrap-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig01-bootstrap-concept-01-four-routes-20260915-155423.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="图&nbsp;2.1: 获得抽样分布的四条路线"><img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig01-bootstrap-concept-01-four-routes-20260915-155423.png" class="img-fluid figure-img" style="width:100.0%" alt="获得抽样分布的四条路线"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;2.1: 获得抽样分布的四条路线
+</figcaption>
+</figure>
+</div>
+<p><em>图注：理论推导、现实重复抽样、蒙特卡洛模拟和 Bootstrap 都试图描述统计量在重复抽样中的变化，关键区别在于“新样本从哪里来”。</em></p>
+<section id="sec-bootstrap-sampling" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="sec-bootstrap-sampling"><span class="header-section-number">2.1</span> 从一份样本到抽样不确定性</h2>
+<p>这一节先不急着“做 Bootstrap”。我们先把它要解决的问题说清楚：一份样本给出了一个估计值，但统计推断真正关心的是这个估计值在重复抽样中的波动。</p>
+<section id="sec-bootstrap-sampling-1" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="sec-bootstrap-sampling-1"><span class="header-section-number">2.1.1</span> DGP、随机样本与抽样分布</h3>
+<p>假设某个教学案例记录了 5 个收益率观测：</p>
+<p><span class="math display">\[
+2\%,\quad 4\%,\quad 5\%,\quad 7\%,\quad 12\%.
+\]</span></p>
+<p>为了后面计算方便，记为</p>
+<p><span class="math display">\[
+x=(2,4,5,7,12),
+\]</span></p>
+<p>其中数值单位都是百分点。这里使用圆括号，是因为样本是一个包含 <span class="math inline">\(n\)</span> 个记录的观测列；后面的 Bootstrap 样本允许同一个数重复出现，用通常的集合花括号会把重复元素的含义掩盖掉。</p>
+<p>这 5 个数不是实际金融资产数据，只用于解释算法。为了从最简单的情形进入，我们暂时假定它们来自同一个独立同分布 (independent and identically distributed, iid) 的 DGP。金融时间序列通常不能如此简单处理， <a href="#sec-bootstrap-schemes" class="quarto-xref"><span>小节 2.5</span></a> 会专门讨论。</p>
+<p>样本均值为</p>
+<p><span class="math display">\[
+\bar X=\frac{2+4+5+7+12}{5}=6.
+\]</span></p>
+<p>如果研究目标是总体平均收益率，<span class="math inline">\(6\%\)</span> 是当前样本给出的点估计。但点估计本身还没有告诉我们它有多稳定。若重新从同一个 DGP 抽取 5 个观测，新样本的均值一般不会仍然等于 <span class="math inline">\(6\%\)</span>。有时可能是 <span class="math inline">\(4.8\%\)</span>，有时可能是 <span class="math inline">\(7.1\%\)</span>。<strong>这种“换一份样本，估计值也会变化”的现象，就是抽样不确定性的来源。</strong></p>
+<p>一般地，设</p>
+<p><span class="math display">\[
+X_{1},\ldots,X_{n}\overset{iid}{\sim}F,
+\]</span></p>
+<p>其中 <span class="math inline">\(F\)</span> 表示未知总体分布。研究参数记为 <span class="math inline">\(\theta=t(F)\)</span>，样本统计量记为</p>
+<p><span class="math display">\[
+\hat\theta=T(X_{1},\ldots,X_{n}).
+\]</span></p>
+<p>如果从同一个 <span class="math inline">\(F\)</span> 反复抽取大小为 <span class="math inline">\(n\)</span> 的随机样本，每次都重新计算 <span class="math inline">\(\hat\theta\)</span>，这些可能的估计值及其概率就构成了<strong>抽样分布 (sampling distribution)</strong>。样本均值、中位数、相关系数、回归系数和两个系数之差，都有自己的抽样分布。</p>
+</section>
+<section id="sec-bootstrap-sampling-2" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="sec-bootstrap-sampling-2"><span class="header-section-number">2.1.2</span> 标准误衡量的是“估计量怎样波动”</h3>
+<p>当方差存在时，<strong>标准误 (standard error, SE)</strong> 是估计量抽样分布的标准差：</p>
+<p><span class="math display">\[
+SE_{F}(\hat\theta)
+=\sqrt{\operatorname{Var}_{F}(\hat\theta)}.
+\]</span></p>
+<p>标准差和标准误容易混淆。样本标准差描述的是一组观测值本身有多分散；标准误描述的是<strong>统计量在重复样本之间有多分散</strong>。以 iid 样本均值为例，若总体标准差为 <span class="math inline">\(\sigma\)</span>，则</p>
+<p><span class="math display">\[
+SE_{F}(\bar X)=\frac{\sigma}{\sqrt{n}}.
+\]</span></p>
+<p>实际不知道 <span class="math inline">\(\sigma\)</span> 时，常用样本标准差 <span class="math inline">\(s\)</span> 替代，得到 <span class="math inline">\(s/\sqrt{n}\)</span>。这个公式之所以方便，是因为均值的抽样性质已经有成熟的解析理论。</p>
+<p>但如果统计量换成两个回归系数之差、一个复杂的非线性函数或一条拟合曲线，解析标准误可能很难推导。Efron and Tibshirani (1993) 正是从“如何衡量估计精度”这个问题进入 Bootstrap：计算机可以用大量重复计算替代一部分专门的标准误公式。</p>
+</section>
+<section id="sec-bootstrap-sampling-3" class="level3" data-number="2.1.3">
+<h3 data-number="2.1.3" class="anchored" data-anchor-id="sec-bootstrap-sampling-3"><span class="header-section-number">2.1.3</span> 三条获得抽样分布的路线</h3>
+<p>现在回到核心问题：怎样知道 <span class="math inline">\(\hat\theta\)</span> 的抽样分布？把几种做法放在一起看，Bootstrap 所处的位置就比较清楚了。</p>
+<p>一种路线是<strong>理论推导</strong>。如果模型足够简单，可以直接得到标准误公式，或者利用中心极限定理等大样本结果近似抽样分布。样本均值的 <span class="math inline">\(s/\sqrt{n}\)</span>、OLS 系数的常规标准误都属于这条路线。</p>
+<p>另一种路线是<strong>蒙特卡洛模拟</strong>。如果 DGP 已知或由研究者明确设定，例如规定 <span class="math inline">\(X_{i}\sim N(6,14.5)\)</span>，就可以在计算机中反复生成样本，每次重新计算 <span class="math inline">\(\hat\theta\)</span>。许多次模拟得到的统计量分布可以逼近这个已知 DGP 下的抽样分布。这里的关键是：我们知道用什么机制产生新数据。</p>
+<p>现实中还可以真的<strong>重新从总体抽样</strong>。例如，我们希望估计广州居民的边际消费倾向，随机调查了 400 名居民并估计一条消费—收入回归。如果经费和时间都没有限制，可以重新独立调查 400 名居民，再估计一次回归；如此重复几百次，就会得到几百个边际消费倾向估计值。它们的标准差正是我们想知道的重复抽样波动。问题在于，真正重复几百轮调查的成本通常无法承受。对于已经发生的金融市场历史，更不能让同一段历史重新发生几百次。</p>
+<p>这个思想实验说明了标准误的本质：理想情况下，我们想看“很多份真实随机样本上的估计值如何变化”；Bootstrap 只是用计算机中的伪样本去近似这件现实中难以反复完成的事情。</p>
+<p>Bootstrap 采取的是另一条路线：<strong>先用现有样本估计 DGP，再从估计出来的 DGP 中反复生成伪样本。</strong> 对最基本的非参数 Bootstrap 而言，这个“估计出来的 DGP”就是经验分布。对回归、聚类和时间序列，估计 DGP 以及生成伪样本的方式会相应改变。</p>
+<div class="callout callout-style-default callout-note callout-titled" title="三种重复不是一回事">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+三种重复不是一回事
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>现实重复抽样</strong>：真的回到总体重新收集数据，目标是直接观察真实抽样波动。</li>
+<li><strong>蒙特卡洛模拟</strong>：从研究者已知或设定的 DGP 生成数据，用来研究统计方法在这个 DGP 下的表现。</li>
+<li><strong>Bootstrap</strong>：从已经观察到的一份样本出发，用样本估计未知 DGP，再从这个估计机制中重抽样。</li>
+</ul>
+<p>三者都可以产生很多个统计量，但“新样本从哪里来”不同，因此所回答的问题也不同。</p>
+</div>
+</div>
+<p>需要说明的是，Bootstrap 与蒙特卡洛模拟共享“反复生成数据并重新计算统计量”的计算框架，但不能把两者混为一谈。后面的已知 DGP 核验实验属于蒙特卡洛思路；正文中的五点重抽样则属于 Bootstrap。</p>
+</section>
+</section>
+<section id="sec-bootstrap-core" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="sec-bootstrap-core"><span class="header-section-number">2.2</span> Bootstrap 的核心：让样本暂时代替总体</h2>
+<p>上一节说明了为什么需要 Bootstrap。现在进入它最核心的一步：未知总体 <span class="math inline">\(F\)</span> 无法直接拿来反复抽样，但我们可以先用样本构造一个经验分布 <span class="math inline">\(\hat F_{n}\)</span>，把它当作当前能够使用的总体近似。</p>
+<section id="sec-bootstrap-core-1" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="sec-bootstrap-core-1"><span class="header-section-number">2.2.1</span> 经验分布与 plug-in principle</h3>
+<p>对样本 <span class="math inline">\(x=(2,4,5,7,12)\)</span>，最直接的做法是给每一个原始观测赋予概率 <span class="math inline">\(1/5\)</span>。于是 <span class="math inline">\(2,4,5,7,12\)</span> 各以 <span class="math inline">\(0.2\)</span> 的概率出现。这就得到一个离散的<strong>经验分布 (empirical distribution)</strong>。</p>
+<p>它的经验分布函数 (empirical distribution function, EDF) 为</p>
+<p><span class="math display">\[
+\hat F_{n}(z)=\frac{1}{n}\sum_{i=1}^{n}I(X_{i}\leq z),
+\]</span></p>
+<p>其中 <span class="math inline">\(I(\cdot)\)</span> 是指示函数，条件成立时取 1，否则取 0。对当前样本，<span class="math inline">\(\hat F_{5}(5)=3/5=0.6\)</span>，因为 5 个观测中有 3 个不超过 5。</p>
+<div id="fig-bootstrap-02" class="quarto-float quarto-figure quarto-figure-center anchored" alt="五个数构造的经验分布函数">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bootstrap-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig02-edf-tiny-20260915-155423.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="图&nbsp;2.2: 五个数构造的经验分布函数"><img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig02-edf-tiny-20260915-155423.png" class="img-fluid figure-img" style="width:100.0%" alt="五个数构造的经验分布函数"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;2.2: 五个数构造的经验分布函数
+</figcaption>
+</figure>
+</div>
+<p><em>图注：经验分布在每个样本点处跳跃。横轴左端延伸到样本最小值以外，右端延伸到最大值以外，因此显示累计概率从 0 到 1 的完整变化。本图不绘制未知的真实总体分布。</em></p>
+<div id="fig-bootstrap-03" class="quarto-float quarto-figure quarto-figure-center anchored" alt="现实抽样世界与 Bootstrap 世界">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bootstrap-03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig03-bootstrap-concept-02-two-worlds-20260915-155423.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="图&nbsp;2.3: 现实抽样世界与 Bootstrap 世界"><img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig03-bootstrap-concept-02-two-worlds-20260915-155423.png" class="img-fluid figure-img" style="width:100.0%" alt="现实抽样世界与 Bootstrap 世界"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap-03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;2.3: 现实抽样世界与 Bootstrap 世界
+</figcaption>
+</figure>
+</div>
+<p><em>图注：上半部分表示现实抽样世界 <span class="math inline">\(F\to S\to\hat\theta\)</span>；下半部分表示 Bootstrap 世界 <span class="math inline">\(S\to\hat F_{n}\to S^{*}\to\hat\theta^{*}\)</span>。Bootstrap 用后者近似前者的抽样波动。</em></p>
+<p>为什么可以这样做？这里用到的是一个很一般的 <strong>plug-in principle</strong> (Efron and Tibshirani, 1993, Ch. 4)：如果总体参数可以写成分布 <span class="math inline">\(F\)</span> 的某个函数 <span class="math inline">\(\theta=t(F)\)</span>，那么不知道 <span class="math inline">\(F\)</span> 时，可以先用 <span class="math inline">\(\hat F_{n}\)</span> 替代 <span class="math inline">\(F\)</span>，得到</p>
+<p><span class="math display">\[
+\hat\theta=t(\hat F_{n}).
+\]</span></p>
+<p>例如，总体均值是 <span class="math inline">\(F\)</span> 的均值，代入经验分布以后得到的就是样本均值；总体相关系数用样本联合经验分布代替后，得到的是样本相关系数。Bootstrap 再向前走一步：不仅用 <span class="math inline">\(\hat F_{n}\)</span> 估计参数，还从 <span class="math inline">\(\hat F_{n}\)</span> 中抽样，近似“如果从 <span class="math inline">\(F\)</span> 重新抽样会怎样”。</p>
+</section>
+<section id="sec-bootstrap-core-2" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="sec-bootstrap-core-2"><span class="header-section-number">2.2.2</span> 一份 Bootstrap 样本是怎样产生的</h3>
+<p>从经验分布 <span class="math inline">\(\hat F_{n}\)</span> 中独立抽取 <span class="math inline">\(n\)</span> 次，就等价于从原样本中<strong>有放回</strong>抽取 <span class="math inline">\(n\)</span> 个记录。抽到一个数以后立即放回，因此同一个记录可能出现多次，也可能一次都没有出现。</p>
+<p>对 <span class="math inline">\(x=(2,4,5,7,12)\)</span>，下面是几份可能的 Bootstrap 样本。为了看清“哪些原始记录被抽中了几次”，第三列按原始顺序 <span class="math inline">\((2,4,5,7,12)\)</span> 记录每个观测被抽中的次数。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">重抽样轮次</th>
+<th>Bootstrap 样本</th>
+<th>各原始观测被抽中的次数 <span class="math inline">\((N_{1}^{*},\ldots,N_{5}^{*})\)</span></th>
+<th style="text-align: right;">均值</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td><span class="math inline">\((2,2,5,12,12)\)</span></td>
+<td><span class="math inline">\((2,0,1,0,2)\)</span></td>
+<td style="text-align: right;">6.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td><span class="math inline">\((4,4,5,5,7)\)</span></td>
+<td><span class="math inline">\((0,2,2,1,0)\)</span></td>
+<td style="text-align: right;">5.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td><span class="math inline">\((2,4,7,7,12)\)</span></td>
+<td><span class="math inline">\((1,1,0,2,1)\)</span></td>
+<td style="text-align: right;">6.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(\vdots\)</span></td>
+<td><span class="math inline">\(\vdots\)</span></td>
+<td><span class="math inline">\(\vdots\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(\vdots\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">500</td>
+<td><span class="math inline">\((12,4,7,5,12)\)</span></td>
+<td><span class="math inline">\((0,1,1,1,2)\)</span></td>
+<td style="text-align: right;">8.0</td>
+</tr>
+</tbody>
+</table>
+<p>令 <span class="math inline">\(N_{i}^{*}\)</span> 表示原样本第 <span class="math inline">\(i\)</span> 个记录在某一份 Bootstrap 样本中被抽中的次数，令</p>
+<p><span class="math display">\[
+W_{i}^{*}=\frac{N_{i}^{*}}{n}
+\]</span></p>
+<p>表示它在伪样本中的相对权重。于是 Bootstrap 均值可以写成</p>
+<p><span class="math display">\[
+\bar X^{*}=\sum_{i=1}^{n}W_{i}^{*}X_{i},
+\qquad W_{i}^{*}\geq0,
+\qquad \sum_{i=1}^{n}W_{i}^{*}=1.
+\]</span></p>
+<p>第一份伪样本的权重是 <span class="math inline">\((0.4,0,0.2,0,0.4)\)</span>，因此</p>
+<p><span class="math display">\[
+\bar X^{*}=0.4\times2+0.2\times5+0.4\times12=6.6.
+\]</span></p>
+<p>Bootstrap 的随机性可以理解成：原样本中的记录不变，但每轮给它们分配了不同的随机权重。</p>
+<p>为什么一定要有放回？普通非参数 Bootstrap 要模拟的是从经验分布独立抽取 <span class="math inline">\(n\)</span> 次，因此采用有放回抽样 (Efron and Tibshirani, 1993, Ch. 6)。如果从 5 个记录中无放回地抽满 5 个，得到的只是原样本的一个重新排列。均值、方差和通常的回归系数都不会因此改变，也就没有办法观察统计量的抽样波动。</p>
+</section>
+<section id="sec-bootstrap-core-3" class="level3" data-number="2.2.3">
+<h3 data-number="2.2.3" class="anchored" data-anchor-id="sec-bootstrap-core-3"><span class="header-section-number">2.2.3</span> 从一份伪样本到 Bootstrap 分布</h3>
+<p>对第 <span class="math inline">\(b\)</span> 份 Bootstrap 样本 <span class="math inline">\(S^{*(b)}\)</span>，重新计算同一个统计量：</p>
+<p><span class="math display">\[
+\hat\theta^{*(b)}=T(S^{*(b)}).
+\]</span></p>
+<p>重复 <span class="math inline">\(B\)</span> 次以后，就得到</p>
+<p><span class="math display">\[
+\hat\theta^{*(1)},\ldots,\hat\theta^{*(B)}.
+\]</span></p>
+<p>这些值的经验分布就是实际计算中看到的 Bootstrap 分布近似 (Efron and Tibshirani, 1993, Ch. 6; Hesterberg, 2015)。这里有三个不同对象，需要一直区分：</p>
+<ul>
+<li><span class="math inline">\(\hat F_{n}\)</span> 是<strong>观测值</strong>的经验分布；</li>
+<li><span class="math inline">\(\mathcal L^{*}(\hat\theta^{*}\mid S)\)</span> 是给定原样本以后，<strong>统计量</strong>的理想 Bootstrap 分布；</li>
+<li>有限 <span class="math inline">\(B\)</span> 次得到的直方图，只是对这个理想 Bootstrap 分布的数值近似。</li>
+</ul>
+<p>整个逻辑可以写成两个平行世界。</p>
+<p>现实抽样世界是</p>
+<p><span class="math display">\[
+F\longrightarrow S\longrightarrow\hat\theta,
+\]</span></p>
+<p>Bootstrap 世界是</p>
+<p><span class="math display">\[
+\hat F_{n}\longrightarrow S^{*}\longrightarrow\hat\theta^{*}.
+\]</span></p>
+<div id="fig-bootstrap-04" class="quarto-float quarto-figure quarto-figure-center anchored" alt="从一份样本到 Bootstrap 分布">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bootstrap-04-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig04-bootstrap-concept-03-resampling-distribution-20260915-155423.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="图&nbsp;2.4: 从一份样本到 Bootstrap 分布"><img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig04-bootstrap-concept-03-resampling-distribution-20260915-155423.png" class="img-fluid figure-img" style="width:100.0%" alt="从一份样本到 Bootstrap 分布"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap-04-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;2.4: 从一份样本到 Bootstrap 分布
+</figcaption>
+</figure>
+</div>
+<p><em>图注：从同一份原样本反复有放回重抽，每次重新计算统计量；许多次统计量的取值共同形成 Bootstrap 分布。</em></p>
+<p>Bootstrap 希望第二条链条能够模仿第一条链条中估计误差的变化。更准确地说，对于适用的统计量，我们希望</p>
+<p><span class="math display">\[
+\mathcal L^{*}(\hat\theta^{*}-\hat\theta\mid S)
+\approx
+\mathcal L_{F}(\hat\theta-\theta).
+\]</span></p>
+<p>右边是现实抽样中“估计值减真实参数”的误差分布；左边是 Bootstrap 世界中“重抽样估计值减原估计值”的误差分布。Bootstrap 不是说 <span class="math inline">\(\hat\theta\)</span> 已经等于 <span class="math inline">\(\theta\)</span>，而是希望围绕 <span class="math inline">\(\hat\theta\)</span> 的重抽样波动能够近似围绕 <span class="math inline">\(\theta\)</span> 的真实抽样波动。</p>
+<p>这一步需要理论条件。经验分布能够逼近总体分布只是基础，还要求目标统计量对这种分布扰动足够稳定，而且重抽样方案与实际数据结构一致。 <a href="#sec-bootstrap-schemes" class="quarto-xref"><span>小节 2.5</span></a> 会看到，一旦数据有聚类或时间依赖，就不能机械地逐行抽样。</p>
+</section>
+</section>
+<section id="sec-bootstrap-inference" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="sec-bootstrap-inference"><span class="header-section-number">2.3</span> 从重抽样分布到标准误和置信区间</h2>
+<p>理解一份 Bootstrap 样本以后，后面的计算并不神秘：重复很多次，把每次的统计量保存下来，再从这些统计量的分布中读取标准误、偏差和分位数。</p>
+<section id="sec-bootstrap-inference-1" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="sec-bootstrap-inference-1"><span class="header-section-number">2.3.1</span> Bootstrap 标准误</h3>
+<p>记</p>
+<p><span class="math display">\[
+\bar\theta^{*}=\frac{1}{B}\sum_{b=1}^{B}\hat\theta^{*(b)}.
+\]</span></p>
+<p>有限 <span class="math inline">\(B\)</span> 下，用 <span class="math inline">\(B\)</span> 个 Bootstrap 统计量的样本标准差估计理想 Bootstrap 分布的标准差 (Efron and Tibshirani, 1993, Ch. 6; Guan, 2003)：</p>
+<p><span class="math display">\[
+\widehat{SE}_{\mathrm{boot}}(\hat\theta)
+=\sqrt{\frac{1}{B-1}\sum_{b=1}^{B}
+\left(\hat\theta^{*(b)}-\bar\theta^{*}\right)^{2}}.
+\]</span></p>
+<p>这里<strong>不再除以 <span class="math inline">\(\sqrt{B}\)</span></strong>。我们关心的是 <span class="math inline">\(\hat\theta^{*}\)</span> 本身在重抽样中的离散程度，而不是 <span class="math inline">\(B\)</span> 个 Bootstrap 估计值平均数的标准误。增加 <span class="math inline">\(B\)</span> 应让这个标准误估计更稳定，但不应让原统计量的不确定性趋于零。</p>
+<p>同一批重抽样结果还可以估计 Bootstrap 偏差：</p>
+<p><span class="math display">\[
+\widehat{\operatorname{Bias}}_{\mathrm{boot}}
+=\bar\theta^{*}-\hat\theta.
+\]</span></p>
+<p>它衡量的是统计量在所估计 DGP 下的偏差，不会自动识别样本选择偏差、遗漏变量偏差或内生性。</p>
+</section>
+<section id="sec-bootstrap-inference-2" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="sec-bootstrap-inference-2"><span class="header-section-number">2.3.2</span> 四个步骤，以及对应的 Stata 和 Python 代码</h3>
+<p>普通 iid Bootstrap 可以概括为四步：</p>
+<ol type="1">
+<li><strong>Step 1</strong>: 从原样本有放回抽取 <span class="math inline">\(n\)</span> 个记录，得到一份 Bootstrap 样本。</li>
+<li><strong>Step 2</strong>: 在这份样本上重新计算目标统计量 <span class="math inline">\(\hat\theta^{*}\)</span>。</li>
+<li><strong>Step 3</strong>: 独立重复前两步 <span class="math inline">\(B\)</span> 次，并保存每一次的统计量。</li>
+<li><strong>Step 4</strong>: 用保存下来的 <span class="math inline">\(B\)</span> 个统计量计算标准误、偏差、分位数或其他推断量。</li>
+</ol>
+<p>下面的 Stata 代码故意不用最简短的 <code>bootstrap</code> 前缀，而是把“抽样—计算—重复—保存”四步暴露出来，便于理解算法。该程序已在本地 Stata 19.5 执行，保存了 9999 次重抽样结果。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">clear</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>input <span class="kw">double</span> x</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>2</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>4</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>5</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>7</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>12</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>* 定义一次 Bootstrap 重抽样：bsample 会有放回地抽取与原样本同样多的记录。</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">capture</span> <span class="kw">program</span> <span class="kw">drop</span> boot_mean_once</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="kw">program</span> <span class="kw">define</span> boot_mean_once, rclass</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">preserve</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">bsample</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">quietly</span> <span class="kw">summarize</span> x</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> <span class="fu">scalar</span> xbar = <span class="fu">r</span>(<span class="kw">mean</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">restore</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>* 重复 9999 次，并把每次均值保存为变量 xbar_star。</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="kw">simulate</span> xbar_star=<span class="fu">r</span>(xbar), reps(9999) <span class="dv">seed</span>(12345): <span class="co">///</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    boot_mean_once</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>* 第 4 步：查看 9999 个 Bootstrap 均值的分布。</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="kw">summarize</span> xbar_star, <span class="kw">detail</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Python 的对应逻辑更直接：</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.array([<span class="fl">2.</span>, <span class="fl">4.</span>, <span class="fl">5.</span>, <span class="fl">7.</span>, <span class="fl">12.</span>])</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="bu">len</span>(x)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> <span class="dv">9999</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">12345</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>boot_means <span class="op">=</span> np.empty(B)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> b <span class="kw">in</span> <span class="bu">range</span>(B):</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Step 1: 有放回抽取 n 个观测</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    x_star <span class="op">=</span> rng.choice(x, size<span class="op">=</span>n, replace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Step 2: 重新计算目标统计量</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    boot_means[b] <span class="op">=</span> x_star.mean()</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3 已由循环完成；Step 4 读取重抽样分布</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>boot_se <span class="op">=</span> boot_means.std(ddof<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>boot_bias <span class="op">=</span> boot_means.mean() <span class="op">-</span> x.mean()</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>实际研究中通常不会手写循环。Stata 的 <code>bootstrap</code> 前缀和许多估计命令的 <code>vce(bootstrap)</code> 选项会自动完成这些步骤， <a href="#sec-bootstrap-applications" class="quarto-xref"><span>小节 2.6</span></a> 再讨论常规用法。</p>
+</section>
+<section id="sec-bootstrap-inference-3" class="level3" data-number="2.3.3">
+<h3 data-number="2.3.3" class="anchored" data-anchor-id="sec-bootstrap-inference-3"><span class="header-section-number">2.3.3</span> 五个数的精确结果</h3>
+<p>当前教学样本只有 5 个观测，因此所有有序 Bootstrap 样本一共只有</p>
+<p><span class="math display">\[
+5^{5}=3125
+\]</span></p>
+<p>种，每一种的概率都是 <span class="math inline">\(1/3125\)</span>。所以这个例子可以不用随机模拟，直接穷举全部可能结果，得到理想 Bootstrap 分布。</p>
+<p>沿用 canonical v05 中已经核验的计算结果：</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 42%">
+<col style="width: 57%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>对象</th>
+<th style="text-align: right;">精确 Bootstrap 计算</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>原样本均值 <span class="math inline">\(\bar X\)</span></td>
+<td style="text-align: right;">6.0000</td>
+</tr>
+<tr class="even">
+<td>Bootstrap 均值的期望 <span class="math inline">\(E^{*}(\bar X^{*})\)</span></td>
+<td style="text-align: right;">6.0000</td>
+</tr>
+<tr class="odd">
+<td>理想 Bootstrap 标准误 <span class="math inline">\(\sqrt{\operatorname{Var}^{*}(\bar X^{*})}\)</span></td>
+<td style="text-align: right;">1.5232</td>
+</tr>
+<tr class="even">
+<td>Bootstrap 偏差</td>
+<td style="text-align: right;">0.0000</td>
+</tr>
+<tr class="odd">
+<td>常用解析标准误估计 <span class="math inline">\(s/\sqrt{n}\)</span></td>
+<td style="text-align: right;">1.7029</td>
+</tr>
+</tbody>
+</table>
+<p>这里两种标准误并不完全相同。原样本离差平方和为 58，经验分布按概率 <span class="math inline">\(1/5\)</span> 计算的方差为 <span class="math inline">\(58/5=11.6\)</span>，因此</p>
+<p><span class="math display">\[
+\operatorname{Var}^{*}(\bar X^{*})=\frac{11.6}{5}=2.32,
+\]</span></p>
+<p>于是 Bootstrap 标准误为 <span class="math inline">\(\sqrt{2.32}=1.5232\)</span>。通常无偏样本方差使用分母 <span class="math inline">\(n-1\)</span>，所以</p>
+<p><span class="math display">\[
+s^{2}=\frac{58}{4}=14.5,
+\qquad
+\frac{s}{\sqrt{n}}=1.7029.
+\]</span></p>
+<p>一般地，对 iid 均值有</p>
+<p><span class="math display">\[
+\sqrt{\operatorname{Var}^{*}(\bar X^{*})}
+=\sqrt{\frac{n-1}{n}}\frac{s}{\sqrt{n}}.
+\]</span></p>
+<p>这是一条代数关系，不应被误解为“Bootstrap 已经验证了 iid 假设”。即使原数据其实存在时间依赖，只要错误地逐点 Bootstrap，也仍然会得到这条关系。</p>
+</section>
+<section id="sec-bootstrap-inference-4" class="level3" data-number="2.3.4">
+<h3 data-number="2.3.4" class="anchored" data-anchor-id="sec-bootstrap-inference-4"><span class="header-section-number">2.3.4</span> 从 Bootstrap 统计量的排序位置理解百分位数区间</h3>
+<p>标准误只告诉我们 Bootstrap 分布有多宽。要构造区间，还要决定把端点放在哪里。百分位数区间的做法很直接：<strong>先把很多次 Bootstrap 得到的统计量从小到大排序，再取两端指定比例的位置。</strong> 因此，这里应该查看的是 <span class="math inline">\(\bar X^{*}\)</span> 或更一般的 <span class="math inline">\(\hat\theta^{*}\)</span>，而不是重新查看原始的 5 个观测值。</p>
+<p>前面的 Stata 教学程序已经把每一次重抽样均值保存为 <code>xbar_star</code>。完成较多次重抽样以后，可以直接查看这些 Bootstrap 均值的分位数：</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>* 本例保存了 9999 次重抽样均值。</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">summarize</span> xbar_star, <span class="kw">detail</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">centile</span> xbar_star, <span class="kw">centile</span>(2.5 97.5)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>xbar_star</code> 的每一行对应一次 Bootstrap 样本的均值。例如，若一共保存了 9999 个均值，先把它们从小到大排列，2.5% 分位数就是靠近序列左端 2.5% 位置的数值，97.5% 分位数则是靠近右端 2.5% 位置的数值。百分位数置信区间就是把这两个位置直接作为区间端点。</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Stata 19.5 实际输出：9999 次重抽样">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stata 19.5 实际输出：9999 次重抽样
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>下面摘录 <code>summarize xbar_star, detail</code> 的分布摘要和 <code>centile</code> 的端点列 (seed 为 12345)：</p>
+<pre class="text"><code>summarize xbar_star, detail
+Obs          9,999       Mean       5.986039
+Std. dev.    1.523227    Median     6
+
+centile xbar_star, centile(2.5 97.5)
+Variable       Obs      Percentile      Centile
+xbar_star      9,999        2.5            3.4
+                          97.5            9.2</code></pre>
+<p>读取 <code>Centile</code> 列可得百分位数区间 [3.4, 9.2]。<code>centile</code> 原输出右侧还报告各分位数估计自身的置信区间，那两组数不是这里要构造的总体均值区间。完整输出保存在配套 Stata Notebook。有限次重抽样的均值和标准误有模拟误差；不同软件的随机数与分位数约定也可能不同，不要求逐位相同。</p>
+</div>
+</div>
+<p>定义 <span class="math inline">\(Q_{p}(\hat\theta^{*})\)</span> 为 Bootstrap 分布的第 <span class="math inline">\(p\)</span> 分位数，则 <span class="math inline">\(1-\alpha\)</span> 的<strong>百分位数置信区间 (percentile confidence interval)</strong> 为</p>
+<p><span class="math display">\[
+CI_{1-\alpha}^{P}
+=\left[
+Q_{\alpha/2}(\hat\theta^{*}),
+Q_{1-\alpha/2}(\hat\theta^{*})
+\right].
+\]</span></p>
+<p>例如，95% 区间取 2.5% 和 97.5% 分位数。百分位数区间是最直观的 Bootstrap 区间之一，但其覆盖精度仍依赖统计量和样本规模，不能把“无需正态分布公式”理解为“无需条件” (Efron and Tibshirani, 1993, Ch. 13; Hesterberg, 2015)。对五点样本的全部 <span class="math inline">\(5^{5}=3125\)</span> 个等概率 Bootstrap 均值进行穷举时，本章统一使用经验分布广义逆的分位数定义，得到端点</p>
+<p><span class="math display">\[
+[3.4,9.2].
+\]</span></p>
+<div id="fig-bootstrap-05" class="quarto-float quarto-figure quarto-figure-center anchored" alt="同一份五点样本的精确 Bootstrap 均值分布">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bootstrap-05-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig05-mean-bootstrap-exact-20260915-155423.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="图&nbsp;2.5: 同一份五点样本的精确 Bootstrap 均值分布"><img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig05-mean-bootstrap-exact-20260915-155423.png" class="img-fluid figure-img" style="width:100.0%" alt="同一份五点样本的精确 Bootstrap 均值分布"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap-05-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;2.5: 同一份五点样本的精确 Bootstrap 均值分布
+</figcaption>
+</figure>
+</div>
+<p><em>图注：每根柱的高度是对应均值的概率，不是平滑密度。两条端点线对应百分位数区间，中心线标示原样本均值 6。</em></p>
+<p>这个精确分布还有一个教学上的好处：它把“分位数”从抽象定义变成了排序问题。随机做 9999 次 Bootstrap 时，我们只是用有限次随机重抽样近似这 3125 种可能结果所构成的理想分布；<span class="math inline">\(B\)</span> 越大，样本分位数通常越稳定，但不会增加原始样本中的信息。</p>
+<p>还可以用 Bootstrap 标准误构造正态近似区间：</p>
+<p><span class="math display">\[
+CI_{1-\alpha}^{N}
+=\left[
+\hat\theta-z_{1-\alpha/2}\widehat{SE}_{\mathrm{boot}},
+\hat\theta+z_{1-\alpha/2}\widehat{SE}_{\mathrm{boot}}
+\right].
+\]</span></p>
+<p>对五点样本，代入理想 Bootstrap 标准误后约为 <span class="math inline">\([3.015,8.985]\)</span>。百分位数区间允许不对称，正态近似区间则以点估计为中心对称；两者都不是在任何小样本中自动可靠。</p>
+<p>“95% 置信区间”的频率学派解释仍然没有改变：如果能够从真实 DGP 反复抽样，并且每次都按同一规则构造区间，那么长期覆盖真实参数的比例希望接近 95%。它不是说已经算出的这一个区间以 95% 概率包含固定参数。</p>
+</section>
+</section>
+<section id="sec-bootstrap-testing" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="sec-bootstrap-testing"><span class="header-section-number">2.4</span> 假设检验为什么还要加入原假设</h2>
+<p>置信区间主要描述“估计量在当前估计 DGP 下怎样波动”。假设检验多了一层要求：我们必须问，<strong>如果原假设 <span class="math inline">\(H_{0}\)</span> 为真，统计量应该怎样波动？</strong> 因而，直接从原样本得到的 Bootstrap 分布不能总是拿来数 p 值；必须让重抽样机制与 <span class="math inline">\(H_{0}\)</span> 相容。</p>
+<section id="sec-bootstrap-testing-1" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="sec-bootstrap-testing-1"><span class="header-section-number">2.4.1</span> 把参考分布移到原假设下</h3>
+<p>继续使用五点样本，检验总体均值是否高于预先给定的基准 4：</p>
+<p><span class="math display">\[
+H_{0}:\mu=4,
+\qquad
+H_{1}:\mu&gt;4.
+\]</span></p>
+<p>观测统计量取</p>
+<p><span class="math display">\[
+U_{\mathrm{obs}}=\bar X-4=2.
+\]</span></p>
+<p>原经验分布的均值是 6。如果直接对 <span class="math inline">\(\bar X^{*}\)</span> 的右尾计数，只能回答“从均值为 6 的经验分布重新抽样时，多大的均值常见”，并没有回答“在 <span class="math inline">\(H_{0}:\mu=4\)</span> 下，观察到均值 6 是否异常”。</p>
+<p>一个简单的做法是把经验分布平移到原假设下：</p>
+<p><span class="math display">\[
+X_{i}^{0}=X_{i}-\bar X+4.
+\]</span></p>
+<p>于是五个数变成 <span class="math inline">\((0,2,3,5,10)\)</span>，经验均值恰好为 4。从这组数据有放回抽样得到 <span class="math inline">\(\bar X^{0*}\)</span>，再计算</p>
+<p><span class="math display">\[
+U^{*}=\bar X^{0*}-4.
+\]</span></p>
+<p>如果使用同一组重抽样索引，就有</p>
+<p><span class="math display">\[
+U^{*}
+=\bar X^{0*}-4
+=\bar X^{*}-\bar X.
+\]</span></p>
+<p>因此可以显式平移数据，也可以把上一节的每个 Bootstrap 均值减去原样本均值。两种写法在这个简单均值问题中等价。</p>
+<p>这里的关键不是“所有 Bootstrap 检验都要平移数据”，而是：<strong>检验必须构造一个在原假设下有意义的参考分布。</strong> 对更复杂的模型，可能通过中心化、学生化、受约束估计或其他方式完成。</p>
+</section>
+<section id="sec-bootstrap-testing-2" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="sec-bootstrap-testing-2"><span class="header-section-number">2.4.2</span> 尾部计数与 p 值</h3>
+<p>对于右尾检验，观察到的统计量是 <span class="math inline">\(U_{\mathrm{obs}}=2\)</span>。给定 <span class="math inline">\(B\)</span> 次随机重抽样，本章采用</p>
+<p><span class="math display">\[
+\hat p^{*}
+=\frac{1+\sum_{b=1}^{B}I(U_{b}^{*}\geq U_{\mathrm{obs}})}{B+1}.
+\]</span></p>
+<p>加一是有限随机重抽样下的一种明确计数约定，避免因为 <span class="math inline">\(B\)</span> 有限而直接报告零概率。它并不能让任意 Bootstrap 检验变成有限样本精确检验；Bootstrap 检验的重复次数和 p 值精度还需结合具体检验设计判断 (Davidson and MacKinnon, 2000)。</p>
+<p>沿用 canonical v05 的 Python 核验，<span class="math inline">\(B=9999\)</span> 时右尾计数为 1171，对应 p 值为 0.1172。若穷举全部 3125 个等概率结果，右尾计数为 376，理想经验 DGP 下的尾概率为</p>
+<p><span class="math display">\[
+\frac{376}{3125}=0.12032.
+\]</span></p>
+<div id="fig-bootstrap-06" class="quarto-float quarto-figure quarto-figure-center anchored" alt="原假设下中心化均值的参考分布">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bootstrap-06-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig06-null-mean-tail-20260915-155423.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="图&nbsp;2.6: 原假设下中心化均值的参考分布"><img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig06-null-mean-tail-20260915-155423.png" class="img-fluid figure-img" style="width:100.0%" alt="原假设下中心化均值的参考分布"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap-06-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;2.6: 原假设下中心化均值的参考分布
+</figcaption>
+</figure>
+</div>
+<p><em>图注：这是上一节全部 Bootstrap 均值减去原样本均值 6 后的参考分布。满足 <span class="math inline">\(U^{*}\geq2\)</span> 的部分构成右尾，概率总和为 0.12032。</em></p>
+<p>在这个构造下，没有足够证据在 5% 水平拒绝 <span class="math inline">\(H_{0}\)</span>。这不等于“证明总体均值就是 4”，也不能把 0.1172 解释为“原假设成立的概率”。</p>
+<div class="callout callout-style-default callout-note callout-titled" title="先确定检验方向，再定义 p 值">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+先确定检验方向，再定义 p 值
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>假设某个观测统计量位于原假设参考分布的第 97 百分位，也就是其左侧累计概率约为 0.97。这里的 <strong>0.97 是累计概率，不应直接叫作 p 值</strong>。</p>
+<ul>
+<li>若事先的备择假设是右尾，例如 <span class="math inline">\(H_{1}:\mu&gt;\mu_{0}\)</span>，p 值应取右尾概率，约为 <span class="math inline">\(1-0.97=0.03\)</span>。</li>
+<li>若事先的备择假设是左尾，同一个观测值对应的左尾 p 值约为 0.97，因此并不支持这个方向的备择假设。</li>
+<li>若采用对称的等尾双侧规则，两侧都要计入。连续情形下可直观写成 <span class="math inline">\(2\min(0.97,0.03)=0.06\)</span>；实际离散 Bootstrap 分布还要按事先规定的双侧统计量和并列值规则计算。</li>
+</ul>
+<p>同理，如果统计量位于第 3 百分位，左尾概率约为 0.03，右尾概率约为 0.97。<strong>“位于分布尾部”与“p 值等于 0.03 还是 0.97”取决于事先定义的备择方向。</strong> 不能看完统计量落在哪一边以后，再临时把检验方向改成能得到较小 p 值的那一侧。</p>
+</div>
+</div>
+<p>因此，Bootstrap 检验中真正需要保存的不是“一个神秘的 p 值”，而是原假设下的参考分布、观测统计量的位置以及预先定义的尾部规则。</p>
+<div id="fig-bootstrap-07" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Bootstrap 检验中的尾部与 p 值">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bootstrap-07-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig07-bootstrap-concept-04-test-tails-pvalue-20260915-155423.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="图&nbsp;2.7: Bootstrap 检验中的尾部与 p 值"><img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig07-bootstrap-concept-04-test-tails-pvalue-20260915-155423.png" class="img-fluid figure-img" style="width:100.0%" alt="Bootstrap 检验中的尾部与 p 值"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap-07-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;2.7: Bootstrap 检验中的尾部与 p 值
+</figcaption>
+</figure>
+</div>
+<p><em>图注：同一个观测统计量在参考分布中的位置固定，但 p 值取哪一侧由事先设定的备择方向决定；累计概率 0.97 不能直接称为 p 值。原图左下小图仅示意左尾方向，阴影面积未按 0.97 比例绘制；本例的概率与观测位置请按上方主图及正文读取。</em></p>
+</section>
+<section id="sec-bootstrap-testing-3" class="level3" data-number="2.4.3">
+<h3 data-number="2.4.3" class="anchored" data-anchor-id="sec-bootstrap-testing-3"><span class="header-section-number">2.4.3</span> Bootstrap 检验与置换检验的区别</h3>
+<p>Permutation test 也属于再抽样推断，但它通常不是“从样本有放回抽数据”。例如两组随机试验中，若 <span class="math inline">\(H_{0}\)</span> 表示处理标签与结果无关，可以在保持观测结果不变的情况下重新分配组别标签，从而构造原假设下的置换分布。</p>
+<p>Bootstrap 更常见的思路是先估计 DGP，再从估计 DGP 中生成伪样本；Permutation test 则利用 <span class="math inline">\(H_{0}\)</span> 下的可交换性重新安排观测或标签。二者都依靠计算，但<strong>抽样规则、原假设和概率解释必须分别说明</strong>。 <a href="#sec-bootstrap-applications-3" class="quarto-xref"><span>小节 2.6.3</span></a> 比较组间回归系数时会再次遇到这个区别。</p>
+</section>
+</section>
+<section id="sec-bootstrap-schemes" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="sec-bootstrap-schemes"><span class="header-section-number">2.5</span> 常用 Bootstrap 抽样方法</h2>
+<p>到目前为止，我们一直假定观测是 iid，因此可以把“一行数据”作为抽样单位。但金融计量中常见的回归、面板和时间序列会打破这个简单结构。选择 Bootstrap 方法，本质上是在回答两个问题：<strong>什么才是近似独立的抽样单位，以及伪样本必须保留原数据中的哪些关系。</strong></p>
+<div id="fig-bootstrap-08" class="quarto-float quarto-figure quarto-figure-center anchored" alt="五种常用 Bootstrap 抽样方法">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bootstrap-08-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig08-bootstrap-concept-05-method-map-20260915-155423.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="图&nbsp;2.8: 五种常用 Bootstrap 抽样方法"><img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig08-bootstrap-concept-05-method-map-20260915-155423.png" class="img-fluid figure-img" style="width:100.0%" alt="五种常用 Bootstrap 抽样方法"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap-08-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;2.8: 五种常用 Bootstrap 抽样方法
+</figcaption>
+</figure>
+</div>
+<p><em>图注：Pairs、residual、wild、cluster 和 block Bootstrap 的差别，不在于命令名称，而在于抽样单位以及必须保留的数据结构。</em></p>
+<p>只看文字定义容易把几种方法混在一起。下面先准备一个只有 9 行的教学数据，5.1–5.4 节都用它来说明“每次重抽样到底改了什么”。数据由 3 家企业、3 个时期组成，变量没有实际经济含义，只服务于抽样机制说明。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>企业</th>
+<th style="text-align: right;">时期</th>
+<th style="text-align: right;"><span class="math inline">\(x\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(y\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(\hat y=1+2x\)</span></th>
+<th style="text-align: right;">残差 <span class="math inline">\(\hat u=y-\hat y\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td style="text-align: right;">2021</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td>A</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">-2</td>
+</tr>
+<tr class="odd">
+<td>A</td>
+<td style="text-align: right;">2023</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td style="text-align: right;">2021</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td>B</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td style="text-align: right;">2023</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">-1</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td style="text-align: right;">2021</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">-1</td>
+</tr>
+<tr class="even">
+<td>C</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td style="text-align: right;">2023</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>把这 9 行暂时放入一个带常数项的一元回归，OLS 恰好得到 <span class="math inline">\(\hat y=1+2x\)</span>，所以残差也很容易手算。这里不是在推荐用 pooled OLS 分析真实面板数据，而是让不同 Bootstrap 方案可以在同一张小表上比较。</p>
+<section id="sec-bootstrap-schemes-1" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" class="anchored" data-anchor-id="sec-bootstrap-schemes-1"><span class="header-section-number">2.5.1</span> Pairs Bootstrap：整行观测一起抽</h3>
+<p>如果每一行 <span class="math inline">\((Y_{i},X_{i})\)</span> 都可以看成独立同分布的联合观测，最直接的方法是把整行作为一个单位，有放回抽取 <span class="math inline">\(n\)</span> 行。这称为<strong>成对 Bootstrap (pairs bootstrap)</strong>。</p>
+<p>例如，把上表 9 行暂时当成 9 个独立观测。第一次可能抽到</p>
+<p><span class="math display">\[
+(C2,A1,C3,B3,B3,C1,A1,C2,C3),
+\]</span></p>
+<p>第二次也可能抽到</p>
+<p><span class="math display">\[
+(B1,A1,A3,B2,B3,B1,C1,C2,A3).
+\]</span></p>
+<p>其中 <code>A1</code> 表示企业 A 的第 1 期。第一份伪样本中，<code>C2</code>、<code>B3</code>、<code>A1</code> 和 <code>C3</code> 都重复出现，而 <code>A2</code>、<code>A3</code>、<code>B1</code>、<code>B2</code> 完全没有出现；第二份伪样本的重复与遗漏模式又不同。这才是有放回随机抽样应有的样子：不存在“先抽 A 公司、再抽 B 公司”的固定顺序。</p>
+<p>关键是每次抽到一条记录时，<span class="math inline">\(x\)</span> 与 <span class="math inline">\(y\)</span> 始终整行一起移动；若分别重抽 <span class="math inline">\(x\)</span> 和 <span class="math inline">\(y\)</span>，就会破坏原样本中的联合关系。Pairs Bootstrap 的这种整行重抽思想是回归 Bootstrap 的基本方案之一 (Efron and Tibshirani, 1993, Ch. 9; Davison and Hinkley, 1997, Ch. 6)。</p>
+<p>这个例子也立刻暴露了 pairs Bootstrap 的边界：如果 A、B、C 真的是 3 家企业的面板记录，那么逐行抽样会把同一企业内部的相关结构拆开。此时“行”不是正确的独立抽样单位， <a href="#sec-bootstrap-schemes-4" class="quarto-xref"><span>小节 2.5.4</span></a> 的 cluster Bootstrap 更合适。</p>
+</section>
+<section id="sec-bootstrap-schemes-2" class="level3" data-number="2.5.2">
+<h3 data-number="2.5.2" class="anchored" data-anchor-id="sec-bootstrap-schemes-2"><span class="header-section-number">2.5.2</span> Residual Bootstrap：固定 <span class="math inline">\(X\)</span>，重新抽误差</h3>
+<p>考虑线性模型</p>
+<p><span class="math display">\[
+Y_{i}=X_{i}'\beta+u_{i}.
+\]</span></p>
+<p>如果研究问题采取“给定这一组 <span class="math inline">\(X\)</span>，误差项怎样随机变化”的条件推断视角，可以固定原来的 <span class="math inline">\(X\)</span> 和拟合值，只从适当中心化的残差中有放回抽取新的误差 <span class="math inline">\(u_{i}^{*}\)</span>，再构造</p>
+<p><span class="math display">\[
+Y_{i}^{*}=X_{i}'\hat\beta+u_{i}^{*}.
+\]</span></p>
+<p>用上面的 9 行数据，残差池是</p>
+<p><span class="math display">\[
+(0,-2,1,1,0,-1,-1,2,0).
+\]</span></p>
+<p>某一次有放回抽取可能得到</p>
+<p><span class="math display">\[
+u^{*}=(2,2,1,0,-1,-2,1,0,-1).
+\]</span></p>
+<p>由于 <span class="math inline">\(\hat y=(3,5,7,3,5,7,3,5,7)\)</span> 保持不变，这次伪样本的因变量变成</p>
+<p><span class="math display">\[
+y^{*}=(5,7,8,3,4,5,4,5,6).
+\]</span></p>
+<p>注意，这次没有重新抽 <span class="math inline">\(x\)</span>，也没有移动企业或时期标签；改变的是误差实现。</p>
+<p>经典 residual Bootstrap 把这些残差视为可以在不同观测之间交换，因此最适合模型设定正确、误差近似 iid 或至少同方差可交换的情形 (Efron and Tibshirani, 1993, Ch. 9; Davison and Hinkley, 1997, Ch. 6)。若真实误差方差随 <span class="math inline">\(X\)</span> 变化，把大残差和小残差混在一起重抽会抹掉异方差结构。</p>
+</section>
+<section id="sec-bootstrap-schemes-3" class="level3" data-number="2.5.3">
+<h3 data-number="2.5.3" class="anchored" data-anchor-id="sec-bootstrap-schemes-3"><span class="header-section-number">2.5.3</span> Wild Bootstrap：残差不换位置，只改变随机方向和幅度规则</h3>
+<p>异方差明显时，一个常见思路是 <strong>Wild Bootstrap</strong>。它不把第 <span class="math inline">\(i\)</span> 个观测的残差拿到第 <span class="math inline">\(j\)</span> 个观测上，而是让每个观测自己的残差乘一个随机乘子：</p>
+<p><span class="math display">\[
+u_{i}^{*}=\tilde u_{i}v_{i},
+\]</span></p>
+<p>其中 <span class="math inline">\(\tilde u_{i}\)</span> 是按所用方案处理后的残差，<span class="math inline">\(v_{i}\)</span> 是独立生成的随机乘子。最基本的要求是</p>
+<p><span class="math display">\[
+E^{*}(v_{i})=0,
+\qquad
+E^{*}(v_{i}^{2})=1.
+\]</span></p>
+<p>这两个矩条件使伪误差仍以 0 为中心，并把第 <span class="math inline">\(i\)</span> 条记录自身的残差尺度保留下来。Wild Bootstrap 并不只有一种乘子。常见选择包括 (Mammen, 1993; Davidson and Flachaire, 2008)：</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>乘子</th>
+<th>定义</th>
+<th>直观含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Rademacher</td>
+<td><span class="math inline">\(P(v_{i}=1)=P(v_{i}=-1)=1/2\)</span></td>
+<td>每条残差独立地以 1/2 概率保持符号、以 1/2 概率翻转符号；一轮样本中不要求“恰好一半”翻转，但平均而言约有一半翻转</td>
+</tr>
+<tr class="even">
+<td>Mammen two-point</td>
+<td><span class="math inline">\(v_{i}=a=(1-\sqrt5)/2\)</span> 的概率为 <span class="math inline">\((\sqrt5+1)/(2\sqrt5)\)</span>；<span class="math inline">\(v_{i}=b=(1+\sqrt5)/2\)</span> 的概率为 <span class="math inline">\((\sqrt5-1)/(2\sqrt5)\)</span></td>
+<td>非对称的两点分布，满足 <span class="math inline">\(E(v)=0\)</span>、<span class="math inline">\(E(v^{2})=1\)</span>、<span class="math inline">\(E(v^{3})=1\)</span>，用于匹配更高阶矩特征</td>
+</tr>
+<tr class="odd">
+<td>Standard normal</td>
+<td><span class="math inline">\(v_{i}\sim N(0,1)\)</span></td>
+<td>连续地改变残差的符号和幅度；概念简单，但有限样本表现并不因此自动优于两点乘子</td>
+</tr>
+</tbody>
+</table>
+<p>Rademacher 乘子还有一个很直观的性质：由于 <span class="math inline">\(v_{i}^{2}=1\)</span>，有</p>
+<p><span class="math display">\[
+(u_{i}^{*})^{2}=\tilde u_{i}^{2}.
+\]</span></p>
+<p>也就是说，每条记录的残差平方在这一轮重抽样中保持不变，只改变符号。Mammen 乘子允许幅度也发生两点式变化，并通过三阶矩条件引入非对称性。正态乘子则允许连续幅度变化。<strong>这些分布不是任意装饰；它们决定了伪误差如何模仿原误差的条件异方差和高阶形态。</strong></p>
+<p>实际研究中还要同时考虑残差是否做杠杆修正、统计量是否学生化，以及样本是否存在聚类。Roodman et al.&nbsp;(2019) 对 Wild Cluster Bootstrap 的乘子选择和 Stata 实现给出了更系统的讨论。</p>
+<div id="fig-bootstrap-09" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Wild Bootstrap 的常用随机乘子">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bootstrap-09-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig09-bootstrap-concept-06-wild-multipliers-20260915-155423.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="图&nbsp;2.9: Wild Bootstrap 的常用随机乘子"><img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig09-bootstrap-concept-06-wild-multipliers-20260915-155423.png" class="img-fluid figure-img" style="width:100.0%" alt="Wild Bootstrap 的常用随机乘子"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap-09-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;2.9: Wild Bootstrap 的常用随机乘子
+</figcaption>
+</figure>
+</div>
+<p><em>图注：Wild Bootstrap 不交换残差位置，而是通过 <span class="math inline">\(u_{i}^{*}=\tilde u_{i}v_{i}\)</span> 改变残差的随机实现。图中列出 Rademacher、Mammen 两点和标准正态三类常见乘子。</em></p>
+<p>为了只看机制，先用最简单的 Rademacher 乘子，即每个 <span class="math inline">\(v_{i}\)</span> 以相同概率取 <span class="math inline">\(-1\)</span> 或 <span class="math inline">\(1\)</span>。假设这 9 行抽到</p>
+<p><span class="math display">\[
+v=(1,-1,1,-1,1,-1,1,-1,1).
+\]</span></p>
+<p>那么原残差</p>
+<p><span class="math display">\[
+(0,-2,1,1,0,-1,-1,2,0)
+\]</span></p>
+<p>变成</p>
+<p><span class="math display">\[
+u^{*}=(0,2,1,-1,0,1,-1,-2,0),
+\]</span></p>
+<p>于是</p>
+<p><span class="math display">\[
+y^{*}=(3,7,8,2,5,8,2,3,7).
+\]</span></p>
+<p>这里最值得观察的是：第 2 行原残差的绝对值是 2，重抽后仍然以这条记录自身的尺度 2 为基础；第 1 行残差为 0，也不会从别处“借来”一个大残差。这正是 Wild Bootstrap 用来保留异方差尺度差异的直觉。</p>
+<p>实际应用中的 wild Bootstrap 还会涉及其他乘子分布、杠杆修正和学生化。聚类数据中的 Wild Cluster Bootstrap 更是在簇层面使用共同乘子，不能简单理解成逐行乘 <span class="math inline">\(\pm1\)</span>。</p>
+</section>
+<section id="sec-bootstrap-schemes-4" class="level3" data-number="2.5.4">
+<h3 data-number="2.5.4" class="anchored" data-anchor-id="sec-bootstrap-schemes-4"><span class="header-section-number">2.5.4</span> Cluster Bootstrap：抽的是企业，而不是企业年份</h3>
+<p>如果上面的 A、B、C 确实代表 3 家企业，而且企业内部 3 期观测允许相关，那么近似独立的单位是“企业”，不是“企业年份”。<strong>Cluster Bootstrap</strong> 因此有放回抽取企业，并把被抽中企业的全部时期一起带入伪样本。</p>
+<p>例如，原来有 3 个企业簇 <span class="math inline">\((A,B,C)\)</span>，一次 cluster Bootstrap 可能抽到</p>
+<p><span class="math display">\[
+(A,C,C).
+\]</span></p>
+<p>这份伪样本就由下面 9 行组成：</p>
+<p><span class="math display">\[
+(A1,A2,A3,C1,C2,C3,C1,C2,C3).
+\]</span></p>
+<p>企业 B 整组没有出现，企业 C 的三期记录整组出现两次。企业内部的时期顺序和共同波动没有被拆开。</p>
+<p><strong>Cluster Bootstrap 的核心不是“先分组再普通抽样”，而是把整个簇当作一次抽样的最小单位。</strong> 它在簇层面有放回抽样，同时保持被抽中簇内部的记录关系不变；这与 residual Bootstrap 在观测层重抽误差、Wild Bootstrap 在观测层或簇层施加随机乘子的机制不同 (Field and Welsh, 2007)。</p>
+<p>这个只有 3 个企业的例子<strong>只用于说明抽样动作，不能拿来做可靠的聚类推断</strong>。真实应用还要考虑独立聚类数 <span class="math inline">\(G\)</span> 是否足够、簇规模是否极不均衡，以及是否需要 Wild Cluster Bootstrap 或其他少聚类修正。</p>
+</section>
+<section id="sec-bootstrap-schemes-5" class="level3" data-number="2.5.5">
+<h3 data-number="2.5.5" class="anchored" data-anchor-id="sec-bootstrap-schemes-5"><span class="header-section-number">2.5.5</span> Block Bootstrap：时间顺序不能被完全打散</h3>
+<p>时间序列需要另一种直觉。假设连续 8 个交易日的收益率如下：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">交易日</th>
+<th style="text-align: right;">日收益率 (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">-0.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">-0.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">-0.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0.8</td>
+</tr>
+</tbody>
+</table>
+<p>若逐日 iid 重抽，第 2 日后面原本紧接第 3 日、第 4–6 日连续为负这些局部关系都会被打散。Block Bootstrap 改为抽“连续的一段时间”，其基本思想是让伪样本保留一部分局部时序依赖。Moving Block Bootstrap 的经典理论可追溯至 Künsch (1989)。</p>
+<div id="fig-bootstrap-10" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Moving Block Bootstrap 的区块构造与拼接">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bootstrap-10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig10-bootstrap-concept-07-moving-block-20260915-155423.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="图&nbsp;2.10: Moving Block Bootstrap 的区块构造与拼接"><img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig10-bootstrap-concept-07-moving-block-20260915-155423.png" class="img-fluid figure-img" style="width:100.0%" alt="Moving Block Bootstrap 的区块构造与拼接"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap-10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;2.10: Moving Block Bootstrap 的区块构造与拼接
+</figcaption>
+</figure>
+</div>
+<p><em>图注：长度为 3 的移动区块保留区块内部的时间顺序；随机抽取若干区块后再拼接成一份伪时间序列。</em></p>
+<p>以 Moving Block Bootstrap、区块长度 <span class="math inline">\(\ell=3\)</span> 为例，可用的重叠区块包括</p>
+<p><span class="math display">\[
+\begin{aligned}
+B_{1}&amp;=(0.4,0.6,0.5),\\
+B_{2}&amp;=(0.6,0.5,-0.3),\\
+B_{3}&amp;=(0.5,-0.3,-0.5),\\
+B_{4}&amp;=(-0.3,-0.5,-0.4),\\
+B_{5}&amp;=(-0.5,-0.4,0.7),\\
+B_{6}&amp;=(-0.4,0.7,0.8).
+\end{aligned}
+\]</span></p>
+<p>如果一次抽到 <span class="math inline">\((B_{4},B_{1},B_{5})\)</span>，依次拼接并截取前 8 个数，可以得到伪序列</p>
+<p><span class="math display">\[
+(-0.3,-0.5,-0.4,0.4,0.6,0.5,-0.5,-0.4).
+\]</span></p>
+<p>区块内部的相邻顺序被保留，但区块之间的连接位置可以改变。区块过短会丢失较长依赖，区块过长又会减少可供重抽的有效变化，因此 <span class="math inline">\(\ell\)</span> 本身也是需要选择和检查的参数。</p>
+<p>以平稳时间序列均值为例，若第 <span class="math inline">\(k\)</span> 阶自协方差为 <span class="math inline">\(\gamma_{k}\)</span>，则</p>
+<p><span class="math display">\[
+\operatorname{Var}(\bar X)
+=\frac{1}{n}\left[
+\gamma_{0}
++2\sum_{k=1}^{n-1}
+\left(1-\frac{k}{n}\right)\gamma_{k}
+\right].
+\]</span></p>
+<p>逐点 iid Bootstrap 不能保留后面的协方差项。Block Bootstrap 只是近似保留局部依赖，也仍需要平稳性、弱依赖等条件；单位根、明显结构突变等问题不会因为“切块”自动消失。</p>
+</section>
+<section id="sec-bootstrap-schemes-6" class="level3" data-number="2.5.6">
+<h3 data-number="2.5.6" class="anchored" data-anchor-id="sec-bootstrap-schemes-6"><span class="header-section-number">2.5.6</span> 怎样在这些方案之间做选择</h3>
+<p>前面的数值例子看起来只是不同的“洗牌方式”，其实每一种方式都对应一套关于 DGP 的判断。面对新的数据，可以先问三件事：</p>
+<ul>
+<li><strong>独立抽样单位是什么？</strong> 是单个个体、企业、地区，还是时间区块？</li>
+<li><strong>希望条件于什么？</strong> 回归中是让 <span class="math inline">\(X\)</span> 一起随机变化，还是固定 <span class="math inline">\(X\)</span> 只模拟误差？</li>
+<li><strong>原数据中哪些依赖必须保留？</strong> 异方差、簇内相关、时间依赖是否是统计量抽样波动的一部分？</li>
+</ul>
+<p>简化地说，iid 横截面常用 pairs Bootstrap；固定设计且同方差误差可考虑 residual Bootstrap；异方差回归常用 wild 类方法；聚类数据需要在簇层重抽或使用相应乘子方法；时间序列则需要 block 类方法。更系统的回归和相关数据 Bootstrap 讨论可参考 Efron and Tibshirani (1993, Ch. 8–9)、Davison and Hinkley (1997, Ch. 6, 8) 与 Horowitz (2018)。真实问题往往同时包含多个结构，因此不能把方法名当成互不相干的按钮。</p>
+</section>
+</section>
+<section id="sec-bootstrap-applications" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="sec-bootstrap-applications"><span class="header-section-number">2.6</span> 应用</h2>
+<p>Bootstrap 并不只用于少数特殊研究设计。对很多 Stata 用户来说，最常见的入口就是“我已经会估计这个模型，但希望用 Bootstrap 得到标准误或置信区间”。在此基础上，才会进一步遇到组间系数差异、面板门槛检验和机器学习中的 Bagging。</p>
+<section id="sec-bootstrap-applications-1" class="level3" data-number="2.6.1">
+<h3 data-number="2.6.1" class="anchored" data-anchor-id="sec-bootstrap-applications-1"><span class="header-section-number">2.6.1</span> 最常见的用法：Bootstrap 标准误</h3>
+<p>如果一个估计命令支持 <code>vce(bootstrap)</code>，最直接的写法是在原命令后更换方差估计方式。例如：</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>* 已在本地 Stata 19.5 核验。</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> auto, <span class="kw">clear</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">regress</span> price <span class="kw">weight</span> <span class="fu">length</span>, <span class="co">///</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">vce</span>(<span class="kw">bootstrap</span>, reps(5000) <span class="dv">seed</span>(13579))</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>模型本身仍然是同一个 OLS；点估计仍来自原样本回归，改变的是方差估计和相应推断的计算方式。Bootstrap 会反复生成伪样本，并在每份伪样本上重新运行回归。</p>
+<p>另一个更通用的命令方式是 <code>bootstrap</code> 前缀。它特别适合保存某个系数、系数函数或用户程序返回的统计量：</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>* 已在本地 Stata 19.5 执行。</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">bootstrap</span> beta_weight=_b[<span class="kw">weight</span>], <span class="co">///</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    reps(5000) <span class="dv">seed</span>(13579): <span class="co">///</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">regress</span> price <span class="kw">weight</span> <span class="fu">length</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>如果目标是某个非线性函数，也可以把它写成待保存的表达式，或者让一个 <code>rclass</code>/<code>eclass</code> 程序返回统计量，再由 <code>bootstrap</code> 前缀负责重抽样和重复估计。由此可以把 Bootstrap 理解成一个<strong>外层推断机制</strong>：里面的估计命令可以变化，但每份伪样本都必须把原估计过程重新跑一遍。</p>
+<p><strong><code>vce(robust)</code> 与 <code>vce(bootstrap)</code> 不是“低配版”和“高级版”。</strong></p>
+<p>初学者很容易产生一个疑问：既然 OLS 已经可以写 <code>vce(robust)</code>，什么时候还有必要写 <code>vce(bootstrap)</code>？两者解决问题的方式不同。</p>
+<p><code>vce(robust)</code> 使用异方差稳健的 sandwich 方差公式。它不重抽样，没有随机模拟误差，计算很快；在独立横截面、主要担心异方差、研究对象就是常规回归系数时，通常已经是直接而自然的选择。</p>
+<p><code>vce(bootstrap)</code> 则用重抽样近似估计量的抽样分布。它的优势主要不是“比 robust 更稳健”，而是<strong>更灵活</strong>：当目标统计量没有方便的解析方差公式、是多个估计量的非线性函数、来自多步程序，或者研究者希望直接利用重抽样分布构造区间时，Bootstrap 往往更方便。某些非标准检验也必须借助专门的 Bootstrap 参考分布。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>问题</th>
+<th>更自然的起点</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>OLS 系数，独立横截面，主要担心异方差</td>
+<td><code>vce(robust)</code></td>
+<td>有成熟的异方差稳健解析方差，快速且无模拟误差</td>
+</tr>
+<tr class="even">
+<td>系数差、比率、分位数、复杂多步统计量</td>
+<td><code>bootstrap</code> / <code>vce(bootstrap)</code></td>
+<td>直接重复完整估计过程，不必为每个统计量单独推导方差</td>
+</tr>
+<tr class="odd">
+<td>聚类、少聚类或时间依赖</td>
+<td>先确定 cluster/wild/block 等结构</td>
+<td>普通 <code>robust</code> 和普通逐行 Bootstrap 都可能破坏正确的依赖结构</td>
+</tr>
+</tbody>
+</table>
+<p>因此，不应为了“保险”同时把所有模型都改成 Bootstrap，也不应在 <code>vce(robust)</code> 与 <code>vce(bootstrap)</code> 得到不同显著性结论后只挑一个更喜欢的结果。Stata 中 Bootstrap 标准误的实现与不同抽样方案可参考 Guan (2003)、Poi (2004) 以及当前版本的 Stata <code>bootstrap</code> 手册。<strong>先判断数据的随机结构和目标统计量，再选择方差估计或重抽样方案。</strong></p>
+<p>需要说明的是，普通 pairs Bootstrap 在随机设计、独立观测下可以容许异方差，但这不意味着它在有限样本中一定优于 heteroskedasticity-robust SE；简单 residual Bootstrap 在异方差下反而可能不合适。具体选项和 Stata 当前版本行为由本地整合时核对。</p>
+</section>
+<section id="sec-bootstrap-applications-2" class="level3" data-number="2.6.2">
+<h3 data-number="2.6.2" class="anchored" data-anchor-id="sec-bootstrap-applications-2"><span class="header-section-number">2.6.2</span> 自定义统计量：什么时候 <code>bootstrap</code> 前缀特别有用</h3>
+<p>很多实证问题的目标不是单个回归系数。例如：</p>
+<ul>
+<li>两个系数之差 <span class="math inline">\(\beta_{1}-\beta_{2}\)</span>；</li>
+<li>两个估计量之比；</li>
+<li>多步估计得到的某个函数；</li>
+<li>分位数、相关系数、Sharpe ratio 等没有简单标准误公式的统计量；</li>
+<li>一段程序最终返回的政策效应或预测指标。</li>
+</ul>
+<p>这时 Bootstrap 的优势很直观：只要每一份伪样本上能够重新计算这个统计量，就可以收集它在重复样本中的分布，而不必为每一个新统计量单独推导方差公式。</p>
+<p>不过“能跑”不等于“有效”。统计量若对少数极端观测非常敏感，或目标参数位于分布边界，普通 Bootstrap 可能失效。 <a href="#sec-bootstrap-limits" class="quarto-xref"><span>小节 2.7</span></a> 会专门讨论。</p>
+</section>
+<section id="sec-bootstrap-applications-3" class="level3" data-number="2.6.3">
+<h3 data-number="2.6.3" class="anchored" data-anchor-id="sec-bootstrap-applications-3"><span class="header-section-number">2.6.3</span> 组间回归系数差异：直接 Bootstrap 系数差</h3>
+<p>“一组系数显著、另一组不显著”不等于“两组系数显著不同”。正确问题是直接研究系数差</p>
+<p><span class="math display">\[
+\Delta=\beta_{0}-\beta_{1}
+\]</span></p>
+<p>的抽样分布。</p>
+<p>设两组线性模型为</p>
+<p><span class="math display">\[
+Y_{i}=\alpha_{g}+\beta_{g}X_{i}+u_{i},
+\qquad g\in\{0,1\}.
+\]</span></p>
+<p>若两组独立，而且各组内部为 iid 横截面，可以在每一组内部单独重抽相同数量的完整记录，每次重新估计两个回归，再保存</p>
+<p><span class="math display">\[
+\hat\Delta^{*}=\hat\beta_{0}^{*}-\hat\beta_{1}^{*}.
+\]</span></p>
+<p>配套模拟数据 <code>data/bootstrap/two_groups_teaching.csv</code> 每组 80 条。沿用 canonical v05 已核验结果：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>对象</th>
+<th style="text-align: right;">结果</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>第 0 组斜率估计</td>
+<td style="text-align: right;">0.2323</td>
+</tr>
+<tr class="even">
+<td>第 1 组斜率估计</td>
+<td style="text-align: right;">0.5849</td>
+</tr>
+<tr class="odd">
+<td>斜率差 <span class="math inline">\(\hat\Delta\)</span></td>
+<td style="text-align: right;">−0.3527</td>
+</tr>
+<tr class="even">
+<td>系数差的 Bootstrap 标准误</td>
+<td style="text-align: right;">0.1341</td>
+</tr>
+<tr class="odd">
+<td>95% 百分位数区间</td>
+<td style="text-align: right;">[−0.6144, −0.0905]</td>
+</tr>
+</tbody>
+</table>
+<div id="fig-bootstrap-11" class="quarto-float quarto-figure quarto-figure-center anchored" alt="组内重抽样得到的斜率差分布">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bootstrap-11-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig11-group-difference-20260915-155423.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="图&nbsp;2.11: 组内重抽样得到的斜率差分布"><img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig11-group-difference-20260915-155423.png" class="img-fluid figure-img" style="width:100.0%" alt="组内重抽样得到的斜率差分布"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap-11-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;2.11: 组内重抽样得到的斜率差分布
+</figcaption>
+</figure>
+</div>
+<p><em>图注：每次重抽都保持两组原有身份，并在各组内部有放回抽取 80 条记录。竖线标示原系数差、零值和百分位数区间端点。数据来自教学模拟，不是融资约束的实证证据。</em></p>
+<p>Stata 中可以把“两次回归并作差”写成一个返回统计量的程序，外面再用 <code>bootstrap</code>：</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>* 已在本地 Stata 19.5 执行。</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>import delimited <span class="st">"data/bootstrap/two_groups_teaching.csv"</span>, <span class="kw">clear</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">assert</span> <span class="fu">inlist</span>(<span class="fu">group</span>, 0, 1)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="kw">drop</span> <span class="kw">if</span> <span class="fu">missing</span>(invest, cash, <span class="fu">group</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="kw">capture</span> <span class="kw">program</span> <span class="kw">drop</span> slope_diff</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="kw">program</span> <span class="kw">define</span> slope_diff, rclass</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">tempname</span> b0</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">quietly</span> <span class="kw">regress</span> invest cash <span class="kw">if</span> <span class="fu">group</span> == 0</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scalar</span> <span class="ot">`b0'</span> = _b[cash]</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">quietly</span> <span class="kw">regress</span> invest cash <span class="kw">if</span> <span class="fu">group</span> == 1</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> <span class="fu">scalar</span> delta = <span class="fu">scalar</span>(<span class="ot">`b0'</span>) - _b[cash]</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    * 清除最后一组回归留下的 <span class="fu">e</span>(<span class="kw">sample</span>)，保留两组样本。</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">ereturn</span> <span class="kw">clear</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="kw">bootstrap</span> delta=<span class="fu">r</span>(delta), <span class="kw">strata</span>(<span class="fu">group</span>) <span class="co">///</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    reps(9999) <span class="dv">seed</span>(12345): <span class="co">///</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    slope_diff</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="kw">estat</span> <span class="kw">bootstrap</span>, percentile <span class="fu">normal</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>这里 <code>strata(group)</code> 的作用是保持每组样本量，并在组内独立重抽。阅读的是 <code>delta</code> 的 Bootstrap 分布，而不是分别比较两组回归表上的星号。</p>
+<p><strong>组内 Bootstrap 与置换检验。</strong></p>
+<p>如果把全部观测合在一起，然后随机重新分配 <code>group</code> 标签，所构造的是另一种参考分布，逻辑更接近置换检验。它回答的是“在相应的原假设和可交换性条件下，重新分组能否产生这么大的差异”，而不是“保持原组别时，系数差在重复抽样中有多大波动”。</p>
+<p>连玉君编写的 <code>bdiff</code> 把组间系数比较封装成 Stata 命令。公开保存的 1.04 版默认包含 Fisher 置换逻辑，因此不能把它简单当作上面 <code>strata(group)</code> 组内 Bootstrap 的快捷替代。具体版本和尾概率定义放在<a href="#sec-bootstrap-bdiff">bdiff 的版本核验</a>。</p>
+<p>本地 Stata 19.5 的 9999 次组内重抽样得到斜率差 -0.35267532、Bootstrap SE 0.13718173、百分位数区间 [-0.6283827, -0.0921835]。点估计与 Python 相同；有限次重抽样的标准误和端点略有差异，两种计算的区间均不包含 0。程序末尾的 <code>ereturn clear</code> 用于清除最后一次分组回归的 <code>e(sample)</code>，避免外层 <code>bootstrap</code> 只留下最后一组。</p>
+</section>
+<section id="sec-bootstrap-applications-4" class="level3" data-number="2.6.4">
+<h3 data-number="2.6.4" class="anchored" data-anchor-id="sec-bootstrap-applications-4"><span class="header-section-number">2.6.4</span> 面板门槛模型：Bootstrap 用来处理非标准检验</h3>
+<p>Bootstrap 的一个典型价值，是处理普通渐近检验分布不标准的问题。Hansen (1999) 的面板门槛模型就是金融与公司研究中常见的例子。</p>
+<p>设模型中的斜率会随着门槛变量 <span class="math inline">\(q_{it}\)</span> 是否超过某个未知门槛 <span class="math inline">\(\gamma\)</span> 而改变。检验“是否存在门槛效应”时，原假设下两个区间的斜率相同，此时门槛参数 <span class="math inline">\(\gamma\)</span> 本身并没有通常意义上的识别。正因为这个识别问题，不能机械地把常规 Wald、F 或 <span class="math inline">\(\chi^{2}\)</span> 临界值搬过来。</p>
+<p>Hansen (1999) 的做法是利用 Bootstrap 构造相应检验统计量的经验参考分布，再据此得到 p 值。这里 Bootstrap 的作用不是“给普通 OLS 换一个标准误”，而是<strong>近似一个非标准检验统计量在原假设下的分布</strong>。</p>
+<p>这一应用有两个教学意义。其一，Bootstrap 不只服务于标准误；它还可以解决“理论分布难以直接使用”的检验问题。其二，重抽样方案必须与门槛模型的估计步骤一致，每一份伪样本都需要重新完成门槛搜索和模型估计，而不能只对最终系数加随机扰动。</p>
+<p>面板门槛模型的完整设定、门槛搜索和 Stata 实操应放在相应面板专题中。本章只把它放在 Bootstrap 的应用地图中，说明为什么实际金融计量研究会需要这类方法。</p>
+</section>
+<section id="sec-bootstrap-applications-5" class="level3" data-number="2.6.5">
+<h3 data-number="2.6.5" class="anchored" data-anchor-id="sec-bootstrap-applications-5"><span class="header-section-number">2.6.5</span> Bagging 与 Random Forest：同样的重抽样，不同的目标</h3>
+<p>Bootstrap 在预测中的一个重要用途不是计算标准误，而是生成不同训练样本。设训练集为 <span class="math inline">\(S\)</span>，从中产生 <span class="math inline">\(B\)</span> 份 Bootstrap 样本，每份训练一棵回归树，预测函数记为 <span class="math inline">\(\hat f^{*(b)}(x)\)</span>。<strong>Bootstrap Aggregating (Bagging)</strong> 对这些预测取平均：</p>
+<p><span class="math display">\[
+\hat f_{\mathrm{bag}}(x)
+=\frac{1}{B}\sum_{b=1}^{B}\hat f^{*(b)}(x).
+\]</span></p>
+<p>树模型对训练样本的小变化很敏感，因此不同 Bootstrap 样本会产生不同的树。把这些树的预测平均起来，通常可以降低单棵树的方差 (Breiman, 1996)。</p>
+<p>Random Forest 在观测层 Bootstrap 之外，还会在每个节点随机抽取一部分候选特征，再从中选择切分变量 (Breiman, 2001)。因此，“Bootstrap 样本—多棵树—平均”描述的是 Bagging 的核心；Random Forest 还多了特征随机化这一步。</p>
+<p>在普通大小为 <span class="math inline">\(n\)</span> 的 Bootstrap 中，一个特定观测一次都没有被抽中的概率是</p>
+<p><span class="math display">\[
+\left(1-\frac{1}{n}\right)^{n}
+\longrightarrow e^{-1}\approx0.368.
+\]</span></p>
+<p>没有参与某棵树训练的观测称为<strong>袋外观测 (out-of-bag, OOB)</strong>。一条记录的 OOB 预测只能由那些没有用它训练过的树给出。OOB 由此提供一种内部预测评估方式。</p>
+<p>这里需要把目标分清：统计推断中的 Bootstrap 用重抽样分布描述估计不确定性；Bagging/RF 用 Bootstrap 生成不同训练集以改善预测。二者使用相似的抽样机制，但评价标准和理论问题并不相同。</p>
+</section>
+<section id="sec-bootstrap-applications-6" class="level3" data-number="2.6.6">
+<h3 data-number="2.6.6" class="anchored" data-anchor-id="sec-bootstrap-applications-6"><span class="header-section-number">2.6.6</span> 其他金融计量中的使用方式</h3>
+<p>同一个思想还会出现在很多后续章节：</p>
+<ul>
+<li>对相关系数、Sharpe ratio、VaR 或其他非线性风险统计量构造标准误和区间；如果数据有时间依赖，通常需要 block 类方案，而不是逐日 iid Bootstrap。</li>
+<li>在多期 DID 等问题中，用 multiplier/wild 类 Bootstrap 构造同时置信带，控制整条动态效应路径的联合覆盖率。</li>
+<li>对复杂多步估计量，只要能够在每份伪样本中完整重复估计流程，就可以用重抽样近似最终统计量的分布。</li>
+</ul>
+<p>这些应用的共同点不是“都调用同一个命令”，而是每次都要先问：实际 DGP 中的随机性来自哪里，哪一层结构需要在 Bootstrap 世界里被模仿。</p>
+</section>
+</section>
+<section id="sec-bootstrap-limits" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="sec-bootstrap-limits"><span class="header-section-number">2.7</span> Bootstrap 不能解决什么</h2>
+<p>Bootstrap 很灵活，但灵活不等于没有条件。理解它的局限，往往比记住更多命令更重要。</p>
+<section id="sec-bootstrap-limits-1" class="level3" data-number="2.7.1">
+<h3 data-number="2.7.1" class="anchored" data-anchor-id="sec-bootstrap-limits-1"><span class="header-section-number">2.7.1</span> <span class="math inline">\(n\)</span>、<span class="math inline">\(B\)</span> 与 <code>seed()</code>：信息量、计算精度和可复现性</h3>
+<p>Bootstrap 有两层随机性容易混在一起。原始样本量 <span class="math inline">\(n\)</span> 决定 <span class="math inline">\(\hat F_{n}\)</span> 中包含多少来自总体的信息；重复次数 <span class="math inline">\(B\)</span> 决定计算机对已经选定的 Bootstrap 分布近似得有多精细。增加 <span class="math inline">\(B\)</span> 不能把原始的 5 个观测变成 5000 个独立信息。</p>
+<p>对固定原样本和固定右尾事件，若其理想 Bootstrap 概率为 <span class="math inline">\(p^{*}\)</span>，随机重复得到的尾部比例近似有蒙特卡洛标准误</p>
+<p><span class="math display">\[
+SE_{\mathrm{MC}}
+\approx
+\sqrt{\frac{p^{*}(1-p^{*})}{B}}.
+\]</span></p>
+<p>例如 <span class="math inline">\(p^{*}\approx0.05\)</span> 时，<span class="math inline">\(B=999\)</span> 的蒙特卡洛标准误约为 0.0069，<span class="math inline">\(B=9999\)</span> 时约为 0.0022。 Bootstrap 重复次数的选择本身就是一个数值精度问题，不能只依赖固定经验数值；相关系统讨论见 Davidson and MacKinnon (2000) 与 Andrews and Buchinsky (2000)。若最终结论依赖 p 值究竟是 0.048 还是 0.052，那么 999 次通常不够稳定；单纯报告更多小数位也没有意义。</p>
+<p>在课堂调试或检查程序流程时，可以先用几百次重复缩短运行时间；正式计算标准误时通常使用数千次作为起点；分位数区间、尾部 p 值或结论接近临界值时，往往需要 9999 次甚至更多。<strong>这些数字只是实务起点，不是普适的理论下限。</strong> 更可靠的判断标准是：增加 <span class="math inline">\(B\)</span> 或更换一次种子以后，结果是否已经稳定到研究所需的精度。</p>
+<div id="fig-bootstrap-12" class="quarto-float quarto-figure quarto-figure-center anchored" alt="原始样本量、Bootstrap 重复次数与随机种子">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bootstrap-12-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig12-bootstrap-concept-08-n-b-seed-20260915-155423.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" title="图&nbsp;2.12: 原始样本量、Bootstrap 重复次数与随机种子"><img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig12-bootstrap-concept-08-n-b-seed-20260915-155423.png" class="img-fluid figure-img" style="width:100.0%" alt="原始样本量、Bootstrap 重复次数与随机种子"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap-12-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;2.12: 原始样本量、Bootstrap 重复次数与随机种子
+</figcaption>
+</figure>
+</div>
+<p><em>图注：<span class="math inline">\(n\)</span> 关系到原样本包含多少总体信息，<span class="math inline">\(B\)</span> 关系到给定样本后数值近似的稳定程度，<code>seed()</code> 只用于固定伪随机序列并保证可复现。</em></p>
+<p><code>seed()</code> 解决的是另一个问题：<strong>可复现性</strong>。计算机使用伪随机数发生器，只要初始状态相同，给定同一程序和运行环境，就可以重现同一串随机抽样。例如：</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>* 已在本地 Stata 19.5 执行。</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">bootstrap</span> beta_weight=_b[<span class="kw">weight</span>], <span class="co">///</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    reps(5000) <span class="dv">seed</span>(13579): <span class="co">///</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">regress</span> price <span class="kw">weight</span> <span class="fu">length</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>这里 <code>seed(13579)</code> 不会让 Bootstrap “更随机”或“更准确”；它只是固定随机数序列的起点。不要为了得到显著结果反复试不同 seed，也不要在每一次 replication 内重新设 seed。若为了检查蒙特卡洛误差而换一个 seed，发现结论明显变化，正确反应通常是增加 <span class="math inline">\(B\)</span>、检查抽样方案并报告数值不确定性，而不是挑选一个有利的 seed。</p>
+</section>
+<section id="sec-bootstrap-limits-2" class="level3" data-number="2.7.2">
+<h3 data-number="2.7.2" class="anchored" data-anchor-id="sec-bootstrap-limits-2"><span class="header-section-number">2.7.2</span> 小样本的主要问题不是“重复次数不够”</h3>
+<p>Hesterberg (2015) 的教学图形很好地展示了一点：当原样本很小时，不同原始样本对应的 Bootstrap 分布可以差异很大；相反，在固定同一原样本以后，把重抽样次数从 1000 增加到更多，通常只会减少较小的模拟误差。</p>
+<p>这意味着，如果原样本根本没有很好地代表真实 DGP，Bootstrap 只能非常精确地重复一个不够好的经验分布。</p>
+<p>极端统计量尤其容易出问题。假设总体支持集是 <span class="math inline">\((0,1)\)</span>，目标参数是总体上界 1，而统计量是样本最大值。普通非参数 Bootstrap 只能从已经观察到的数值中抽样，因此任何伪样本最大值都不可能超过原样本最大值。它无法生成“原样本没有见过但总体可能出现”的更大值。这类边界、极值和不光滑统计量需要专门方法。</p>
+<p>同样地，小样本中位数、分位数等统计量的 Bootstrap 分布可能只落在少量离散点上，形状和覆盖率都可能很不稳定。不能因为软件给出了区间，就默认区间已经可靠。</p>
+</section>
+<section id="sec-bootstrap-limits-3" class="level3" data-number="2.7.3">
+<h3 data-number="2.7.3" class="anchored" data-anchor-id="sec-bootstrap-limits-3"><span class="header-section-number">2.7.3</span> 错误的抽样单位会精确地重复错误的 DGP</h3>
+<p>如果企业内部相关，却逐行抽样；如果时间序列有持续性，却逐日独立抽样；如果回归异方差明显，却用简单 residual Bootstrap 把所有残差互换，那么增加 <span class="math inline">\(B\)</span> 只会让错误方案的数值近似更加稳定。</p>
+<p>因此，Bootstrap 的第一步不是 <code>reps(5000)</code>，而是明确抽样单位和所保留的依赖结构。</p>
+</section>
+<section id="sec-bootstrap-limits-4" class="level3" data-number="2.7.4">
+<h3 data-number="2.7.4" class="anchored" data-anchor-id="sec-bootstrap-limits-4"><span class="header-section-number">2.7.4</span> Bootstrap 不会修复识别问题和系统性偏差</h3>
+<p>Bootstrap 主要描述的是：<strong>在给定数据结构和估计策略下，随机抽样会让统计量怎样变化。</strong> 它不会自动纠正遗漏变量、反向因果、样本选择、测量误差或错误的识别假设。</p>
+<p>例如，一个内生回归系数即使 Bootstrap 标准误很小，也仍可能围绕错误的目标值非常稳定。Bootstrap 可以告诉我们“这个估计量在当前设计下波动不大”，但不能把一个不具有因果含义的系数变成因果效应。</p>
+</section>
+<section id="sec-bootstrap-limits-5" class="level3" data-number="2.7.5">
+<h3 data-number="2.7.5" class="anchored" data-anchor-id="sec-bootstrap-limits-5"><span class="header-section-number">2.7.5</span> 使用前的检查顺序</h3>
+<p>面对一个新的 Bootstrap 问题，可以按下面顺序检查：</p>
+<ol type="1">
+<li><strong>Step 1</strong>: 明确目标参数和统计量。到底要估计均值、回归系数、系数差、分位数，还是一个非线性函数？</li>
+<li><strong>Step 2</strong>: 说明 DGP 中的近似独立单位。是个体、企业、地区还是时间区块？</li>
+<li><strong>Step 3</strong>: 选择与数据结构一致的 Bootstrap 方案。Pairs、residual、wild、cluster 或 block 分别保留了什么？</li>
+<li><strong>Step 4</strong>: 每份伪样本都完整重复原估计步骤，不跳过模型选择、门槛搜索或多步计算。</li>
+<li><strong>Step 5</strong>: 选择足够大的 <span class="math inline">\(B\)</span>，设定并记录 <code>seed()</code>，在临界 p 值或高精度要求下检查蒙特卡洛误差。</li>
+<li><strong>Step 6</strong>: 检查 Bootstrap 分布是否出现明显偏差、极端离散、退化重复或算法失败，并报告有效重复数。</li>
+</ol>
+<p>简言之，Bootstrap 的核心不是“多抽几千次”，而是<strong>把现实抽样问题翻译成一个合理的 Bootstrap 世界，然后让计算机反复运行这个世界。</strong></p>
+</section>
+</section>
+<section id="sec-bootstrap-appendix-theory" class="level2" data-number="2.8">
+<h2 data-number="2.8" class="anchored" data-anchor-id="sec-bootstrap-appendix-theory"><span class="header-section-number">2.8</span> 推导与继续学习</h2>
+<section id="sec-bootstrap-appendix-theory-1" class="level3" data-number="2.8.1">
+<h3 data-number="2.8.1" class="anchored" data-anchor-id="sec-bootstrap-appendix-theory-1"><span class="header-section-number">2.8.1</span> 随机权重与学生化</h3>
+<p>普通 iid Bootstrap 的计数向量满足</p>
+<p><span class="math display">\[
+(N_{1}^{*},\ldots,N_{n}^{*})
+\sim
+\operatorname{Multinomial}
+\left(n;\frac{1}{n},\ldots,\frac{1}{n}\right).
+\]</span></p>
+<p>因此 <span class="math inline">\(E^{*}(N_{i}^{*})=1\)</span>，而且各计数并不独立，因为总次数固定为 <span class="math inline">\(n\)</span>。正文的随机权重表达式正是这一多项分布的另一种写法。</p>
+<p>区间推断中还常使用<strong>学生化 Bootstrap (bootstrap-t)</strong>。以总体均值为例，每次重抽后同时计算均值和标准误：</p>
+<p><span class="math display">\[
+t^{*}
+=\frac{\bar X^{*}-\bar X}{s^{*}/\sqrt{n}}.
+\]</span></p>
+<p>如果 <span class="math inline">\(q_{p}^{*}\)</span> 是 <span class="math inline">\(t^{*}\)</span> 的第 <span class="math inline">\(p\)</span> 分位数，则区间可写为</p>
+<p><span class="math display">\[
+CI^{t}_{1-\alpha}
+=\left[
+\bar X-q_{1-\alpha/2}^{*}\frac{s}{\sqrt{n}},
+\bar X-q_{\alpha/2}^{*}\frac{s}{\sqrt{n}}
+\right].
+\]</span></p>
+<p>学生化的思想是把估计误差同时除以一个随机尺度估计，使参考分布对未知方差更稳定。在适当正则条件下，它可能比简单百分位数区间有更好的高阶精度。</p>
+<p>当前五点样本有一个教学上的特殊问题：某些 Bootstrap 样本会五个数全相同，于是 <span class="math inline">\(s^{*}=0\)</span>，学生化统计量退化。程序必须明确处理这种重复，不能静默删除以后假装没有问题。因此正文不把 bootstrap-t 作为五点例子的主要方法。</p>
+</section>
+<section id="sec-bootstrap-appendix-theory-2" class="level3" data-number="2.8.2">
+<h3 data-number="2.8.2" class="anchored" data-anchor-id="sec-bootstrap-appendix-theory-2"><span class="header-section-number">2.8.2</span> 一个已知 DGP 下的核验</h3>
+<p>只有现实样本时，我们看不到真正的抽样分布。为了核验 Bootstrap 是否在一个简单环境下接近真实分布，可以另设已知 DGP：</p>
+<p><span class="math display">\[
+X_{i}\sim N(6,14.5),
+\qquad n=80,
+\]</span></p>
+<p>其中 14.5 表示方差，即 <span class="math inline">\(\operatorname{Var}(X_{i})=14.5\)</span>。</p>
+<p>此时样本均值误差的真实分布已知：</p>
+<p><span class="math display">\[
+\bar X-6
+\sim
+N\left(0,\frac{14.5}{80}\right),
+\]</span></p>
+<p>真实标准误为 0.4257。canonical v05 的既有模拟使用种子 97531 生成一份样本，样本均值为 5.0489，再做 9999 次普通 Bootstrap，Bootstrap 标准误约为 0.3895。</p>
+<div id="fig-bootstrap-13" class="quarto-float quarto-figure quarto-figure-center anchored" alt="已知正态总体下的误差分布核验">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bootstrap-13-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig13-known-dgp-validation-20260915-155423.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" title="图&nbsp;2.13: 已知正态总体下的误差分布核验"><img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/bootstrap-fig13-known-dgp-validation-20260915-155423.png" class="img-fluid figure-img" style="width:100.0%" alt="已知正态总体下的误差分布核验"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap-13-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;2.13: 已知正态总体下的误差分布核验
+</figcaption>
+</figure>
+</div>
+<p><em>图注：光滑线是已知正态 DGP 下样本均值误差的解析密度；直方图来自同一份原样本的中心化 Bootstrap 误差。两者不必完全重合。这个实验是在已知 DGP 下检查近似，不是前面五点样本的“真实总体”。</em></p>
+<p>这个例子也帮助区分 Monte Carlo 与 Bootstrap：真实误差分布来自我们人为规定的已知 DGP；Bootstrap 分布则只使用其中抽到的一份样本来近似它。</p>
+</section>
+<section id="sec-bootstrap-appendix-theory-3" class="level3" data-number="2.8.3">
+<h3 data-number="2.8.3" class="anchored" data-anchor-id="sec-bootstrap-appendix-theory-3"><span class="header-section-number">2.8.3</span> 阅读入口</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>想进一步解决的问题</th>
+<th>阅读位置</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>从抽样精度进入 Bootstrap，经验分布与 plug-in principle</td>
+<td>Efron and Tibshirani (1993)，第 2–6 章</td>
+</tr>
+<tr class="even">
+<td>两样本、相关数据和回归中的重抽样</td>
+<td>同书第 8–9 章；Davison and Hinkley (1997)，第 3–6、8 章</td>
+</tr>
+<tr class="odd">
+<td>百分位数、bootstrap-t、BCa 等区间</td>
+<td>Efron and Tibshirani (1993)，第 12–14 章；Hesterberg (2015)</td>
+</tr>
+<tr class="even">
+<td>Bootstrap 与 permutation 的关系</td>
+<td>Efron and Tibshirani (1993)，第 15–16 章</td>
+</tr>
+<tr class="odd">
+<td>Stata 中的 Bootstrap 标准误、重抽样编程与时间序列示例</td>
+<td>Guan (2003)；Poi (2004)；StataCorp <code>bootstrap</code> 手册</td>
+</tr>
+<tr class="even">
+<td>Wild/cluster Bootstrap 与 Stata 实现</td>
+<td>Roodman et al.&nbsp;(2019)</td>
+</tr>
+<tr class="odd">
+<td>Bagging 与 Random Forest</td>
+<td>Breiman (1996, 2001)；James et al.&nbsp;(2023)，第 8 章</td>
+</tr>
+<tr class="even">
+<td>面板门槛模型中的非标准检验</td>
+<td>Hansen (1999)</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="sec-bootstrap-bdiff" class="level2" data-number="2.9">
+<h2 data-number="2.9" class="anchored" data-anchor-id="sec-bootstrap-bdiff"><span class="header-section-number">2.9</span> <code>bdiff</code> 的版本核验</h2>
+<p>2026-09-15 本地核验：安装文件标注 <code>Version 1.04 24Nov2020</code>，已运行 499 次默认随机重分组。源码中的抽样分支和较小尾部比例定义与下面记载一致。该运行只核对接口，不作为两组斜率差的主要推断结果。</p>
+<p>命令名称相同，并不表示所有版本的重抽样设定和概率定义都相同。本附录只记录当前 canonical handoff 已经核实的源码事实，实际使用时仍应以本机安装版本为准。</p>
+<p>公开仓库保存的 <code>bdiff.ado</code> 固定版本首行标注 <code>Version 1.04 24Nov2020</code>。SSC 登记页注明修订日期为 25Nov2020，但存档源码不能保证与读者当前安装文件逐字相同。可以用</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>which bdiff</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">viewsource</span> bdiff.ado</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>检查本机文件。</p>
+<p>该版本语法声明为 <code>BSample</code>，因此 <code>bs</code> 是选项缩写，不是另一个独立算法。其无 <code>bsample</code> 分支随机重新分组；有 <code>bsample</code> 分支先重抽合并样本，再执行相同的重分组逻辑。二者都不等于 <a href="#sec-bootstrap-applications-3" class="quarto-xref"><span>小节 2.6.3</span></a> 的 <code>strata(group)</code> 组内 Bootstrap。</p>
+<p>设该源码计算的上尾比例为</p>
+<p><span class="math display">\[
+q
+=\frac{\#\{\hat\Delta^{*(b)}\geq\hat\Delta\}}{B}.
+\]</span></p>
+<p>该版本报告</p>
+<p><span class="math display">\[
+p_{\mathrm{reported}}=\min(q,1-q).
+\]</span></p>
+<p>这不是通常等尾双侧概率中的 <span class="math inline">\(2\min(q,1-q)\)</span>，也不同于预先给定方向的一侧检验。若将 <code>bdiff</code> 用于正式研究，应在论文中说明实际版本、抽样机制和尾概率定义，或者保存重抽样统计量后按照事先定义的检验重新计算。</p>
+</section>
+<section id="参考资料" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="参考资料">参考资料</h2>
+<ol type="1">
+<li><p>Andrews, D. W. K., &amp; Buchinsky, M. (<strong>2000</strong>). A three-step method for choosing the number of bootstrap repetitions. <em>Econometrica, 68</em>(1), 23–51. <a href="https://doi.org/10.1111/1468-0262.00092">Link</a>, <a href="https://doi.org/10.1111/1468-0262.00092">PDF</a>, <a href="https://scholar.google.com/scholar?q=Andrews+Buchinsky+three-step+method+bootstrap+repetitions">Google</a>.</p></li>
+<li><p>Breiman, L. (<strong>1996</strong>). Bagging predictors. <em>Machine Learning, 24</em>, 123–140. <a href="https://doi.org/10.1007/BF00058655">Link</a>, <a href="https://doi.org/10.1007/BF00058655">PDF</a>, <a href="https://scholar.google.com/scholar?q=Breiman+Bagging+predictors">Google</a>.</p></li>
+<li><p>Breiman, L. (<strong>2001</strong>). Random forests. <em>Machine Learning, 45</em>, 5–32. <a href="https://doi.org/10.1023/A:1010933404324">Link</a>, <a href="https://doi.org/10.1023/A:1010933404324">PDF</a>, <a href="https://scholar.google.com/scholar?q=Breiman+Random+forests">Google</a>.</p></li>
+<li><p>Chung, E., &amp; Romano, J. P. (<strong>2013</strong>). Exact and asymptotically robust permutation tests. <em>The Annals of Statistics, 41</em>(2), 484–507. <a href="https://doi.org/10.1214/13-AOS1090">Link</a>, <a href="https://arxiv.org/pdf/1304.5939">PDF</a>, <a href="https://scholar.google.com/scholar?q=Chung+Romano+Exact+and+asymptotically+robust+permutation+tests">Google</a>.</p></li>
+<li><p>Davidson, R., &amp; Flachaire, E. (<strong>2008</strong>). The wild bootstrap, tamed at last. <em>Journal of Econometrics, 146</em>(1), 162–169. <a href="https://doi.org/10.1016/j.jeconom.2008.08.003">Link</a>, <a href="https://doi.org/10.1016/j.jeconom.2008.08.003">PDF</a>, <a href="https://scholar.google.com/scholar?q=Davidson+Flachaire+The+wild+bootstrap+tamed+at+last">Google</a>.</p></li>
+<li><p>Davidson, R., &amp; MacKinnon, J. G. (<strong>2000</strong>). Bootstrap tests: How many bootstraps? <em>Econometric Reviews, 19</em>(1), 55–68. <a href="https://doi.org/10.1080/07474930008800459">Link</a>, <a href="https://doi.org/10.1080/07474930008800459">PDF</a>, <a href="https://scholar.google.com/scholar?q=Davidson+MacKinnon+Bootstrap+tests+How+many+bootstraps">Google</a>.</p></li>
+<li><p>Davidson, R., &amp; MacKinnon, J. G. (<strong>2004</strong>). <em>Econometric Theory and Methods</em>. Oxford University Press. §4.6、§5.3. <a href="https://qed.econ.queensu.ca/ETM/">Link</a>, <a href="https://qed.econ.queensu.ca/ETM/ETM-davidson-mackinnon-2021.pdf">PDF</a>, <a href="https://scholar.google.com/scholar?q=Davidson+MacKinnon+Econometric+Theory+and+Methods">Google</a>.</p></li>
+<li><p>Davison, A. C., &amp; Hinkley, D. V. (<strong>1997</strong>). <em>Bootstrap Methods and Their Application</em>. Cambridge University Press. <a href="https://doi.org/10.1017/CBO9780511802843">Link</a>, <a href="https://doi.org/10.1017/CBO9780511802843">PDF</a>, <a href="https://scholar.google.com/scholar?q=Davison+Hinkley+Bootstrap+Methods+and+Their+Application">Google</a>.</p></li>
+<li><p>Efron, B., &amp; Tibshirani, R. J. (<strong>1993</strong>). <em>An Introduction to the Bootstrap</em>. Chapman &amp; Hall. <a href="https://doi.org/10.1201/9780429246593">Link</a>, <a href="https://doi.org/10.1201/9780429246593">PDF</a>, <a href="https://scholar.google.com/scholar?q=Efron+Tibshirani+An+Introduction+to+the+Bootstrap">Google</a>.</p></li>
+<li><p>Field, C. A., &amp; Welsh, A. H. (<strong>2007</strong>). Bootstrapping clustered data. <em>Journal of the Royal Statistical Society: Series B, 69</em>(3), 369–390. <a href="https://doi.org/10.1111/j.1467-9868.2007.00593.x">Link</a>, <a href="https://doi.org/10.1111/j.1467-9868.2007.00593.x">PDF</a>, <a href="https://scholar.google.com/scholar?q=Field+Welsh+Bootstrapping+clustered+data">Google</a>.</p></li>
+<li><p>Guan, W. (<strong>2003</strong>). From the help desk: Bootstrapped standard errors. <em>The Stata Journal, 3</em>(1), 71–80. <a href="https://doi.org/10.1177/1536867X0300300105">Link</a>, <a href="https://journals.sagepub.com/doi/pdf/10.1177/1536867X0300300105">PDF</a>, <a href="https://scholar.google.com/scholar?q=Guan+From+the+help+desk+Bootstrapped+standard+errors">Google</a>.</p></li>
+<li><p>Hansen, B. E. (<strong>1999</strong>). Threshold effects in non-dynamic panels: Estimation, testing, and inference. <em>Journal of Econometrics, 93</em>(2), 345–368. <a href="https://doi.org/10.1016/S0304-4076%2899%2900025-1">Link</a>, <a href="https://www.ssc.wisc.edu/~bhansen/papers/joe_99.pdf">PDF</a>, <a href="https://scholar.google.com/scholar?q=Hansen+Threshold+effects+in+non-dynamic+panels">Google</a>.</p></li>
+<li><p>Hesterberg, T. C. (<strong>2015</strong>). What teachers should know about the bootstrap: Resampling in the undergraduate statistics curriculum. <em>The American Statistician, 69</em>(4), 371–386. <a href="https://doi.org/10.1080/00031305.2015.1089789">Link</a>, <a href="https://arxiv.org/pdf/1411.5279">PDF</a>, <a href="https://scholar.google.com/scholar?q=Hesterberg+What+teachers+should+know+about+the+bootstrap">Google</a>.</p></li>
+<li><p>Horowitz, J. L. (<strong>2018</strong>). <em>Bootstrap methods in econometrics</em>. arXiv:1809.04016. <a href="https://doi.org/10.48550/arXiv.1809.04016">Link</a>, <a href="https://arxiv.org/pdf/1809.04016">PDF</a>, <a href="https://scholar.google.com/scholar?q=Horowitz+Bootstrap+Methods+in+Econometrics+2018">Google</a>.</p></li>
+<li><p>James, G., Witten, D., Hastie, T., Tibshirani, R., &amp; Taylor, J. (<strong>2023</strong>). <em>An Introduction to Statistical Learning: With Applications in Python</em>. Springer. <a href="https://doi.org/10.1007/978-3-031-38747-0">Link</a>, <a href="https://doi.org/10.1007/978-3-031-38747-0">PDF</a>, <a href="https://scholar.google.com/scholar?q=An+Introduction+to+Statistical+Learning+With+Applications+in+Python">Google</a>.</p></li>
+<li><p>Künsch, H. R. (<strong>1989</strong>). The jackknife and the bootstrap for general stationary observations. <em>The Annals of Statistics, 17</em>(3), 1217–1241. <a href="https://doi.org/10.1214/aos/1176347265">Link</a>, <a href="https://doi.org/10.1214/aos/1176347265">PDF</a>, <a href="https://scholar.google.com/scholar?q=Kunsch+Jackknife+Bootstrap+General+Stationary+Observations">Google</a>.</p></li>
+<li><p>Lian, Y. (2016; revised 2020). <em>BDIFF: Stata module to compute Bootstrap and Permutation tests for difference in coefficients between two groups</em>. Statistical Software Components S458202. <a href="https://ideas.repec.org/c/boc/bocode/s458202.html">Link</a>, <a href="https://ideas.repec.org/c/boc/bocode/s458202.html">PDF</a>, <a href="https://scholar.google.com/scholar?q=Lian+BDIFF+S458202">Google</a>.</p></li>
+<li><p>Mammen, E. (<strong>1993</strong>). Bootstrap and wild bootstrap for high dimensional linear models. <em>The Annals of Statistics, 21</em>(1), 255–285. <a href="https://doi.org/10.1214/aos/1176349025">Link</a>, <a href="https://doi.org/10.1214/aos/1176349025">PDF</a>, <a href="https://scholar.google.com/scholar?q=Mammen+Bootstrap+and+wild+bootstrap+for+high+dimensional+linear+models">Google</a>.</p></li>
+<li><p>Phipson, B., &amp; Smyth, G. K. (<strong>2010</strong>). Permutation p-values should never be zero: Calculating exact p-values when permutations are randomly drawn. <em>Statistical Applications in Genetics and Molecular Biology, 9</em>(1), Article 39. <a href="https://doi.org/10.2202/1544-6115.1585">Link</a>, <a href="https://doi.org/10.2202/1544-6115.1585">PDF</a>, <a href="https://scholar.google.com/scholar?q=Phipson+Smyth+Permutation+p-values+should+never+be+zero">Google</a>.</p></li>
+<li><p>Poi, B. P. (<strong>2004</strong>). From the help desk: Some bootstrapping techniques. <em>The Stata Journal, 4</em>(3), 312–328. <a href="https://doi.org/10.1177/1536867X0400400308">Link</a>, <a href="https://journals.sagepub.com/doi/pdf/10.1177/1536867X0400400308">PDF</a>, <a href="https://scholar.google.com/scholar?q=Poi+Some+bootstrapping+techniques+Stata+Journal">Google</a>.</p></li>
+<li><p>Roodman, D., MacKinnon, J. G., Nielsen, M. Ø., &amp; Webb, M. D. (<strong>2019</strong>). Fast and wild: Bootstrap inference in Stata using boottest. <em>The Stata Journal, 19</em>(1), 4–60. <a href="https://doi.org/10.1177/1536867X19830877">Link</a>, <a href="https://doi.org/10.1177/1536867X19830877">PDF</a>, <a href="https://scholar.google.com/scholar?q=Roodman+MacKinnon+Nielsen+Webb+Fast+and+wild">Google</a>.</p></li>
+<li><p>StataCorp. <em>bootstrap — Bootstrap sampling and estimation</em>；<em>bootstrap postestimation</em>. <a href="https://www.stata.com/manuals/rbootstrap.pdf">Link</a>, <a href="https://www.stata.com/manuals/rbootstrappostestimation.pdf">PDF</a>, <a href="https://scholar.google.com/scholar?q=Stata+bootstrap+manual">Google</a>。本地 Stata 19 已核验；手册访问日期为 2026-09-15。</p></li>
+</ol>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "已复制");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "已复制");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../notebooks/intro/policy-stata.html" class="pagination-link" aria-label="政策实操">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">政策实操</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../notebooks/bootstrap/bootstrap-demo.html" class="pagination-link" aria-label="Bootstrap：Python 实验">
+        <span class="nav-page-text">Bootstrap：Python 实验</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>LN429 · 中山大学岭南学院</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/lectures/bootstrap.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p><a href="https://www.lianxh.cn">连享会</a> · Quarto Book</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>

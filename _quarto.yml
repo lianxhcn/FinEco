@@ -2,6 +2,22 @@ project:
   type: book
   output-dir: docs
   resources:
+    - notebooks/bootstrap/bootstrap-demo.ipynb
+    - notebooks/bootstrap/bootstrap-stata.ipynb
+    - tools/bootstrap/bootstrap_core.py
+    - tools/bootstrap/make_figures.py
+    - tools/bootstrap/run_v10.py
+    - tools/bootstrap/bootstrap.css
+    - tools/bootstrap/README.md
+    - tools/bootstrap/01-tiny-bootstrap.do
+    - tools/bootstrap/02-group-bootstrap.do
+    - tools/bootstrap/03-bdiff-interface-only.do
+    - data/bootstrap/group_boot_differences.csv
+    - data/bootstrap/README.md
+    - data/bootstrap/tiny_exact_means.csv
+    - data/bootstrap/tiny_mc_means.csv
+    - data/bootstrap/tiny_sample.csv
+    - data/bootstrap/two_groups_teaching.csv
     - .nojekyll
     - data/intro/*.csv
     - data/intro/source-manifest.json
@@ -50,6 +66,12 @@ book:
         - lectures/intro.qmd
         - notebooks/intro/portfolio-python.ipynb
         - notebooks/intro/policy-stata.ipynb
+        - href: lectures/bootstrap.qmd
+          text: Bootstrap
+        - href: notebooks/bootstrap/bootstrap-demo.ipynb
+          text: Bootstrap：Python 实验
+        - href: notebooks/bootstrap/bootstrap-stata.ipynb
+          text: Bootstrap：Stata 实验
     - part: "附录"
       chapters:
         - resources/references.qmd
@@ -59,7 +81,7 @@ format:
       text: |
         <link rel="icon" type="image/png" sizes="40x40" href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png">
     theme: cosmo
-    lang: zh-CN
+    lang: zh
     toc: true
     toc-depth: 3
     number-sections: true

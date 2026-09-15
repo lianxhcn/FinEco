@@ -19,6 +19,8 @@ PDF 标签以 DOI 兜底时，不表示一定能直接下载全文。具体应�
 
 ## 各章书目入口
 
+- [Bootstrap：参考资料](../lectures/bootstrap.qmd#参考资料)：重抽样、检验与 Stata 实现。
+
 - [研究流程：参考文献](../lectures/intro.qmd#sec-intro-references)：投资组合、Sharpe 比率和 DDML。
 - [研究流程：数据与复现](../lectures/intro.qmd#sec-intro-sources)：第一讲的行情、政策背景、模拟数据及软件资料。
 

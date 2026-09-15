@@ -1,0 +1,1908 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Bootstrap：Stata 完整核验 – 金融计量经济学</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../resources/references.html" rel="next">
+<link href="../../notebooks/bootstrap/bootstrap-demo.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-0626ff4d7a71b55c8707dcae1d04a9b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-d59a9bb4a0246dd4330968064f99cf3e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<link rel="icon" type="image/png" sizes="40x40" href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png">
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../../notebooks/bootstrap/bootstrap-stata.html">Bootstrap：Stata 实验</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../../index.html" class="sidebar-logo-link">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">金融计量经济学</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/lianxhcn/FinEco" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="切换阅读器模式">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🏠 前言</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📚 课程资料</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../getting-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📌 课件使用</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../syllabus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📅 课程安排</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../homework.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🚀 作业</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../exercises/hw-01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">hw-01</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">🛠️ 环境配置</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">软件配置</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../publishing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">同步与发布</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">研究基础</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">研究流程</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/intro/portfolio-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">组合实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/intro/policy-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">政策实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/bootstrap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Bootstrap</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/bootstrap/bootstrap-demo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Python 实验</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/bootstrap/bootstrap-stata.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Bootstrap：Stata 实验</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">附录</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../resources/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">公共书目</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../../notebooks/bootstrap/bootstrap-stata.html">Bootstrap：Stata 实验</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Bootstrap：Stata 完整核验</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>来自 v10-final canonical handoff。教学模拟与 auto.dta；全部结果由本地执行保存。</p>
+<p>运行说明：本机 Stata 启动 profile 会尝试写入旧目录并产生启动日志警告；随后程序恢复项目目录，章内日志独立记录。该警告不属于以下实验的命令错误。</p>
+<p><a href="../../lectures/bootstrap.html">返回 Bootstrap 讲义</a> · <a href="../../index.html">课程主页</a> · <a href="https://raw.githubusercontent.com/lianxhcn/FinEco/main/notebooks/bootstrap/bootstrap-stata.ipynb">下载本 Notebook</a></p>
+<div id="e2c1d20b" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-15T08:15:38.578759Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-15T08:15:38.578759Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-15T08:15:40.729563Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-15T08:15:40.728553Z&quot;}" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> root : <span class="ot">environment</span> FINECO_BOOTSTRAP_ROOT</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>cd <span class="st">"`root'"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">capture</span> <span class="fu">log</span> <span class="kw">close</span> <span class="dt">_all</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span> <span class="kw">using</span> <span class="st">"logs/bootstrap/v10/stata.log"</span>, <span class="bn">text</span> <span class="kw">replace</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">set</span> <span class="kw">more</span> <span class="kw">off</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">display</span> <span class="st">"Stata version: "</span> c(stata_version)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> <span class="st">"auto.dta"</span>, <span class="kw">clear</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">summarize</span> price</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">mean</span> price</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="kw">regress</span> price <span class="kw">weight</span> mpg, <span class="kw">noheader</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Running D:\stata19/profile.do ...
+file D:/stata/do/log-15Sep2026-16-15-38.log could not be opened
+r(603);
+</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<style>div.jp-Notebook .datagrid-container {min-height: 448px; }</style>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>C:\Users\Administrator\.codex\worktrees\bceb\FinEco
+-------------------------------------------------------------------------------
+      name:  &lt;unnamed&gt;
+       log:  C:\Users\Administrator\.codex\worktrees\bceb\FinEco\logs/bootstrap
+&gt; /v10/stata.log
+  log type:  text
+ opened on:  15 Sep 2026, 16:15:39
+Stata version: 19.5
+(1978 automobile data)
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       price |         74    6165.257    2949.496       3291      15906
+
+Mean estimation                             Number of obs = 74
+
+--------------------------------------------------------------
+             |       Mean   Std. err.     [95% conf. interval]
+-------------+------------------------------------------------
+       price |   6165.257    342.872      5481.914    6848.600
+--------------------------------------------------------------
+------------------------------------------------------------------------------
+       price | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      weight |      1.747      0.641     2.72   0.008        0.468       3.025
+         mpg |    -49.512     86.156    -0.57   0.567     -221.302     122.278
+       _cons |   1946.069   3597.050     0.54   0.590    -5226.245    9118.382
+------------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+<div id="23b569fa" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-15T08:15:40.733562Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-15T08:15:40.733562Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-15T08:15:44.151525Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-15T08:15:44.150516Z&quot;}" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">do</span> <span class="st">"tools/bootstrap/01-tiny-bootstrap.do"</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+. version 17.0
+
+. clear all
+
+. set more off
+
+. 
+. * 从 FinEco 项目根目录运行；本文件演示与讲义相同的五个数。
+. * 已在本地 Stata 19.5 执行；Python 穷举结果作为独立数值基准。
+. input double x
+
+              x
+  1. 2
+  2. 4
+  3. 5
+  4. 7
+  5. 12
+  6. end
+
+. 
+. quietly summarize x
+
+. scalar original_mean = r(mean)
+
+. scalar analytical_se = r(sd)/sqrt(r(N))
+
+. display "Original mean = " original_mean
+Original mean = 6
+
+. display "Analytical SE estimate = " analytical_se
+Analytical SE estimate = 1.7029386
+
+. 
+. * 每次有放回抽取五行，重新计算均值；不需要在程序内再次 bsample。
+. bootstrap mean=r(mean), reps(9999) seed(12345): ///
+&gt;     summarize x
+(running summarize on estimation sample)
+
+warning: summarize does not set e(sample), so no observations will be
+         excluded from the resampling because of missing values or other
+         reasons. To exclude observations, press Break, save the data, drop
+         any observations that are to be excluded, and rerun bootstrap.
+
+Bootstrap replications (9,999): .........10.........20.........30.........40...
+&gt; ......50.........60.........70.........80.........90.........100.........110.
+&gt; ........120.........130.........140.........150.........160.........170......
+&gt; ...180.........190.........200.........210.........220.........230.........24
+&gt; 0.........250.........260.........270.........280.........290.........300....
+&gt; .....310.........320.........330.........340.........350.........360.........
+&gt; 370.........380.........390.........400.........410.........420.........430..
+&gt; .......440.........450.........460.........470.........480.........490.......
+&gt; ..500.........510.........520.........530.........540.........550.........560
+&gt; .........570.........580.........590.........600.........610.........620.....
+&gt; ....630.........640.........650.........660.........670.........680.........6
+&gt; 90.........700.........710.........720.........730.........740.........750...
+&gt; ......760.........770.........780.........790.........800.........810........
+&gt; .820.........830.........840.........850.........860.........870.........880.
+&gt; ........890.........900.........910.........920.........930.........940......
+&gt; ...950.........960.........970.........980.........990.........1,000.........
+&gt; 1,010.........1,020.........1,030.........1,040.........1,050.........1,060..
+&gt; .......1,070.........1,080.........1,090.........1,100.........1,110.........
+&gt; 1,120.........1,130.........1,140.........1,150.........1,160.........1,170..
+&gt; .......1,180.........1,190.........1,200.........1,210.........1,220.........
+&gt; 1,230.........1,240.........1,250.........1,260.........1,270.........1,280..
+&gt; .......1,290.........1,300.........1,310.........1,320.........1,330.........
+&gt; 1,340.........1,350.........1,360.........1,370.........1,380.........1,390..
+&gt; .......1,400.........1,410.........1,420.........1,430.........1,440.........
+&gt; 1,450.........1,460.........1,470.........1,480.........1,490.........1,500..
+&gt; .......1,510.........1,520.........1,530.........1,540.........1,550.........
+&gt; 1,560.........1,570.........1,580.........1,590.........1,600.........1,610..
+&gt; .......1,620.........1,630.........1,640.........1,650.........1,660.........
+&gt; 1,670.........1,680.........1,690.........1,700.........1,710.........1,720..
+&gt; .......1,730.........1,740.........1,750.........1,760.........1,770.........
+&gt; 1,780.........1,790.........1,800.........1,810.........1,820.........1,830..
+&gt; .......1,840.........1,850.........1,860.........1,870.........1,880.........
+&gt; 1,890.........1,900.........1,910.........1,920.........1,930.........1,940..
+&gt; .......1,950.........1,960.........1,970.........1,980.........1,990.........
+&gt; 2,000.........2,010.........2,020.........2,030.........2,040.........2,050..
+&gt; .......2,060.........2,070.........2,080.........2,090.........2,100.........
+&gt; 2,110.........2,120.........2,130.........2,140.........2,150.........2,160..
+&gt; .......2,170.........2,180.........2,190.........2,200.........2,210.........
+&gt; 2,220.........2,230.........2,240.........2,250.........2,260.........2,270..
+&gt; .......2,280.........2,290.........2,300.........2,310.........2,320.........
+&gt; 2,330.........2,340.........2,350.........2,360.........2,370.........2,380..
+&gt; .......2,390.........2,400.........2,410.........2,420.........2,430.........
+&gt; 2,440.........2,450.........2,460.........2,470.........2,480.........2,490..
+&gt; .......2,500.........2,510.........2,520.........2,530.........2,540.........
+&gt; 2,550.........2,560.........2,570.........2,580.........2,590.........2,600..
+&gt; .......2,610.........2,620.........2,630.........2,640.........2,650.........
+&gt; 2,660.........2,670.........2,680.........2,690.........2,700.........2,710..
+&gt; .......2,720.........2,730.........2,740.........2,750.........2,760.........
+&gt; 2,770.........2,780.........2,790.........2,800.........2,810.........2,820..
+&gt; .......2,830.........2,840.........2,850.........2,860.........2,870.........
+&gt; 2,880.........2,890.........2,900.........2,910.........2,920.........2,930..
+&gt; .......2,940.........2,950.........2,960.........2,970.........2,980.........
+&gt; 2,990.........3,000.........3,010.........3,020.........3,030.........3,040..
+&gt; .......3,050.........3,060.........3,070.........3,080.........3,090.........
+&gt; 3,100.........3,110.........3,120.........3,130.........3,140.........3,150..
+&gt; .......3,160.........3,170.........3,180.........3,190.........3,200.........
+&gt; 3,210.........3,220.........3,230.........3,240.........3,250.........3,260..
+&gt; .......3,270.........3,280.........3,290.........3,300.........3,310.........
+&gt; 3,320.........3,330.........3,340.........3,350.........3,360.........3,370..
+&gt; .......3,380.........3,390.........3,400.........3,410.........3,420.........
+&gt; 3,430.........3,440.........3,450.........3,460.........3,470.........3,480..
+&gt; .......3,490.........3,500.........3,510.........3,520.........3,530.........
+&gt; 3,540.........3,550.........3,560.........3,570.........3,580.........3,590..
+&gt; .......3,600.........3,610.........3,620.........3,630.........3,640.........
+&gt; 3,650.........3,660.........3,670.........3,680.........3,690.........3,700..
+&gt; .......3,710.........3,720.........3,730.........3,740.........3,750.........
+&gt; 3,760.........3,770.........3,780.........3,790.........3,800.........3,810..
+&gt; .......3,820.........3,830.........3,840.........3,850.........3,860.........
+&gt; 3,870.........3,880.........3,890.........3,900.........3,910.........3,920..
+&gt; .......3,930.........3,940.........3,950.........3,960.........3,970.........
+&gt; 3,980.........3,990.........4,000.........4,010.........4,020.........4,030..
+&gt; .......4,040.........4,050.........4,060.........4,070.........4,080.........
+&gt; 4,090.........4,100.........4,110.........4,120.........4,130.........4,140..
+&gt; .......4,150.........4,160.........4,170.........4,180.........4,190.........
+&gt; 4,200.........4,210.........4,220.........4,230.........4,240.........4,250..
+&gt; .......4,260.........4,270.........4,280.........4,290.........4,300.........
+&gt; 4,310.........4,320.........4,330.........4,340.........4,350.........4,360..
+&gt; .......4,370.........4,380.........4,390.........4,400.........4,410.........
+&gt; 4,420.........4,430.........4,440.........4,450.........4,460.........4,470..
+&gt; .......4,480.........4,490.........4,500.........4,510.........4,520.........
+&gt; 4,530.........4,540.........4,550.........4,560.........4,570.........4,580..
+&gt; .......4,590.........4,600.........4,610.........4,620.........4,630.........
+&gt; 4,640.........4,650.........4,660.........4,670.........4,680.........4,690..
+&gt; .......4,700.........4,710.........4,720.........4,730.........4,740.........
+&gt; 4,750.........4,760.........4,770.........4,780.........4,790.........4,800..
+&gt; .......4,810.........4,820.........4,830.........4,840.........4,850.........
+&gt; 4,860.........4,870.........4,880.........4,890.........4,900.........4,910..
+&gt; .......4,920.........4,930.........4,940.........4,950.........4,960.........
+&gt; 4,970.........4,980.........4,990.........5,000.........5,010.........5,020..
+&gt; .......5,030.........5,040.........5,050.........5,060.........5,070.........
+&gt; 5,080.........5,090.........5,100.........5,110.........5,120.........5,130..
+&gt; .......5,140.........5,150.........5,160.........5,170.........5,180.........
+&gt; 5,190.........5,200.........5,210.........5,220.........5,230.........5,240..
+&gt; .......5,250.........5,260.........5,270.........5,280.........5,290.........
+&gt; 5,300.........5,310.........5,320.........5,330.........5,340.........5,350..
+&gt; .......5,360.........5,370.........5,380.........5,390.........5,400.........
+&gt; 5,410.........5,420.........5,430.........5,440.........5,450.........5,460..
+&gt; .......5,470.........5,480.........5,490.........5,500.........5,510.........
+&gt; 5,520.........5,530.........5,540.........5,550.........5,560.........5,570..
+&gt; .......5,580.........5,590.........5,600.........5,610.........5,620.........
+&gt; 5,630.........5,640.........5,650.........5,660.........5,670.........5,680..
+&gt; .......5,690.........5,700.........5,710.........5,720.........5,730.........
+&gt; 5,740.........5,750.........5,760.........5,770.........5,780.........5,790..
+&gt; .......5,800.........5,810.........5,820.........5,830.........5,840.........
+&gt; 5,850.........5,860.........5,870.........5,880.........5,890.........5,900..
+&gt; .......5,910.........5,920.........5,930.........5,940.........5,950.........
+&gt; 5,960.........5,970.........5,980.........5,990.........6,000.........6,010..
+&gt; .......6,020.........6,030.........6,040.........6,050.........6,060.........
+&gt; 6,070.........6,080.........6,090.........6,100.........6,110.........6,120..
+&gt; .......6,130.........6,140.........6,150.........6,160.........6,170.........
+&gt; 6,180.........6,190.........6,200.........6,210.........6,220.........6,230..
+&gt; .......6,240.........6,250.........6,260.........6,270.........6,280.........
+&gt; 6,290.........6,300.........6,310.........6,320.........6,330.........6,340..
+&gt; .......6,350.........6,360.........6,370.........6,380.........6,390.........
+&gt; 6,400.........6,410.........6,420.........6,430.........6,440.........6,450..
+&gt; .......6,460.........6,470.........6,480.........6,490.........6,500.........
+&gt; 6,510.........6,520.........6,530.........6,540.........6,550.........6,560..
+&gt; .......6,570.........6,580.........6,590.........6,600.........6,610.........
+&gt; 6,620.........6,630.........6,640.........6,650.........6,660.........6,670..
+&gt; .......6,680.........6,690.........6,700.........6,710.........6,720.........
+&gt; 6,730.........6,740.........6,750.........6,760.........6,770.........6,780..
+&gt; .......6,790.........6,800.........6,810.........6,820.........6,830.........
+&gt; 6,840.........6,850.........6,860.........6,870.........6,880.........6,890..
+&gt; .......6,900.........6,910.........6,920.........6,930.........6,940.........
+&gt; 6,950.........6,960.........6,970.........6,980.........6,990.........7,000..
+&gt; .......7,010.........7,020.........7,030.........7,040.........7,050.........
+&gt; 7,060.........7,070.........7,080.........7,090.........7,100.........7,110..
+&gt; .......7,120.........7,130.........7,140.........7,150.........7,160.........
+&gt; 7,170.........7,180.........7,190.........7,200.........7,210.........7,220..
+&gt; .......7,230.........7,240.........7,250.........7,260.........7,270.........
+&gt; 7,280.........7,290.........7,300.........7,310.........7,320.........7,330..
+&gt; .......7,340.........7,350.........7,360.........7,370.........7,380.........
+&gt; 7,390.........7,400.........7,410.........7,420.........7,430.........7,440..
+&gt; .......7,450.........7,460.........7,470.........7,480.........7,490.........
+&gt; 7,500.........7,510.........7,520.........7,530.........7,540.........7,550..
+&gt; .......7,560.........7,570.........7,580.........7,590.........7,600.........
+&gt; 7,610.........7,620.........7,630.........7,640.........7,650.........7,660..
+&gt; .......7,670.........7,680.........7,690.........7,700.........7,710.........
+&gt; 7,720.........7,730.........7,740.........7,750.........7,760.........7,770..
+&gt; .......7,780.........7,790.........7,800.........7,810.........7,820.........
+&gt; 7,830.........7,840.........7,850.........7,860.........7,870.........7,880..
+&gt; .......7,890.........7,900.........7,910.........7,920.........7,930.........
+&gt; 7,940.........7,950.........7,960.........7,970.........7,980.........7,990..
+&gt; .......8,000.........8,010.........8,020.........8,030.........8,040.........
+&gt; 8,050.........8,060.........8,070.........8,080.........8,090.........8,100..
+&gt; .......8,110.........8,120.........8,130.........8,140.........8,150.........
+&gt; 8,160.........8,170.........8,180.........8,190.........8,200.........8,210..
+&gt; .......8,220.........8,230.........8,240.........8,250.........8,260.........
+&gt; 8,270.........8,280.........8,290.........8,300.........8,310.........8,320..
+&gt; .......8,330.........8,340.........8,350.........8,360.........8,370.........
+&gt; 8,380.........8,390.........8,400.........8,410.........8,420.........8,430..
+&gt; .......8,440.........8,450.........8,460.........8,470.........8,480.........
+&gt; 8,490.........8,500.........8,510.........8,520.........8,530.........8,540..
+&gt; .......8,550.........8,560.........8,570.........8,580.........8,590.........
+&gt; 8,600.........8,610.........8,620.........8,630.........8,640.........8,650..
+&gt; .......8,660.........8,670.........8,680.........8,690.........8,700.........
+&gt; 8,710.........8,720.........8,730.........8,740.........8,750.........8,760..
+&gt; .......8,770.........8,780.........8,790.........8,800.........8,810.........
+&gt; 8,820.........8,830.........8,840.........8,850.........8,860.........8,870..
+&gt; .......8,880.........8,890.........8,900.........8,910.........8,920.........
+&gt; 8,930.........8,940.........8,950.........8,960.........8,970.........8,980..
+&gt; .......8,990.........9,000.........9,010.........9,020.........9,030.........
+&gt; 9,040.........9,050.........9,060.........9,070.........9,080.........9,090..
+&gt; .......9,100.........9,110.........9,120.........9,130.........9,140.........
+&gt; 9,150.........9,160.........9,170.........9,180.........9,190.........9,200..
+&gt; .......9,210.........9,220.........9,230.........9,240.........9,250.........
+&gt; 9,260.........9,270.........9,280.........9,290.........9,300.........9,310..
+&gt; .......9,320.........9,330.........9,340.........9,350.........9,360.........
+&gt; 9,370.........9,380.........9,390.........9,400.........9,410.........9,420..
+&gt; .......9,430.........9,440.........9,450.........9,460.........9,470.........
+&gt; 9,480.........9,490.........9,500.........9,510.........9,520.........9,530..
+&gt; .......9,540.........9,550.........9,560.........9,570.........9,580.........
+&gt; 9,590.........9,600.........9,610.........9,620.........9,630.........9,640..
+&gt; .......9,650.........9,660.........9,670.........9,680.........9,690.........
+&gt; 9,700.........9,710.........9,720.........9,730.........9,740.........9,750..
+&gt; .......9,760.........9,770.........9,780.........9,790.........9,800.........
+&gt; 9,810.........9,820.........9,830.........9,840.........9,850.........9,860..
+&gt; .......9,870.........9,880.........9,890.........9,900.........9,910.........
+&gt; 9,920.........9,930.........9,940.........9,950.........9,960.........9,970..
+&gt; .......9,980.........9,990......... done
+
+Bootstrap results                                        Number of obs =     5
+                                                         Replications  = 9,999
+
+      Command: summarize x
+         mean: r(mean)
+
+------------------------------------------------------------------------------
+             |   Observed   Bootstrap                         Normal-based
+             | coefficient  std. err.      z    P&gt;|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        mean |      6.000      1.523     3.94   0.000        3.015       8.985
+------------------------------------------------------------------------------
+
+. estat bootstrap, percentile normal
+
+Bootstrap results                               Number of obs     =          5
+                                                Replications      =       9999
+
+      Command: summarize x
+         mean: r(mean)
+
+------------------------------------------------------------------------------
+             |    Observed               Bootstrap
+             | coefficient       Bias    std. err.  [95% conf. interval]
+-------------+----------------------------------------------------------------
+        mean |           6  -.0139614   1.5232272     3.01453    8.98547   (N)
+             |                                            3.4        9.2   (P)
+------------------------------------------------------------------------------
+Key: N: Normal
+     P: Percentile
+
+. 
+. * Python 穷举基准：均值 6；Bootstrap SE 1.5231546212；百分位数区间 [3.4, 9.2]
+&gt; 。
+. * 这里有限次模拟与精确基准无需逐位相同。
+. * 输出中的 normal-based z/p 不是讲义第 4 节构造的右尾 Bootstrap p 值。
+. 
+end of do-file
+</code></pre>
+</div>
+</div>
+<div id="b7047639" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-15T08:15:44.153525Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-15T08:15:44.153525Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-15T08:15:48.611276Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-15T08:15:48.609266Z&quot;}" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">clear</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>input <span class="kw">double</span> x</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>2</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>4</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>5</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>7</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>12</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="kw">capture</span> <span class="kw">program</span> <span class="kw">drop</span> boot_mean_once</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="kw">program</span> <span class="kw">define</span> boot_mean_once, rclass</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">preserve</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">bsample</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">quietly</span> <span class="kw">summarize</span> x</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> <span class="fu">scalar</span> xbar = <span class="fu">r</span>(<span class="kw">mean</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">restore</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="kw">simulate</span> xbar_star=<span class="fu">r</span>(xbar), reps(9999) <span class="dv">seed</span>(12345): boot_mean_once</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="kw">summarize</span> xbar_star, <span class="kw">detail</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="kw">centile</span> xbar_star, <span class="kw">centile</span>(2.5 97.5)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="kw">save</span> <span class="st">"logs/bootstrap/v10/tiny-stata-replicates.dta"</span>, <span class="kw">replace</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+
+      Command: boot_mean_once
+    xbar_star: r(xbar)
+
+Simulations (9,999): .........10.........20.........30.........40.........50...
+&gt; ......60.........70.........80.........90.........100.........110.........120
+&gt; .........130.........140.........150.........160.........170.........180.....
+&gt; ....190.........200.........210.........220.........230.........240.........2
+&gt; 50.........260.........270.........280.........290.........300.........310...
+&gt; ......320.........330.........340.........350.........360.........370........
+&gt; .380.........390.........400.........410.........420.........430.........440.
+&gt; ........450.........460.........470.........480.........490.........500......
+&gt; ...510.........520.........530.........540.........550.........560.........57
+&gt; 0.........580.........590.........600.........610.........620.........630....
+&gt; .....640.........650.........660.........670.........680.........690.........
+&gt; 700.........710.........720.........730.........740.........750.........760..
+&gt; .......770.........780.........790.........800.........810.........820.......
+&gt; ..830.........840.........850.........860.........870.........880.........890
+&gt; .........900.........910.........920.........930.........940.........950.....
+&gt; ....960.........970.........980.........990.........1,000.........1,010......
+&gt; ...1,020.........1,030.........1,040.........1,050.........1,060.........1,07
+&gt; 0.........1,080.........1,090.........1,100.........1,110.........1,120......
+&gt; ...1,130.........1,140.........1,150.........1,160.........1,170.........1,18
+&gt; 0.........1,190.........1,200.........1,210.........1,220.........1,230......
+&gt; ...1,240.........1,250.........1,260.........1,270.........1,280.........1,29
+&gt; 0.........1,300.........1,310.........1,320.........1,330.........1,340......
+&gt; ...1,350.........1,360.........1,370.........1,380.........1,390.........1,40
+&gt; 0.........1,410.........1,420.........1,430.........1,440.........1,450......
+&gt; ...1,460.........1,470.........1,480.........1,490.........1,500.........1,51
+&gt; 0.........1,520.........1,530.........1,540.........1,550.........1,560......
+&gt; ...1,570.........1,580.........1,590.........1,600.........1,610.........1,62
+&gt; 0.........1,630.........1,640.........1,650.........1,660.........1,670......
+&gt; ...1,680.........1,690.........1,700.........1,710.........1,720.........1,73
+&gt; 0.........1,740.........1,750.........1,760.........1,770.........1,780......
+&gt; ...1,790.........1,800.........1,810.........1,820.........1,830.........1,84
+&gt; 0.........1,850.........1,860.........1,870.........1,880.........1,890......
+&gt; ...1,900.........1,910.........1,920.........1,930.........1,940.........1,95
+&gt; 0.........1,960.........1,970.........1,980.........1,990.........2,000......
+&gt; ...2,010.........2,020.........2,030.........2,040.........2,050.........2,06
+&gt; 0.........2,070.........2,080.........2,090.........2,100.........2,110......
+&gt; ...2,120.........2,130.........2,140.........2,150.........2,160.........2,17
+&gt; 0.........2,180.........2,190.........2,200.........2,210.........2,220......
+&gt; ...2,230.........2,240.........2,250.........2,260.........2,270.........2,28
+&gt; 0.........2,290.........2,300.........2,310.........2,320.........2,330......
+&gt; ...2,340.........2,350.........2,360.........2,370.........2,380.........2,39
+&gt; 0.........2,400.........2,410.........2,420.........2,430.........2,440......
+&gt; ...2,450.........2,460.........2,470.........2,480.........2,490.........2,50
+&gt; 0.........2,510.........2,520.........2,530.........2,540.........2,550......
+&gt; ...2,560.........2,570.........2,580.........2,590.........2,600.........2,61
+&gt; 0.........2,620.........2,630.........2,640.........2,650.........2,660......
+&gt; ...2,670.........2,680.........2,690.........2,700.........2,710.........2,72
+&gt; 0.........2,730.........2,740.........2,750.........2,760.........2,770......
+&gt; ...2,780.........2,790.........2,800.........2,810.........2,820.........2,83
+&gt; 0.........2,840.........2,850.........2,860.........2,870.........2,880......
+&gt; ...2,890.........2,900.........2,910.........2,920.........2,930.........2,94
+&gt; 0.........2,950.........2,960.........2,970.........2,980.........2,990......
+&gt; ...3,000.........3,010.........3,020.........3,030.........3,040.........3,05
+&gt; 0.........3,060.........3,070.........3,080.........3,090.........3,100......
+&gt; ...3,110.........3,120.........3,130.........3,140.........3,150.........3,16
+&gt; 0.........3,170.........3,180.........3,190.........3,200.........3,210......
+&gt; ...3,220.........3,230.........3,240.........3,250.........3,260.........3,27
+&gt; 0.........3,280.........3,290.........3,300.........3,310.........3,320......
+&gt; ...3,330.........3,340.........3,350.........3,360.........3,370.........3,38
+&gt; 0.........3,390.........3,400.........3,410.........3,420.........3,430......
+&gt; ...3,440.........3,450.........3,460.........3,470.........3,480.........3,49
+&gt; 0.........3,500.........3,510.........3,520.........3,530.........3,540......
+&gt; ...3,550.........3,560.........3,570.........3,580.........3,590.........3,60
+&gt; 0.........3,610.........3,620.........3,630.........3,640.........3,650......
+&gt; ...3,660.........3,670.........3,680.........3,690.........3,700.........3,71
+&gt; 0.........3,720.........3,730.........3,740.........3,750.........3,760......
+&gt; ...3,770.........3,780.........3,790.........3,800.........3,810.........3,82
+&gt; 0.........3,830.........3,840.........3,850.........3,860.........3,870......
+&gt; ...3,880.........3,890.........3,900.........3,910.........3,920.........3,93
+&gt; 0.........3,940.........3,950.........3,960.........3,970.........3,980......
+&gt; ...3,990.........4,000.........4,010.........4,020.........4,030.........4,04
+&gt; 0.........4,050.........4,060.........4,070.........4,080.........4,090......
+&gt; ...4,100.........4,110.........4,120.........4,130.........4,140.........4,15
+&gt; 0.........4,160.........4,170.........4,180.........4,190.........4,200......
+&gt; ...4,210.........4,220.........4,230.........4,240.........4,250.........4,26
+&gt; 0.........4,270.........4,280.........4,290.........4,300.........4,310......
+&gt; ...4,320.........4,330.........4,340.........4,350.........4,360.........4,37
+&gt; 0.........4,380.........4,390.........4,400.........4,410.........4,420......
+&gt; ...4,430.........4,440.........4,450.........4,460.........4,470.........4,48
+&gt; 0.........4,490.........4,500.........4,510.........4,520.........4,530......
+&gt; ...4,540.........4,550.........4,560.........4,570.........4,580.........4,59
+&gt; 0.........4,600.........4,610.........4,620.........4,630.........4,640......
+&gt; ...4,650.........4,660.........4,670.........4,680.........4,690.........4,70
+&gt; 0.........4,710.........4,720.........4,730.........4,740.........4,750......
+&gt; ...4,760.........4,770.........4,780.........4,790.........4,800.........4,81
+&gt; 0.........4,820.........4,830.........4,840.........4,850.........4,860......
+&gt; ...4,870.........4,880.........4,890.........4,900.........4,910.........4,92
+&gt; 0.........4,930.........4,940.........4,950.........4,960.........4,970......
+&gt; ...4,980.........4,990.........5,000.........5,010.........5,020.........5,03
+&gt; 0.........5,040.........5,050.........5,060.........5,070.........5,080......
+&gt; ...5,090.........5,100.........5,110.........5,120.........5,130.........5,14
+&gt; 0.........5,150.........5,160.........5,170.........5,180.........5,190......
+&gt; ...5,200.........5,210.........5,220.........5,230.........5,240.........5,25
+&gt; 0.........5,260.........5,270.........5,280.........5,290.........5,300......
+&gt; ...5,310.........5,320.........5,330.........5,340.........5,350.........5,36
+&gt; 0.........5,370.........5,380.........5,390.........5,400.........5,410......
+&gt; ...5,420.........5,430.........5,440.........5,450.........5,460.........5,47
+&gt; 0.........5,480.........5,490.........5,500.........5,510.........5,520......
+&gt; ...5,530.........5,540.........5,550.........5,560.........5,570.........5,58
+&gt; 0.........5,590.........5,600.........5,610.........5,620.........5,630......
+&gt; ...5,640.........5,650.........5,660.........5,670.........5,680.........5,69
+&gt; 0.........5,700.........5,710.........5,720.........5,730.........5,740......
+&gt; ...5,750.........5,760.........5,770.........5,780.........5,790.........5,80
+&gt; 0.........5,810.........5,820.........5,830.........5,840.........5,850......
+&gt; ...5,860.........5,870.........5,880.........5,890.........5,900.........5,91
+&gt; 0.........5,920.........5,930.........5,940.........5,950.........5,960......
+&gt; ...5,970.........5,980.........5,990.........6,000.........6,010.........6,02
+&gt; 0.........6,030.........6,040.........6,050.........6,060.........6,070......
+&gt; ...6,080.........6,090.........6,100.........6,110.........6,120.........6,13
+&gt; 0.........6,140.........6,150.........6,160.........6,170.........6,180......
+&gt; ...6,190.........6,200.........6,210.........6,220.........6,230.........6,24
+&gt; 0.........6,250.........6,260.........6,270.........6,280.........6,290......
+&gt; ...6,300.........6,310.........6,320.........6,330.........6,340.........6,35
+&gt; 0.........6,360.........6,370.........6,380.........6,390.........6,400......
+&gt; ...6,410.........6,420.........6,430.........6,440.........6,450.........6,46
+&gt; 0.........6,470.........6,480.........6,490.........6,500.........6,510......
+&gt; ...6,520.........6,530.........6,540.........6,550.........6,560.........6,57
+&gt; 0.........6,580.........6,590.........6,600.........6,610.........6,620......
+&gt; ...6,630.........6,640.........6,650.........6,660.........6,670.........6,68
+&gt; 0.........6,690.........6,700.........6,710.........6,720.........6,730......
+&gt; ...6,740.........6,750.........6,760.........6,770.........6,780.........6,79
+&gt; 0.........6,800.........6,810.........6,820.........6,830.........6,840......
+&gt; ...6,850.........6,860.........6,870.........6,880.........6,890.........6,90
+&gt; 0.........6,910.........6,920.........6,930.........6,940.........6,950......
+&gt; ...6,960.........6,970.........6,980.........6,990.........7,000.........7,01
+&gt; 0.........7,020.........7,030.........7,040.........7,050.........7,060......
+&gt; ...7,070.........7,080.........7,090.........7,100.........7,110.........7,12
+&gt; 0.........7,130.........7,140.........7,150.........7,160.........7,170......
+&gt; ...7,180.........7,190.........7,200.........7,210.........7,220.........7,23
+&gt; 0.........7,240.........7,250.........7,260.........7,270.........7,280......
+&gt; ...7,290.........7,300.........7,310.........7,320.........7,330.........7,34
+&gt; 0.........7,350.........7,360.........7,370.........7,380.........7,390......
+&gt; ...7,400.........7,410.........7,420.........7,430.........7,440.........7,45
+&gt; 0.........7,460.........7,470.........7,480.........7,490.........7,500......
+&gt; ...7,510.........7,520.........7,530.........7,540.........7,550.........7,56
+&gt; 0.........7,570.........7,580.........7,590.........7,600.........7,610......
+&gt; ...7,620.........7,630.........7,640.........7,650.........7,660.........7,67
+&gt; 0.........7,680.........7,690.........7,700.........7,710.........7,720......
+&gt; ...7,730.........7,740.........7,750.........7,760.........7,770.........7,78
+&gt; 0.........7,790.........7,800.........7,810.........7,820.........7,830......
+&gt; ...7,840.........7,850.........7,860.........7,870.........7,880.........7,89
+&gt; 0.........7,900.........7,910.........7,920.........7,930.........7,940......
+&gt; ...7,950.........7,960.........7,970.........7,980.........7,990.........8,00
+&gt; 0.........8,010.........8,020.........8,030.........8,040.........8,050......
+&gt; ...8,060.........8,070.........8,080.........8,090.........8,100.........8,11
+&gt; 0.........8,120.........8,130.........8,140.........8,150.........8,160......
+&gt; ...8,170.........8,180.........8,190.........8,200.........8,210.........8,22
+&gt; 0.........8,230.........8,240.........8,250.........8,260.........8,270......
+&gt; ...8,280.........8,290.........8,300.........8,310.........8,320.........8,33
+&gt; 0.........8,340.........8,350.........8,360.........8,370.........8,380......
+&gt; ...8,390.........8,400.........8,410.........8,420.........8,430.........8,44
+&gt; 0.........8,450.........8,460.........8,470.........8,480.........8,490......
+&gt; ...8,500.........8,510.........8,520.........8,530.........8,540.........8,55
+&gt; 0.........8,560.........8,570.........8,580.........8,590.........8,600......
+&gt; ...8,610.........8,620.........8,630.........8,640.........8,650.........8,66
+&gt; 0.........8,670.........8,680.........8,690.........8,700.........8,710......
+&gt; ...8,720.........8,730.........8,740.........8,750.........8,760.........8,77
+&gt; 0.........8,780.........8,790.........8,800.........8,810.........8,820......
+&gt; ...8,830.........8,840.........8,850.........8,860.........8,870.........8,88
+&gt; 0.........8,890.........8,900.........8,910.........8,920.........8,930......
+&gt; ...8,940.........8,950.........8,960.........8,970.........8,980.........8,99
+&gt; 0.........9,000.........9,010.........9,020.........9,030.........9,040......
+&gt; ...9,050.........9,060.........9,070.........9,080.........9,090.........9,10
+&gt; 0.........9,110.........9,120.........9,130.........9,140.........9,150......
+&gt; ...9,160.........9,170.........9,180.........9,190.........9,200.........9,21
+&gt; 0.........9,220.........9,230.........9,240.........9,250.........9,260......
+&gt; ...9,270.........9,280.........9,290.........9,300.........9,310.........9,32
+&gt; 0.........9,330.........9,340.........9,350.........9,360.........9,370......
+&gt; ...9,380.........9,390.........9,400.........9,410.........9,420.........9,43
+&gt; 0.........9,440.........9,450.........9,460.........9,470.........9,480......
+&gt; ...9,490.........9,500.........9,510.........9,520.........9,530.........9,54
+&gt; 0.........9,550.........9,560.........9,570.........9,580.........9,590......
+&gt; ...9,600.........9,610.........9,620.........9,630.........9,640.........9,65
+&gt; 0.........9,660.........9,670.........9,680.........9,690.........9,700......
+&gt; ...9,710.........9,720.........9,730.........9,740.........9,750.........9,76
+&gt; 0.........9,770.........9,780.........9,790.........9,800.........9,810......
+&gt; ...9,820.........9,830.........9,840.........9,850.........9,860.........9,87
+&gt; 0.........9,880.........9,890.........9,900.........9,910.........9,920......
+&gt; ...9,930.........9,940.........9,950.........9,960.........9,970.........9,98
+&gt; 0.........9,990......... done
+
+                           r(xbar)
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            3              2
+ 5%          3.6              2
+10%            4              2       Obs               9,999
+25%            5              2       Sum of wgt.       9,999
+
+50%            6                      Mean           5.986039
+                        Largest       Std. dev.      1.523227
+75%            7             11
+90%            8             11       Variance       2.320221
+95%          8.6             11       Skewness       .3160442
+99%          9.6             12       Kurtosis       2.835762
+
+                                                          Binom. interp.   
+    Variable |       Obs  Percentile    Centile        [95% conf. interval]
+-------------+-------------------------------------------------------------
+   xbar_star |     9,999        2.5         3.4             3.2         3.4
+             |                 97.5         9.2               9         9.2
+file logs/bootstrap/v10/tiny-stata-replicates.dta saved</code></pre>
+</div>
+</div>
+<div id="858a3b40" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-15T08:15:48.614279Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-15T08:15:48.613276Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-15T08:16:45.242698Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-15T08:16:45.241659Z&quot;}" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> <span class="st">"auto.dta"</span>, <span class="kw">clear</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">regress</span> price <span class="kw">weight</span> <span class="fu">length</span>, <span class="co">///</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">vce</span>(<span class="kw">bootstrap</span>, reps(5000) <span class="dv">seed</span>(13579))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> vce_se = _se[<span class="kw">weight</span>]</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="kw">bootstrap</span> beta_weight=_b[<span class="kw">weight</span>], <span class="co">///</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    reps(5000) <span class="dv">seed</span>(13579): <span class="co">///</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">regress</span> price <span class="kw">weight</span> <span class="fu">length</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="kw">assert</span> <span class="fu">abs</span>(_se[beta_weight] - vce_se) &lt; 1e-8</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(1978 automobile data)
+(running regress on estimation sample)
+
+Bootstrap replications (5,000): .........10.........20.........30.........40...
+&gt; ......50.........60.........70.........80.........90.........100.........110.
+&gt; ........120.........130.........140.........150.........160.........170......
+&gt; ...180.........190.........200.........210.........220.........230.........24
+&gt; 0.........250.........260.........270.........280.........290.........300....
+&gt; .....310.........320.........330.........340.........350.........360.........
+&gt; 370.........380.........390.........400.........410.........420.........430..
+&gt; .......440.........450.........460.........470.........480.........490.......
+&gt; ..500.........510.........520.........530.........540.........550.........560
+&gt; .........570.........580.........590.........600.........610.........620.....
+&gt; ....630.........640.........650.........660.........670.........680.........6
+&gt; 90.........700.........710.........720.........730.........740.........750...
+&gt; ......760.........770.........780.........790.........800.........810........
+&gt; .820.........830.........840.........850.........860.........870.........880.
+&gt; ........890.........900.........910.........920.........930.........940......
+&gt; ...950.........960.........970.........980.........990.........1,000.........
+&gt; 1,010.........1,020.........1,030.........1,040.........1,050.........1,060..
+&gt; .......1,070.........1,080.........1,090.........1,100.........1,110.........
+&gt; 1,120.........1,130.........1,140.........1,150.........1,160.........1,170..
+&gt; .......1,180.........1,190.........1,200.........1,210.........1,220.........
+&gt; 1,230.........1,240.........1,250.........1,260.........1,270.........1,280..
+&gt; .......1,290.........1,300.........1,310.........1,320.........1,330.........
+&gt; 1,340.........1,350.........1,360.........1,370.........1,380.........1,390..
+&gt; .......1,400.........1,410.........1,420.........1,430.........1,440.........
+&gt; 1,450.........1,460.........1,470.........1,480.........1,490.........1,500..
+&gt; .......1,510.........1,520.........1,530.........1,540.........1,550.........
+&gt; 1,560.........1,570.........1,580.........1,590.........1,600.........1,610..
+&gt; .......1,620.........1,630.........1,640.........1,650.........1,660.........
+&gt; 1,670.........1,680.........1,690.........1,700.........1,710.........1,720..
+&gt; .......1,730.........1,740.........1,750.........1,760.........1,770.........
+&gt; 1,780.........1,790.........1,800.........1,810.........1,820.........1,830..
+&gt; .......1,840.........1,850.........1,860.........1,870.........1,880.........
+&gt; 1,890.........1,900.........1,910.........1,920.........1,930.........1,940..
+&gt; .......1,950.........1,960.........1,970.........1,980.........1,990.........
+&gt; 2,000.........2,010.........2,020.........2,030.........2,040.........2,050..
+&gt; .......2,060.........2,070.........2,080.........2,090.........2,100.........
+&gt; 2,110.........2,120.........2,130.........2,140.........2,150.........2,160..
+&gt; .......2,170.........2,180.........2,190.........2,200.........2,210.........
+&gt; 2,220.........2,230.........2,240.........2,250.........2,260.........2,270..
+&gt; .......2,280.........2,290.........2,300.........2,310.........2,320.........
+&gt; 2,330.........2,340.........2,350.........2,360.........2,370.........2,380..
+&gt; .......2,390.........2,400.........2,410.........2,420.........2,430.........
+&gt; 2,440.........2,450.........2,460.........2,470.........2,480.........2,490..
+&gt; .......2,500.........2,510.........2,520.........2,530.........2,540.........
+&gt; 2,550.........2,560.........2,570.........2,580.........2,590.........2,600..
+&gt; .......2,610.........2,620.........2,630.........2,640.........2,650.........
+&gt; 2,660.........2,670.........2,680.........2,690.........2,700.........2,710..
+&gt; .......2,720.........2,730.........2,740.........2,750.........2,760.........
+&gt; 2,770.........2,780.........2,790.........2,800.........2,810.........2,820..
+&gt; .......2,830.........2,840.........2,850.........2,860.........2,870.........
+&gt; 2,880.........2,890.........2,900.........2,910.........2,920.........2,930..
+&gt; .......2,940.........2,950.........2,960.........2,970.........2,980.........
+&gt; 2,990.........3,000.........3,010.........3,020.........3,030.........3,040..
+&gt; .......3,050.........3,060.........3,070.........3,080.........3,090.........
+&gt; 3,100.........3,110.........3,120.........3,130.........3,140.........3,150..
+&gt; .......3,160.........3,170.........3,180.........3,190.........3,200.........
+&gt; 3,210.........3,220.........3,230.........3,240.........3,250.........3,260..
+&gt; .......3,270.........3,280.........3,290.........3,300.........3,310.........
+&gt; 3,320.........3,330.........3,340.........3,350.........3,360.........3,370..
+&gt; .......3,380.........3,390.........3,400.........3,410.........3,420.........
+&gt; 3,430.........3,440.........3,450.........3,460.........3,470.........3,480..
+&gt; .......3,490.........3,500.........3,510.........3,520.........3,530.........
+&gt; 3,540.........3,550.........3,560.........3,570.........3,580.........3,590..
+&gt; .......3,600.........3,610.........3,620.........3,630.........3,640.........
+&gt; 3,650.........3,660.........3,670.........3,680.........3,690.........3,700..
+&gt; .......3,710.........3,720.........3,730.........3,740.........3,750.........
+&gt; 3,760.........3,770.........3,780.........3,790.........3,800.........3,810..
+&gt; .......3,820.........3,830.........3,840.........3,850.........3,860.........
+&gt; 3,870.........3,880.........3,890.........3,900.........3,910.........3,920..
+&gt; .......3,930.........3,940.........3,950.........3,960.........3,970.........
+&gt; 3,980.........3,990.........4,000.........4,010.........4,020.........4,030..
+&gt; .......4,040.........4,050.........4,060.........4,070.........4,080.........
+&gt; 4,090.........4,100.........4,110.........4,120.........4,130.........4,140..
+&gt; .......4,150.........4,160.........4,170.........4,180.........4,190.........
+&gt; 4,200.........4,210.........4,220.........4,230.........4,240.........4,250..
+&gt; .......4,260.........4,270.........4,280.........4,290.........4,300.........
+&gt; 4,310.........4,320.........4,330.........4,340.........4,350.........4,360..
+&gt; .......4,370.........4,380.........4,390.........4,400.........4,410.........
+&gt; 4,420.........4,430.........4,440.........4,450.........4,460.........4,470..
+&gt; .......4,480.........4,490.........4,500.........4,510.........4,520.........
+&gt; 4,530.........4,540.........4,550.........4,560.........4,570.........4,580..
+&gt; .......4,590.........4,600.........4,610.........4,620.........4,630.........
+&gt; 4,640.........4,650.........4,660.........4,670.........4,680.........4,690..
+&gt; .......4,700.........4,710.........4,720.........4,730.........4,740.........
+&gt; 4,750.........4,760.........4,770.........4,780.........4,790.........4,800..
+&gt; .......4,810.........4,820.........4,830.........4,840.........4,850.........
+&gt; 4,860.........4,870.........4,880.........4,890.........4,900.........4,910..
+&gt; .......4,920.........4,930.........4,940.........4,950.........4,960.........
+&gt; 4,970.........4,980.........4,990.........5,000 done
+
+Linear regression                                    Number of obs =        74
+                                                     Replications  =     5,000
+                                                     Wald chi2(2)  =     34.85
+                                                     Prob &gt; chi2   =    0.0000
+                                                     R-squared     =    0.3476
+                                                     Adj R-squared =    0.3292
+                                                     Root MSE      = 2415.7351
+
+------------------------------------------------------------------------------
+             |   Observed   Bootstrap                         Normal-based
+       price | coefficient  std. err.      z    P&gt;|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      weight |      4.699      1.767     2.66   0.008        1.235       8.163
+      length |    -97.960     57.755    -1.70   0.090     -211.158      15.237
+       _cons |  10386.541   5787.933     1.79   0.073     -957.600   21730.681
+------------------------------------------------------------------------------
+(running regress on estimation sample)
+
+Bootstrap replications (5,000): .........10.........20.........30.........40...
+&gt; ......50.........60.........70.........80.........90.........100.........110.
+&gt; ........120.........130.........140.........150.........160.........170......
+&gt; ...180.........190.........200.........210.........220.........230.........24
+&gt; 0.........250.........260.........270.........280.........290.........300....
+&gt; .....310.........320.........330.........340.........350.........360.........
+&gt; 370.........380.........390.........400.........410.........420.........430..
+&gt; .......440.........450.........460.........470.........480.........490.......
+&gt; ..500.........510.........520.........530.........540.........550.........560
+&gt; .........570.........580.........590.........600.........610.........620.....
+&gt; ....630.........640.........650.........660.........670.........680.........6
+&gt; 90.........700.........710.........720.........730.........740.........750...
+&gt; ......760.........770.........780.........790.........800.........810........
+&gt; .820.........830.........840.........850.........860.........870.........880.
+&gt; ........890.........900.........910.........920.........930.........940......
+&gt; ...950.........960.........970.........980.........990.........1,000.........
+&gt; 1,010.........1,020.........1,030.........1,040.........1,050.........1,060..
+&gt; .......1,070.........1,080.........1,090.........1,100.........1,110.........
+&gt; 1,120.........1,130.........1,140.........1,150.........1,160.........1,170..
+&gt; .......1,180.........1,190.........1,200.........1,210.........1,220.........
+&gt; 1,230.........1,240.........1,250.........1,260.........1,270.........1,280..
+&gt; .......1,290.........1,300.........1,310.........1,320.........1,330.........
+&gt; 1,340.........1,350.........1,360.........1,370.........1,380.........1,390..
+&gt; .......1,400.........1,410.........1,420.........1,430.........1,440.........
+&gt; 1,450.........1,460.........1,470.........1,480.........1,490.........1,500..
+&gt; .......1,510.........1,520.........1,530.........1,540.........1,550.........
+&gt; 1,560.........1,570.........1,580.........1,590.........1,600.........1,610..
+&gt; .......1,620.........1,630.........1,640.........1,650.........1,660.........
+&gt; 1,670.........1,680.........1,690.........1,700.........1,710.........1,720..
+&gt; .......1,730.........1,740.........1,750.........1,760.........1,770.........
+&gt; 1,780.........1,790.........1,800.........1,810.........1,820.........1,830..
+&gt; .......1,840.........1,850.........1,860.........1,870.........1,880.........
+&gt; 1,890.........1,900.........1,910.........1,920.........1,930.........1,940..
+&gt; .......1,950.........1,960.........1,970.........1,980.........1,990.........
+&gt; 2,000.........2,010.........2,020.........2,030.........2,040.........2,050..
+&gt; .......2,060.........2,070.........2,080.........2,090.........2,100.........
+&gt; 2,110.........2,120.........2,130.........2,140.........2,150.........2,160..
+&gt; .......2,170.........2,180.........2,190.........2,200.........2,210.........
+&gt; 2,220.........2,230.........2,240.........2,250.........2,260.........2,270..
+&gt; .......2,280.........2,290.........2,300.........2,310.........2,320.........
+&gt; 2,330.........2,340.........2,350.........2,360.........2,370.........2,380..
+&gt; .......2,390.........2,400.........2,410.........2,420.........2,430.........
+&gt; 2,440.........2,450.........2,460.........2,470.........2,480.........2,490..
+&gt; .......2,500.........2,510.........2,520.........2,530.........2,540.........
+&gt; 2,550.........2,560.........2,570.........2,580.........2,590.........2,600..
+&gt; .......2,610.........2,620.........2,630.........2,640.........2,650.........
+&gt; 2,660.........2,670.........2,680.........2,690.........2,700.........2,710..
+&gt; .......2,720.........2,730.........2,740.........2,750.........2,760.........
+&gt; 2,770.........2,780.........2,790.........2,800.........2,810.........2,820..
+&gt; .......2,830.........2,840.........2,850.........2,860.........2,870.........
+&gt; 2,880.........2,890.........2,900.........2,910.........2,920.........2,930..
+&gt; .......2,940.........2,950.........2,960.........2,970.........2,980.........
+&gt; 2,990.........3,000.........3,010.........3,020.........3,030.........3,040..
+&gt; .......3,050.........3,060.........3,070.........3,080.........3,090.........
+&gt; 3,100.........3,110.........3,120.........3,130.........3,140.........3,150..
+&gt; .......3,160.........3,170.........3,180.........3,190.........3,200.........
+&gt; 3,210.........3,220.........3,230.........3,240.........3,250.........3,260..
+&gt; .......3,270.........3,280.........3,290.........3,300.........3,310.........
+&gt; 3,320.........3,330.........3,340.........3,350.........3,360.........3,370..
+&gt; .......3,380.........3,390.........3,400.........3,410.........3,420.........
+&gt; 3,430.........3,440.........3,450.........3,460.........3,470.........3,480..
+&gt; .......3,490.........3,500.........3,510.........3,520.........3,530.........
+&gt; 3,540.........3,550.........3,560.........3,570.........3,580.........3,590..
+&gt; .......3,600.........3,610.........3,620.........3,630.........3,640.........
+&gt; 3,650.........3,660.........3,670.........3,680.........3,690.........3,700..
+&gt; .......3,710.........3,720.........3,730.........3,740.........3,750.........
+&gt; 3,760.........3,770.........3,780.........3,790.........3,800.........3,810..
+&gt; .......3,820.........3,830.........3,840.........3,850.........3,860.........
+&gt; 3,870.........3,880.........3,890.........3,900.........3,910.........3,920..
+&gt; .......3,930.........3,940.........3,950.........3,960.........3,970.........
+&gt; 3,980.........3,990.........4,000.........4,010.........4,020.........4,030..
+&gt; .......4,040.........4,050.........4,060.........4,070.........4,080.........
+&gt; 4,090.........4,100.........4,110.........4,120.........4,130.........4,140..
+&gt; .......4,150.........4,160.........4,170.........4,180.........4,190.........
+&gt; 4,200.........4,210.........4,220.........4,230.........4,240.........4,250..
+&gt; .......4,260.........4,270.........4,280.........4,290.........4,300.........
+&gt; 4,310.........4,320.........4,330.........4,340.........4,350.........4,360..
+&gt; .......4,370.........4,380.........4,390.........4,400.........4,410.........
+&gt; 4,420.........4,430.........4,440.........4,450.........4,460.........4,470..
+&gt; .......4,480.........4,490.........4,500.........4,510.........4,520.........
+&gt; 4,530.........4,540.........4,550.........4,560.........4,570.........4,580..
+&gt; .......4,590.........4,600.........4,610.........4,620.........4,630.........
+&gt; 4,640.........4,650.........4,660.........4,670.........4,680.........4,690..
+&gt; .......4,700.........4,710.........4,720.........4,730.........4,740.........
+&gt; 4,750.........4,760.........4,770.........4,780.........4,790.........4,800..
+&gt; .......4,810.........4,820.........4,830.........4,840.........4,850.........
+&gt; 4,860.........4,870.........4,880.........4,890.........4,900.........4,910..
+&gt; .......4,920.........4,930.........4,940.........4,950.........4,960.........
+&gt; 4,970.........4,980.........4,990.........5,000 done
+
+Linear regression                                        Number of obs =    74
+                                                         Replications  = 5,000
+
+      Command: regress price weight length
+  beta_weight: _b[weight]
+
+------------------------------------------------------------------------------
+             |   Observed   Bootstrap                         Normal-based
+             | coefficient  std. err.      z    P&gt;|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+ beta_weight |      4.699      1.767     2.66   0.008        1.235       8.163
+------------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+<div id="c38cec20" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-15T08:16:45.244674Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-15T08:16:45.244674Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-15T08:19:58.202244Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-15T08:19:58.201233Z&quot;}" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">do</span> <span class="st">"tools/bootstrap/02-group-bootstrap.do"</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+. version 17.0
+
+. clear all
+
+. set more off
+
+. 
+. * 在 FinEco 项目根目录运行。数据为教学模拟，不是真实企业实证数据。
+. import delimited "data/bootstrap/two_groups_teaching.csv", clear
+(encoding automatically selected: ISO-8859-1)
+(3 vars, 160 obs)
+
+. assert inlist(group, 0, 1)
+
+. drop if missing(invest, cash, group)
+(0 observations deleted)
+
+. 
+. capture program drop slope_diff
+
+. program define slope_diff, rclass
+  1.     tempname b0
+  2.     quietly regress invest cash if group == 0
+  3.     scalar `b0' = _b[cash]
+  4.     quietly regress invest cash if group == 1
+  5.     return scalar delta = scalar(`b0') - _b[cash]
+  6.     * 清除最后一组回归的 e(sample)，保留两组作为重抽样母样本。
+.     ereturn clear
+  7. end
+
+. 
+. * 先独立核对点估计；每次统计量是第 0 组减第 1 组。
+. quietly slope_diff
+
+. assert abs(r(delta) - (-0.3526753172950964)) &lt; 1e-8
+
+. display "Observed slope difference = " r(delta)
+Observed slope difference = -.35267532
+
+. 
+. * strata(group) 表示各组内部独立抽样，组别和组规模保持不变。
+. * 包含截距的一元回归；抽样单位为完整的企业记录。
+. bootstrap delta=r(delta), strata(group) ///
+&gt;     reps(9999) seed(12345): slope_diff
+(running slope_diff on estimation sample)
+
+warning: slope_diff does not set e(sample), so no observations will be
+         excluded from the resampling because of missing values or other
+         reasons. To exclude observations, press Break, save the data, drop
+         any observations that are to be excluded, and rerun bootstrap.
+
+Bootstrap replications (9,999): .........10.........20.........30.........40...
+&gt; ......50.........60.........70.........80.........90.........100.........110.
+&gt; ........120.........130.........140.........150.........160.........170......
+&gt; ...180.........190.........200.........210.........220.........230.........24
+&gt; 0.........250.........260.........270.........280.........290.........300....
+&gt; .....310.........320.........330.........340.........350.........360.........
+&gt; 370.........380.........390.........400.........410.........420.........430..
+&gt; .......440.........450.........460.........470.........480.........490.......
+&gt; ..500.........510.........520.........530.........540.........550.........560
+&gt; .........570.........580.........590.........600.........610.........620.....
+&gt; ....630.........640.........650.........660.........670.........680.........6
+&gt; 90.........700.........710.........720.........730.........740.........750...
+&gt; ......760.........770.........780.........790.........800.........810........
+&gt; .820.........830.........840.........850.........860.........870.........880.
+&gt; ........890.........900.........910.........920.........930.........940......
+&gt; ...950.........960.........970.........980.........990.........1,000.........
+&gt; 1,010.........1,020.........1,030.........1,040.........1,050.........1,060..
+&gt; .......1,070.........1,080.........1,090.........1,100.........1,110.........
+&gt; 1,120.........1,130.........1,140.........1,150.........1,160.........1,170..
+&gt; .......1,180.........1,190.........1,200.........1,210.........1,220.........
+&gt; 1,230.........1,240.........1,250.........1,260.........1,270.........1,280..
+&gt; .......1,290.........1,300.........1,310.........1,320.........1,330.........
+&gt; 1,340.........1,350.........1,360.........1,370.........1,380.........1,390..
+&gt; .......1,400.........1,410.........1,420.........1,430.........1,440.........
+&gt; 1,450.........1,460.........1,470.........1,480.........1,490.........1,500..
+&gt; .......1,510.........1,520.........1,530.........1,540.........1,550.........
+&gt; 1,560.........1,570.........1,580.........1,590.........1,600.........1,610..
+&gt; .......1,620.........1,630.........1,640.........1,650.........1,660.........
+&gt; 1,670.........1,680.........1,690.........1,700.........1,710.........1,720..
+&gt; .......1,730.........1,740.........1,750.........1,760.........1,770.........
+&gt; 1,780.........1,790.........1,800.........1,810.........1,820.........1,830..
+&gt; .......1,840.........1,850.........1,860.........1,870.........1,880.........
+&gt; 1,890.........1,900.........1,910.........1,920.........1,930.........1,940..
+&gt; .......1,950.........1,960.........1,970.........1,980.........1,990.........
+&gt; 2,000.........2,010.........2,020.........2,030.........2,040.........2,050..
+&gt; .......2,060.........2,070.........2,080.........2,090.........2,100.........
+&gt; 2,110.........2,120.........2,130.........2,140.........2,150.........2,160..
+&gt; .......2,170.........2,180.........2,190.........2,200.........2,210.........
+&gt; 2,220.........2,230.........2,240.........2,250.........2,260.........2,270..
+&gt; .......2,280.........2,290.........2,300.........2,310.........2,320.........
+&gt; 2,330.........2,340.........2,350.........2,360.........2,370.........2,380..
+&gt; .......2,390.........2,400.........2,410.........2,420.........2,430.........
+&gt; 2,440.........2,450.........2,460.........2,470.........2,480.........2,490..
+&gt; .......2,500.........2,510.........2,520.........2,530.........2,540.........
+&gt; 2,550.........2,560.........2,570.........2,580.........2,590.........2,600..
+&gt; .......2,610.........2,620.........2,630.........2,640.........2,650.........
+&gt; 2,660.........2,670.........2,680.........2,690.........2,700.........2,710..
+&gt; .......2,720.........2,730.........2,740.........2,750.........2,760.........
+&gt; 2,770.........2,780.........2,790.........2,800.........2,810.........2,820..
+&gt; .......2,830.........2,840.........2,850.........2,860.........2,870.........
+&gt; 2,880.........2,890.........2,900.........2,910.........2,920.........2,930..
+&gt; .......2,940.........2,950.........2,960.........2,970.........2,980.........
+&gt; 2,990.........3,000.........3,010.........3,020.........3,030.........3,040..
+&gt; .......3,050.........3,060.........3,070.........3,080.........3,090.........
+&gt; 3,100.........3,110.........3,120.........3,130.........3,140.........3,150..
+&gt; .......3,160.........3,170.........3,180.........3,190.........3,200.........
+&gt; 3,210.........3,220.........3,230.........3,240.........3,250.........3,260..
+&gt; .......3,270.........3,280.........3,290.........3,300.........3,310.........
+&gt; 3,320.........3,330.........3,340.........3,350.........3,360.........3,370..
+&gt; .......3,380.........3,390.........3,400.........3,410.........3,420.........
+&gt; 3,430.........3,440.........3,450.........3,460.........3,470.........3,480..
+&gt; .......3,490.........3,500.........3,510.........3,520.........3,530.........
+&gt; 3,540.........3,550.........3,560.........3,570.........3,580.........3,590..
+&gt; .......3,600.........3,610.........3,620.........3,630.........3,640.........
+&gt; 3,650.........3,660.........3,670.........3,680.........3,690.........3,700..
+&gt; .......3,710.........3,720.........3,730.........3,740.........3,750.........
+&gt; 3,760.........3,770.........3,780.........3,790.........3,800.........3,810..
+&gt; .......3,820.........3,830.........3,840.........3,850.........3,860.........
+&gt; 3,870.........3,880.........3,890.........3,900.........3,910.........3,920..
+&gt; .......3,930.........3,940.........3,950.........3,960.........3,970.........
+&gt; 3,980.........3,990.........4,000.........4,010.........4,020.........4,030..
+&gt; .......4,040.........4,050.........4,060.........4,070.........4,080.........
+&gt; 4,090.........4,100.........4,110.........4,120.........4,130.........4,140..
+&gt; .......4,150.........4,160.........4,170.........4,180.........4,190.........
+&gt; 4,200.........4,210.........4,220.........4,230.........4,240.........4,250..
+&gt; .......4,260.........4,270.........4,280.........4,290.........4,300.........
+&gt; 4,310.........4,320.........4,330.........4,340.........4,350.........4,360..
+&gt; .......4,370.........4,380.........4,390.........4,400.........4,410.........
+&gt; 4,420.........4,430.........4,440.........4,450.........4,460.........4,470..
+&gt; .......4,480.........4,490.........4,500.........4,510.........4,520.........
+&gt; 4,530.........4,540.........4,550.........4,560.........4,570.........4,580..
+&gt; .......4,590.........4,600.........4,610.........4,620.........4,630.........
+&gt; 4,640.........4,650.........4,660.........4,670.........4,680.........4,690..
+&gt; .......4,700.........4,710.........4,720.........4,730.........4,740.........
+&gt; 4,750.........4,760.........4,770.........4,780.........4,790.........4,800..
+&gt; .......4,810.........4,820.........4,830.........4,840.........4,850.........
+&gt; 4,860.........4,870.........4,880.........4,890.........4,900.........4,910..
+&gt; .......4,920.........4,930.........4,940.........4,950.........4,960.........
+&gt; 4,970.........4,980.........4,990.........5,000.........5,010.........5,020..
+&gt; .......5,030.........5,040.........5,050.........5,060.........5,070.........
+&gt; 5,080.........5,090.........5,100.........5,110.........5,120.........5,130..
+&gt; .......5,140.........5,150.........5,160.........5,170.........5,180.........
+&gt; 5,190.........5,200.........5,210.........5,220.........5,230.........5,240..
+&gt; .......5,250.........5,260.........5,270.........5,280.........5,290.........
+&gt; 5,300.........5,310.........5,320.........5,330.........5,340.........5,350..
+&gt; .......5,360.........5,370.........5,380.........5,390.........5,400.........
+&gt; 5,410.........5,420.........5,430.........5,440.........5,450.........5,460..
+&gt; .......5,470.........5,480.........5,490.........5,500.........5,510.........
+&gt; 5,520.........5,530.........5,540.........5,550.........5,560.........5,570..
+&gt; .......5,580.........5,590.........5,600.........5,610.........5,620.........
+&gt; 5,630.........5,640.........5,650.........5,660.........5,670.........5,680..
+&gt; .......5,690.........5,700.........5,710.........5,720.........5,730.........
+&gt; 5,740.........5,750.........5,760.........5,770.........5,780.........5,790..
+&gt; .......5,800.........5,810.........5,820.........5,830.........5,840.........
+&gt; 5,850.........5,860.........5,870.........5,880.........5,890.........5,900..
+&gt; .......5,910.........5,920.........5,930.........5,940.........5,950.........
+&gt; 5,960.........5,970.........5,980.........5,990.........6,000.........6,010..
+&gt; .......6,020.........6,030.........6,040.........6,050.........6,060.........
+&gt; 6,070.........6,080.........6,090.........6,100.........6,110.........6,120..
+&gt; .......6,130.........6,140.........6,150.........6,160.........6,170.........
+&gt; 6,180.........6,190.........6,200.........6,210.........6,220.........6,230..
+&gt; .......6,240.........6,250.........6,260.........6,270.........6,280.........
+&gt; 6,290.........6,300.........6,310.........6,320.........6,330.........6,340..
+&gt; .......6,350.........6,360.........6,370.........6,380.........6,390.........
+&gt; 6,400.........6,410.........6,420.........6,430.........6,440.........6,450..
+&gt; .......6,460.........6,470.........6,480.........6,490.........6,500.........
+&gt; 6,510.........6,520.........6,530.........6,540.........6,550.........6,560..
+&gt; .......6,570.........6,580.........6,590.........6,600.........6,610.........
+&gt; 6,620.........6,630.........6,640.........6,650.........6,660.........6,670..
+&gt; .......6,680.........6,690.........6,700.........6,710.........6,720.........
+&gt; 6,730.........6,740.........6,750.........6,760.........6,770.........6,780..
+&gt; .......6,790.........6,800.........6,810.........6,820.........6,830.........
+&gt; 6,840.........6,850.........6,860.........6,870.........6,880.........6,890..
+&gt; .......6,900.........6,910.........6,920.........6,930.........6,940.........
+&gt; 6,950.........6,960.........6,970.........6,980.........6,990.........7,000..
+&gt; .......7,010.........7,020.........7,030.........7,040.........7,050.........
+&gt; 7,060.........7,070.........7,080.........7,090.........7,100.........7,110..
+&gt; .......7,120.........7,130.........7,140.........7,150.........7,160.........
+&gt; 7,170.........7,180.........7,190.........7,200.........7,210.........7,220..
+&gt; .......7,230.........7,240.........7,250.........7,260.........7,270.........
+&gt; 7,280.........7,290.........7,300.........7,310.........7,320.........7,330..
+&gt; .......7,340.........7,350.........7,360.........7,370.........7,380.........
+&gt; 7,390.........7,400.........7,410.........7,420.........7,430.........7,440..
+&gt; .......7,450.........7,460.........7,470.........7,480.........7,490.........
+&gt; 7,500.........7,510.........7,520.........7,530.........7,540.........7,550..
+&gt; .......7,560.........7,570.........7,580.........7,590.........7,600.........
+&gt; 7,610.........7,620.........7,630.........7,640.........7,650.........7,660..
+&gt; .......7,670.........7,680.........7,690.........7,700.........7,710.........
+&gt; 7,720.........7,730.........7,740.........7,750.........7,760.........7,770..
+&gt; .......7,780.........7,790.........7,800.........7,810.........7,820.........
+&gt; 7,830.........7,840.........7,850.........7,860.........7,870.........7,880..
+&gt; .......7,890.........7,900.........7,910.........7,920.........7,930.........
+&gt; 7,940.........7,950.........7,960.........7,970.........7,980.........7,990..
+&gt; .......8,000.........8,010.........8,020.........8,030.........8,040.........
+&gt; 8,050.........8,060.........8,070.........8,080.........8,090.........8,100..
+&gt; .......8,110.........8,120.........8,130.........8,140.........8,150.........
+&gt; 8,160.........8,170.........8,180.........8,190.........8,200.........8,210..
+&gt; .......8,220.........8,230.........8,240.........8,250.........8,260.........
+&gt; 8,270.........8,280.........8,290.........8,300.........8,310.........8,320..
+&gt; .......8,330.........8,340.........8,350.........8,360.........8,370.........
+&gt; 8,380.........8,390.........8,400.........8,410.........8,420.........8,430..
+&gt; .......8,440.........8,450.........8,460.........8,470.........8,480.........
+&gt; 8,490.........8,500.........8,510.........8,520.........8,530.........8,540..
+&gt; .......8,550.........8,560.........8,570.........8,580.........8,590.........
+&gt; 8,600.........8,610.........8,620.........8,630.........8,640.........8,650..
+&gt; .......8,660.........8,670.........8,680.........8,690.........8,700.........
+&gt; 8,710.........8,720.........8,730.........8,740.........8,750.........8,760..
+&gt; .......8,770.........8,780.........8,790.........8,800.........8,810.........
+&gt; 8,820.........8,830.........8,840.........8,850.........8,860.........8,870..
+&gt; .......8,880.........8,890.........8,900.........8,910.........8,920.........
+&gt; 8,930.........8,940.........8,950.........8,960.........8,970.........8,980..
+&gt; .......8,990.........9,000.........9,010.........9,020.........9,030.........
+&gt; 9,040.........9,050.........9,060.........9,070.........9,080.........9,090..
+&gt; .......9,100.........9,110.........9,120.........9,130.........9,140.........
+&gt; 9,150.........9,160.........9,170.........9,180.........9,190.........9,200..
+&gt; .......9,210.........9,220.........9,230.........9,240.........9,250.........
+&gt; 9,260.........9,270.........9,280.........9,290.........9,300.........9,310..
+&gt; .......9,320.........9,330.........9,340.........9,350.........9,360.........
+&gt; 9,370.........9,380.........9,390.........9,400.........9,410.........9,420..
+&gt; .......9,430.........9,440.........9,450.........9,460.........9,470.........
+&gt; 9,480.........9,490.........9,500.........9,510.........9,520.........9,530..
+&gt; .......9,540.........9,550.........9,560.........9,570.........9,580.........
+&gt; 9,590.........9,600.........9,610.........9,620.........9,630.........9,640..
+&gt; .......9,650.........9,660.........9,670.........9,680.........9,690.........
+&gt; 9,700.........9,710.........9,720.........9,730.........9,740.........9,750..
+&gt; .......9,760.........9,770.........9,780.........9,790.........9,800.........
+&gt; 9,810.........9,820.........9,830.........9,840.........9,850.........9,860..
+&gt; .......9,870.........9,880.........9,890.........9,900.........9,910.........
+&gt; 9,920.........9,930.........9,940.........9,950.........9,960.........9,970..
+&gt; .......9,980.........9,990......... done
+
+Bootstrap results
+
+Number of strata = 2                                     Number of obs =   160
+                                                         Replications  = 9,999
+
+      Command: slope_diff
+        delta: r(delta)
+
+------------------------------------------------------------------------------
+             |   Observed   Bootstrap                         Normal-based
+             | coefficient  std. err.      z    P&gt;|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+       delta |     -0.353      0.137    -2.57   0.010       -0.622      -0.084
+------------------------------------------------------------------------------
+
+. estat bootstrap, percentile normal
+
+Bootstrap results
+Number of strata   =          2                 Number of obs     =        160
+                                                Replications      =       9999
+
+      Command: slope_diff
+        delta: r(delta)
+
+------------------------------------------------------------------------------
+             |    Observed               Bootstrap
+             | coefficient       Bias    std. err.  [95% conf. interval]
+-------------+----------------------------------------------------------------
+       delta |  -.35267532  -.0005073   .13718173   -.6215466  -.0838041   (N)
+             |                                      -.6283827  -.0921835   (P)
+------------------------------------------------------------------------------
+Key: N: Normal
+     P: Percentile
+
+. 
+. * Python 9999 次模拟基准：SE = 0.1340657447，百分位数区间约 [-0.6144, -0.0905
+&gt; ]。
+. * 不同软件的随机数与分位数实现不同，不断言模拟数值逐位一致。
+. * 不允许将此程序换成 bdiff, bsample，二者并非同一重抽样设计。
+. 
+end of do-file
+</code></pre>
+</div>
+</div>
+<div id="7b3bc7f2" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-15T08:19:58.205246Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-15T08:19:58.204244Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-15T08:20:06.762274Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-15T08:20:06.761267Z&quot;}" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">do</span> <span class="st">"tools/bootstrap/03-bdiff-interface-only.do"</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">findfile</span> bdiff.ado</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">display</span> <span class="st">"BDIFF_SOURCE: `r(fn)'"</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span> <span class="kw">close</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+. version 17.0
+
+. clear all
+
+. set more off
+
+. 
+. * 仅为命令接口与版本核对示例，不用于本讲模拟数据的主要推断。
+. * 系数相等并不推出完整记录可交换；本例两组 X 分布和误差尺度不同。
+. import delimited "data/bootstrap/two_groups_teaching.csv", clear
+(encoding automatically selected: ISO-8859-1)
+(3 vars, 160 obs)
+
+. drop if missing(invest, cash, group)
+(0 observations deleted)
+
+. cap which bdiff
+
+. if _rc ssc install bdiff
+
+. which bdiff
+D:/stata/plus\b\bdiff.ado
+*! Version 1.04  24Nov2020
+
+. * 如需检查原文件，请单独执行：viewsource bdiff.ado
+. 
+. * 用 499 次避免把接口展示当成高精度尾概率分析。
+. * 1.04 存档代码中，默认随机重新分组；其输出较小尾部比例不是通常双侧 p 值。
+. bdiff, group(group) model(regress invest cash) ///
+&gt;     reps(499) seed(12345)
+
+Begin Time: 15 Sep 2026 16:19:58
+...............................................................................
+&gt; .............................................................................
+&gt; .............................................................................
+&gt; .............................................................................
+&gt; .............................................................................
+&gt; .............................................................................
+&gt; ...................................number of observations will be reset to 49
+&gt; 9
+Press any key to continue, or Break to abort
+Number of observations (_N) was 160, now 499.
+
+
+
+-Permutaion (499 times)- Test of Group (group 0 v.s 1) coeficients difference
+
+   Variables |      b0-b1    Freq     p-value
+-------------+-------------------------------
+        cash |     -0.353     495       0.008
+       _cons |      0.007     177       0.355
+---------------------------------------------
+
+ Over Time:15 Sep 2026 16:20:06   Time used: 8.391s
+
+. 
+end of do-file
+D:/stata/plus/b/bdiff.ado
+BDIFF_SOURCE: D:/stata/plus/b/bdiff.ado
+      name:  &lt;unnamed&gt;
+       log:  C:\Users\Administrator\.codex\worktrees\bceb\FinEco\logs/bootstrap
+&gt; /v10/stata.log
+  log type:  text
+ closed on:  15 Sep 2026, 16:20:06
+-------------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "已复制");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "已复制");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../notebooks/bootstrap/bootstrap-demo.html" class="pagination-link" aria-label="Bootstrap：Python 实验">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Bootstrap：Python 实验</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../resources/references.html" class="pagination-link" aria-label="公共书目">
+        <span class="nav-page-text">公共书目</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>LN429 · 中山大学岭南学院</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions"><ul><li><a href="https://github.dev/lianxhcn/FinEco/blob/main/notebooks/bootstrap/bootstrap-stata.ipynb" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p><a href="https://www.lianxh.cn">连享会</a> · Quarto Book</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
