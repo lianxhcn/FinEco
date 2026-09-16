@@ -352,10 +352,12 @@ window.Quarto = {
   </ul></li>
   <li><a href="#sec-financial-management-operations" id="toc-sec-financial-management-operations" class="nav-link" data-scroll-target="#sec-financial-management-operations"><span class="header-section-number">3.3</span> 追加、合并、变形和聚合</a>
   <ul class="collapse">
-  <li><a href="#append增加同类记录" id="toc-append增加同类记录" class="nav-link" data-scroll-target="#append增加同类记录"><span class="header-section-number">3.3.1</span> Append：增加同类记录</a></li>
-  <li><a href="#merge沿键增加信息" id="toc-merge沿键增加信息" class="nav-link" data-scroll-target="#merge沿键增加信息"><span class="header-section-number">3.3.2</span> Merge：沿键增加信息</a></li>
-  <li><a href="#reshape同一信息换一种排列" id="toc-reshape同一信息换一种排列" class="nav-link" data-scroll-target="#reshape同一信息换一种排列"><span class="header-section-number">3.3.3</span> Reshape：同一信息换一种排列</a></li>
-  <li><a href="#aggregate为目标粒度定义统计量" id="toc-aggregate为目标粒度定义统计量" class="nav-link" data-scroll-target="#aggregate为目标粒度定义统计量"><span class="header-section-number">3.3.4</span> Aggregate：为目标粒度定义统计量</a></li>
+  <li><a href="#先看一组-mini-data" id="toc-先看一组-mini-data" class="nav-link" data-scroll-target="#先看一组-mini-data"><span class="header-section-number">3.3.1</span> 先看一组 mini data</a></li>
+  <li><a href="#append把同类记录接到下面" id="toc-append把同类记录接到下面" class="nav-link" data-scroll-target="#append把同类记录接到下面"><span class="header-section-number">3.3.2</span> Append：把同类记录接到下面</a></li>
+  <li><a href="#merge沿主键增加新的变量" id="toc-merge沿主键增加新的变量" class="nav-link" data-scroll-target="#merge沿主键增加新的变量"><span class="header-section-number">3.3.3</span> Merge：沿主键增加新的变量</a></li>
+  <li><a href="#reshape同一批信息换一种排列" id="toc-reshape同一批信息换一种排列" class="nav-link" data-scroll-target="#reshape同一批信息换一种排列"><span class="header-section-number">3.3.4</span> Reshape：同一批信息换一种排列</a></li>
+  <li><a href="#aggregate把细粒度数据压到目标粒度" id="toc-aggregate把细粒度数据压到目标粒度" class="nav-link" data-scroll-target="#aggregate把细粒度数据压到目标粒度"><span class="header-section-number">3.3.5</span> Aggregate：把细粒度数据压到目标粒度</a></li>
+  <li><a href="#四种操作放在一起比较" id="toc-四种操作放在一起比较" class="nav-link" data-scroll-target="#四种操作放在一起比较"><span class="header-section-number">3.3.6</span> 四种操作放在一起比较</a></li>
   </ul></li>
   <li><a href="#sec-financial-management-storage" id="toc-sec-financial-management-storage" class="nav-link" data-scroll-target="#sec-financial-management-storage"><span class="header-section-number">3.4</span> 存储格式也是数据契约</a>
   <ul class="collapse">
@@ -415,7 +417,13 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>建立粒度、主键和复用意识；能解释 append、merge、reshape 和聚合的区别；能选择文件或数据库保存方式，并把处理过程写成别人可以重跑的工作流。完整教学代码见 <a href="../notebooks/financial-data/financial-data.html#sec-csmar-mini">Notebook 的小表实验</a>，真实项目见 <a href="../notebooks/financial-data/financial-data.html#sec-csmar-04">CSMAR 合并阶段</a>。</p>
+<ol type="1">
+<li>用粒度和主键说明每张表的一行代表什么。</li>
+<li>区分 append、merge、reshape 和 aggregate 对数据结构的不同影响。</li>
+<li>根据任务选择 CSV、Parquet、SQLite 或 DuckDB 等存储与查询方式。</li>
+<li>把来源、连接关系和处理中间结果整理成别人可以重跑的工作流。</li>
+</ol>
+<p>完整教学代码见 <a href="../notebooks/financial-data/financial-data.html#sec-csmar-mini">Notebook 的小表实验</a>，真实项目见 <a href="../notebooks/financial-data/financial-data.html#sec-csmar-04">CSMAR 合并阶段</a>。</p>
 </div>
 </div>
 <section id="sec-financial-management-tables" class="level2" data-number="3.1">
@@ -582,25 +590,217 @@ U(K)=N,\qquad \text{Missing}(K)=0.
 </section>
 <section id="sec-financial-management-operations" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="sec-financial-management-operations"><span class="header-section-number">3.3</span> 追加、合并、变形和聚合</h2>
-<p>实际项目中，最常用的表格操作大致可以归为四类：追加 (append)、合并 (merge)、变形 (reshape) 和聚合 (aggregate)。它们都可能让多份数据最终出现在一张表里，但每一种操作改变数据结构的方式不同。</p>
-<p>因此，给 Agent 一句「把这些数据合并起来」通常还不够。研究者至少要说明哪些文件是同类记录需要纵向追加，哪些表提供不同字段需要沿主键连接，哪些数据只是宽长排列不同，以及哪些高频记录必须先聚合到目标粒度。</p>
-<section id="append增加同类记录" class="level3" data-number="3.3.1">
-<h3 data-number="3.3.1" class="anchored" data-anchor-id="append增加同类记录"><span class="header-section-number">3.3.1</span> Append：增加同类记录</h3>
-<p>Append 适用于同一种记录被拆在多个文件里的情形。例如，一份文件保存 2019 年行情，另一份保存 2020 年行情，两者的列含义和观测单位相同，就可以把第二份数据接到第一份数据的下面。它增加的是<strong>记录数</strong>，而不是变量数。</p>
-<p>在追加之前，应先核对两边的列名、字段类型、单位和时间范围是否一致；追加以后，则要检查总行数是否符合预期，并最好保留一个来源标签。这样一旦出现重叠期间或字段定义变化，我们仍能追查某条记录来自哪个文件。</p>
-<p>例如，一个文件覆盖 2015—2020 年，另一个覆盖 2020—2025 年。把两者追加以后，最终行数等于两个文件行数之和，这个算术关系完全正确，但 2020 年很可能被保存了两遍。此时不能因为行数算对了就认为追加完成，而要继续检查完整业务键。</p>
-<p>因此，追加时保留来源列很有用：发现重叠后，可以比较同一键在两个文件中的内容，再根据数据版本或导出说明决定如何处理。本章 CSMAR 股东表正好包含两个导出分片，<a href="../notebooks/financial-data/financial-data.html#sec-csmar-02">Notebook 第 02 节</a>实际检查了拼接后的完整键。</p>
+<p>实际项目中，最常见的表格操作大致可以归为四类：追加 (append)、合并 (merge)、变形 (reshape) 和聚合 (aggregate)。这四个词很容易混在一起，因为最后看起来都是把数据整理成一张新表。对初学者来说，最有效的区分方法不是先记函数名，而是先看<strong>操作前后的表究竟发生了什么变化</strong>。</p>
+<p>这一节沿用旧版数据管理讲义的 mini data 思路。所有数值都是教学设定，规模刻意压缩到几行，以便在课堂上直接观察行数、列数和粒度的变化。</p>
+<section id="先看一组-mini-data" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="先看一组-mini-data"><span class="header-section-number">3.3.1</span> 先看一组 mini data</h3>
+<p>假设我们手里有两份年度财务文件。两份文件的列完全相同，只是年份不同。</p>
+<p><strong>2024 年财务表</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>code</th>
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">assets</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>000001</td>
+<td style="text-align: right;">2024</td>
+<td style="text-align: right;">100</td>
+</tr>
+<tr class="even">
+<td>000002</td>
+<td style="text-align: right;">2024</td>
+<td style="text-align: right;">200</td>
+</tr>
+</tbody>
+</table>
+<p><strong>2025 年财务表</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>code</th>
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">assets</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>000001</td>
+<td style="text-align: right;">2025</td>
+<td style="text-align: right;">110</td>
+</tr>
+<tr class="even">
+<td>000002</td>
+<td style="text-align: right;">2025</td>
+<td style="text-align: right;">230</td>
+</tr>
+</tbody>
+</table>
+<p>另有一张公司基本信息表：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>code</th>
+<th>industry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>000001</td>
+<td>银行</td>
+</tr>
+<tr class="even">
+<td>000002</td>
+<td>房地产</td>
+</tr>
+</tbody>
+</table>
+<p>以及一张日收益表：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>code</th>
+<th>date</th>
+<th style="text-align: right;">ret</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>000001</td>
+<td>2025-01-02</td>
+<td style="text-align: right;">0.10</td>
+</tr>
+<tr class="even">
+<td>000001</td>
+<td>2025-01-03</td>
+<td style="text-align: right;">-0.10</td>
+</tr>
+<tr class="odd">
+<td>000002</td>
+<td>2025-01-02</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="even">
+<td>000002</td>
+<td>2025-01-03</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+</tbody>
+</table>
+<p>这四张小表已经足够演示 append、merge、reshape 和 aggregate。课堂上可以始终追问两个问题：<strong>一行代表什么？操作以后这个含义有没有改变？</strong></p>
 </section>
-<section id="merge沿键增加信息" class="level3" data-number="3.3.2">
-<h3 data-number="3.3.2" class="anchored" data-anchor-id="merge沿键增加信息"><span class="header-section-number">3.3.2</span> Merge：沿键增加信息</h3>
-<p>Merge 与 append 不同，它不是把更多行接到下面，而是沿着主键给现有观测增加新的信息。合并之前最重要的判断，是两张表在连接键上的关系。一对一表示左右两边的键都唯一；多对一表示左表可以有多行对应右表的一条信息，例如日行情连接公司静态属性；一对多则意味着左表的一条记录会在结果中复制成多行。</p>
-<p>多对多连接有时确实是业务事实，例如一家公司对应多个证券、一个事件对应多个参与者，但这种情况下必须事先说明预期组合关系。若没有明确理由，多对多通常不是更灵活的 merge，而是一个需要停下来检查的数据结构信号。</p>
+<section id="append把同类记录接到下面" class="level3" data-number="3.3.2">
+<h3 data-number="3.3.2" class="anchored" data-anchor-id="append把同类记录接到下面"><span class="header-section-number">3.3.2</span> Append：把同类记录接到下面</h3>
+<p>Append 适用于同一种记录被拆在多个文件里的情形。上面的 2024 年和 2025 年财务表具有相同的列、相同的单位和相同的粒度，都是公司—年度数据，因此可以纵向追加：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>code</th>
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">assets</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>000001</td>
+<td style="text-align: right;">2024</td>
+<td style="text-align: right;">100</td>
+</tr>
+<tr class="even">
+<td>000002</td>
+<td style="text-align: right;">2024</td>
+<td style="text-align: right;">200</td>
+</tr>
+<tr class="odd">
+<td>000001</td>
+<td style="text-align: right;">2025</td>
+<td style="text-align: right;">110</td>
+</tr>
+<tr class="even">
+<td>000002</td>
+<td style="text-align: right;">2025</td>
+<td style="text-align: right;">230</td>
+</tr>
+</tbody>
+</table>
+<p>这个操作最直观的特征是：<strong>列数没有变化，行数从 2+2 变成 4。</strong></p>
+<p>在 pandas 中，对应的操作可以写成：</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>annual <span class="op">=</span> pd.concat([fin_2024, fin_2025], ignore_index<span class="op">=</span><span class="va">True</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>这里真正需要核对的不是 <code>concat</code> 会不会运行，而是两份文件是否真的具有相同定义。追加之前应检查：</p>
+<ul>
+<li>列名和变量含义是否一致；</li>
+<li>数值单位和编码方式是否一致；</li>
+<li>两个文件的时间范围是否重叠；</li>
+<li>相同主键是否在不同文件中重复出现。</li>
+</ul>
+<p>例如，一个文件覆盖 2015—2020 年，另一个覆盖 2020—2025 年。直接 append 后，行数当然等于两个文件行数之和，但 2020 年很可能被保存了两遍。因此，追加以后仍要检查完整业务键，最好同时保留来源文件标签。</p>
+</section>
+<section id="merge沿主键增加新的变量" class="level3" data-number="3.3.3">
+<h3 data-number="3.3.3" class="anchored" data-anchor-id="merge沿主键增加新的变量"><span class="header-section-number">3.3.3</span> Merge：沿主键增加新的变量</h3>
+<p>Merge 的方向与 append 不同。它不是把新记录接到表的下面，而是沿着主键把另一张表中的信息接到右边。</p>
+<p>把前面的年度财务表与公司基本信息表按 <code>code</code> 连接：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>code</th>
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">assets</th>
+<th>industry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>000001</td>
+<td style="text-align: right;">2024</td>
+<td style="text-align: right;">100</td>
+<td>银行</td>
+</tr>
+<tr class="even">
+<td>000002</td>
+<td style="text-align: right;">2024</td>
+<td style="text-align: right;">200</td>
+<td>房地产</td>
+</tr>
+<tr class="odd">
+<td>000001</td>
+<td style="text-align: right;">2025</td>
+<td style="text-align: right;">110</td>
+<td>银行</td>
+</tr>
+<tr class="even">
+<td>000002</td>
+<td style="text-align: right;">2025</td>
+<td style="text-align: right;">230</td>
+<td>房地产</td>
+</tr>
+</tbody>
+</table>
+<p>可以看到，财务表仍然是 4 行，但多了一列 <code>industry</code>。这里年度财务表的 <code>(code, year)</code> 是唯一的，公司信息表的 <code>code</code> 是唯一的，因此这是典型的<strong>多对一 (many-to-one)</strong> 连接。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>annual <span class="op">=</span> annual.merge(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    company,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    on<span class="op">=</span><span class="st">"code"</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    how<span class="op">=</span><span class="st">"left"</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    validate<span class="op">=</span><span class="st">"many_to_one"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    indicator<span class="op">=</span><span class="va">True</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>validate="many_to_one"</code> 的作用，是把我们对连接关系的预期写进代码；<code>indicator=True</code> 则保留每一行的匹配状态。这样，程序不仅完成 merge，还同时帮我们检查结构是否符合预期。</p>
+<p>不同连接关系的含义可以放在一起看：</p>
+<ul>
+<li><strong>一对一 (one-to-one)</strong>：左右两边的连接键都唯一。</li>
+<li><strong>多对一 (many-to-one)</strong>：左表同一个键可以出现多次，右表每个键只能出现一次，例如多年的公司财务记录连接公司所属行业。</li>
+<li><strong>一对多 (one-to-many)</strong>：左表一行会展开成多行，只有当目标粒度本来就需要这种展开时才合理。</li>
+<li><strong>多对多 (many-to-many)</strong>：双方同一个键都出现多次。它有时是业务事实，但如果事先没有明确预期，通常应暂停并检查。</li>
+</ul>
+<p>连接方式还决定哪些键会被保留：</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
 <th>连接方式</th>
 <th>保留哪些键</th>
-<th>需要追查什么</th>
+<th>课堂上要问的问题</th>
 </tr>
 </thead>
 <tbody>
@@ -612,7 +812,7 @@ U(K)=N,\qquad \text{Missing}(K)=0.
 <tr class="even">
 <td>inner</td>
 <td>两侧共同键</td>
-<td>谁被丢弃，是否改变目标总体</td>
+<td>哪些左表观测被静默丢弃</td>
 </tr>
 <tr class="odd">
 <td>outer</td>
@@ -621,41 +821,243 @@ U(K)=N,\qquad \text{Missing}(K)=0.
 </tr>
 </tbody>
 </table>
-<p>下面的代码接续 <a href="../notebooks/financial-data/financial-data.html#sec-csmar-04">Notebook 第 04 节</a>已经生成的 <code>views</code>。在前面的步骤中，原始财务表已经识别出 A/B 两种报表口径；这里没有把 B 记录删除，而只是为本次连接分别取出 A 口径的资产负债表和利润表，再按公司年度键进行合并。</p>
-<p>因此，这段代码不是一个可以脱离上下文单独运行的例子。读者取得授权数据后，应从 Notebook 第 00 节开始顺序执行，让 <code>views</code>、键检查函数和字段定义都来自同一套流程。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A/B 保留在年度视图中；本次只连接 A 口径，未销毁 B 记录。</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>left <span class="op">=</span> views[<span class="st">"balance"</span>].query(<span class="st">"Typrep == 'A'"</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>right <span class="op">=</span> views[<span class="st">"income"</span>].query(<span class="st">"Typrep == 'A'"</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>keys <span class="op">=</span> [<span class="st">"stock_code"</span>, <span class="st">"fiscal_year"</span>]</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>require_key(left, keys, <span class="st">"资产负债表 A"</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>require_key(right, keys, <span class="st">"利润表 A"</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>merged <span class="op">=</span> left.merge(</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    right, on<span class="op">=</span>keys, how<span class="op">=</span><span class="st">"outer"</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    validate<span class="op">=</span><span class="st">"one_to_one"</span>, indicator<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    suffixes<span class="op">=</span>(<span class="st">"_balance"</span>, <span class="st">"_income"</span>)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>这里特意使用 <code>validate="one_to_one"</code> 和 <code>indicator=True</code>。前者把我们对连接关系的预期写进代码：如果任一侧出现非预期重复，合并会直接失败；后者则保留每条记录来自左表、右表还是双方匹配的信息，便于后续审计。</p>
-<p>不过，这些参数只能帮助检查<strong>结构</strong>。即使合并满足一对一，也不能证明字段单位正确，更不能证明证券身份和财务口径已经核对无误。例如，把两个季度表都错误地压成年度键，仍可能在技术上通过唯一性检查。因此，程序检查和经济定义检查需要配合使用。</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="代码能运行，不代表 merge 是对的">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+代码能运行，不代表 merge 是对的
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>假设目标是公司—年度数据，却把年度财务表与日收益表只按 <code>code</code> 合并。<code>000001</code> 的 2024 和 2025 两条年度记录都会分别匹配 2025 年的两个交易日，于是 2 行年度记录被展开成 4 行。程序不会报错，但 <code>(code, year)</code> 已经不再唯一，而且 2024 年记录甚至连接到了 2025 年的行情。</p>
+<p>这类错误的根源不是 Python 语法，而是<strong>连接键没有表达两张表真正的粒度关系</strong>。</p>
+</div>
+</div>
+<p>旧版讲义中的示意图把这个问题画得很直观：左侧直接连接不同粒度的表会造成行数膨胀；右侧先把日度数据聚合到公司—年度，再按 <code>(code, year)</code> 合并。</p>
+<div id="fig-financial-management-wrong-merge" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-financial-management-wrong-merge-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/data_manage_fig02_wrong_merge_correct_aggregation.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-financial-management-wrong-merge-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;3.3: 错误合并与正确做法。图源复用自旧版数据管理讲义。
+</figcaption>
+</figure>
+</div>
 </section>
-<section id="reshape同一信息换一种排列" class="level3" data-number="3.3.3">
-<h3 data-number="3.3.3" class="anchored" data-anchor-id="reshape同一信息换一种排列"><span class="header-section-number">3.3.3</span> Reshape：同一信息换一种排列</h3>
-<p>Reshape 改变的是同一批信息的排列方式，而不是增加新的经济信息。比如，宽表可能把 <code>assets_2019</code>、<code>assets_2020</code> 分别放在两列；长表则增加一个 <code>year</code> 列，把资产统一放在 <code>assets</code> 列中。对面板数据而言，长表通常更方便按年份筛选、构造滞后变量和与其他公司年度表连接。</p>
-<p>在 pandas 中，<code>melt</code> 常用于把宽表转成长表，<code>pivot</code> 则可以把长表重新展开成宽表。但 <code>pivot</code> 要求给定的行列组合能够唯一确定一个值。如果不能唯一，真正的问题通常不是函数选错了，而是数据里还存在另一个没有被说明的维度。</p>
-<p>例如，一家公司同一年同时存在合并报表和母公司报表，那么 <code>(firm, year)</code> 本来就不能唯一确定资产值。此时应该把报表类型保留下来，或者先明确本研究采用哪一种口径。若只是为了让代码运行而改用会自动取均值的 <code>pivot_table</code>，就把<strong>重新排列数据</strong>悄悄变成了<strong>对不同报表求平均</strong>，经济含义已经完全改变。</p>
-<p>因此，教学小表在宽转长、长转宽以后还会检查键和数值是否保持一致。这种往返检查比单看函数没有报错更有意义。</p>
+<section id="reshape同一批信息换一种排列" class="level3" data-number="3.3.4">
+<h3 data-number="3.3.4" class="anchored" data-anchor-id="reshape同一批信息换一种排列"><span class="header-section-number">3.3.4</span> Reshape：同一批信息换一种排列</h3>
+<p>Reshape 改变的是同一批信息的排列方式，不增加新的经济信息。继续使用前面的年度资产数据，长表是：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>code</th>
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">assets</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>000001</td>
+<td style="text-align: right;">2024</td>
+<td style="text-align: right;">100</td>
+</tr>
+<tr class="even">
+<td>000001</td>
+<td style="text-align: right;">2025</td>
+<td style="text-align: right;">110</td>
+</tr>
+<tr class="odd">
+<td>000002</td>
+<td style="text-align: right;">2024</td>
+<td style="text-align: right;">200</td>
+</tr>
+<tr class="even">
+<td>000002</td>
+<td style="text-align: right;">2025</td>
+<td style="text-align: right;">230</td>
+</tr>
+</tbody>
+</table>
+<p>如果把年份展开到列上，就得到宽表：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>code</th>
+<th style="text-align: right;">assets_2024</th>
+<th style="text-align: right;">assets_2025</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>000001</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">110</td>
+</tr>
+<tr class="even">
+<td>000002</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">230</td>
+</tr>
+</tbody>
+</table>
+<p>两张表中的四个资产数值完全相同，只是摆放位置不同。对面板数据而言，长表通常更方便按年份筛选、构造滞后变量和与其他公司年度表连接。</p>
+<p>在 pandas 中，可以分别使用：</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 宽表 → 长表</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">long</span> <span class="op">=</span> wide.melt(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    id_vars<span class="op">=</span><span class="st">"code"</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    var_name<span class="op">=</span><span class="st">"year"</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    value_name<span class="op">=</span><span class="st">"assets"</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 长表 → 宽表</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>wide <span class="op">=</span> <span class="bu">long</span>.pivot(</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span><span class="st">"code"</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span><span class="st">"year"</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    values<span class="op">=</span><span class="st">"assets"</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>这里要特别区分 <code>pivot</code> 和聚合。<code>pivot</code> 要求给定的行列组合唯一确定一个值。如果同一家公司同一年同时存在合并报表和母公司报表，那么 <code>(code, year)</code> 本来就不能唯一确定资产。此时真正缺少的是 <code>report_type</code> 这一维，而不是需要用 <code>pivot_table</code> 自动取均值。</p>
+<p>换言之，<strong>reshape 只改变排列，aggregate 才改变粒度。</strong> 如果为了让代码运行而在 reshape 时顺手取了均值，就已经改变了原始信息。</p>
 </section>
-<section id="aggregate为目标粒度定义统计量" class="level3" data-number="3.3.4">
-<h3 data-number="3.3.4" class="anchored" data-anchor-id="aggregate为目标粒度定义统计量"><span class="header-section-number">3.3.4</span> Aggregate：为目标粒度定义统计量</h3>
-<p>Aggregate 的任务，是把较高频或更细粒度的数据转换到目标粒度。这里最容易犯的错误，是看到很多行就机械地求和或求平均。不同变量对应的聚合规则并不相同：日度换手率可以在明确口径下取期间平均，年度营业收入通常直接使用年度报告值，而季度财报中的累计收入则不能简单把四个季度累计数再次相加。</p>
-<p>所以，聚合不是一个纯粹的技术步骤。选择 <code>mean</code>、<code>sum</code>、<code>last</code> 还是复合计算，都必须与变量的经济含义相匹配。</p>
-<p>日简单收益率 <span class="math inline">\(r_{id}\)</span> 使用小数表示，<span class="math inline">\(d\)</span> 为期间内交易日。若数据完整、公司行为口径一致且没有额外现金流处理问题，期间复合收益为：</p>
+<section id="aggregate把细粒度数据压到目标粒度" class="level3" data-number="3.3.5">
+<h3 data-number="3.3.5" class="anchored" data-anchor-id="aggregate把细粒度数据压到目标粒度"><span class="header-section-number">3.3.5</span> Aggregate：把细粒度数据压到目标粒度</h3>
+<p>Aggregate 的任务，是把较高频或更细粒度的数据转换到目标粒度。现在回到前面的日收益表。它是证券—交易日数据，而年度财务表是公司—年度数据。如果最终分析底表要保持公司—年度粒度，就应该先把日收益聚合到年度，再 merge。</p>
+<p>对 <code>000001</code> 而言，两天收益分别为 10% 和 −10%。两日复合收益不是 0，而是：</p>
+<p><span class="math display">\[
+(1+0.10)(1-0.10)-1=-0.01.
+\]</span></p>
+<p>对 <code>000002</code> 而言，两天收益为 2% 和 3%，复合收益为：</p>
+<p><span class="math display">\[
+(1+0.02)(1+0.03)-1=0.0506.
+\]</span></p>
+<p>因此，日度表聚合到 2025 年以后变成：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>code</th>
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">annual_return</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>000001</td>
+<td style="text-align: right;">2025</td>
+<td style="text-align: right;">-0.0100</td>
+</tr>
+<tr class="even">
+<td>000002</td>
+<td style="text-align: right;">2025</td>
+<td style="text-align: right;">0.0506</td>
+</tr>
+</tbody>
+</table>
+<p>再把它与 2025 年财务数据合并：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>code</th>
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">assets</th>
+<th style="text-align: right;">annual_return</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>000001</td>
+<td style="text-align: right;">2025</td>
+<td style="text-align: right;">110</td>
+<td style="text-align: right;">-0.0100</td>
+</tr>
+<tr class="even">
+<td>000002</td>
+<td style="text-align: right;">2025</td>
+<td style="text-align: right;">230</td>
+<td style="text-align: right;">0.0506</td>
+</tr>
+</tbody>
+</table>
+<p>到这一步，两张表才真正处在同一个公司—年度粒度上。</p>
+<p>日简单收益率记为 <span class="math inline">\(r_{id}\)</span>，其中 <span class="math inline">\(d\)</span> 表示期间内的交易日。若公司行为口径一致，期间复合收益可以写为：</p>
 <p><span class="math display">\[
 R_{it}=\prod_{d\in\mathcal D_{it}}(1+r_{id})-1.
 \]</span></p>
-<p>其中，<span class="math inline">\(\mathcal D_{it}\)</span> 表示证券 <span class="math inline">\(i\)</span> 在期间 <span class="math inline">\(t\)</span> 中实际纳入计算的交易日集合。这个公式把每天的财富增长因子连续相乘，因此得到的是这段期间内的复合收益。</p>
-<p>一个两天的小例子就能看出它与平均日收益的区别：第一天上涨 10%，第二天下跌 10%，算术平均收益是 0，但两天后的财富从 1 变成 <span class="math inline">\(1.1\times0.9=0.99\)</span>，实际复合收益为 −1%。因此，平均日收益乘交易日数最多是另一种近似或年化均值口径，不能直接替代期间复合回报。</p>
-<p>风险指标也有同样的问题。日收益波动率通常由日收益的标准差计算；若要年化，还需要明确交易日数以及相应假设。平均绝对收益虽然也能反映波动大小，却不是标准差，不能只因为数值看起来相近就使用同一个变量名。</p>
-<p>此外，如果某只股票一年中缺失了大量交易日，直接对现有记录计算年度波动率也需要说明覆盖情况。收益与风险的完整定义会在后面的金融模型章节系统讨论，本章只要求在数据管理阶段不要让字段名称超出实际计算含义。</p>
+<p>其中，<span class="math inline">\(\mathcal D_{it}\)</span> 是证券 <span class="math inline">\(i\)</span> 在期间 <span class="math inline">\(t\)</span> 内实际纳入计算的交易日集合。</p>
+<p>旧版数据管理 Notebook 使用的也是同一个逻辑：先识别 <code>company_mini</code>、<code>fin_mini</code> 和 <code>daily_mini</code> 的粒度，再把日度数据按 <code>(code, year)</code> 聚合，最后与年度财务表连接。这个顺序值得记住：</p>
+<ol type="1">
+<li><strong>识别目标粒度</strong>：最终需要公司—年度，还是证券—交易日？</li>
+<li><strong>检查各源表粒度</strong>：每张表的一行分别代表什么？</li>
+<li><strong>先聚合细粒度表</strong>：只有当目标分析单位需要时才做 aggregate。</li>
+<li><strong>再按完整主键 merge</strong>：并检查合并前后的行数与主键唯一性。</li>
+</ol>
+<p>下图把这条路径放在一张图中。<code>company_info</code> 是公司层面的静态表，<code>stock_daily</code> 要先变成年度特征，最后才与 <code>fin_annual</code> 形成分析底表。</p>
+<div id="fig-financial-management-analysis-base" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-financial-management-analysis-base-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/data_manage_fig01_key_grain_analysis_base.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-financial-management-analysis-base-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;3.4: 从多张原始表到分析底表。图源复用自旧版数据管理讲义。
+</figcaption>
+</figure>
+</div>
+<p>需要说明的是，聚合规则不是见到多行就取均值。不同变量有不同的经济定义：</p>
+<ul>
+<li>日收益转期间收益通常使用复合计算，而不是简单平均后乘以天数；</li>
+<li>日收益波动率可以由标准差构造，但年化时还要说明交易日数和相应假设；</li>
+<li>流量变量与存量变量不能使用同一种加总逻辑；</li>
+<li>季度报表若披露的是年内累计值，不能把四个季度累计数再次相加。</li>
+</ul>
+<p>所以，aggregate 并不是纯粹的技术步骤。选择 <code>mean</code>、<code>sum</code>、<code>last</code> 或复合计算，都必须回到变量本身的经济含义。</p>
+</section>
+<section id="四种操作放在一起比较" class="level3" data-number="3.3.6">
+<h3 data-number="3.3.6" class="anchored" data-anchor-id="四种操作放在一起比较"><span class="header-section-number">3.3.6</span> 四种操作放在一起比较</h3>
+<p>到这里，可以用一张表把四种操作的边界固定下来：</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>操作</th>
+<th>主要改变什么</th>
+<th>mini data 中的例子</th>
+<th>最先检查什么</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>append</td>
+<td>增加同类记录的行数</td>
+<td>2024 与 2025 财务表上下拼接</td>
+<td>列定义、单位、重叠主键</td>
+</tr>
+<tr class="even">
+<td>merge</td>
+<td>沿主键增加字段或匹配记录</td>
+<td>年度财务表接入行业</td>
+<td>连接键与一对一/多对一关系</td>
+</tr>
+<tr class="odd">
+<td>reshape</td>
+<td>改变同一信息的排列</td>
+<td><code>year</code> 从行变量变成列名</td>
+<td>信息是否一一对应、键是否唯一</td>
+</tr>
+<tr class="even">
+<td>aggregate</td>
+<td>改变数据粒度</td>
+<td>日收益压到年度收益</td>
+<td>目标粒度与统计量的经济定义</td>
+</tr>
+</tbody>
+</table>
+<p>这四个操作中，最容易造成静默错误的是 merge 和 aggregate：前者可能悄悄复制或删除观测，后者可能在没有说明经济含义的情况下改变变量定义。因此，每完成一步，都应该重新检查行数、主键和目标粒度。</p>
 </section>
 </section>
 <section id="sec-financial-management-storage" class="level2" data-number="3.4">
@@ -709,7 +1111,7 @@ R_{it}=\prod_{d\in\mathcal D_{it}}(1+r_{id})-1.
 <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/financial-data-fig05-storage-20260916-101501.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-financial-management-storage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-图&nbsp;3.3: CSV 与 Parquet 的存储直觉。原图来自《数据分析与经济决策》课程。
+图&nbsp;3.5: CSV 与 Parquet 的存储直觉。原图来自《数据分析与经济决策》课程。
 </figcaption>
 </figure>
 </div>
@@ -739,12 +1141,12 @@ R_{it}=\prod_{d\in\mathcal D_{it}}(1+r_{id})-1.
 <p>把数据写入 SQLite 后，比较规范的流程仍然与前面的原则一致：先定义表结构和必要约束，再导入数据，核对行数、期间和键，之后才用 SQL 做筛选、连接和汇总，必要时把查询结果重新读回 pandas 继续分析。</p>
 <p><code>DataFrame.to_sql()</code> 可以很方便地把 DataFrame 写成数据库表，但它并不知道 <code>(firm, year)</code> 为什么应该唯一，也不会自动替我们建立业务主键。如果希望数据库本身帮助阻止重复键，就需要显式建表或在核验以后建立唯一索引。</p>
 <p>在<a href="../notebooks/financial-data/financial-data.html#sec-csmar-mini">教学小表实验</a>中，公司和年度表写入内存数据库，<code>(firm, year)</code> 建立唯一索引，然后执行下面的查询。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> c.industry, <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> n, <span class="fu">AVG</span>(f.assets) <span class="kw">AS</span> mean_assets</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> annual <span class="kw">AS</span> f</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> company <span class="kw">AS</span> c <span class="kw">ON</span> f.firm <span class="op">=</span> c.firm</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> f.<span class="dt">year</span> <span class="op">=</span> <span class="dv">2020</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> c.industry</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> c.industry;</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> c.industry, <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> n, <span class="fu">AVG</span>(f.assets) <span class="kw">AS</span> mean_assets</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> annual <span class="kw">AS</span> f</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> company <span class="kw">AS</span> c <span class="kw">ON</span> f.firm <span class="op">=</span> c.firm</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> f.<span class="dt">year</span> <span class="op">=</span> <span class="dv">2020</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> c.industry</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> c.industry;</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>这条 SQL 可以按语句顺序读：<code>FROM</code> 指定年度表作为数据来源，<code>JOIN</code> 按公司标识加入行业信息，<code>WHERE</code> 只保留 2020 年，<code>GROUP BY</code> 再把企业按行业分组，最后由 <code>COUNT</code> 和 <code>AVG</code> 分别计算组内企业数与平均资产。</p>
 <p>Notebook 中还会用 pandas 对同一小表做一次等价计算。两种实现得到相同结果，可以帮助我们检查代码是否写错，但这只是<strong>实现层面的交叉验证</strong>。如果两边都使用了错误的资产定义或错误的行业映射，它们仍然会一致地给出错误答案。</p>
 <table class="caption-top table">
@@ -827,7 +1229,13 @@ R_{it}=\prod_{d\in\mathcal D_{it}}(1+r_{id})-1.
 <h2 data-number="3.6" class="anchored" data-anchor-id="sec-financial-management-duckdb"><span class="header-section-number">3.6</span> DuckDB 与 Parquet：查询本地大文件</h2>
 <p>当数据已经按年份或主题保存成多个 Parquet 文件，而且日常任务主要是筛选、分组和连接时，DuckDB 提供了另一种很方便的路线。它可以直接对本地 Parquet 文件执行分析型 SQL，不必先把整批数据全部读成 pandas DataFrame。具体接口可查 <a href="https://duckdb.org/docs/stable/data/parquet/overview">DuckDB 官方 Parquet 文档</a>。</p>
 <p>本章介绍 DuckDB 的目的，是让学生知道文件很多以后还有什么工具可用，而不是要求为了本次 CSMAR 案例另外安装一套数据库系统。</p>
-<p>工具选择可以从当前瓶颈出发，而不需要追求更高级的方案。只有几张中小规模表时，pandas 已经足够直观；若多张关系表需要长期保存并反复查询，SQLite 可以把它们集中起来；若主要面对大量本地列式文件，DuckDB 可能更方便直接查询。</p>
+<p>工具选择可以从当前瓶颈出发，而不需要追求更高级的方案：</p>
+<ul>
+<li><strong>pandas</strong>：只有几张中小规模表，需要频繁做清洗、变形和模型前处理时，通常最直观。</li>
+<li><strong>SQLite</strong>：多张关系表需要长期保存、反复按键查询和连接时，可以把它们集中在一个本地数据库中。</li>
+<li><strong>DuckDB</strong>：主要面对大量本地 Parquet 等列式文件，希望直接筛选、分组和连接时，往往更方便。</li>
+</ul>
+<p>这里的顺序不是工具等级。研究问题和数据结构相同的前提下，哪个工具能把当前任务做得清楚、可检查，就优先使用哪个。</p>
 <p>需要反复强调的是，换工具不会自动修复数据逻辑。把 CSV 全部转成 Parquet，或者把所有表导入数据库，仍然不能让一个错误的主键变正确。数据管理先解决定义和关系，再讨论性能。</p>
 <p>如果要比较 pandas、SQLite 和 DuckDB 的性能，应先保证它们处理的是同一批输入、同一组列、相同筛选条件和相同聚合定义，并先确认结果一致，再比较运行时间。否则，一个工具更快，可能只是因为它少读了几列，或者根本没有执行同样的任务。</p>
 <p>计时本身也受很多条件影响：第一次读取与缓存后的读取不同，是否把建库时间算进去也会改变结论。本章因此不沿用来源讲义某台机器上的固定计时结果，只介绍各工具适合出现在哪一类工作流中。</p>
@@ -852,7 +1260,12 @@ R_{it}=\prod_{d\in\mathcal D_{it}}(1+r_{id})-1.
   decisions.md              已确认决定与待裁定事项</code></pre>
 <p>上面的目录只是一个独立学生项目的通用示意，用来说明不同生命周期的数据最好分层保存。实际 FinEco 项目已经有自己的工程规则：受限的 raw、interim 和 processed 数据位于授权数据根，公开的 <code>data/financial-data/</code> 只保存说明与汇总，具体位置见<a href="../data/financial-data/README.md">运行说明</a>。</p>
 <p>因此，不要为了让真实项目长得像这张示意图就去移动教师已经保存的原始资料。目录规范的作用是帮助理解责任边界，而不是要求所有项目使用完全相同的文件夹名称。</p>
-<p>原始数据、标准化数据和最终研究样本承担的责任不同。原始层尽量保持数据提供方交付的状态；标准化层可以修正已经确认的字段类型、日期格式和单位；研究样本层才根据具体论文或作业的要求执行行业排除、样本期间和其他筛选。</p>
+<p>原始数据、标准化数据和最终研究样本承担的责任不同，可以按下面三层理解：</p>
+<ul>
+<li><strong>原始层 (raw)</strong>：尽量保持数据提供方交付时的状态，只追加来源、下载条件和文件指纹等外部说明。</li>
+<li><strong>标准化层 (interim / standardized)</strong>：修正已经确认的字段类型、日期格式、单位和可重复执行的结构问题，但不替具体论文做样本筛选。</li>
+<li><strong>研究样本层 (processed / analysis sample)</strong>：根据具体论文或作业要求执行行业排除、样本期间、缺失规则和其他研究设计选择。</li>
+</ul>
 <p>这样分层以后，某篇论文决定删除金融行业，并不意味着基础数据库里也应该永久删掉金融企业。以后研究问题改变，只要重新执行研究样本规则即可，而不需要重新下载数据。</p>
 </section>
 <section id="文件名要能排序和辨认" class="level3" data-number="3.7.2">
@@ -906,7 +1319,15 @@ R_{it}=\prod_{d\in\mathcal D_{it}}(1+r_{id})-1.
 </section>
 <section id="sec-financial-management-workflow" class="level2" data-number="3.8">
 <h2 data-number="3.8" class="anchored" data-anchor-id="sec-financial-management-workflow"><span class="header-section-number">3.8</span> 从小任务到可复用工作流</h2>
-<p>把前面的内容连在一起，一套比较稳定的数据管理工作流就形成了。拿到多张表后，先记录来源，并说明每张表的一行代表什么；接着检查字段类型和主键，决定哪些表可以直接连接、哪些必须先聚合；合并后保留匹配状态和必要审计；最后再把已经核验的中间结果保存下来，供后面的清洗和建模反复使用。</p>
+<p>把前面的内容连在一起，一套比较稳定的数据管理工作流就形成了。拿到多张表以后，可以按下面的顺序推进：</p>
+<ol type="1">
+<li><strong>记录来源</strong>：保存数据来源、导出条件、时间范围和文件版本。</li>
+<li><strong>说明粒度</strong>：写清楚每张表的一行代表什么，以及预期使用什么业务键。</li>
+<li><strong>检查结构</strong>：核对字段类型、主键唯一性、重复来源和必要的有效期信息。</li>
+<li><strong>决定表操作</strong>：区分哪些文件需要 append，哪些表可以 merge，哪些高频记录必须先 aggregate，哪些只是 reshape。</li>
+<li><strong>保留审计信息</strong>：合并后保存匹配状态、输入输出数量和未匹配记录，不把异常静默丢掉。</li>
+<li><strong>保存可复用资产</strong>：把已经核验的中间结果另存为派生数据，供后面的清洗和建模反复使用。</li>
+</ol>
 <p>这套流程的目的不是增加文档工作，而是把原来依赖个人记忆的判断写进数据和代码中。这样下游分析如果出现异常，可以沿着处理链回到具体一步，而不必从头猜测。</p>
 <pre class="text"><code>任务：把年度财务与日行情形成年度分析底表。
 输入：已列明来源与字段结构的年度表、日表、身份历史表。
@@ -918,7 +1339,13 @@ R_{it}=\prod_{d\in\mathcal D_{it}}(1+r_{id})-1.
 停止条件：重复原因不清、身份有效期缺失、口径不一致。</code></pre>
 <p>读者可以 clone 仓库后运行 <a href="../notebooks/financial-data/financial-data.html#sec-csmar-04">Notebook 第 04–05 节</a>，看真实财务表怎样把这些原则落实成代码。这里的学习目标不是把合并程序重新抄一遍，而是能够解释每一个关键操作为什么必要：为什么这个键应该唯一，为什么某张日表要先聚合，为什么保留 <code>_merge</code> 状态，以及哪些变量口径当前还没有足够证据冻结。</p>
 <p>当这些问题能够回答清楚时，代码才真正从<strong>能运行</strong>变成<strong>可解释、可检查的工作流</strong>。</p>
-<p>课后可以用四个小问题检查是否真正理解本讲：给一张证券日表和一张公司年表分别写出粒度与主键；说明同一个财务表连接在年度描述和日度预测中为什么使用条件不同；比较 CSV、Parquet 和 SQLite 分别保存了哪些结构信息；最后，为一次跨年份追加后出现的重复键设计一套核查步骤。</p>
+<p>课后可以用四个小问题检查是否真正理解本讲：</p>
+<ol type="1">
+<li>给一张证券日表和一张公司年表，分别写出它们的粒度与候选主键。</li>
+<li>说明同一张财务表连接到年度描述数据和日度预测数据时，为什么使用条件不同。</li>
+<li>比较 CSV、Parquet 和 SQLite 分别能够保存哪些结构信息，又有哪些经济定义仍需要数据字典。</li>
+<li>为一次跨年份 append 后出现的重复键设计一套核查步骤。</li>
+</ol>
 <p>下一讲进入<a href="../lectures/financial-data-cleaning.html">清洗、变量构造和审计</a>。那时我们不再主要问这些表怎样放在一起，而是进一步判断其中的缺失、异常和变量构造是否有合理的经济含义。</p>
 </section>
 <section id="本讲来源" class="level2" data-number="3.9">

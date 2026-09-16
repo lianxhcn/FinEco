@@ -369,7 +369,12 @@ window.Quarto = {
 </header>
 
 
-<p>数据文件已经能够正常读入，多张表也按主键连接起来，这时很容易产生一种感觉：数据准备工作差不多结束了。实际上，真正需要研究判断的部分往往从这里才开始。一个空白值可能表示企业没有披露，也可能表示该项目根本不适用；一个看起来离谱的财务比率，可能只是分母非常接近零；同一公司同一年出现两条记录，也可能不是重复，而是两种报表口径或两个证券。</p>
+<p>数据文件已经能够正常读入，多张表也按主键连接起来，这时很容易产生一种感觉：数据准备工作差不多结束了。实际上，真正需要研究判断的部分往往从这里才开始。最常见的三类现象是：</p>
+<ul>
+<li>一个空白值可能表示企业没有披露，也可能表示该项目根本不适用；</li>
+<li>一个看起来离谱的财务比率，可能只是分母非常接近零；</li>
+<li>同一公司同一年出现两条记录，也可能不是重复，而是两种报表口径或两个证券。</li>
+</ul>
 <p>软件可以很快把这些不整齐的地方处理掉，例如填补缺失、删除重复、截掉极端值。但每做一次处理，我们都可能同时改变样本范围或变量含义。因此，数据清洗不是把表格修得更漂亮，而是在保留证据的前提下，判断哪些差异是技术问题，哪些差异本来就属于经济事实。</p>
 <p>本章以<a href="https://lianxhcn.github.io/ds2026/Lecture/data_clean/lecture_data_clean.html">《数据分析与经济决策》的数据清洗讲义</a>和<a href="https://lianxhcn.github.io/dsfin/">《金融数据分析》</a>中的相关材料为基础，沿用<strong>先发现问题，再决定处理</strong>的思路。上一讲已经解决了<a href="../lectures/financial-data-management.html">粒度和连接</a>这一层问题；这里把注意力转向单张表内部的缺失、重复和异常值，以及这些处理怎样影响样本选择、财务比率和后续研究结论。</p>
 <p>本讲还会加入一个更实际的要求：清洗规则不仅要能执行，还要能被复查。也就是说，程序除了给出处理后的数据，还应该告诉我们改了什么、为什么改，以及还有哪些地方目前证据不足。</p>
@@ -383,7 +388,13 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>能区分发现异常与决定处理；能说明变量公式、单位、支持期和信息日期；能审查缺失、重复、极端值和样本筛选；能写出 Agent 必须报告的验收证据。数值小例子为教学设定，CSMAR 结果另在完整案例中解释。</p>
+<ol type="1">
+<li>区分发现异常与决定怎样处理异常。</li>
+<li>说明变量公式、单位、支持期和信息日期。</li>
+<li>审查缺失、重复、极端值和样本筛选如何改变研究样本。</li>
+<li>为 Agent 或程序写出可核对的验收证据。</li>
+</ol>
+<p>数值小例子为教学设定，CSMAR 结果另在完整案例中解释。</p>
 </div>
 </div>
 <section id="sec-financial-cleaning-ready" class="level2" data-number="4.1">
@@ -408,9 +419,93 @@ window.Quarto = {
 <li><strong>Step 4</strong>: 检查关键变量的分布与内部关系，为后面的缺失、异常值和变量构造诊断提供入口。</li>
 </ol>
 <p>这四步不是一次性的机械检查。后面只要改变样本、连接新表或构造新变量，都可能需要回到其中某一步重新核对。</p>
+<p>为了让后面的判断不悬在抽象概念上，先看一张从旧版数据清洗讲义压缩而来的虚构小表。它只有 6 行，但故意放入了几种常见问题。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>stkcd</th>
+<th style="text-align: right;">year</th>
+<th>report_type</th>
+<th style="text-align: right;">leverage</th>
+<th>size</th>
+<th style="text-align: right;">ROA</th>
+<th style="text-align: right;">RD</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>000001</td>
+<td style="text-align: right;">2022</td>
+<td>A</td>
+<td style="text-align: right;">0.89</td>
+<td>25.3</td>
+<td style="text-align: right;">0.012</td>
+<td style="text-align: right;">缺失</td>
+</tr>
+<tr class="even">
+<td>000001</td>
+<td style="text-align: right;">2022</td>
+<td>B</td>
+<td style="text-align: right;">0.91</td>
+<td>25.1</td>
+<td style="text-align: right;">0.010</td>
+<td style="text-align: right;">缺失</td>
+</tr>
+<tr class="odd">
+<td>000001</td>
+<td style="text-align: right;">2023</td>
+<td>A</td>
+<td style="text-align: right;">0.88</td>
+<td>25.4</td>
+<td style="text-align: right;">0.013</td>
+<td style="text-align: right;">缺失</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: right;">2022</td>
+<td>A</td>
+<td style="text-align: right;">0.65</td>
+<td>24.1</td>
+<td style="text-align: right;">0.045</td>
+<td style="text-align: right;">0.008</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td style="text-align: right;">2023</td>
+<td>A</td>
+<td style="text-align: right;">0.68</td>
+<td>24.2</td>
+<td style="text-align: right;">0.041</td>
+<td style="text-align: right;">0.009</td>
+</tr>
+<tr class="even">
+<td>000063</td>
+<td style="text-align: right;">2023</td>
+<td>A</td>
+<td style="text-align: right;">3.21</td>
+<td><code>23.9</code></td>
+<td style="text-align: right;">-0.180</td>
+<td style="text-align: right;">0.048</td>
+</tr>
+</tbody>
+</table>
+<p>这张表可以直接作为后面几个小节的共同例子：</p>
+<ul>
+<li><code>stkcd</code> 中既有 <code>000001</code>、<code>000063</code>，又有 <code>2</code>，说明证券代码的格式并不一致；</li>
+<li><code>(000001, 2022)</code> 出现两行，但 <code>report_type</code> 分别为 A 和 B，这不是简单的完全重复，而是两种报表口径；</li>
+<li><code>size</code> 的最后一个值被存成字符串 <code>23.9</code>，表面上看是数字，存储类型却可能与其他行不同；</li>
+<li><code>RD</code> 对 <code>000001</code> 连续缺失，不能在没有证据时直接解释为零；</li>
+<li><code>leverage=3.21</code> 和 <code>ROA=-0.180</code> 看起来很极端，但在处理之前还要确认它们是录入错误、分母问题，还是企业真实状态。</li>
+</ul>
+<p>后面的类型转换、缺失、重复和异常值检查都围绕这些问题展开。这样，清洗规则不再是一组孤立命令，而是在解释同一张小表为什么需要不同判断。</p>
 <section id="类型转换与分类变量" class="level3" data-number="4.2.1">
 <h3 data-number="4.2.1" class="anchored" data-anchor-id="类型转换与分类变量"><span class="header-section-number">4.2.1</span> 类型转换与分类变量</h3>
-<p>变量<strong>看起来像数字</strong>和<strong>在研究中是连续数值</strong>是两回事。证券代码虽然全由数字构成，主要作用仍然是标识不同证券；行业代码即使保存成整数，也没有「行业 8 比行业 4 大一倍」的含义。信用评级又不同，它往往具有明确顺序，但从 AAA 到 AA+ 与从 BBB 到 BBB− 的经济距离并不一定相等。</p>
+<p>上面的小表已经给出两个典型的类型问题：<code>stkcd=2</code> 是标识变量的格式不一致，<code>size</code> 中的 <code>23.9</code> 则提示数值列可能被读成字符串。这里要先区分一件事：变量<strong>看起来像数字</strong>和<strong>在研究中是连续数值</strong>是两回事。可以把几个常见例子并排看：</p>
+<ul>
+<li><strong>证券代码</strong>：<code>000001</code> 虽然只由数字组成，作用是标识证券，通常应按字符串保存。</li>
+<li><strong>行业代码</strong>：即使数据库把行业保存成整数，也没有「行业 8 比行业 4 大一倍」的数量含义。</li>
+<li><strong>信用评级</strong>：AAA、AA+、AA 等通常具有顺序，但相邻等级之间的经济距离并不必然相等。</li>
+</ul>
 <p>因此，在类型转换时应根据变量角色判断，而不是简单地把所有可转成数字的列都变成数值型。后续模型若要把有序类别映射为分值，也应单独说明这种编码假设。</p>
 <p>类型转换最好是可追溯的。对于关键变量，可以保留原始列或至少保留来源说明，同时统计有多少记录转换失败、失败值主要是什么。如果一个金额字段含有逗号、货币符号或百分号，应先根据数据说明确定这些符号的含义，再统一转换。</p>
 <p>尤其要警惕<strong>删除所有非数字字符</strong>这种看似万能的做法。如果同一列里既有 2 亿元又有 8000 万元，把单位全部删除以后只剩下 2 和 8000，数值反而失去可比性。正确顺序应是先识别单位，再做换算。</p>
@@ -419,7 +514,7 @@ window.Quarto = {
 </section>
 <section id="缺失先解释为什么没有值" class="level3" data-number="4.2.2">
 <h3 data-number="4.2.2" class="anchored" data-anchor-id="缺失先解释为什么没有值"><span class="header-section-number">4.2.2</span> 缺失：先解释为什么没有值</h3>
-<p>缺失值是数据清洗中最容易被顺手处理的问题。看到 <code>NaN</code>，很多人会立即想到删掉、填零或用均值补上。但在决定怎么处理以前，更重要的问题是：这个值为什么不存在？</p>
+<p>在上面的小表中，<code>000001</code> 的 <code>RD</code> 连续缺失。这个现象比一个孤立的 <code>NaN</code> 更值得追问，因为它可能来自企业没有研发、没有披露，或数据库当时没有覆盖。<strong>缺失值处理的第一步不是填补，而是解释为什么没有值。</strong></p>
 <p>实际研究中至少要区分几种情况：经济活动确实没有发生，变量对该对象不适用，企业没有披露，数据库没有收录，或者只是文件读取失败。它们在表格里都可能表现为同一个缺失符号，但经济含义完全不同。例如研发费用没有记录，并不能自动推出企业的研发投入就是零。</p>
 <p>下面用一个完全虚构的小表看这种差别。A 企业明确记录研发为 0，B 企业的研发数据缺失，C 企业研发为 2，三家企业资产都等于 100。只使用已经观测到的 A 和 C，研发率平均值为 1%；如果把 B 的缺失直接填成 0，再计算三家企业的平均值，就变成约 0.67%。</p>
 <p>统计量确实变了，但我们并没有因此获得任何关于 B 企业研发投入的新信息。变化只是来自一个额外假设——把<strong>未知</strong>当成<strong>零</strong>——以及分母样本从两家企业变成三家企业。</p>
@@ -467,14 +562,25 @@ window.Quarto = {
 </section>
 <section id="重复区分记录重复与对象不同" class="level3" data-number="4.2.3">
 <h3 data-number="4.2.3" class="anchored" data-anchor-id="重复区分记录重复与对象不同"><span class="header-section-number">4.2.3</span> 重复：区分记录重复与对象不同</h3>
-<p>重复也不是一种单一问题。两条记录可能是同一文件被重复导出，也可能拥有相同主键却在某些字段上数值不同；还可能只是我们选错了主键，把不同季度、不同报表类型或不同证券误认为同一观测。</p>
+<p>上面的小表中，<code>(000001, 2022)</code> 出现了两次，但 A、B 两行的数值并不相同。若直接按 <code>(stkcd, year)</code> 执行 <code>drop_duplicates()</code>，我们实际上是在没有说明报表口径的情况下随机丢掉一条记录。<strong>因此，发现重复键以后要先解释重复来自哪里，再决定是否删除。</strong> 至少要区分下面几种来源：</p>
+<ul>
+<li><strong>完全重复导出</strong>：同一文件或同一批记录被重复保存。</li>
+<li><strong>报表或频率维度未进入主键</strong>：例如同一公司同一年同时存在 A/B 两类报表，或季度与年度记录混在一起。</li>
+<li><strong>版本差异</strong>：同一证券同一报告日存在多个修订版本，需要追查各版本的可得时间。</li>
+<li><strong>身份映射差异</strong>：同一公司同一年对应多个证券，问题已经从去重转向公司与证券的映射。</li>
+</ul>
 <p>因此，即使两行所有数值看起来完全相同，也最好先确认它们确实代表同一经济记录，而不是两类记录碰巧取值一致。删除重复必须有明确依据，并留下原始数量和处理规则。</p>
-<p>例如，财务表里同一公司同一年同时出现 A/B 两类报表，真正的问题是研究尚未确定应该使用哪一种报表口径；同一证券同一报告日出现多个版本，则要追查财报修订和各版本的可得时间；同一公司同一年对应两个证券，又涉及公司与证券身份映射。</p>
 <p><code>drop_duplicates()</code> 可以按照我们给定的列删除行，但它不知道这些情形背后的经济区别。换言之，函数能够执行去重规则，却不能替研究者决定什么才算重复。</p>
 </section>
 <section id="异常值阈值是检查入口" class="level3" data-number="4.2.4">
 <h3 data-number="4.2.4" class="anchored" data-anchor-id="异常值阈值是检查入口"><span class="header-section-number">4.2.4</span> 异常值：阈值是检查入口</h3>
-<p>异常值的判断也应从<strong>发现</strong>与<strong>处理</strong>两个阶段分开。一个极端观测可能来自单位混用或录入错误，也可能只是因为财务比率的分母接近零，还可能真实反映企业在危机时期的特殊状态。看到它以后，应该同时查看原始分子和分母、前后年份以及相关财务项目，必要时回到公司披露核对。</p>
+<p>小表中的 <code>leverage=3.21</code> 和 <code>ROA=-0.180</code> 很容易被统计程序标记为极端值，但它们究竟是错误还是经济事实，仅凭数值大小还不能决定。<strong>异常值检查的作用是定位需要解释的记录，而不是自动生成删除名单。</strong> 一个极端观测通常先从下面几类原因排查：</p>
+<ul>
+<li><strong>技术错误</strong>：单位混用、录入错误、字段错位或解析失败；</li>
+<li><strong>比率结构</strong>：分母非常接近零，使一个本来并不大的分子产生极端比率；</li>
+<li><strong>真实经济状态</strong>：企业在危机、重组或特殊交易期间确实出现异常数值。</li>
+</ul>
+<p>看到极端观测以后，应该同时查看原始分子和分母、前后年份以及相关财务项目，必要时回到公司披露核对。</p>
 <p>箱线图、极端分位数和 z 分数很适合帮助我们定位值得检查的记录，但它们只是诊断工具。一个点在图上被标成离群值，并不等于这条经济记录应该被删除。</p>
 <p>还要避免术语混淆。在统计分析中，<strong>标准化变量</strong>通常指减去均值再除以标准差等尺度变换；在数据工程语境里，<strong>标准化数据</strong>有时只是指统一字段名、类型和格式。两者不是同一件事。</p>
 <p>对数变换也不能只当成让分布好看一点的技术操作。零值和负值不能直接取自然对数，而给所有观测统一加 1 是否合理，又取决于变量单位和经济含义。比如金额以元还是亿元计，加 1 的含义完全不同，因此不能把 <code>log(x+1)</code> 当成通用排错方法。</p>
@@ -569,7 +675,12 @@ ROA^{avg}_{it}&amp;=\frac{NetIncome_{it}}
 <p>这样做的好处，是避免把不同含义的通过状态混成一句任务完成。某一步可能工程上已经运行成功，但研究口径仍未获得足够证据。</p>
 <section id="结构样本流与合并" class="level3" data-number="4.5.1">
 <h3 data-number="4.5.1" class="anchored" data-anchor-id="结构样本流与合并"><span class="header-section-number">4.5.1</span> 结构、样本流与合并</h3>
-<p>结构与样本流审计主要回答三件事：谁进入了数据，谁在处理过程中离开了，以及有没有观测因为错误连接被重复使用。结构审计 (Structure Audit) 可以检查年份、证券和公司覆盖，并分别验证证券层面和公司层面的主键；样本流 (Sample Flow) 记录每一步前后的样本量和处理原因；合并审计 (Merge Audit) 则把双方匹配、仅主表和仅使用表三类记录分开报告。</p>
+<p>结构与样本流审计主要回答三件事：谁进入了数据，谁在处理过程中离开了，以及有没有观测因为错误连接被重复使用。实际检查时可以拆成三类：</p>
+<ul>
+<li><strong>结构审计 (Structure Audit)</strong>：检查年份、证券和公司覆盖，并分别验证证券层面和公司层面的主键。</li>
+<li><strong>样本流 (Sample Flow)</strong>：记录每一步之前和之后的样本量、增加或减少的原因，以及对应的筛选规则。</li>
+<li><strong>合并审计 (Merge Audit)</strong>：把双方匹配、仅主表和仅使用表三类记录分开报告，并继续追查未匹配集中在哪些群体。</li>
+</ul>
 <p>这些表本身并不复杂，但它们把原本藏在代码中的样本变化显式呈现出来，便于我们判断某一步是否意外改变了研究对象。</p>
 <p>读合并审计时，不要停在匹配率 97% 这一行。更有意义的问题是，那 3% 未匹配的记录是谁。新上市公司可能因为缺少上一年财务而更容易出现未匹配，退市公司可能缺少完整年度收益，金融企业也可能因为某些会计项目不适用而表现出不同缺失模式。</p>
 <p>因此，应按年份和有经济含义的群体继续比较未匹配率，并使用各组自身样本数作为分母。新上市公司组本来就比非新上市公司小，只比较未匹配条数很容易误判差异大小。</p>
@@ -625,10 +736,22 @@ Assets_{it}\approx Liabilities_{it}+Equity_{it}.
 Y^{*}_{it}\longrightarrow Text_{it}
 \longrightarrow Model\longrightarrow\widehat{Y}_{it}.
 \tag{4.4}\]</span></span></p>
-<p>其中，<span class="math inline">\(Y^{*}_{it}\)</span> 表示企业 <span class="math inline">\(i\)</span> 在年份 <span class="math inline">\(t\)</span> 的真实目标状态，例如是否存在供应链风险；<span class="math inline">\(Text_{it}\)</span> 是研究者能够取得的相关文本；<span class="math inline">\(Model\)</span> 代表用于测量的完整程序，包括模型版本、提示词和必要的解析规则；<span class="math inline">\(\widehat{Y}_{it}\)</span> 才是最后得到的标签。</p>
+<p>式中四个对象对应测量链条中的不同阶段：</p>
+<ul>
+<li><span class="math inline">\(Y^{*}_{it}\)</span>：企业 <span class="math inline">\(i\)</span> 在年份 <span class="math inline">\(t\)</span> 的真实目标状态，例如是否存在供应链风险；</li>
+<li><span class="math inline">\(Text_{it}\)</span>：研究者实际能够取得的相关文本；</li>
+<li><span class="math inline">\(Model\)</span>：用于测量的完整程序，包括模型版本、提示词和必要的解析规则；</li>
+<li><span class="math inline">\(\widehat{Y}_{it}\)</span>：程序最后输出、进入统计分析的标签。</li>
+</ul>
 <p>如果标签取 0 或 1，它只是一个分类结果，没有货币单位。更关键的是，文本没有明确写「供应链风险」并不等于真实风险不存在，模型输出 1 也不等于人工基准标签 (ground truth)。模型只是在既定文本和测量规则下给出一个估计标签。</p>
 <p>要判断这个测量程序是否可靠，需要一批由人工按照明确定义标注的验证样本，而且最好不要让这批样本同时承担反复调整提示词的训练作用。否则，提示词可能只是逐渐适应了已经看过的例子。</p>
-<p>对二元分类，可以同时报告 accuracy、precision 和 recall。Accuracy 看所有标签中判断正确的比例；precision 看模型判为正的记录里有多少真正为正；recall 则看所有真正为正的记录中有多少被模型找到。若正类本来只占很小比例，模型把所有记录都判成负类也可能得到很高 accuracy，因此不能只用一个总体正确率评价测量质量。</p>
+<p>对二元分类，可以同时报告三个最基本的指标：</p>
+<ul>
+<li><strong>Accuracy</strong>：所有记录中，模型判断正确的比例。</li>
+<li><strong>Precision</strong>：模型判为正的记录中，真正为正的比例。</li>
+<li><strong>Recall</strong>：所有真正为正的记录中，被模型找到的比例。</li>
+</ul>
+<p>若正类本来只占很小比例，模型把所有记录都判成负类也可能得到很高 accuracy，因此不能只用一个总体正确率评价测量质量。</p>
 <p>总体指标之外，还要看错误集中在哪里。某个分类器在整体样本上表现不错，却可能特别容易误判金融行业、较早年份、超长年报或者某种特殊措辞。如果这些系统性错误刚好与后续回归中的分组变量相关，就可能扭曲研究结论。</p>
 <p>因此，文本来源、抓取时间、是否截断、模型版本、提示词、推理参数和人工复核结果都应该保存下来。这样将来标签发生变化时，才能判断变化来自文本、模型还是测量规则。</p>
 <section id="文本解析标签与研究自由度" class="level3" data-number="4.7.1">
