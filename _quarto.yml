@@ -2,6 +2,8 @@ project:
   type: book
   output-dir: docs
   resources:
+    - data/financial-data/**
+    - tools/financial-data/**
     - notebooks/bootstrap/bootstrap-demo.ipynb
     - notebooks/bootstrap/bootstrap-stata.ipynb
     - tools/bootstrap/bootstrap_core.py
@@ -66,6 +68,14 @@ book:
         - lectures/intro.qmd
         - notebooks/intro/portfolio-python.ipynb
         - notebooks/intro/policy-stata.ipynb
+        - href: lectures/financial-data.qmd
+          text: 数据流程与获取
+        - href: lectures/financial-data-management.qmd
+          text: 数据管理
+        - href: lectures/financial-data-cleaning.qmd
+          text: 数据清洗与审计
+        - href: notebooks/financial-data/financial-data.ipynb
+          text: CSMAR：Agent 实战
         - href: lectures/bootstrap.qmd
           text: Bootstrap
         - href: notebooks/bootstrap/bootstrap-demo.ipynb

@@ -1,0 +1,3406 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>5&nbsp; CSMAR 实战：用 Codex 从 ZIP 建立年度数据库 – 金融计量经济学</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../lectures/bootstrap.html" rel="next">
+<link href="../../lectures/financial-data-cleaning.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-0626ff4d7a71b55c8707dcae1d04a9b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-d59a9bb4a0246dd4330968064f99cf3e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<link rel="icon" type="image/png" sizes="40x40" href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png">
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../../notebooks/financial-data/financial-data.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">CSMAR：Agent 实战</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../../index.html" class="sidebar-logo-link">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">金融计量经济学</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/lianxhcn/FinEco" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="切换阅读器模式">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🏠 前言</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📚 课程资料</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../getting-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📌 课件使用</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../syllabus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📅 课程安排</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../homework.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🚀 作业</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../exercises/hw-01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">hw-01</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">🛠️ 环境配置</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">软件配置</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../publishing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">同步与发布</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">研究基础</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">研究流程</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/intro/portfolio-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">组合实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/intro/policy-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">政策实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/financial-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">数据流程与获取</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/financial-data-management.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">数据管理</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/financial-data-cleaning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">数据清洗与审计</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/financial-data/financial-data.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">CSMAR：Agent 实战</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/bootstrap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Bootstrap</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/bootstrap/bootstrap-demo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Python 实验</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/bootstrap/bootstrap-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Stata 实验</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">附录</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../resources/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">公共书目</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目录</h2>
+   
+  <ul>
+  <li><a href="#sec-csmar-rules" id="toc-sec-csmar-rules" class="nav-link active" data-scroll-target="#sec-csmar-rules"><span class="header-section-number">5.1</span> 开始执行前：建立规则文件</a>
+  <ul class="collapse">
+  <li><a href="#工作规则模板全文" id="toc-工作规则模板全文" class="nav-link" data-scroll-target="#工作规则模板全文"><span class="header-section-number">5.1.1</span> 工作规则模板全文</a></li>
+  <li><a href="#项目计划" id="toc-项目计划" class="nav-link" data-scroll-target="#项目计划"><span class="header-section-number">5.1.2</span> 项目计划</a></li>
+  <li><a href="#本案例的数据协议" id="toc-本案例的数据协议" class="nav-link" data-scroll-target="#本案例的数据协议"><span class="header-section-number">5.1.3</span> 本案例的数据协议</a></li>
+  <li><a href="#金融数据章-data-agent-protocol" id="toc-金融数据章-data-agent-protocol" class="nav-link" data-scroll-target="#金融数据章-data-agent-protocol"><span class="header-section-number">5.1.4</span> 金融数据章 Data Agent Protocol</a></li>
+  </ul></li>
+  <li><a href="#sec-financial-data-csmar" id="toc-sec-financial-data-csmar" class="nav-link" data-scroll-target="#sec-financial-data-csmar"><span class="header-section-number">5.2</span> 主案例：建立中国上市公司年度基础数据库</a>
+  <ul class="collapse">
+  <li><a href="#原始文件里实际有什么" id="toc-原始文件里实际有什么" class="nav-link" data-scroll-target="#原始文件里实际有什么"><span class="header-section-number">5.2.1</span> 原始文件里实际有什么</a></li>
+  <li><a href="#标准化之后再取年度视图" id="toc-标准化之后再取年度视图" class="nav-link" data-scroll-target="#标准化之后再取年度视图"><span class="header-section-number">5.2.2</span> 标准化之后再取年度视图</a></li>
+  <li><a href="#候选底表与真正的公司年度主表" id="toc-候选底表与真正的公司年度主表" class="nav-link" data-scroll-target="#候选底表与真正的公司年度主表"><span class="header-section-number">5.2.3</span> 候选底表与真正的公司年度主表</a></li>
+  </ul></li>
+  <li><a href="#sec-csmar-00" id="toc-sec-csmar-00" class="nav-link" data-scroll-target="#sec-csmar-00">00. Setup：把数据和代码的位置分开</a>
+  <ul class="collapse">
+  <li><a href="#本阶段给-codex-的任务" id="toc-本阶段给-codex-的任务" class="nav-link" data-scroll-target="#本阶段给-codex-的任务"><span class="header-section-number">5.2.4</span> 本阶段给 Codex 的任务</a></li>
+  </ul></li>
+  <li><a href="#sec-csmar-01" id="toc-sec-csmar-01" class="nav-link" data-scroll-target="#sec-csmar-01">01. Source inventory：先确认拿到的是哪一批数据</a>
+  <ul class="collapse">
+  <li><a href="#本阶段给-codex-的任务-1" id="toc-本阶段给-codex-的任务-1" class="nav-link" data-scroll-target="#本阶段给-codex-的任务-1"><span class="header-section-number">5.2.5</span> 本阶段给 Codex 的任务</a></li>
+  </ul></li>
+  <li><a href="#sec-csmar-02" id="toc-sec-csmar-02" class="nav-link" data-scroll-target="#sec-csmar-02">02. Schema audit：先读字段说明，再认识一行记录</a></li>
+  <li><a href="#sec-csmar-03" id="toc-sec-csmar-03" class="nav-link" data-scroll-target="#sec-csmar-03">03. Standardization：字段名变了，经济含义不能变</a>
+  <ul class="collapse">
+  <li><a href="#本阶段给-codex-的任务-2" id="toc-本阶段给-codex-的任务-2" class="nav-link" data-scroll-target="#本阶段给-codex-的任务-2"><span class="header-section-number">5.2.6</span> 本阶段给 Codex 的任务</a></li>
+  </ul></li>
+  <li><a href="#sec-csmar-04" id="toc-sec-csmar-04" class="nav-link" data-scroll-target="#sec-csmar-04">04. Merge planning：年度筛选和删除重复是不同操作</a>
+  <ul class="collapse">
+  <li><a href="#小型合并实验同样能运行行数却不同" id="toc-小型合并实验同样能运行行数却不同" class="nav-link" data-scroll-target="#小型合并实验同样能运行行数却不同"><span class="header-section-number">5.2.7</span> 小型合并实验：同样能运行，行数却不同</a></li>
+  </ul></li>
+  <li><a href="#sec-csmar-05" id="toc-sec-csmar-05" class="nav-link" data-scroll-target="#sec-csmar-05">05. Firm-year master：先保留覆盖差异，再核查公司身份</a>
+  <ul class="collapse">
+  <li><a href="#本阶段给-codex-的任务-3" id="toc-本阶段给-codex-的任务-3" class="nav-link" data-scroll-target="#本阶段给-codex-的任务-3"><span class="header-section-number">5.2.8</span> 本阶段给 Codex 的任务</a></li>
+  </ul></li>
+  <li><a href="#sec-csmar-06" id="toc-sec-csmar-06" class="nav-link" data-scroll-target="#sec-csmar-06">06. Variable construction：每个比率都保留分子和分母</a>
+  <ul class="collapse">
+  <li><a href="#本阶段给-codex-的任务-4" id="toc-本阶段给-codex-的任务-4" class="nav-link" data-scroll-target="#本阶段给-codex-的任务-4"><span class="header-section-number">5.2.9</span> 本阶段给 Codex 的任务</a></li>
+  </ul></li>
+  <li><a href="#sec-csmar-07" id="toc-sec-csmar-07" class="nav-link" data-scroll-target="#sec-csmar-07">07. Missing / duplicate / outlier：诊断之后才决定</a></li>
+  <li><a href="#sec-csmar-08" id="toc-sec-csmar-08" class="nav-link" data-scroll-target="#sec-csmar-08">08. Data Audit：让结果接受反向检查</a>
+  <ul class="collapse">
+  <li><a href="#本阶段给-codex-的任务-5" id="toc-本阶段给-codex-的任务-5" class="nav-link" data-scroll-target="#本阶段给-codex-的任务-5"><span class="header-section-number">5.2.10</span> 本阶段给 Codex 的任务</a></li>
+  </ul></li>
+  <li><a href="#sec-csmar-09" id="toc-sec-csmar-09" class="nav-link" data-scroll-target="#sec-csmar-09">09. Agent workflow：先写任务边界，再运行验证</a>
+  <ul class="collapse">
+  <li><a href="#本阶段给-codex-的任务-6" id="toc-本阶段给-codex-的任务-6" class="nav-link" data-scroll-target="#本阶段给-codex-的任务-6"><span class="header-section-number">5.2.11</span> 本阶段给 Codex 的任务</a></li>
+  </ul></li>
+  <li><a href="#sec-csmar-10" id="toc-sec-csmar-10" class="nav-link" data-scroll-target="#sec-csmar-10">10. Export：冻结输入、代码与执行证据</a>
+  <ul class="collapse">
+  <li><a href="#本阶段给-codex-的任务-7" id="toc-本阶段给-codex-的任务-7" class="nav-link" data-scroll-target="#本阶段给-codex-的任务-7"><span class="header-section-number">5.2.12</span> 本阶段给 Codex 的任务</a></li>
+  </ul></li>
+  <li><a href="#sec-csmar-11" id="toc-sec-csmar-11" class="nav-link" data-scroll-target="#sec-csmar-11">11. Exercises：把运行成功转成判断依据</a></li>
+  <li><a href="#sec-csmar-mini" id="toc-sec-csmar-mini" class="nav-link" data-scroll-target="#sec-csmar-mini"><span class="header-section-number">5.3</span> 教学小表：不依赖 CSMAR 的独立实验</a></li>
+  <li><a href="#sec-csmar-review" id="toc-sec-csmar-review" class="nav-link" data-scroll-target="#sec-csmar-review"><span class="header-section-number">5.4</span> 如何阅读本轮结果与继续返修</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.dev/lianxhcn/FinEco/blob/main/notebooks/financial-data/financial-data.ipynb" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../../notebooks/financial-data/financial-data.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">CSMAR：Agent 实战</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-csmar-case" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">CSMAR 实战：用 Codex 从 ZIP 建立年度数据库</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>这是数据工作流单元的完整案例。先阅读<a href="../../lectures/financial-data.html">流程与获取</a>、<a href="../../lectures/financial-data-management.html">数据管理</a>和<a href="../../lectures/financial-data-cleaning.html">清洗与审计</a>。本案例重点是把研究规则变成 Agent 可以执行的任务，再用实际输出核验。</p>
+<p>学生可以 clone <a href="https://github.com/lianxhcn/FinEco">FinEco 仓库</a>，按<a href="../../data/financial-data/README.md">运行说明</a>配置环境与授权数据，在本地运行这份 Notebook。没有 CSMAR 数据也能单独运行末尾的<a href="#sec-csmar-mini">教学小表</a>。</p>
+<p>本实验从授权 ZIP 开始，逐步建立标准化表、候选年度底表、变量比较与审计结果。输出仅包含汇总统计；完整记录留在本地。当前数据中的公司身份、上市日期及历史状态还有待核对，<strong>候选底表不等于可直接用于论文的最终样本</strong>。</p>
+<p>依次运行 00–11。教师提供的坚果云下载入口、校验值和解压步骤见 <a href="../../data/financial-data/DATA_ACCESS.md">CSMAR 数据获取</a>。仓库不附原始数据，请在已有授权范围内使用。</p>
+<section id="sec-csmar-rules" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="sec-csmar-rules"><span class="header-section-number">5.1</span> 开始执行前：建立规则文件</h2>
+<p>本案例从一组真实授权 ZIP 出发。给 Agent 一句清洗数据还不足以开始，需要先明确它能读写哪里、哪些口径已有依据、遇到什么情况必须报告。</p>
+<p>课程仓库现有根规则继续有效。下面模板供学生自己的独立项目使用，不能覆盖教师仓库规则。将 AGENTS.example.md 在学生项目另存为 AGENTS.md，将 DECISIONS.template.md 另存为 DECISIONS.md，再核对项目路径。项目计划说明阶段，数据协议说明含义与允许动作，提示词只安排本次任务。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>文档</th>
+<th>下载与用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Agent 工作规则</td>
+<td><a href="../../data/financial-data/agent-project/AGENTS.example.md">AGENTS.example.md</a>，规定工作边界</td>
+</tr>
+<tr class="even">
+<td>数据协议</td>
+<td><a href="../../data/financial-data/DATA_PROTOCOL.md">DATA_PROTOCOL.md</a>，定义四层规则</td>
+</tr>
+<tr class="odd">
+<td>项目阶段</td>
+<td><a href="../../data/financial-data/agent-project/PROJECT_PLAN.md">PROJECT_PLAN.md</a>，列交付和验收</td>
+</tr>
+<tr class="even">
+<td>全套任务提示词</td>
+<td><a href="../../data/financial-data/agent-project/PROMPTS.md">PROMPTS.md</a>，P00–P07</td>
+</tr>
+<tr class="odd">
+<td>人工决策</td>
+<td><a href="../../data/financial-data/agent-project/DECISIONS.template.md">DECISIONS.template.md</a>，待决与批准分开</td>
+</tr>
+</tbody>
+</table>
+<p>这些提示词是依据已执行工作编写的教学模板，后面的程序是本案例实际实现，不能据此声称复制同一句提示词必然生成完全相同代码。</p>
+<section id="工作规则模板全文" class="level3" data-number="5.1.1">
+<h3 data-number="5.1.1" class="anchored" data-anchor-id="工作规则模板全文"><span class="header-section-number">5.1.1</span> 工作规则模板全文</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># CSMAR 学生项目：Agent 工作规则模板</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>使用方式：在学生自己的独立项目中另存为 <span class="in">`AGENTS.md`</span>，先由学生填写并核对项目路径。本文件在课程仓库中是教学模板，不覆盖 FinEco 现有规则。</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">## 每次任务先读</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>阅读本文件、<span class="in">`PROJECT_PLAN.md`</span>、<span class="in">`DATA_PROTOCOL.md`</span>、<span class="in">`DECISIONS.md`</span> 和当前任务提示词。遇到冲突先报告，不能把模板中的建议写成教师已经批准的规则。</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## 工作边界</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>原始 ZIP 与解压原件只读；核对授权输入根目录，派生结果写入本次运行目录。</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>只修改指定学生项目，开始时列出允许修改的文件。不得改写教师来源仓库、系统环境或共享配置。</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>不读取凭据，不公开受限记录，不将公司级原始或派生数据上传 GitHub、网页或外部服务。</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>字段含义必须对应提供方说明；单位、币种、历史状态或身份不明确时保持待确认。</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>不自动填补、缩尾、删除行业或状态样本，不为了唯一性任意保留一条记录。</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>合并前核对粒度、空键与重复键；连接关系不符合设计时停止相应步骤。</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>代码改变后从头运行，保存版本和真实输出。不能手工编造通过状态或 Notebook 结果。</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>每次交付报告输入、规则、代码、输出、检查与待决事项，并区分执行成功与研究口径获批。</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">## 审核接口</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>没有依据的事项输出 <span class="in">`HUMAN REVIEW REQUIRED`</span>，附证据、影响及需要谁作何种决定。仅将已获得教师明确确认的规则写入 <span class="in">`DECISIONS.md`</span> 的批准栏，其余留在待决栏。</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="项目计划" class="level3" data-number="5.1.2">
+<h3 data-number="5.1.2" class="anchored" data-anchor-id="项目计划"><span class="header-section-number">5.1.2</span> 项目计划</h3>
+<p>目标：按已确认规则，从获授权 CSMAR 导出文件建立可审计年度候选库。研究期为 2015–2025，2014 年财务用于相邻年度分母。最终粒度目标为公司年度，当前证券年度结果必须另行核对身份。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>阶段</th>
+<th>交付</th>
+<th>进入下一步的条件</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>输入盘点</td>
+<td>Source Manifest、字段说明清单</td>
+<td>ZIP 可读、来源明确、授权和路径确认</td>
+</tr>
+<tr class="even">
+<td>结构与标准化</td>
+<td>schema、映射、interim、转换失败汇总</td>
+<td>保留原始行；字段定义有据；失败已说明</td>
+</tr>
+<tr class="odd">
+<td>年度视图</td>
+<td>期间与 A/B 样本流</td>
+<td>每个过滤条件可追溯，其他原行仍在 interim</td>
+</tr>
+<tr class="even">
+<td>多表合并</td>
+<td>候选底表、merge audit、身份冲突表</td>
+<td>证券年度键检查通过；公司身份问题单列</td>
+</tr>
+<tr class="odd">
+<td>变量构造</td>
+<td>原始分子分母、候选比率</td>
+<td>单位与口径未确认时清楚标为条件性候选</td>
+</tr>
+<tr class="even">
+<td>审计返修</td>
+<td>分布、缺失、会计、时间和分组审计</td>
+<td>发现的问题已对应返修或人工裁定</td>
+</tr>
+<tr class="odd">
+<td>版本保存</td>
+<td>manifest、代码哈希、环境、决策状态</td>
+<td>区分已保存证据与最终研究数据批准</td>
+</tr>
+</tbody>
+</table>
+<p>按顺序采用 <code>PROMPTS.md</code>。发现一个阶段的未决问题时，可继续互不依赖的检查，但不能让待定信息影响的下游结果被标为正式通过。当前案例的实际未决事项见上一级 <code>DATA_GAPS.md</code>。</p>
+</section>
+<section id="本案例的数据协议" class="level3" data-number="5.1.3">
+<h3 data-number="5.1.3" class="anchored" data-anchor-id="本案例的数据协议"><span class="header-section-number">5.1.3</span> 本案例的数据协议</h3>
+<p>下面给出完整协议，课堂可按需讲授，学生不用跳到另一份讲义寻找关键边界。</p>
+</section>
+<section id="金融数据章-data-agent-protocol" class="level3" data-number="5.1.4">
+<h3 data-number="5.1.4" class="anchored" data-anchor-id="金融数据章-data-agent-protocol"><span class="header-section-number">5.1.4</span> 金融数据章 Data Agent Protocol</h3>
+<p>版本：v2 本地整合稿。retrieved_date: 2026-09-16。教师依据：本次任务书及当前对话确认。执行实现：<code>tools/financial-data/pipeline.py</code>；课堂入口：<code>notebooks/financial-data/financial-data.ipynb</code>。</p>
+<section id="global-rules" class="level4" data-number="5.1.4.1">
+<h4 data-number="5.1.4.1" class="anchored" data-anchor-id="global-rules"><span class="header-section-number">5.1.4.1</span> 1. Global Rules</h4>
+<ol type="1">
+<li>不修改、覆盖或重命名原始 ZIP；解压文件按数据集隔离，已有内容必须与原 ZIP 一致。</li>
+<li>不静默删除观测。标准化保留全部行，年度视图筛选必须记录前后行数和理由，未纳入行仍在支持层或候选层。</li>
+<li>不按变量代码猜定义。先读本批 TXT、数据库说明，再形成字段映射。</li>
+<li>单位改变须有字典依据，保留原值及转换式。财务金额单位未证实时不声明为人民币元。</li>
+<li>不自动填补缺失，不自动缩尾，不自行选择论文研究样本。</li>
+<li>合并前验证两侧粒度、键完整性及唯一性；不用未经说明的 many-to-many。</li>
+<li>A/B 报表分开保存；指标命名标明口径。不能把归母净利润与全部权益的混合口径称为唯一 ROE。</li>
+<li>相邻年度滞后按明确的年度键匹配，不能跨断档顺序移位。</li>
+<li>程序运行成功只通过执行检查；经济逻辑、身份映射和时间信息另行审核。</li>
+<li>无法裁定的事项标为 HUMAN REVIEW REQUIRED，保留证据，不编造确认结果。</li>
+<li>记录级数据只写受限目录；公开输出实行文件允许清单，不展示真实公司行。</li>
+<li>冻结输入指纹、代码指纹、环境版本与执行时间；更新数据后重新运行审计。</li>
+</ol>
+</section>
+<section id="project-rules" class="level4" data-number="5.1.4.2">
+<h4 data-number="5.1.4.2" class="anchored" data-anchor-id="project-rules"><span class="header-section-number">5.1.4.2</span> 2. Project Rules</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>项目</th>
+<th>规则与当前实现</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Population</td>
+<td>目标为 2015–2025 年间曾上市的 A 股公司；当前下载是否覆盖完整历史总体尚待核验</td>
+</tr>
+<tr class="even">
+<td>Raw period</td>
+<td>2014–2025 为年度视图；原文件还含 2026 季报及 1 月 1 日记录，标准化层完整保存</td>
+</tr>
+<tr class="odd">
+<td>Unit</td>
+<td>目标 firm-year；当前技术键 stock_code + fiscal_year，另检验 firm_id + fiscal_year</td>
+</tr>
+<tr class="even">
+<td>A 股身份</td>
+<td>TRD_Year 的市场编码 1、4、16、32、64 提供已观测身份；缺少证据的代码保留在 candidate</td>
+</tr>
+<tr class="odd">
+<td>Listing</td>
+<td>年度表的首次上市日期为候选口径，与 CG_Co 的上市日期逐项比较；冲突标识不能视为已裁定</td>
+</tr>
+<tr class="even">
+<td>Master</td>
+<td>年度来源键先 outer 合并；候选视图再限制研究年、可确认 A 股身份及已知上市期间；完整并集保留</td>
+</tr>
+<tr class="odd">
+<td>Financial industry</td>
+<td>根据年度行业 J 前缀标识，不删除；行业标准 2023 年发生变化</td>
+</tr>
+<tr class="even">
+<td>ST/PT</td>
+<td>保留源状态及标识，不删除；源定义为已出年报最新状态，完整历史状态尚未核验</td>
+</tr>
+<tr class="odd">
+<td>Missing / winsor</td>
+<td>不填补，不缩尾；零分母比率缺失，负分母原样保留并诊断</td>
+</tr>
+<tr class="even">
+<td>Statement type</td>
+<td>A 合并报表与 B 母公司报表分别并入；主案例比较合并报表口径，母公司列保留</td>
+</tr>
+<tr class="odd">
+<td>Announcement</td>
+<td>使用 Actudt；Firforecdt 只作预约披露日期，不替代缺失 Actudt</td>
+</tr>
+<tr class="even">
+<td>Export</td>
+<td>环境变量 FINECO_CSMAR_ROOT；记录级输出进入根目录下 financial-data-v2/runs/</td>
+</tr>
+<tr class="odd">
+<td>Public status</td>
+<td>Notebook 汇总输出可审核；最终公司年度 master 尚未验收，不宣称可直接做论文</td>
+</tr>
+</tbody>
+</table>
+<p>这里的上市期间判定是可复现候选规则。上市日期冲突、退市覆盖不足及证券代码迁移均会影响最终总体，不能被候选视图的程序名掩盖。</p>
+</section>
+<section id="task-rules可复制给-agent-的五个任务" class="level4" data-number="5.1.4.3">
+<h4 data-number="5.1.4.3" class="anchored" data-anchor-id="task-rules可复制给-agent-的五个任务"><span class="header-section-number">5.1.4.3</span> 3. Task Rules：可复制给 Agent 的五个任务</h4>
+<section id="检查资产负债表的键" class="level5" data-number="5.1.4.3.1">
+<h5 data-number="5.1.4.3.1" class="anchored" data-anchor-id="检查资产负债表的键"><span class="header-section-number">5.1.4.3.1</span> 3.1 检查资产负债表的键</h5>
+<p>本任务解决“一行究竟代表什么”。</p>
+<ul>
+<li>Input：原始 FS_Combas CSV、同包 TXT。</li>
+<li>Goal：验证 Stkcd + Accper + Typrep，比较 Stkcd + 年度的重复情况。</li>
+<li>Allowed actions：读取、统计、保存受限重复组，形成汇总报告。</li>
+<li>Forbidden actions：删除重复、取第一条、选择 A/B、改变日期。</li>
+<li>Required checks：键缺失、重复、日期后缀、A/B 频数、原始行数。</li>
+<li>Expected outputs：schema.json、候选键结论、报告期分布。</li>
+<li>Human review conditions：字段无定义、完整键不唯一或日期无法解释。</li>
+</ul>
+</section>
+<section id="标准化资产负债表" class="level5" data-number="5.1.4.3.2">
+<h5 data-number="5.1.4.3.2" class="anchored" data-anchor-id="标准化资产负债表"><span class="header-section-number">5.1.4.3.2</span> 3.2 标准化资产负债表</h5>
+<p>本任务解决字段类型和名称的一致性。</p>
+<ul>
+<li>Input：通过来源检查的 CSV 和字段映射。</li>
+<li>Goal：生成可复用 Parquet，保留每条记录。</li>
+<li>Allowed actions：改名、转换已验证类型、解析日期、记录解析失败。</li>
+<li>Forbidden actions：样本筛选、缺失填补、单位猜测、缩尾。</li>
+<li>Required checks：行数相同、六位证券代码不丢前导零、原始文件哈希不变。</li>
+<li>Expected outputs：interim/balance.parquet、字段类型与缺失率表。</li>
+<li>Human review conditions：非数字金额、无效日期、单位冲突或原始文件改变。</li>
+</ul>
+</section>
+<section id="合并年末财务报表" class="level5" data-number="5.1.4.3.3">
+<h5 data-number="5.1.4.3.3" class="anchored" data-anchor-id="合并年末财务报表"><span class="header-section-number">5.1.4.3.3</span> 3.3 合并年末财务报表</h5>
+<p>本任务解决多表覆盖不一致及口径混入。</p>
+<ul>
+<li>Input：年度视图 balance、income、cashflow。</li>
+<li>Goal：A/B 分列合并，保留两侧未匹配记录。</li>
+<li>Allowed actions：按已确认年末规则取视图、验证键、outer merge、添加来源标记。</li>
+<li>Forbidden actions：inner merge 丢行、按公司名匹配、将 B 填进缺失 A。</li>
+<li>Required checks：每侧键唯一；N_after = matched + master_only + using_only；年度和群体未匹配分布。</li>
+<li>Expected outputs：候选底表、merge.csv、merge_by_year.csv。</li>
+<li>Human review conditions：键不唯一、样本异常膨胀、异常群体集中。</li>
+</ul>
+</section>
+<section id="构造-leverage-并比较盈利能力口径" class="level5" data-number="5.1.4.3.4">
+<h5 data-number="5.1.4.3.4" class="anchored" data-anchor-id="构造-leverage-并比较盈利能力口径"><span class="header-section-number">5.1.4.3.4</span> 3.4 构造 Leverage 并比较盈利能力口径</h5>
+<p>本任务解决比率可以计算但定义不透明的问题。</p>
+<ul>
+<li>Input：保留分子分母及 A/B 区分的年度候选表。</li>
+<li>Goal：Leverage；ROA、ROE 期末/平均口径和归母口径候选。</li>
+<li>Allowed actions：按公式计算，零分母返回缺失，保留负权益，精确匹配 t−1。</li>
+<li>Forbidden actions：删除 Leverage &gt; 1、替换极端 ROE、宣布一个口径为唯一正确。</li>
+<li>Required checks：币种/单位、相邻年度、零与近零分母、缺失率、共同样本比较、反算。</li>
+<li>Expected outputs：分子分母、distribution.csv、ratio_common_sample.csv、ratio_correlations.csv。</li>
+<li>Human review conditions：跨表单位不明、公司身份冲突、拟采用某一口径进入正式研究。</li>
+</ul>
+</section>
+<section id="生成-data-audit" class="level5" data-number="5.1.4.3.5">
+<h5 data-number="5.1.4.3.5" class="anchored" data-anchor-id="生成-data-audit"><span class="header-section-number">5.1.4.3.5</span> 3.5 生成 Data Audit</h5>
+<p>本任务解决“怎样核实 Agent 没有把错误藏在处理过程里”。</p>
+<ul>
+<li>Input：冻结的原始指纹、代码、候选表与各步日志。</li>
+<li>Goal：形成可交给另一位研究者检查的证据包。</li>
+<li>Allowed actions：只读诊断、汇总、在受限目录保存异常行。</li>
+<li>Forbidden actions：边审计边自动修复、向公共 Notebook 输出真实公司记录。</li>
+<li>Required checks：结构、样本流、合并、缺失、分布、会计、时间、身份映射及公开范围。</li>
+<li>Expected outputs：AUDIT_REPORT.md、机器可读汇总、HUMAN REVIEW REQUIRED 清单。</li>
+<li>Human review conditions：任一关键数据定义未确认、审计失败、输入版本发生变化。</li>
+</ul>
+</section>
+</section>
+<section id="audit-rules-与冻结条件" class="level4" data-number="5.1.4.4">
+<h4 data-number="5.1.4.4" class="anchored" data-anchor-id="audit-rules-与冻结条件"><span class="header-section-number">5.1.4.4</span> 4. Audit Rules 与冻结条件</h4>
+<p>每次交付必须列输入、原始/输出行数、两个层级的主键检查、删除或未纳入理由、缺失率、合并分类、关键分布、会计与时间检查及人工待办。</p>
+<p>执行验证通过不自动触发最终冻结：当前允许冻结“本次候选结果与审计证据”，不允许标记“完整 A 股公司年度研究库已验收”。人工裁定后应另起运行版本，不覆盖本轮证据。</p>
+</section>
+</section>
+</section>
+<section id="sec-financial-data-csmar" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="sec-financial-data-csmar"><span class="header-section-number">5.2</span> 主案例：建立中国上市公司年度基础数据库</h2>
+<p>这一节把前面的判断落实到真实文件。目标研究期为 2015–2025 年，财务数据向前保留 2014 年，供平均资产或平均权益口径计算期初值。基础库阶段保留金融行业、ST/PT 和退市公司，不提前实施某篇论文的样本删除。</p>
+<section id="原始文件里实际有什么" class="level3" data-number="5.2.1">
+<h3 data-number="5.2.1" class="anchored" data-anchor-id="原始文件里实际有什么"><span class="header-section-number">5.2.1</span> 原始文件里实际有什么</h3>
+<p>先核对文件，再谈能构造什么。本批数据有 10 个 ZIP，覆盖年度基本信息、静态公司信息、三张财务报表、股东、治理、股权性质、年回报率和披露日期；另有基本信息数据库说明书。股东 ZIP 含两个 CSV，属于同一张表的分片，须追加后一起检查。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 40%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>数据表</th>
+<th style="text-align: right;">本批原始行数</th>
+<th>关键发现</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>年度基本信息</td>
+<td style="text-align: right;">50,706</td>
+<td>有公司 ID、证券 ID、年度行业；状态定义仍需谨慎</td>
+</tr>
+<tr class="even">
+<td>静态公司基本情况</td>
+<td style="text-align: right;">3,194</td>
+<td>含上市和退市日期，但证券覆盖少于其他表</td>
+</tr>
+<tr class="odd">
+<td>资产负债表</td>
+<td style="text-align: right;">451,054</td>
+<td>同时含 A/B、季度末、年末和 1 月 1 日记录</td>
+</tr>
+<tr class="even">
+<td>利润表</td>
+<td style="text-align: right;">451,037</td>
+<td>研发费用字段自 2018 年起使用</td>
+</tr>
+<tr class="odd">
+<td>现金流量表</td>
+<td style="text-align: right;">451,022</td>
+<td>与其他财务表不能假定覆盖完全相同</td>
+</tr>
+<tr class="even">
+<td>十大股东，两片合计</td>
+<td style="text-align: right;">1,870,326</td>
+<td>主键需要股东排名；不能直接当公司年度表</td>
+</tr>
+<tr class="odd">
+<td>股权性质</td>
+<td style="text-align: right;">49,848</td>
+<td>含 Top1 对照字段及复合性质编码</td>
+</tr>
+<tr class="even">
+<td>治理综合信息</td>
+<td style="text-align: right;">49,848</td>
+<td>本次导出不含现成 Top1</td>
+</tr>
+<tr class="odd">
+<td>年个股回报率</td>
+<td style="text-align: right;">49,555</td>
+<td>市场类型可提供 A 股身份证据；市值单位为千</td>
+</tr>
+<tr class="even">
+<td>披露日期</td>
+<td style="text-align: right;">197,324</td>
+<td>文件名虽写预披露，字段实际包含 Actudt</td>
+</tr>
+</tbody>
+</table>
+<p>数字来自本次读取，见<a href="../../data/financial-data/SOURCE_MANIFEST.md">来源清单</a>和<a href="../../data/financial-data/audit/schema.json">机器可读结构审计</a>。文件内日期跨度并不完全相同，财务表和披露表还含 2026 年季报；年度视图另按 2014–2025 年末规则生成。</p>
+</section>
+<section id="标准化之后再取年度视图" class="level3" data-number="5.2.2">
+<h3 data-number="5.2.2" class="anchored" data-anchor-id="标准化之后再取年度视图"><span class="header-section-number">5.2.2</span> 标准化之后再取年度视图</h3>
+<p>这一小节解释哪些操作只是技术整理，哪些操作已经改变数据范围。标准化阶段保留全部行，只进行字段映射和类型处理。年度视图才保留 12 月 31 日，A/B 分开并入。A 表示合并报表，B 表示母公司报表；归母净利润则是合并报表内部的利润归属概念，与母公司单体报表不同。</p>
+<p>每一步留下样本流。季度记录没有被当成错误删除；它们仍保存在 interim，只是不属于这一年度视图。1 月 1 日记录也不被直接冒充当年年末。若研究季度动态或期初调整，要另行建立规则。</p>
+<p>主表采用各年度来源键的并集，记录每张表是否提供对应观测。这能显露覆盖差异。比如缺少现金流记录的公司不因为一次 inner merge 就消失。不同年份、上市状态和行业中的未匹配情况，需要进一步解释。</p>
+</section>
+<section id="候选底表与真正的公司年度主表" class="level3" data-number="5.2.3">
+<h3 data-number="5.2.3" class="anchored" data-anchor-id="候选底表与真正的公司年度主表"><span class="header-section-number">5.2.3</span> 候选底表与真正的公司年度主表</h3>
+<p>这一小节处理本次最关键的身份问题。研究期年度并集有 49,078 行；候选上市期间视图有 47,019 行，对应 5,708 个证券代码和 5,702 个公司 ID。它使用市场表确认曾观测到的 A 股身份，并按可用上市日期排除已知上市前记录；未纳入的 2,059 行仍保存在候选层。</p>
+<p>这些行数不能直接称为完整 A 股公司总体。静态公司信息覆盖不足，上市日期在两个来源间存在差异；当前未发现已知退市后记录，不等于所有未知退市均已排除。</p>
+<p>更直接的检查是：证券代码—年份键没有重复，公司 ID—年份却出现 26 个重复组，共 52 行。部分组财务数值也不同。可能需要证券代码变更或转板历史来解释，不能按代码大小、记录顺序或收益率是否缺失选一条。这里保留全部证据，等待人工核对。</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="本轮底表的状态">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+本轮底表的状态
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>本轮已完成标准化、候选年度表与真实审计。<strong>最终公司年度 master 尚未验收。</strong> 身份映射、上市日期、完整退市覆盖和历史状态等问题见 <a href="../../data/financial-data/DATA_GAPS.md">DATA_GAPS.md</a>。程序文件名中的 <code>master</code> 不代表这些问题已解决。</p>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-csmar-00" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-csmar-00">00. Setup：把数据和代码的位置分开</h2>
+<p>将环境变量 <code>FINECO_CSMAR_ROOT</code> 设置为含 <code>raw-zip/</code> 的授权目录，随后重启内核。请阅读 <code>data/financial-data/README.md</code>。本实验不会访问实时 API，不需要账号或密钥。</p>
+<p>下面从当前工作目录向上寻找课程根目录，保持路径可迁移。依赖已有环境中的 pandas、numpy、pyarrow、nbformat、nbclient、ipykernel。</p>
+<section id="本阶段给-codex-的任务" class="level3" data-number="5.2.4">
+<h3 data-number="5.2.4" class="anchored" data-anchor-id="本阶段给-codex-的任务"><span class="header-section-number">5.2.4</span> 本阶段给 Codex 的任务</h3>
+<p>以下为教学任务模板。先核对路径和本项目规则，再复制使用；后续代码和输出展示本案例的实现。</p>
+<pre class="text"><code>请先读取本项目 AGENTS.md、PROJECT_PLAN.md、DATA_PROTOCOL.md
+和 DECISIONS.md。目标是从获授权的 CSMAR ZIP 构造年度候选库。
+研究期 2015–2025，2014 年用于相邻期分母支持；目标粒度为公司年度。
+先检查输入路径、数据权限、现有成果和可修改范围，列出阶段计划。
+不要取数、安装系统软件、读取凭据、覆盖原始文件或推送 Git。
+把未确认规则列出来；不要把我的目标理解成允许自行删样本和填补。
+交付：输入可用性、文件所有权、执行顺序、每阶段验收与阻塞项。</code></pre>
+<div id="7fb87698" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-16T01:42:09.044672Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-16T01:42:09.044672Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-16T01:42:09.805798Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-16T01:42:09.804801Z&quot;}" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys, json, hashlib</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datetime <span class="im">import</span> datetime</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 可从仓库根目录或 Notebook 所在目录启动。</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>PROJECT <span class="op">=</span> <span class="bu">next</span>((p <span class="cf">for</span> p <span class="kw">in</span> [Path.cwd(), <span class="op">*</span>Path.cwd().parents]</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> (p <span class="op">/</span> <span class="st">"tools/financial-data/pipeline.py"</span>).is_file()), <span class="va">None</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> PROJECT <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">FileNotFoundError</span>(<span class="st">"请在 FinEco 仓库内部运行 Notebook。"</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>sys.path.insert(<span class="dv">0</span>, <span class="bu">str</span>(PROJECT <span class="op">/</span> <span class="st">"tools/financial-data"</span>))</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pipeline <span class="im">import</span> (data_root, source_inventory, standardize, annual_views,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>                      build_master, construct_variables, audit_master,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>                      require_key, dump_json)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>ROOT <span class="op">=</span> data_root()</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>RUN <span class="op">=</span> ROOT <span class="op">/</span> <span class="st">"financial-data-v2/runs"</span> <span class="op">/</span> datetime.now().strftime(<span class="st">"%Y%m</span><span class="sc">%d</span><span class="st">-%H%M%S-</span><span class="sc">%f</span><span class="st">"</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> folder <span class="kw">in</span> [<span class="st">"interim"</span>, <span class="st">"processed"</span>, <span class="st">"audit"</span>]:</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    (RUN <span class="op">/</span> folder).mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"输入目录已验证；每轮执行使用独立运行目录。"</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"pandas:"</span>, pd.__version__)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>输入目录已验证；每轮执行使用独立运行目录。
+pandas: 2.3.3</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-csmar-01" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-csmar-01">01. Source inventory：先确认拿到的是哪一批数据</h2>
+<p>文件名相同不保证内容相同。SHA256 是文件内容的指纹；manifest 记录来源 ZIP、成员和大小。学生复跑时应比较指纹，不把不同批次输出直接对比。</p>
+<section id="本阶段给-codex-的任务-1" class="level3" data-number="5.2.5">
+<h3 data-number="5.2.5" class="anchored" data-anchor-id="本阶段给-codex-的任务-1"><span class="header-section-number">5.2.5</span> 本阶段给 Codex 的任务</h3>
+<p>以下为教学任务模板。先核对路径和本项目规则，再复制使用；后续代码和输出展示本案例的实现。</p>
+<pre class="text"><code>读取已确认输入根的 raw-zip，仅在指定派生目录解压。
+记录每个 ZIP 的原名、大小、SHA256、成员、编码和字段说明文件。
+逐表阅读说明，报告行列数、实际字段、时间范围、覆盖与候选键。
+多份 CSV 分片必须全部列入；追加后重新验证完整键。
+不根据字段代码猜含义，不按文件名推断实际公告字段一定不存在。
+禁止筛样本和输出受限记录到公开 Notebook。
+交付：Source Manifest、schema、字段定义缺口和读取失败明细。
+字段无说明、压缩包损坏或键含义不明时标记 HUMAN REVIEW REQUIRED。</code></pre>
+<div id="47ba1d7e" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-16T01:42:09.808799Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-16T01:42:09.808799Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-16T01:42:10.128214Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-16T01:42:10.127202Z&quot;}" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>manifest <span class="op">=</span> source_inventory(ROOT)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>dump_json(manifest, RUN <span class="op">/</span> <span class="st">"audit/source_manifest.json"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame(manifest)[[<span class="st">"file"</span>, <span class="st">"size_bytes"</span>, <span class="st">"sha256"</span>]])</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">file</th>
+<th data-quarto-table-cell-role="th">size_bytes</th>
+<th data-quarto-table-cell-role="th">sha256</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>上市公司基本信息年度表213006778(仅供中山大学使用).zip</td>
+<td>660006</td>
+<td>094173795a366b0548a426f3e78f980cc52eaf62f479e4...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>中国上市公司股权性质文件062310522(仅供中山大学使用).zip</td>
+<td>1128717</td>
+<td>6112976d4bceb5ded729d75b521c4e687aceb3d164360d...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>公司基本情况文件060008376退市时间(仅供中山大学使用).zip</td>
+<td>288082</td>
+<td>b2809505382d1b7a197c76420875a5d9e29df709edcb04...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>利润表054017684(仅供中山大学使用).zip</td>
+<td>24323883</td>
+<td>746c5b63ba4728862aa478f7e54b468048c2fcde1ce48a...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>十大股东文件061816460(仅供中山大学使用).zip</td>
+<td>21048413</td>
+<td>490e59e9d04dfe24535108256398c3e2b593f3853a60cc...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>年、中、季报预披露日期表055639123(仅供中山大学使用).zip</td>
+<td>1266782</td>
+<td>8ce167be0c2f1578ee5a1358e7864881c7ccf79717c5df...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>年个股回报率文件062802527(仅供中山大学使用).zip</td>
+<td>1286420</td>
+<td>33c9f111dce1426116ecfac7a50d7ba5886ce62c07cc19...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>治理综合信息文件060913632(仅供中山大学使用).zip</td>
+<td>622431</td>
+<td>5f4c1f8b44fc082ea84972a7de957c72061007d21a5b3a...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>现金流量表(直接法)055248189(仅供中山大学使用).zip</td>
+<td>14337912</td>
+<td>55cdb111b2643ef24bf0f8cc8954d6d5a4bacff781f833...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>资产负债表052534564(仅供中山大学使用).zip</td>
+<td>38880080</td>
+<td>c85797b0ec8ef2706caf1cc6e581e7137bf4740857fc2d...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-csmar-02" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-csmar-02">02. Schema audit：先读字段说明，再认识一行记录</h2>
+<p><code>standardize</code> 读取 ZIP 内 TXT，并对每个 CSV 字段确认说明存在。股东数据的两个分片都必须读取。日期转换失败会计数；原文保留在受限解压目录。标准化层不筛样本。</p>
+<p>这里同时执行标准化，以避免为课堂展示重复读入约数百万条记录；下一节单独检查转换规则。</p>
+<div id="bf42ceb3" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-16T01:42:10.130213Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-16T01:42:10.130213Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-16T01:42:53.748583Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-16T01:42:53.747571Z&quot;}" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>tables, schemas, fields <span class="op">=</span> standardize(ROOT, RUN)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>dump_json(schemas, RUN <span class="op">/</span> <span class="st">"audit/schema.json"</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>dump_json(fields, RUN <span class="op">/</span> <span class="st">"audit/field_dictionary.json"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>schema_table <span class="op">=</span> pd.DataFrame(schemas)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>display(schema_table[[<span class="st">"table"</span>, <span class="st">"rows"</span>, <span class="st">"columns"</span>, <span class="st">"company_coverage"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"candidate_keys"</span>, <span class="st">"duplicate_key_rows"</span>]])</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">table</th>
+<th data-quarto-table-cell-role="th">rows</th>
+<th data-quarto-table-cell-role="th">columns</th>
+<th data-quarto-table-cell-role="th">company_coverage</th>
+<th data-quarto-table-cell-role="th">candidate_keys</th>
+<th data-quarto-table-cell-role="th">duplicate_key_rows</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>annual_info</td>
+<td>50706</td>
+<td>14</td>
+<td>5741</td>
+<td>[Symbol, EndDate]</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>ownership</td>
+<td>49848</td>
+<td>12</td>
+<td>5741</td>
+<td>[Symbol, EndDate]</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>company</td>
+<td>3194</td>
+<td>6</td>
+<td>3194</td>
+<td>[Stkcd]</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>income</td>
+<td>451037</td>
+<td>15</td>
+<td>5802</td>
+<td>[Stkcd, Accper, Typrep]</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>shareholders</td>
+<td>1870326</td>
+<td>7</td>
+<td>5741</td>
+<td>[Stkcd, Reptdt, S0501b]</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>disclosure</td>
+<td>197324</td>
+<td>5</td>
+<td>5803</td>
+<td>[Stkcd, Accper]</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>market</td>
+<td>49555</td>
+<td>7</td>
+<td>5711</td>
+<td>[Stkcd, Trdynt]</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>governance</td>
+<td>49848</td>
+<td>7</td>
+<td>5741</td>
+<td>[Stkcd, Reptdt]</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>cashflow</td>
+<td>451022</td>
+<td>9</td>
+<td>5802</td>
+<td>[Stkcd, Accper, Typrep]</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>balance</td>
+<td>451054</td>
+<td>22</td>
+<td>5802</td>
+<td>[Stkcd, Accper, Typrep]</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>读表时比较 <code>candidate_keys</code>，而不只看“重复数是 0”。财务表需要证券代码、报表日和报表类型；股东表还需要排名。较细粒度的键唯一，不意味着公司年度键唯一。</p>
+</section>
+<section id="sec-csmar-03" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-csmar-03">03. Standardization：字段名变了，经济含义不能变</h2>
+<p>证券代码保留字符串，避免丢失前导零；财务金额保留原始数值单位。市值字段说明明确使用“千”，年度层才转换为元。股东比例原值是百分数，<code>top1</code> 才转为 0–1 比例。</p>
+<p>本批财务 TXT 没有明确标出各金额的币种与单位，跨表 ROA/ROE 暂为条件性候选；应补核财务数据库说明或导出设置。原始空白值不会填成零。</p>
+<section id="本阶段给-codex-的任务-2" class="level3" data-number="5.2.6">
+<h3 data-number="5.2.6" class="anchored" data-anchor-id="本阶段给-codex-的任务-2"><span class="header-section-number">5.2.6</span> 本阶段给 Codex 的任务</h3>
+<p>以下为教学任务模板。先核对路径和本项目规则，再复制使用；后续代码和输出展示本案例的实现。</p>
+<pre class="text"><code>按已核验映射统一字段名和类型，代码保留字符串，解析日期。
+单位有明确依据才换算，保留转换规则与原始值来源。
+interim 保留全部行，报告类型/日期转换失败及前后行数。
+再单独建立 2014–2025 年 12 月 31 日年度视图，A/B 口径分别保留。
+不是年末的记录仍留在 interim。不要自动填缺失、缩尾或删公司。
+交付：Parquet、字段映射、键检查、样本流与转换失败汇总。
+若年度键重复，先解释报表、版本与粒度，不运行任意去重。</code></pre>
+<div id="b5c95c3b" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-16T01:42:53.751580Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-16T01:42:53.750582Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-16T01:42:53.996478Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-16T01:42:53.995469Z&quot;}" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 展示字段类型和缺失率，不展示任何公司记录。</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>balance <span class="op">=</span> tables[<span class="st">"balance"</span>]</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame({<span class="st">"dtype"</span>: balance.dtypes.astype(<span class="bu">str</span>),</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"missing_rate"</span>: balance.isna().mean()}).loc[</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"stock_code"</span>, <span class="st">"report_date"</span>, <span class="st">"Typrep"</span>, <span class="st">"total_assets"</span>, <span class="st">"total_equity"</span>]])</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">len</span>(balance) <span class="op">==</span> <span class="bu">next</span>(s[<span class="st">"rows"</span>] <span class="cf">for</span> s <span class="kw">in</span> schemas <span class="cf">if</span> s[<span class="st">"table"</span>] <span class="op">==</span> <span class="st">"balance"</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">dtype</th>
+<th data-quarto-table-cell-role="th">missing_rate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">stock_code</td>
+<td>string</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">report_date</td>
+<td>datetime64[ns]</td>
+<td>0.000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Typrep</td>
+<td>string</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">total_assets</td>
+<td>float64</td>
+<td>0.000011</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">total_equity</td>
+<td>float64</td>
+<td>0.000004</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-csmar-04" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-csmar-04">04. Merge planning：年度筛选和删除重复是不同操作</h2>
+<p>财务数据包含季度末、年末、1 月 1 日和 A/B 报表。年度视图保留 2014–2025 年 12 月 31 日，A/B 继续分别保存。其他行仍在 interim，未被销毁。</p>
+<p>下面的样本流描述“原表到年度视图”的行数变化，并非论文研究样本排除。</p>
+<div id="c7e09abd" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-16T01:42:53.999481Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-16T01:42:53.998480Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-16T01:42:55.126778Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-16T01:42:55.125767Z&quot;}" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>views, flow <span class="op">=</span> annual_views(tables)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame(flow))</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 验证同一日下合并报表与母公司报表是两种口径。</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>display(views[<span class="st">"balance"</span>].groupby(<span class="st">"Typrep"</span>).agg(</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    rows<span class="op">=</span>(<span class="st">"stock_code"</span>, <span class="st">"size"</span>), securities<span class="op">=</span>(<span class="st">"stock_code"</span>, <span class="st">"nunique"</span>)))</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">step</th>
+<th data-quarto-table-cell-role="th">N_before</th>
+<th data-quarto-table-cell-role="th">Removed</th>
+<th data-quarto-table-cell-role="th">N_after</th>
+<th data-quarto-table-cell-role="th">Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>annual_info:年度视图</td>
+<td>50706</td>
+<td>0</td>
+<td>50706</td>
+<td>保留 2014–2025 年末；其余行仍保存在 interim</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>ownership:年度视图</td>
+<td>49848</td>
+<td>0</td>
+<td>49848</td>
+<td>保留 2014–2025 年末；其余行仍保存在 interim</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>income:年度视图</td>
+<td>451037</td>
+<td>349071</td>
+<td>101966</td>
+<td>保留 2014–2025 年末；其余行仍保存在 interim</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>shareholders:年度视图</td>
+<td>1870326</td>
+<td>1369161</td>
+<td>501165</td>
+<td>保留 2014–2025 年末；其余行仍保存在 interim</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>disclosure:年度视图</td>
+<td>197324</td>
+<td>147367</td>
+<td>49957</td>
+<td>保留 2014–2025 年末；其余行仍保存在 interim</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>market:年度视图</td>
+<td>49555</td>
+<td>0</td>
+<td>49555</td>
+<td>保留 2014–2025 年末；其余行仍保存在 interim</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>governance:年度视图</td>
+<td>49848</td>
+<td>0</td>
+<td>49848</td>
+<td>保留 2014–2025 年末；其余行仍保存在 interim</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>cashflow:年度视图</td>
+<td>451022</td>
+<td>349058</td>
+<td>101964</td>
+<td>保留 2014–2025 年末；其余行仍保存在 interim</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>balance:年度视图</td>
+<td>451054</td>
+<td>349086</td>
+<td>101968</td>
+<td>保留 2014–2025 年末；其余行仍保存在 interim</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rows</th>
+<th data-quarto-table-cell-role="th">securities</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Typrep</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">A</td>
+<td>51484</td>
+<td>5741</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">B</td>
+<td>50484</td>
+<td>5691</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="ed023a73" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-16T01:42:55.129777Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-16T01:42:55.129777Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-16T01:42:55.350573Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-16T01:42:55.349568Z&quot;}" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 与数据管理讲义对应：只连接年度 A 口径，B 仍保留在 views。</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>left <span class="op">=</span> views[<span class="st">"balance"</span>].query(<span class="st">"Typrep == 'A'"</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>right <span class="op">=</span> views[<span class="st">"income"</span>].query(<span class="st">"Typrep == 'A'"</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>keys <span class="op">=</span> [<span class="st">"stock_code"</span>, <span class="st">"fiscal_year"</span>]</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>require_key(left, keys, <span class="st">"资产负债表 A"</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>require_key(right, keys, <span class="st">"利润表 A"</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>merged <span class="op">=</span> left.merge(right, on<span class="op">=</span>keys, how<span class="op">=</span><span class="st">"outer"</span>, validate<span class="op">=</span><span class="st">"one_to_one"</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>                    indicator<span class="op">=</span><span class="va">True</span>, suffixes<span class="op">=</span>(<span class="st">"_balance"</span>, <span class="st">"_income"</span>))</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>display(merged[<span class="st">"_merge"</span>].value_counts().rename(<span class="st">"N"</span>).to_frame())</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> merged.duplicated(keys).<span class="bu">any</span>()</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">N</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">_merge</th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">both</td>
+<td>51484</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">left_only</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">right_only</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<section id="小型合并实验同样能运行行数却不同" class="level3" data-number="5.2.7">
+<h3 data-number="5.2.7" class="anchored" data-anchor-id="小型合并实验同样能运行行数却不同"><span class="header-section-number">5.2.7</span> 小型合并实验：同样能运行，行数却不同</h3>
+<p>以下为明确虚构的教学数据。一家公司一年的资产不能通过只按公司连接而变成两条独立年度观测。先把日度量聚合为研究所需的年度量，才有共同粒度。这里示范年均换手率，不把日收益的算术均值误称年度持有收益率。</p>
+<div id="0af7bef5" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-16T01:42:55.353573Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-16T01:42:55.352574Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-16T01:42:55.372888Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-16T01:42:55.371881Z&quot;}" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 改编自《数据分析与经济决策》课程 data_manage，全部为教学数值。</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>annual_demo <span class="op">=</span> pd.DataFrame({<span class="st">"firm"</span>: [<span class="st">"A"</span>, <span class="st">"B"</span>], <span class="st">"year"</span>: [<span class="dv">2020</span>, <span class="dv">2020</span>], <span class="st">"assets"</span>: [<span class="dv">100</span>, <span class="dv">200</span>]})</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>daily_demo <span class="op">=</span> pd.DataFrame({<span class="st">"firm"</span>: [<span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>], <span class="st">"year"</span>: [<span class="dv">2020</span>]<span class="op">*</span><span class="dv">3</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"turnover"</span>: [<span class="fl">1.</span>, <span class="fl">3.</span>, <span class="fl">2.</span>]})</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>wrong <span class="op">=</span> annual_demo.merge(daily_demo, on<span class="op">=</span>[<span class="st">"firm"</span>, <span class="st">"year"</span>])</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>aggregated <span class="op">=</span> daily_demo.groupby([<span class="st">"firm"</span>, <span class="st">"year"</span>], as_index<span class="op">=</span><span class="va">False</span>).turnover.mean()</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>correct <span class="op">=</span> annual_demo.merge(aggregated, on<span class="op">=</span>[<span class="st">"firm"</span>, <span class="st">"year"</span>], validate<span class="op">=</span><span class="st">"one_to_one"</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>({<span class="st">"原年度行数"</span>: <span class="bu">len</span>(annual_demo), <span class="st">"直接合并行数"</span>: <span class="bu">len</span>(wrong), <span class="st">"聚合后行数"</span>: <span class="bu">len</span>(correct)})</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>display(correct)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">len</span>(correct) <span class="op">==</span> <span class="dv">2</span> <span class="kw">and</span> <span class="bu">len</span>(wrong) <span class="op">==</span> <span class="dv">3</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'原年度行数': 2, '直接合并行数': 3, '聚合后行数': 2}</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">firm</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">assets</th>
+<th data-quarto-table-cell-role="th">turnover</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>A</td>
+<td>2020</td>
+<td>100</td>
+<td>2.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>B</td>
+<td>2020</td>
+<td>200</td>
+<td>2.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-csmar-05" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-csmar-05">05. Firm-year master：先保留覆盖差异，再核查公司身份</h2>
+<p>流水线使用年度表键的并集，防止选某一张财务表作为母表时静默丢失其他表的公司。A/B 财务列分开，所有合并使用 <code>validate="one_to_one"</code>。</p>
+<p>合并成功仅证明证券代码—年度键没有膨胀。公司 ID 可能对应不同证券代码，还必须另外审计。存在冲突时不自行选代码、相加或取均值。</p>
+<section id="本阶段给-codex-的任务-3" class="level3" data-number="5.2.8">
+<h3 data-number="5.2.8" class="anchored" data-anchor-id="本阶段给-codex-的任务-3"><span class="header-section-number">5.2.8</span> 本阶段给 Codex 的任务</h3>
+<p>以下为教学任务模板。先核对路径和本项目规则，再复制使用；后续代码和输出展示本案例的实现。</p>
+<pre class="text"><code>先说明两侧表粒度、键和目标底表粒度，检查空键与重复键。
+采用能保留覆盖差异的连接，并为每次合并设置预期连接关系。
+A/B 财务列分开，不用一类填补另一类；记录 matched、仅左、仅右，
+以及 N_before、N_after 和分年匹配表。未匹配不自动删除。
+分别检查证券年度键和公司年度键。遇到一公司多证券，保留全部
+候选并生成本地冲突表；不能按代码大小、收益是否缺失来选一条。
+交付候选底表、merge audit、身份冲突与总体覆盖限制。
+未解决公司身份时，不能宣称已得到唯一公司年度 master。</code></pre>
+<div id="218b6062" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-16T01:42:55.374889Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-16T01:42:55.374889Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-16T01:42:57.561860Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-16T01:42:57.559849Z&quot;}" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>base, merge_audit, merge_by_year <span class="op">=</span> build_master(views)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame(merge_audit))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>require_key(base, [<span class="st">"stock_code"</span>, <span class="st">"fiscal_year"</span>], <span class="st">"年度候选底表"</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"公司年度冲突行数 (含 2014 支持层):"</span>, <span class="bu">int</span>(base.firm_year_conflict.<span class="bu">sum</span>()))</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">table</th>
+<th data-quarto-table-cell-role="th">N_before</th>
+<th data-quarto-table-cell-role="th">N_after</th>
+<th data-quarto-table-cell-role="th">matched</th>
+<th data-quarto-table-cell-role="th">master_only</th>
+<th data-quarto-table-cell-role="th">using_only</th>
+<th data-quarto-table-cell-role="th">duplicates</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>balance_A</td>
+<td>50706</td>
+<td>51485</td>
+<td>50705</td>
+<td>1</td>
+<td>779</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>balance_B</td>
+<td>51485</td>
+<td>51485</td>
+<td>50484</td>
+<td>1001</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>income_A</td>
+<td>51485</td>
+<td>51485</td>
+<td>51484</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>income_B</td>
+<td>51485</td>
+<td>51485</td>
+<td>50482</td>
+<td>1003</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>cashflow_A</td>
+<td>51485</td>
+<td>51485</td>
+<td>51483</td>
+<td>2</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>cashflow_B</td>
+<td>51485</td>
+<td>51485</td>
+<td>50481</td>
+<td>1004</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>market</td>
+<td>51485</td>
+<td>51778</td>
+<td>49262</td>
+<td>2223</td>
+<td>293</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>ownership</td>
+<td>51778</td>
+<td>51778</td>
+<td>49848</td>
+<td>1930</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>governance</td>
+<td>51778</td>
+<td>51778</td>
+<td>49848</td>
+<td>1930</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>disclosure</td>
+<td>51778</td>
+<td>51778</td>
+<td>49957</td>
+<td>1821</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>top1</td>
+<td>51778</td>
+<td>51778</td>
+<td>49849</td>
+<td>1929</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>公司年度冲突行数 (含 2014 支持层): 90</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-csmar-06" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-csmar-06">06. Variable construction：每个比率都保留分子和分母</h2>
+<p>Leverage 使用合并报表的负债/资产。ROA 同时计算净利润/期末资产、净利润/平均资产，以及归母净利润的候选口径；ROE 区分总净利润/总权益和归母净利润/归母权益。负权益不删，零分母返回缺失。</p>
+<p>平均资产必须使用相邻年度。缺少 t−1 时不把更早一年当作上一年。2014 数据供 2015 分母使用。以下计算结果仍依赖跨表币种与单位确认。</p>
+<section id="本阶段给-codex-的任务-4" class="level3" data-number="5.2.9">
+<h3 data-number="5.2.9" class="anchored" data-anchor-id="本阶段给-codex-的任务-4"><span class="header-section-number">5.2.9</span> 本阶段给 Codex 的任务</h3>
+<p>以下为教学任务模板。先核对路径和本项目规则，再复制使用；后续代码和输出展示本案例的实现。</p>
+<pre class="text"><code>按 DATA_PROTOCOL 构造 Leverage 及期末/平均分母 ROA、ROE 候选。
+保留所有原始分子分母、币种/单位状态、报表类型与相邻年度匹配。
+2015 年平均分母只可取 2014 年，不得用更早可用年份补齐。
+零分母返回缺失并计数，负分母与极端比率保留供诊断。
+由股东排名 1 的源持股比例构造 Top1，与可比现成字段核验；
+没有总股本分母时不得声称从持股数独立重算。
+同时报告全样本覆盖和共同样本比较，不替教师选择最终定义。
+单位不明确时标明条件性候选，禁止将相关系数当成口径正确证据。</code></pre>
+<div id="3193d612" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-16T01:42:57.564857Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-16T01:42:57.563859Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-16T01:42:57.659945Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-16T01:42:57.658937Z&quot;}" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>base <span class="op">=</span> construct_variables(base)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>ratio_cols <span class="op">=</span> [c <span class="cf">for</span> c <span class="kw">in</span> base <span class="cf">if</span> c.startswith((<span class="st">"roa_"</span>, <span class="st">"roe_"</span>, <span class="st">"leverage_"</span>))]</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"候选比率："</span>, ratio_cols)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> base.duplicated([<span class="st">"stock_code"</span>, <span class="st">"fiscal_year"</span>]).<span class="bu">any</span>()</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>候选比率： ['leverage_consolidated', 'roa_eop_consolidated', 'roa_parent_income_eop_candidate', 'roa_avg_consolidated', 'roa_parent_income_avg_candidate', 'roe_eop_consolidated', 'roe_avg_consolidated', 'roe_parent_eop_consolidated', 'roe_parent_avg_consolidated']</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-csmar-07" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-csmar-07">07. Missing / duplicate / outlier：诊断之后才决定</h2>
+<p>研发费用字段从 2018 年起使用，早期缺失不能自动解读为没有研发。极端 ROE 可能来自接近零的权益，也可能来自分子异常；诊断阈值不是删除规则。源上市状态字段的定义不能支持完整历史 ST/PT 路径，因此标识保留 <code>_source</code> 后缀。</p>
+<p>下面只显示汇总，不输出公司名称、证券代码或真实单行数据。</p>
+<div id="6afef807" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-16T01:42:57.662949Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-16T01:42:57.662949Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-16T01:42:57.724211Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-16T01:42:57.723217Z&quot;}" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>research <span class="op">=</span> base[base.fiscal_year.between(<span class="dv">2015</span>, <span class="dv">2025</span>) <span class="op">&amp;</span> base.eligible_known]</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>display(research.groupby(<span class="st">"fiscal_year"</span>).rd_expense.agg(</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    N<span class="op">=</span><span class="st">"size"</span>, nonmissing<span class="op">=</span><span class="st">"count"</span>))</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"权益绝对值不足资产 1% 的行数:"</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>      <span class="bu">int</span>((research.total_equity.<span class="bu">abs</span>() <span class="op">/</span> research.total_assets.<span class="bu">abs</span>()).lt(<span class="fl">.01</span>).<span class="bu">sum</span>()))</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Leverage 大于 1 的行数:"</span>, <span class="bu">int</span>(research.leverage_consolidated.gt(<span class="dv">1</span>).<span class="bu">sum</span>()))</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">N</th>
+<th data-quarto-table-cell-role="th">nonmissing</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">fiscal_year</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2015</td>
+<td>2816</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2016</td>
+<td>3040</td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2017</td>
+<td>3475</td>
+<td>14</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2018</td>
+<td>3580</td>
+<td>3052</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2019</td>
+<td>3772</td>
+<td>3282</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2020</td>
+<td>4202</td>
+<td>3718</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021</td>
+<td>4709</td>
+<td>4246</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2022</td>
+<td>5110</td>
+<td>4662</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2023</td>
+<td>5381</td>
+<td>4955</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2024</td>
+<td>5434</td>
+<td>5028</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2025</td>
+<td>5500</td>
+<td>5122</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>权益绝对值不足资产 1% 的行数: 48
+Leverage 大于 1 的行数: 290</code></pre>
+</div>
+</div>
+</section>
+<section id="sec-csmar-08" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-csmar-08">08. Data Audit：让结果接受反向检查</h2>
+<p>会计检查使用 max(1 个原始单位, 资产绝对值×10⁻⁸) 作为诊断容差；不符合时保留记录供追查。日期审计检查实际披露是否早于报表日，但不能证明下载的是当时可得版本；财报更正历史仍需单独获取。</p>
+<p>报告中的 <code>master_rows</code> 是程序候选视图行数，程序文件名里的 master 不代表已经通过公司年度身份审核。</p>
+<section id="本阶段给-codex-的任务-5" class="level3" data-number="5.2.10">
+<h3 data-number="5.2.10" class="anchored" data-anchor-id="本阶段给-codex-的任务-5"><span class="header-section-number">5.2.10</span> 本阶段给 Codex 的任务</h3>
+<p>以下为教学任务模板。先核对路径和本项目规则，再复制使用；后续代码和输出展示本案例的实现。</p>
+<pre class="text"><code>审计当前候选库的结构、样本流、合并、缺失、分布、分母、
+会计关系和信息日期。关键变量报告 N、mean、sd、分位数与极值。
+按年和可识别群体比较未匹配，用组内样本量作分母。
+区分预约日和实际公告日，检查财报修订版本是否可识别。
+会计容差必须写清，超出容差只标识，不自动删行。
+仅公开不构成再分发的汇总；具体公司问题留在授权本地。
+交付审计报告、证据路径、影响及 HUMAN REVIEW REQUIRED 列表。
+每项结论区分已验证、条件性成立、缺资料和待教师决定。</code></pre>
+<div id="7dfb857d" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-16T01:42:57.727210Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-16T01:42:57.726209Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-16T01:43:00.438206Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-16T01:43:00.437195Z&quot;}" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>summary <span class="op">=</span> audit_master(base, schemas, merge_audit, merge_by_year, flow, RUN)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame([summary]).T.rename(columns<span class="op">=</span>{<span class="dv">0</span>: <span class="st">"value"</span>}))</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>display(pd.read_csv(RUN <span class="op">/</span> <span class="st">"audit/ratio_common_sample.csv"</span>))</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>display(pd.read_csv(RUN <span class="op">/</span> <span class="st">"audit/distribution.csv"</span>).<span class="bu">round</span>(<span class="dv">5</span>))</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">candidate_rows</td>
+<td>49078</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">master_rows</td>
+<td>47019</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">securities</td>
+<td>5708</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">firm_ids</td>
+<td>5702</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">missing_firm_id</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">firm_year_duplicate_rows</td>
+<td>52</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">unresolved_candidate_rows</td>
+<td>2059</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">pre_listing_rows</td>
+<td>2059</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">post_delisting_rows</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">a_share_identity_unconfirmed_rows</td>
+<td>32</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">listing_date_missing_rows</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">listing_date_conflicts</td>
+<td>409</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">financial_rows</td>
+<td>1140</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">st_source_rows</td>
+<td>1288</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">known_delisted_securities</td>
+<td>30</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">actual_announcement_missing</td>
+<td>314</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">actual_before_report_date</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">predisclosure_actual_differ</td>
+<td>9179</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">accounting_comparable</td>
+<td>46728</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">accounting_outside_tolerance</td>
+<td>24</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">accounting_tolerance</td>
+<td>max(1 original unit, abs(assets)*1e-8); diagno...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">leverage_gt_one</td>
+<td>290</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">equity_nonpositive</td>
+<td>290</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">equity_near_zero_relative</td>
+<td>48</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">extreme_roe_abs_gt_one</td>
+<td>922</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">near_zero_and_extreme_roe</td>
+<td>47</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">top1_comparable</td>
+<td>46664</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">top1_difference_gt_001pp</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">top1_outside_0_100</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">mixed_ownership_codes</td>
+<td>1174</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">duplicate_stock_year</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">financial_unit_status</td>
+<td>source units unchanged; currency/unit metadata...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">historical_state_status</td>
+<td>LISTINGSTATE definition says latest state for ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">population_status</td>
+<td>provisional observed-union; complete historica...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">family</th>
+<th data-quarto-table-cell-role="th">N_common</th>
+<th data-quarto-table-cell-role="th">mean_eop</th>
+<th data-quarto-table-cell-role="th">mean_avg</th>
+<th data-quarto-table-cell-role="th">median_eop</th>
+<th data-quarto-table-cell-role="th">median_avg</th>
+<th data-quarto-table-cell-role="th">correlation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>roa</td>
+<td>44383</td>
+<td>0.017447</td>
+<td>0.025873</td>
+<td>0.029702</td>
+<td>0.031178</td>
+<td>0.644684</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>roe</td>
+<td>44383</td>
+<td>0.023625</td>
+<td>0.026189</td>
+<td>0.057896</td>
+<td>0.060038</td>
+<td>0.003548</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">variable</th>
+<th data-quarto-table-cell-role="th">N</th>
+<th data-quarto-table-cell-role="th">mean</th>
+<th data-quarto-table-cell-role="th">sd</th>
+<th data-quarto-table-cell-role="th">min</th>
+<th data-quarto-table-cell-role="th">p1</th>
+<th data-quarto-table-cell-role="th">p25</th>
+<th data-quarto-table-cell-role="th">p50</th>
+<th data-quarto-table-cell-role="th">p75</th>
+<th data-quarto-table-cell-role="th">p99</th>
+<th data-quarto-table-cell-role="th">max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>leverage_consolidated</td>
+<td>46728.0</td>
+<td>4.343100e-01</td>
+<td>8.830700e-01</td>
+<td>8.360000e-03</td>
+<td>5.569000e-02</td>
+<td>2.496800e-01</td>
+<td>4.087700e-01</td>
+<td>5.778900e-01</td>
+<td>9.617800e-01</td>
+<td>1.783455e+02</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>roa_eop_consolidated</td>
+<td>46728.0</td>
+<td>1.998000e-02</td>
+<td>2.827100e-01</td>
+<td>-3.068823e+01</td>
+<td>-3.549100e-01</td>
+<td>7.840000e-03</td>
+<td>3.177000e-02</td>
+<td>6.243000e-02</td>
+<td>1.918900e-01</td>
+<td>7.446080e+00</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>roa_parent_income_eop_candidate</td>
+<td>46728.0</td>
+<td>1.939000e-02</td>
+<td>2.736400e-01</td>
+<td>-3.068823e+01</td>
+<td>-3.459700e-01</td>
+<td>7.370000e-03</td>
+<td>2.976000e-02</td>
+<td>6.008000e-02</td>
+<td>1.861600e-01</td>
+<td>7.446080e+00</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>roa_avg_consolidated</td>
+<td>44383.0</td>
+<td>2.587000e-02</td>
+<td>1.227300e-01</td>
+<td>-9.116920e+00</td>
+<td>-3.035000e-01</td>
+<td>7.110000e-03</td>
+<td>3.118000e-02</td>
+<td>6.397000e-02</td>
+<td>2.125200e-01</td>
+<td>1.221107e+01</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>roa_parent_income_avg_candidate</td>
+<td>44383.0</td>
+<td>2.480000e-02</td>
+<td>1.205200e-01</td>
+<td>-9.116920e+00</td>
+<td>-2.962800e-01</td>
+<td>6.710000e-03</td>
+<td>2.916000e-02</td>
+<td>6.124000e-02</td>
+<td>2.061100e-01</td>
+<td>1.207795e+01</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>roe_eop_consolidated</td>
+<td>46728.0</td>
+<td>2.716000e-02</td>
+<td>5.023190e+00</td>
+<td>-2.073971e+02</td>
+<td>-1.386420e+00</td>
+<td>1.757000e-02</td>
+<td>6.051000e-02</td>
+<td>1.050500e-01</td>
+<td>4.326900e-01</td>
+<td>9.436241e+02</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>roe_avg_consolidated</td>
+<td>44383.0</td>
+<td>2.619000e-02</td>
+<td>1.677260e+00</td>
+<td>-1.748947e+02</td>
+<td>-1.096130e+00</td>
+<td>1.538000e-02</td>
+<td>6.004000e-02</td>
+<td>1.100000e-01</td>
+<td>4.421900e-01</td>
+<td>8.432795e+01</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>roe_parent_eop_consolidated</td>
+<td>46728.0</td>
+<td>-5.110000e-03</td>
+<td>2.086360e+00</td>
+<td>-2.350960e+02</td>
+<td>-1.556730e+00</td>
+<td>1.767000e-02</td>
+<td>6.052000e-02</td>
+<td>1.052700e-01</td>
+<td>4.722100e-01</td>
+<td>1.211421e+02</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>roe_parent_avg_consolidated</td>
+<td>44383.0</td>
+<td>-1.356000e-02</td>
+<td>6.617090e+00</td>
+<td>-1.305214e+03</td>
+<td>-1.176290e+00</td>
+<td>1.552000e-02</td>
+<td>5.990000e-02</td>
+<td>1.102300e-01</td>
+<td>4.768200e-01</td>
+<td>1.259991e+02</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>annual_stock_return</td>
+<td>43845.0</td>
+<td>1.074400e-01</td>
+<td>5.594700e-01</td>
+<td>-9.843600e-01</td>
+<td>-6.176900e-01</td>
+<td>-2.130400e-01</td>
+<td>-5.550000e-03</td>
+<td>2.648800e-01</td>
+<td>2.175800e+00</td>
+<td>1.820616e+01</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>cash</td>
+<td>46389.0</td>
+<td>3.217855e+09</td>
+<td>1.647423e+10</td>
+<td>0.000000e+00</td>
+<td>2.051259e+07</td>
+<td>2.552689e+08</td>
+<td>5.994535e+08</td>
+<td>1.552802e+09</td>
+<td>5.438578e+10</td>
+<td>7.456790e+11</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>chair_ceo_code</td>
+<td>45342.0</td>
+<td>1.669730e+00</td>
+<td>4.703100e-01</td>
+<td>1.000000e+00</td>
+<td>1.000000e+00</td>
+<td>1.000000e+00</td>
+<td>2.000000e+00</td>
+<td>2.000000e+00</td>
+<td>2.000000e+00</td>
+<td>2.000000e+00</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>current_assets</td>
+<td>45881.0</td>
+<td>9.767198e+09</td>
+<td>5.391607e+10</td>
+<td>0.000000e+00</td>
+<td>1.786488e+08</td>
+<td>1.008764e+09</td>
+<td>2.069317e+09</td>
+<td>4.911884e+09</td>
+<td>1.379540e+11</td>
+<td>2.606517e+12</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>current_liabilities</td>
+<td>45881.0</td>
+<td>8.003746e+09</td>
+<td>4.698233e+10</td>
+<td>0.000000e+00</td>
+<td>3.991982e+07</td>
+<td>4.058473e+08</td>
+<td>1.130808e+09</td>
+<td>3.473309e+09</td>
+<td>1.197670e+11</td>
+<td>2.065877e+12</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>employees</td>
+<td>46660.0</td>
+<td>6.067831e+03</td>
+<td>2.402704e+04</td>
+<td>2.000000e+00</td>
+<td>1.025900e+02</td>
+<td>7.860000e+02</td>
+<td>1.736000e+03</td>
+<td>4.262000e+03</td>
+<td>7.618610e+04</td>
+<td>9.688720e+05</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>financing_cash_flow</td>
+<td>46540.0</td>
+<td>3.173942e+08</td>
+<td>1.032736e+10</td>
+<td>-3.975830e+11</td>
+<td>-1.002414e+10</td>
+<td>-1.664398e+08</td>
+<td>-1.382668e+07</td>
+<td>2.364798e+08</td>
+<td>1.421078e+10</td>
+<td>4.156830e+11</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>fixed_assets</td>
+<td>46725.0</td>
+<td>4.267285e+09</td>
+<td>2.363396e+10</td>
+<td>0.000000e+00</td>
+<td>3.472259e+06</td>
+<td>2.073666e+08</td>
+<td>5.730315e+08</td>
+<td>1.699295e+09</td>
+<td>6.770146e+10</td>
+<td>7.702640e+11</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>inventory</td>
+<td>45284.0</td>
+<td>3.052357e+09</td>
+<td>2.469740e+10</td>
+<td>0.000000e+00</td>
+<td>6.915676e+05</td>
+<td>1.245829e+08</td>
+<td>3.437375e+08</td>
+<td>1.014215e+09</td>
+<td>4.444798e+10</td>
+<td>1.075617e+12</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>investing_cash_flow</td>
+<td>46717.0</td>
+<td>-2.253880e+09</td>
+<td>3.265088e+10</td>
+<td>-2.417582e+12</td>
+<td>-2.949517e+10</td>
+<td>-5.294299e+08</td>
+<td>-1.558719e+08</td>
+<td>-1.907308e+07</td>
+<td>1.492050e+09</td>
+<td>6.023370e+11</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>market_type</td>
+<td>46963.0</td>
+<td>8.764920e+00</td>
+<td>1.200278e+01</td>
+<td>1.000000e+00</td>
+<td>1.000000e+00</td>
+<td>1.000000e+00</td>
+<td>4.000000e+00</td>
+<td>1.600000e+01</td>
+<td>6.400000e+01</td>
+<td>6.400000e+01</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>market_value_thousand</td>
+<td>46963.0</td>
+<td>1.675039e+07</td>
+<td>6.178894e+07</td>
+<td>2.543354e+04</td>
+<td>9.426856e+05</td>
+<td>3.382546e+06</td>
+<td>5.937640e+06</td>
+<td>1.261956e+07</td>
+<td>1.846787e+08</td>
+<td>2.575205e+09</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>net_income</td>
+<td>46728.0</td>
+<td>1.054485e+09</td>
+<td>9.999428e+09</td>
+<td>-9.181009e+10</td>
+<td>-2.221755e+09</td>
+<td>2.418124e+07</td>
+<td>1.096625e+08</td>
+<td>3.733962e+08</td>
+<td>1.737149e+10</td>
+<td>3.707660e+11</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>operating_cash_flow</td>
+<td>46728.0</td>
+<td>2.273859e+09</td>
+<td>3.387376e+10</td>
+<td>-5.880090e+11</td>
+<td>-3.057335e+09</td>
+<td>2.071196e+07</td>
+<td>1.428078e+08</td>
+<td>5.163108e+08</td>
+<td>3.144122e+10</td>
+<td>2.112907e+12</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>operating_profit</td>
+<td>46728.0</td>
+<td>1.306895e+09</td>
+<td>1.211309e+10</td>
+<td>-7.155091e+10</td>
+<td>-2.054228e+09</td>
+<td>2.553006e+07</td>
+<td>1.264868e+08</td>
+<td>4.381155e+08</td>
+<td>2.128904e+10</td>
+<td>4.241110e+11</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>parent_equity</td>
+<td>46728.0</td>
+<td>1.125765e+10</td>
+<td>9.085105e+10</td>
+<td>-3.052000e+10</td>
+<td>3.729284e+07</td>
+<td>1.070917e+09</td>
+<td>2.121071e+09</td>
+<td>4.847273e+09</td>
+<td>1.367108e+11</td>
+<td>4.244259e+12</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>parent_net_income</td>
+<td>46728.0</td>
+<td>9.747029e+08</td>
+<td>9.679879e+09</td>
+<td>-8.855647e+10</td>
+<td>-2.062612e+09</td>
+<td>2.399687e+07</td>
+<td>1.055456e+08</td>
+<td>3.526807e+08</td>
+<td>1.515353e+10</td>
+<td>3.685620e+11</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>rd_expense</td>
+<td>34083.0</td>
+<td>2.830382e+08</td>
+<td>1.400887e+09</td>
+<td>0.000000e+00</td>
+<td>9.298513e+05</td>
+<td>2.807401e+07</td>
+<td>6.661311e+07</td>
+<td>1.683402e+08</td>
+<td>3.453500e+09</td>
+<td>5.797810e+10</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>revenue</td>
+<td>45808.0</td>
+<td>1.120639e+10</td>
+<td>7.525803e+10</td>
+<td>-1.714220e+08</td>
+<td>8.984117e+07</td>
+<td>7.321215e+08</td>
+<td>1.800546e+09</td>
+<td>5.068695e+09</td>
+<td>1.584249e+11</td>
+<td>3.318168e+12</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>shares_held</td>
+<td>46665.0</td>
+<td>6.809294e+08</td>
+<td>5.584142e+09</td>
+<td>3.824236e+06</td>
+<td>1.297673e+07</td>
+<td>6.239376e+07</td>
+<td>1.415622e+08</td>
+<td>3.442062e+08</td>
+<td>7.276530e+09</td>
+<td>1.887919e+11</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29</td>
+<td>top1_ownership_pct</td>
+<td>46664.0</td>
+<td>3.253127e+01</td>
+<td>1.488689e+01</td>
+<td>2.900000e-01</td>
+<td>7.840000e+00</td>
+<td>2.122000e+01</td>
+<td>3.008000e+01</td>
+<td>4.196000e+01</td>
+<td>7.308590e+01</td>
+<td>1.000000e+02</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">30</td>
+<td>total_assets</td>
+<td>46728.0</td>
+<td>7.540922e+10</td>
+<td>1.065495e+12</td>
+<td>8.702942e+06</td>
+<td>3.800208e+08</td>
+<td>1.830030e+09</td>
+<td>3.862669e+09</td>
+<td>1.034272e+10</td>
+<td>7.404466e+11</td>
+<td>5.347777e+13</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">31</td>
+<td>total_equity</td>
+<td>46728.0</td>
+<td>1.243785e+10</td>
+<td>9.469463e+10</td>
+<td>-2.906867e+10</td>
+<td>5.232020e+07</td>
+<td>1.105817e+09</td>
+<td>2.204410e+09</td>
+<td>5.143570e+09</td>
+<td>1.666257e+11</td>
+<td>4.272024e+12</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">32</td>
+<td>total_liabilities</td>
+<td>46728.0</td>
+<td>6.297153e+10</td>
+<td>9.773304e+11</td>
+<td>4.427383e+06</td>
+<td>5.139618e+07</td>
+<td>5.075844e+08</td>
+<td>1.475542e+09</td>
+<td>5.067760e+09</td>
+<td>5.831832e+11</td>
+<td>4.920575e+13</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">33</td>
+<td>total_profit</td>
+<td>46728.0</td>
+<td>1.307149e+09</td>
+<td>1.209007e+10</td>
+<td>-7.392381e+10</td>
+<td>-2.181334e+09</td>
+<td>2.951428e+07</td>
+<td>1.303122e+08</td>
+<td>4.457448e+08</td>
+<td>2.124847e+10</td>
+<td>4.248990e+11</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">34</td>
+<td>top1</td>
+<td>46665.0</td>
+<td>3.253100e-01</td>
+<td>1.488700e-01</td>
+<td>2.900000e-03</td>
+<td>7.840000e-02</td>
+<td>2.122000e-01</td>
+<td>3.008000e-01</td>
+<td>4.196000e-01</td>
+<td>7.308500e-01</td>
+<td>1.000000e+00</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>看 <code>ratio_common_sample</code> 的 <code>N_common</code>：只有使用同一批可用观测，均值差异才主要反映分母定义的变化。全样本描述统计同时混入缺失造成的样本变化。相关系数高也不代表两种定义可互换。</p>
+</section>
+</section>
+<section id="sec-csmar-09" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-csmar-09">09. Agent workflow：先写任务边界，再运行验证</h2>
+<p>可复制任务：读取标准化资产负债表；按证券代码、日期和报表类型检查键；允许统计和列出本地待核对记录；禁止删除、填补、缩尾或选择报表类型；输出键检查、缺失率及重复组数；发现非唯一键时标记 HUMAN REVIEW REQUIRED。</p>
+<p>完整规则见 <a href="../../data/financial-data/DATA_PROTOCOL.md">DATA_PROTOCOL.md</a>，分阶段提示词见 <a href="../../data/financial-data/agent-project/PROMPTS.md">PROMPTS.md</a>。下面的 verification cells 是学生核验 Agent 的最小起点，不能代替全部审计。</p>
+<section id="本阶段给-codex-的任务-6" class="level3" data-number="5.2.11">
+<h3 data-number="5.2.11" class="anchored" data-anchor-id="本阶段给-codex-的任务-6"><span class="header-section-number">5.2.11</span> 本阶段给 Codex 的任务</h3>
+<p>以下为教学任务模板。先核对路径和本项目规则，再复制使用；后续代码和输出展示本案例的实现。</p>
+<pre class="text"><code>请根据指定审计问题定位最早出错步骤，先报告原因与受影响输出。
+区分实现错误、源数据限制与研究选择，不为让检查通过而改阈值。
+只修复有明确依据的实现错误，保留修订前后输入哈希与样本比较。
+修复后从头执行相关流水线和 Notebook，比较键、行数、缺失、
+匹配及变量分布，说明哪些变化是预期的。
+仍缺身份、单位或历史状态时，不自行补造，继续保留待裁定。
+交付修改说明、重新执行证据、差异表和剩余问题。</code></pre>
+<div id="0c8f015a" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-16T01:43:00.440204Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-16T01:43:00.440204Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-16T01:43:00.480763Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-16T01:43:00.479749Z&quot;}" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>require_key(views[<span class="st">"balance"</span>], [<span class="st">"stock_code"</span>, <span class="st">"fiscal_year"</span>, <span class="st">"Typrep"</span>], <span class="st">"年度财务"</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">all</span>(x[<span class="st">"N_after"</span>] <span class="op">==</span> x[<span class="st">"matched"</span>] <span class="op">+</span> x[<span class="st">"master_only"</span>] <span class="op">+</span> x[<span class="st">"using_only"</span>]</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>           <span class="cf">for</span> x <span class="kw">in</span> merge_audit)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> summary[<span class="st">"duplicate_stock_year"</span>] <span class="op">==</span> <span class="dv">0</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 不把已知待审事项伪装为通过的断言。</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"HUMAN REVIEW REQUIRED:"</span>,</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>      {<span class="st">"公司年度重复行"</span>: summary[<span class="st">"firm_year_duplicate_rows"</span>],</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>       <span class="st">"上市日期冲突行"</span>: summary[<span class="st">"listing_date_conflicts"</span>],</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>       <span class="st">"实际披露缺失行"</span>: summary[<span class="st">"actual_announcement_missing"</span>]})</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>HUMAN REVIEW REQUIRED: {'公司年度重复行': 52, '上市日期冲突行': 409, '实际披露缺失行': 314}</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-csmar-10" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-csmar-10">10. Export：冻结输入、代码与执行证据</h2>
+<p>完整 interim、候选底表、待审记录已经写入授权数据根目录下的独立运行目录；它们不随 GitHub 或网页分发。保存脚本哈希和版本后，才能知道本次结果对应哪段代码。</p>
+<p>本 Notebook 不自动发布汇总文件；维护脚本只按固定允许清单复制已检查的汇总表到公开目录。</p>
+<section id="本阶段给-codex-的任务-7" class="level3" data-number="5.2.12">
+<h3 data-number="5.2.12" class="anchored" data-anchor-id="本阶段给-codex-的任务-7"><span class="header-section-number">5.2.12</span> 本阶段给 Codex 的任务</h3>
+<p>以下为教学任务模板。先核对路径和本项目规则，再复制使用；后续代码和输出展示本案例的实现。</p>
+<pre class="text"><code>请保存本次输入指纹、脚本哈希、环境版本、真实 Notebook 输出、
+规则与决策记录。检查公开目录和 Notebook 不含受限公司记录、
+账号、密钥或下载密码。完整数据仅留在授权路径。
+列出可复跑命令、文件依赖、审计通过项和未决事项。
+分别报告执行验证、最终公司年度数据、网页预览和公开发布状态。
+未决问题影响最终口径时，只保存候选版本与证据，不标正式冻结。
+不提交、推送或覆盖已有发布结果，除非另有明确授权。</code></pre>
+<div id="7632b87b" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-16T01:43:00.483763Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-16T01:43:00.482764Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-16T01:43:00.566078Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-16T01:43:00.565060Z&quot;}" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>dump_json({<span class="st">"executed_at"</span>: datetime.now().isoformat(), <span class="st">"pandas"</span>: pd.__version__, <span class="st">"numpy"</span>: np.__version__,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>           <span class="st">"pipeline_sha256"</span>: hashlib.sha256((PROJECT <span class="op">/</span> <span class="st">"tools/financial-data/pipeline.py"</span>).read_bytes()).hexdigest()},</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>          RUN <span class="op">/</span> <span class="st">"audit/execution.json"</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>(ROOT <span class="op">/</span> <span class="st">"financial-data-v2/latest-run.txt"</span>).write_text(<span class="bu">str</span>(RUN), encoding<span class="op">=</span><span class="st">"utf-8"</span>)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"候选版本与执行证据已保存；最终公司年度数据尚待人工裁定。"</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>候选版本与执行证据已保存；最终公司年度数据尚待人工裁定。</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-csmar-11" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-csmar-11">11. Exercises：把运行成功转成判断依据</h2>
+<ol type="1">
+<li>找到一种原表键唯一、公司年度键却不唯一的情况，解释为什么不能 <code>drop_duplicates</code>。</li>
+<li>使用 <code>merge_by_year.csv</code> 和 <code>unmatched_groups.csv</code>，比较新上市与其他公司的未匹配率。分母必须使用组内样本数。</li>
+<li>解释 ROA 平均资产口径为什么少于期末口径；在共同样本上比较两者。</li>
+<li>如果想删除 ST，当前 <code>_source</code> 标识是否足够？写出缺少的资料与审计规则。</li>
+<li>将真实极端 ROE 的诊断改写成一个全新教学数值例子，明确标记教学示例，不公开原始行。</li>
+</ol>
+<p>练习完成后交付修改过的 Task Rules、汇总审计和解释；不上传 CSMAR 数据。</p>
+<div id="c573b329" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-16T01:43:00.568093Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-16T01:43:00.568093Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-16T01:43:00.775110Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-16T01:43:00.774077Z&quot;}" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 练习起点：先比较未匹配率，再讨论原因；本单元格只读汇总表。</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>groups <span class="op">=</span> pd.read_csv(RUN <span class="op">/</span> <span class="st">"audit/unmatched_groups.csv"</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>groups[<span class="st">"unmatched_rate"</span>] <span class="op">=</span> groups[<span class="st">"unmatched"</span>] <span class="op">/</span> groups[<span class="st">"N"</span>]</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>display(groups[groups[<span class="st">"group"</span>].eq(<span class="st">"newly_listed"</span>)].<span class="bu">round</span>(<span class="dv">4</span>))</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">group</th>
+<th data-quarto-table-cell-role="th">value</th>
+<th data-quarto-table-cell-role="th">source</th>
+<th data-quarto-table-cell-role="th">N</th>
+<th data-quarto-table-cell-role="th">unmatched</th>
+<th data-quarto-table-cell-role="th">unmatched_rate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>newly_listed</td>
+<td>False</td>
+<td>market</td>
+<td>43960</td>
+<td>53</td>
+<td>0.0012</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>newly_listed</td>
+<td>False</td>
+<td>disclosure</td>
+<td>43960</td>
+<td>255</td>
+<td>0.0058</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>newly_listed</td>
+<td>False</td>
+<td>top1</td>
+<td>43960</td>
+<td>311</td>
+<td>0.0071</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>newly_listed</td>
+<td>False</td>
+<td>balance_A</td>
+<td>43960</td>
+<td>291</td>
+<td>0.0066</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>newly_listed</td>
+<td>False</td>
+<td>income_A</td>
+<td>43960</td>
+<td>291</td>
+<td>0.0066</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>newly_listed</td>
+<td>False</td>
+<td>cashflow_A</td>
+<td>43960</td>
+<td>291</td>
+<td>0.0066</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>newly_listed</td>
+<td>True</td>
+<td>market</td>
+<td>3059</td>
+<td>3</td>
+<td>0.0010</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>newly_listed</td>
+<td>True</td>
+<td>disclosure</td>
+<td>3059</td>
+<td>3</td>
+<td>0.0010</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>newly_listed</td>
+<td>True</td>
+<td>top1</td>
+<td>3059</td>
+<td>43</td>
+<td>0.0141</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>newly_listed</td>
+<td>True</td>
+<td>balance_A</td>
+<td>3059</td>
+<td>0</td>
+<td>0.0000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>newly_listed</td>
+<td>True</td>
+<td>income_A</td>
+<td>3059</td>
+<td>0</td>
+<td>0.0000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>newly_listed</td>
+<td>True</td>
+<td>cashflow_A</td>
+<td>3059</td>
+<td>0</td>
+<td>0.0000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="sec-csmar-mini" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="sec-csmar-mini"><span class="header-section-number">5.3</span> 教学小表：不依赖 CSMAR 的独立实验</h2>
+<p>本节代码可以独立运行，数值全部为虚构教学例子。依次验证读取类型、错误/正确合并、追加、宽长往返、Parquet 类型保存、SQL/pandas 对照，以及缺失填零与比率手算。它对应前三章的小例子，不代表真实公司。</p>
+<p>读取例子重点看证券代码的前导零；合并表比较 2→3 与 2→2；SQL 结果与 pandas 逐项相等；研发率两种均值显示填零改变了假设。每项均有可检查的断言。</p>
+<div id="760d5d7b" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-16T01:43:00.777087Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-16T01:43:00.777087Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-16T01:43:00.999648Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-16T01:43:00.998638Z&quot;}" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""三章理论的小表例子。全部数值为虚构教学数据，不需要 CSMAR。"""</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> io <span class="im">import</span> StringIO, BytesIO</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sqlite3</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_examples():</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 明确类型读取，保留前导零；先看结构，再做计算。</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>    source <span class="op">=</span> StringIO(<span class="st">'code,date,assets</span><span class="ch">\n</span><span class="st">000001,2020-12-31,100</span><span class="ch">\n</span><span class="st">000002,2020-12-31,200</span><span class="ch">\n</span><span class="st">'</span>)</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>    read_demo <span class="op">=</span> pd.read_csv(source, dtype<span class="op">=</span>{<span class="st">'code'</span>: <span class="st">'string'</span>}, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> read_demo.code.iloc[<span class="dv">0</span>] <span class="op">==</span> <span class="st">'000001'</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>    display(read_demo)</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>    display(read_demo.dtypes.astype(<span class="bu">str</span>).rename(<span class="st">'dtype'</span>).to_frame())</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 与理论篇对应的两公司、三交易日小表，绝非真实公司记录。</span></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>    annual <span class="op">=</span> pd.DataFrame({<span class="st">'firm'</span>: [<span class="st">'A'</span>, <span class="st">'B'</span>], <span class="st">'year'</span>: [<span class="dv">2020</span>, <span class="dv">2020</span>], <span class="st">'assets'</span>: [<span class="fl">100.</span>, <span class="fl">200.</span>]})</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>    company <span class="op">=</span> pd.DataFrame({<span class="st">'firm'</span>: [<span class="st">'A'</span>, <span class="st">'B'</span>], <span class="st">'industry'</span>: [<span class="st">'甲行业'</span>, <span class="st">'乙行业'</span>]})</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>    daily <span class="op">=</span> pd.DataFrame({<span class="st">'firm'</span>: [<span class="st">'A'</span>, <span class="st">'A'</span>, <span class="st">'B'</span>],</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>                          <span class="st">'date'</span>: pd.to_datetime([<span class="st">'2020-01-02'</span>, <span class="st">'2020-01-03'</span>, <span class="st">'2020-01-02'</span>]),</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>                          <span class="st">'turnover'</span>: [<span class="fl">1.</span>, <span class="fl">3.</span>, <span class="fl">2.</span>]})</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>    daily[<span class="st">'year'</span>] <span class="op">=</span> daily.date.dt.year</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>    wrong <span class="op">=</span> annual.merge(daily, on<span class="op">=</span>[<span class="st">'firm'</span>, <span class="st">'year'</span>])</span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>    yearly <span class="op">=</span> daily.groupby([<span class="st">'firm'</span>, <span class="st">'year'</span>], as_index<span class="op">=</span><span class="va">False</span>).turnover.mean()</span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>    correct <span class="op">=</span> annual.merge(yearly, on<span class="op">=</span>[<span class="st">'firm'</span>, <span class="st">'year'</span>], validate<span class="op">=</span><span class="st">'one_to_one'</span>, indicator<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="bu">len</span>(wrong) <span class="op">==</span> <span class="dv">3</span> <span class="kw">and</span> <span class="bu">len</span>(correct) <span class="op">==</span> <span class="dv">2</span></span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> correct.turnover.tolist() <span class="op">==</span> [<span class="fl">2.</span>, <span class="fl">2.</span>]</span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>    display(pd.DataFrame({<span class="st">'操作'</span>: [<span class="st">'年度输入'</span>, <span class="st">'直接连接'</span>, <span class="st">'聚合后连接'</span>], <span class="st">'行数'</span>: [<span class="dv">2</span>, <span class="bu">len</span>(wrong), <span class="bu">len</span>(correct)]}))</span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a>    display(correct)</span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># append 保留来源；同一片段重复追加时应被键检查发现。</span></span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a>    appended <span class="op">=</span> pd.concat([annual.iloc[:<span class="dv">1</span>].assign(source<span class="op">=</span><span class="st">'part1'</span>),</span>
+<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a>                          annual.iloc[<span class="dv">1</span>:].assign(source<span class="op">=</span><span class="st">'part2'</span>)], ignore_index<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="kw">not</span> appended.duplicated([<span class="st">'firm'</span>, <span class="st">'year'</span>]).<span class="bu">any</span>()</span>
+<span id="cb31-36"><a href="#cb31-36" aria-hidden="true" tabindex="-1"></a>    duplicated <span class="op">=</span> pd.concat([appended, appended.iloc[:<span class="dv">1</span>]], ignore_index<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> duplicated.duplicated([<span class="st">'firm'</span>, <span class="st">'year'</span>], keep<span class="op">=</span><span class="va">False</span>).<span class="bu">sum</span>() <span class="op">==</span> <span class="dv">2</span></span>
+<span id="cb31-38"><a href="#cb31-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-39"><a href="#cb31-39" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 宽长转换只重排信息，不能自动聚合重复公司年度。</span></span>
+<span id="cb31-40"><a href="#cb31-40" aria-hidden="true" tabindex="-1"></a>    wide <span class="op">=</span> pd.DataFrame({<span class="st">'firm'</span>: [<span class="st">'A'</span>, <span class="st">'B'</span>], <span class="st">'assets_2019'</span>: [<span class="fl">90.</span>, <span class="fl">180.</span>], <span class="st">'assets_2020'</span>: [<span class="fl">100.</span>, <span class="fl">200.</span>]})</span>
+<span id="cb31-41"><a href="#cb31-41" aria-hidden="true" tabindex="-1"></a>    <span class="bu">long</span> <span class="op">=</span> wide.melt(id_vars<span class="op">=</span><span class="st">'firm'</span>, var_name<span class="op">=</span><span class="st">'period'</span>, value_name<span class="op">=</span><span class="st">'assets'</span>)</span>
+<span id="cb31-42"><a href="#cb31-42" aria-hidden="true" tabindex="-1"></a>    <span class="bu">long</span>[<span class="st">'year'</span>] <span class="op">=</span> <span class="bu">long</span>.period.<span class="bu">str</span>[<span class="op">-</span><span class="dv">4</span>:].astype(<span class="bu">int</span>)</span>
+<span id="cb31-43"><a href="#cb31-43" aria-hidden="true" tabindex="-1"></a>    restored <span class="op">=</span> <span class="bu">long</span>.pivot(index<span class="op">=</span><span class="st">'firm'</span>, columns<span class="op">=</span><span class="st">'period'</span>, values<span class="op">=</span><span class="st">'assets'</span>).reset_index()</span>
+<span id="cb31-44"><a href="#cb31-44" aria-hidden="true" tabindex="-1"></a>    pd.testing.assert_frame_equal(wide, restored, check_names<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb31-45"><a href="#cb31-45" aria-hidden="true" tabindex="-1"></a>    display(<span class="bu">long</span>[[<span class="st">'firm'</span>, <span class="st">'year'</span>, <span class="st">'assets'</span>]].sort_values([<span class="st">'firm'</span>, <span class="st">'year'</span>]))</span>
+<span id="cb31-46"><a href="#cb31-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-47"><a href="#cb31-47" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Parquet 保存与读取类型；使用内存字节流，不改写任何原始文件。</span></span>
+<span id="cb31-48"><a href="#cb31-48" aria-hidden="true" tabindex="-1"></a>    <span class="bu">buffer</span> <span class="op">=</span> BytesIO()</span>
+<span id="cb31-49"><a href="#cb31-49" aria-hidden="true" tabindex="-1"></a>    read_demo.to_parquet(<span class="bu">buffer</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb31-50"><a href="#cb31-50" aria-hidden="true" tabindex="-1"></a>    <span class="bu">buffer</span>.seek(<span class="dv">0</span>)</span>
+<span id="cb31-51"><a href="#cb31-51" aria-hidden="true" tabindex="-1"></a>    restored_types <span class="op">=</span> pd.read_parquet(<span class="bu">buffer</span>)</span>
+<span id="cb31-52"><a href="#cb31-52" aria-hidden="true" tabindex="-1"></a>    pd.testing.assert_frame_equal(read_demo, restored_types)</span>
+<span id="cb31-53"><a href="#cb31-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-54"><a href="#cb31-54" aria-hidden="true" tabindex="-1"></a>    <span class="co"># SQLite 唯一索引是显式设置的，不是 to_sql 自动识别业务键。</span></span>
+<span id="cb31-55"><a href="#cb31-55" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> sqlite3.<span class="ex">connect</span>(<span class="st">':memory:'</span>) <span class="im">as</span> conn:</span>
+<span id="cb31-56"><a href="#cb31-56" aria-hidden="true" tabindex="-1"></a>        annual.to_sql(<span class="st">'annual'</span>, conn, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb31-57"><a href="#cb31-57" aria-hidden="true" tabindex="-1"></a>        company.to_sql(<span class="st">'company'</span>, conn, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb31-58"><a href="#cb31-58" aria-hidden="true" tabindex="-1"></a>        conn.execute(<span class="st">'CREATE UNIQUE INDEX annual_key ON annual(firm, year)'</span>)</span>
+<span id="cb31-59"><a href="#cb31-59" aria-hidden="true" tabindex="-1"></a>        conn.execute(<span class="st">'CREATE UNIQUE INDEX company_key ON company(firm)'</span>)</span>
+<span id="cb31-60"><a href="#cb31-60" aria-hidden="true" tabindex="-1"></a>        query <span class="op">=</span> <span class="st">'''SELECT c.industry, COUNT(*) AS n, AVG(f.assets) AS mean_assets</span></span>
+<span id="cb31-61"><a href="#cb31-61" aria-hidden="true" tabindex="-1"></a><span class="st">                   FROM annual AS f JOIN company AS c ON f.firm = c.firm</span></span>
+<span id="cb31-62"><a href="#cb31-62" aria-hidden="true" tabindex="-1"></a><span class="st">                   WHERE f.year = 2020 GROUP BY c.industry ORDER BY c.industry'''</span></span>
+<span id="cb31-63"><a href="#cb31-63" aria-hidden="true" tabindex="-1"></a>        sql_result <span class="op">=</span> pd.read_sql_query(query, conn)</span>
+<span id="cb31-64"><a href="#cb31-64" aria-hidden="true" tabindex="-1"></a>    pandas_result <span class="op">=</span> (annual.merge(company, on<span class="op">=</span><span class="st">'firm'</span>, validate<span class="op">=</span><span class="st">'many_to_one'</span>)</span>
+<span id="cb31-65"><a href="#cb31-65" aria-hidden="true" tabindex="-1"></a>                     .groupby(<span class="st">'industry'</span>, as_index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb31-66"><a href="#cb31-66" aria-hidden="true" tabindex="-1"></a>                     .agg(n<span class="op">=</span>(<span class="st">'firm'</span>, <span class="st">'size'</span>), mean_assets<span class="op">=</span>(<span class="st">'assets'</span>, <span class="st">'mean'</span>)))</span>
+<span id="cb31-67"><a href="#cb31-67" aria-hidden="true" tabindex="-1"></a>    pd.testing.assert_frame_equal(sql_result, pandas_result)</span>
+<span id="cb31-68"><a href="#cb31-68" aria-hidden="true" tabindex="-1"></a>    display(sql_result)</span>
+<span id="cb31-69"><a href="#cb31-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-70"><a href="#cb31-70" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 缺失填零改变了假设和统计分母；这里只比较，不作处理推荐。</span></span>
+<span id="cb31-71"><a href="#cb31-71" aria-hidden="true" tabindex="-1"></a>    rd <span class="op">=</span> pd.Series([<span class="fl">0.</span>, np.nan, <span class="fl">2.</span>]) <span class="op">/</span> <span class="dv">100</span></span>
+<span id="cb31-72"><a href="#cb31-72" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> np.isclose(rd.mean(), <span class="fl">.01</span>)</span>
+<span id="cb31-73"><a href="#cb31-73" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> np.isclose(rd.fillna(<span class="dv">0</span>).mean(), <span class="dv">2</span><span class="op">/</span><span class="dv">300</span>)</span>
+<span id="cb31-74"><a href="#cb31-74" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 算术和复合回报、股利回报、盈利比率均为手算可核对的小例子。</span></span>
+<span id="cb31-75"><a href="#cb31-75" aria-hidden="true" tabindex="-1"></a>    comparisons <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb31-76"><a href="#cb31-76" aria-hidden="true" tabindex="-1"></a>        <span class="st">'指标'</span>: [<span class="st">'研发率_已知样本均值'</span>, <span class="st">'研发率_填零后均值'</span>,</span>
+<span id="cb31-77"><a href="#cb31-77" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'两日算术平均收益'</span>, <span class="st">'两日复合收益'</span>, <span class="st">'含股利回报'</span>,</span>
+<span id="cb31-78"><a href="#cb31-78" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'期末资产ROA'</span>, <span class="st">'平均资产ROA'</span>, <span class="st">'近零权益ROE'</span>],</span>
+<span id="cb31-79"><a href="#cb31-79" aria-hidden="true" tabindex="-1"></a>        <span class="st">'数值'</span>: [rd.mean(), rd.fillna(<span class="dv">0</span>).mean(), np.mean([<span class="fl">.1</span>, <span class="op">-</span><span class="fl">.1</span>]),</span>
+<span id="cb31-80"><a href="#cb31-80" aria-hidden="true" tabindex="-1"></a>                 np.prod(<span class="dv">1</span> <span class="op">+</span> np.array([<span class="fl">.1</span>, <span class="op">-</span><span class="fl">.1</span>])) <span class="op">-</span> <span class="dv">1</span>,</span>
+<span id="cb31-81"><a href="#cb31-81" aria-hidden="true" tabindex="-1"></a>                 (<span class="dv">9</span> <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">10</span> <span class="op">-</span> <span class="dv">1</span>, <span class="dv">10</span><span class="op">/</span><span class="dv">200</span>, <span class="dv">10</span><span class="op">/</span><span class="dv">150</span>, <span class="dv">1</span><span class="op">/</span><span class="fl">.01</span>]})</span>
+<span id="cb31-82"><a href="#cb31-82" aria-hidden="true" tabindex="-1"></a>    display(comparisons.<span class="bu">round</span>(<span class="dv">6</span>))</span>
+<span id="cb31-83"><a href="#cb31-83" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> np.isclose(comparisons.loc[<span class="dv">3</span>, <span class="st">'数值'</span>], <span class="op">-</span><span class="fl">.01</span>)</span>
+<span id="cb31-84"><a href="#cb31-84" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'教学小表检查通过：读取、合并、追加、宽长往返、类型保存、SQL 对照与手算。'</span>)</span>
+<span id="cb31-85"><a href="#cb31-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-86"><a href="#cb31-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-87"><a href="#cb31-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-88"><a href="#cb31-88" aria-hidden="true" tabindex="-1"></a>run_examples()</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">code</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">assets</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>000001</td>
+<td>2020-12-31</td>
+<td>100</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>000002</td>
+<td>2020-12-31</td>
+<td>200</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">dtype</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">code</td>
+<td>string</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">date</td>
+<td>datetime64[ns]</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">assets</td>
+<td>int64</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">操作</th>
+<th data-quarto-table-cell-role="th">行数</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>年度输入</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>直接连接</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>聚合后连接</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">firm</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">assets</th>
+<th data-quarto-table-cell-role="th">turnover</th>
+<th data-quarto-table-cell-role="th">_merge</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>A</td>
+<td>2020</td>
+<td>100.0</td>
+<td>2.0</td>
+<td>both</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>B</td>
+<td>2020</td>
+<td>200.0</td>
+<td>2.0</td>
+<td>both</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">firm</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">assets</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>A</td>
+<td>2019</td>
+<td>90.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>A</td>
+<td>2020</td>
+<td>100.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1</td>
+<td>B</td>
+<td>2019</td>
+<td>180.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>B</td>
+<td>2020</td>
+<td>200.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">industry</th>
+<th data-quarto-table-cell-role="th">n</th>
+<th data-quarto-table-cell-role="th">mean_assets</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>乙行业</td>
+<td>1</td>
+<td>200.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>甲行业</td>
+<td>1</td>
+<td>100.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">指标</th>
+<th data-quarto-table-cell-role="th">数值</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>研发率_已知样本均值</td>
+<td>0.010000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>研发率_填零后均值</td>
+<td>0.006667</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>两日算术平均收益</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>两日复合收益</td>
+<td>-0.010000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>含股利回报</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>期末资产ROA</td>
+<td>0.050000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>平均资产ROA</td>
+<td>0.066667</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>近零权益ROE</td>
+<td>100.000000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>教学小表检查通过：读取、合并、追加、宽长往返、类型保存、SQL 对照与手算。</code></pre>
+</div>
+</div>
+</section>
+<section id="sec-csmar-review" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="sec-csmar-review"><span class="header-section-number">5.4</span> 如何阅读本轮结果与继续返修</h2>
+<p>第 08 节的 summary 表是验收入口。证券年度键唯一与公司年度键唯一分别检查：本批研究视图为 47,019 行，公司年度存在 26 组重复、52 行，涉及 6 个公司 ID。不能任意删除一条让唯一性通过。</p>
+<p>上市日期冲突为 409 行，实际公告缺失为 314 行，会计差异超出容差为 24 行。它们属于不同问题：日期定义要查资料，会计差异要核原表，身份要补映射历史。源字段的最新上市状态不能自动解释为历年 ST/PT。</p>
+<p>ratio_common_sample 表对同一批 44,383 行比较 ROA。期末与平均资产口径均值约 1.74% 与 2.59%，相关系数约 0.645。这是暂定证券年度视图的条件性比较，单位和身份仍未冻结。Top1 的 46,664 个可比记录没有超过 0.01 个百分点的差异；相符不等于独立年报验证。</p>
+<p>返修时使用 P06：先追到最早出错步骤，再修改有证据的实现问题；缺少资料的事项进入 DECISIONS，不让 Agent 编造选择。P07 保存候选证据，并分别声明执行、研究数据、网页和发布状态。</p>
+<p>学生最终提交规则、使用过的提示词、可执行代码、汇总审计和决策说明，不提交受限公司记录。完整未决项见 <a href="../../data/financial-data/DATA_GAPS.md">DATA_GAPS</a>，本次汇总见 <a href="../../data/financial-data/AUDIT_REPORT.md">AUDIT_REPORT</a>。</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "已复制");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "已复制");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../lectures/financial-data-cleaning.html" class="pagination-link" aria-label="数据清洗与审计">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">数据清洗与审计</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../lectures/bootstrap.html" class="pagination-link" aria-label="Bootstrap">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Bootstrap</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>LN429 · 中山大学岭南学院</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.dev/lianxhcn/FinEco/blob/main/notebooks/financial-data/financial-data.ipynb" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p><a href="https://www.lianxh.cn">连享会</a> · Quarto Book</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

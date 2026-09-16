@@ -243,6 +243,7 @@ HUMAN REVIEW REQUIRED
 课堂可选讲缺失、重复、盈利比率和时间审计；对 SQL 或文本感兴趣的学生可沿链接继续阅读。自学时请完成三项工作：给一个缺失填补建议写出所需证据；比较两个 ROA 定义的共同样本；对一份 Agent 审计报告区分已经验证的事实与尚未批准的研究决定。
 
 本章参考《数据分析与经济决策》和《金融数据分析》的数据清洗与文本材料，结合本地实际审计修订。论文与代码来源见下一节书目；真实 CSMAR 汇总位于配套 Notebook，教学小表与其严格区分。
+
 ## 参考文献与数据资产 {#sec-financial-data-references}
 
 1. Chen, A. Y., & Zimmermann, T. (**2022**). Open source cross-sectional asset pricing. *Critical Finance Review*, 11(2), 207–264. [Link](https://doi.org/10.1561/104.00000112) ([rep](https://github.com/OpenSourceAP/CrossSection/)), [PDF](https://www.cfr-cologne.de/download/workingpaper/cfr-20-04.pdf), [Google](<https://scholar.google.com/scholar?q=Open+Source+Cross-Sectional+Asset+Pricing+Chen+Zimmermann>). PDF 为机构工作论文版本，可能与刊发版有差异。

@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>3&nbsp; 金融数据管理：从多张表到分析底表 – 金融计量经济学</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../lectures/financial-data-cleaning.html" rel="next">
+<link href="../lectures/financial-data.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0626ff4d7a71b55c8707dcae1d04a9b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-d59a9bb4a0246dd4330968064f99cf3e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+<link rel="icon" type="image/png" sizes="40x40" href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../lectures/financial-data-management.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">数据管理</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">金融计量经济学</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/lianxhcn/FinEco" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="切换阅读器模式">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🏠 前言</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📚 课程资料</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../getting-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📌 课件使用</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../syllabus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📅 课程安排</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../homework.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🚀 作业</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../exercises/hw-01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">hw-01</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">🛠️ 环境配置</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">软件配置</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../publishing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">同步与发布</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">研究基础</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">研究流程</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/intro/portfolio-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">组合实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/intro/policy-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">政策实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/financial-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">数据流程与获取</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/financial-data-management.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">数据管理</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/financial-data-cleaning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">数据清洗与审计</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/financial-data/financial-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">CSMAR：Agent 实战</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/bootstrap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Bootstrap</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/bootstrap/bootstrap-demo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Python 实验</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/bootstrap/bootstrap-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Stata 实验</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">附录</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../resources/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">公共书目</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目录</h2>
+   
+  <ul>
+  <li><a href="#sec-financial-management-tables" id="toc-sec-financial-management-tables" class="nav-link active" data-scroll-target="#sec-financial-management-tables"><span class="header-section-number">3.1</span> 一个金融研究中的多表场景</a></li>
+  <li><a href="#sec-financial-management-keys" id="toc-sec-financial-management-keys" class="nav-link" data-scroll-target="#sec-financial-management-keys"><span class="header-section-number">3.2</span> 主键与粒度：先说明一行代表什么</a>
+  <ul class="collapse">
+  <li><a href="#用三张小表建立直觉" id="toc-用三张小表建立直觉" class="nav-link" data-scroll-target="#用三张小表建立直觉"><span class="header-section-number">3.2.1</span> 用三张小表建立直觉</a></li>
+  <li><a href="#错误合并为什么可能不报错" id="toc-错误合并为什么可能不报错" class="nav-link" data-scroll-target="#错误合并为什么可能不报错"><span class="header-section-number">3.2.2</span> 错误合并为什么可能不报错</a></li>
+  </ul></li>
+  <li><a href="#sec-financial-management-operations" id="toc-sec-financial-management-operations" class="nav-link" data-scroll-target="#sec-financial-management-operations"><span class="header-section-number">3.3</span> 追加、合并、变形和聚合</a>
+  <ul class="collapse">
+  <li><a href="#append增加同类记录" id="toc-append增加同类记录" class="nav-link" data-scroll-target="#append增加同类记录"><span class="header-section-number">3.3.1</span> Append：增加同类记录</a></li>
+  <li><a href="#merge沿键增加信息" id="toc-merge沿键增加信息" class="nav-link" data-scroll-target="#merge沿键增加信息"><span class="header-section-number">3.3.2</span> Merge：沿键增加信息</a></li>
+  <li><a href="#reshape同一信息换一种排列" id="toc-reshape同一信息换一种排列" class="nav-link" data-scroll-target="#reshape同一信息换一种排列"><span class="header-section-number">3.3.3</span> Reshape：同一信息换一种排列</a></li>
+  <li><a href="#aggregate为目标粒度定义统计量" id="toc-aggregate为目标粒度定义统计量" class="nav-link" data-scroll-target="#aggregate为目标粒度定义统计量"><span class="header-section-number">3.3.4</span> Aggregate：为目标粒度定义统计量</a></li>
+  </ul></li>
+  <li><a href="#sec-financial-management-storage" id="toc-sec-financial-management-storage" class="nav-link" data-scroll-target="#sec-financial-management-storage"><span class="header-section-number">3.4</span> 存储格式也是数据契约</a>
+  <ul class="collapse">
+  <li><a href="#类型编码与经济定义" id="toc-类型编码与经济定义" class="nav-link" data-scroll-target="#类型编码与经济定义"><span class="header-section-number">3.4.1</span> 类型、编码与经济定义</a></li>
+  <li><a href="#读取时只取需要的信息" id="toc-读取时只取需要的信息" class="nav-link" data-scroll-target="#读取时只取需要的信息"><span class="header-section-number">3.4.2</span> 读取时只取需要的信息</a></li>
+  </ul></li>
+  <li><a href="#sec-financial-management-sql" id="toc-sec-financial-management-sql" class="nav-link" data-scroll-target="#sec-financial-management-sql"><span class="header-section-number">3.5</span> SQLite 与 SQL：把多张表放在一起</a>
+  <ul class="collapse">
+  <li><a href="#从表结构到查询结果" id="toc-从表结构到查询结果" class="nav-link" data-scroll-target="#从表结构到查询结果"><span class="header-section-number">3.5.1</span> 从表结构到查询结果</a></li>
+  <li><a href="#四类实际查询怎样设定" id="toc-四类实际查询怎样设定" class="nav-link" data-scroll-target="#四类实际查询怎样设定"><span class="header-section-number">3.5.2</span> 四类实际查询怎样设定</a></li>
+  <li><a href="#建立可重跑的文件数据库" id="toc-建立可重跑的文件数据库" class="nav-link" data-scroll-target="#建立可重跑的文件数据库"><span class="header-section-number">3.5.3</span> 建立可重跑的文件数据库</a></li>
+  </ul></li>
+  <li><a href="#sec-financial-management-duckdb" id="toc-sec-financial-management-duckdb" class="nav-link" data-scroll-target="#sec-financial-management-duckdb"><span class="header-section-number">3.6</span> DuckDB 与 Parquet：查询本地大文件</a></li>
+  <li><a href="#sec-financial-management-contract" id="toc-sec-financial-management-contract" class="nav-link" data-scroll-target="#sec-financial-management-contract"><span class="header-section-number">3.7</span> 目录、命名、字典与交接</a>
+  <ul class="collapse">
+  <li><a href="#按数据生命周期分层" id="toc-按数据生命周期分层" class="nav-link" data-scroll-target="#按数据生命周期分层"><span class="header-section-number">3.7.1</span> 按数据生命周期分层</a></li>
+  <li><a href="#文件名要能排序和辨认" id="toc-文件名要能排序和辨认" class="nav-link" data-scroll-target="#文件名要能排序和辨认"><span class="header-section-number">3.7.2</span> 文件名要能排序和辨认</a></li>
+  <li><a href="#数据字典与-readme-各写什么" id="toc-数据字典与-readme-各写什么" class="nav-link" data-scroll-target="#数据字典与-readme-各写什么"><span class="header-section-number">3.7.3</span> 数据字典与 README 各写什么</a></li>
+  </ul></li>
+  <li><a href="#sec-financial-management-workflow" id="toc-sec-financial-management-workflow" class="nav-link" data-scroll-target="#sec-financial-management-workflow"><span class="header-section-number">3.8</span> 从小任务到可复用工作流</a></li>
+  <li><a href="#本讲来源" id="toc-本讲来源" class="nav-link" data-scroll-target="#本讲来源"><span class="header-section-number">3.9</span> 本讲来源</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/lectures/financial-data-management.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../lectures/financial-data-management.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">数据管理</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-financial-data-management" class="quarto-section-identifier"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">金融数据管理：从多张表到分析底表</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>下载完成后，目录里可能同时出现个股日行情、市场指数、宏观月度指标、年度财务表和公司信息。单独打开任何一个文件都不困难；困难在于下周换一个研究问题时，能否再次准确地找到、连接并解释这些数据。</p>
+<p>本章以<a href="https://lianxhcn.github.io/ds2026/Lecture/data_manage/lecture_data_management.html">《数据分析与经济决策》课程的数据管理讲义</a>为主体，保留多表场景、主键与粒度、存储格式、SQL 查询和工作流，结合<a href="https://lianxhcn.github.io/dsfin/">《金融数据分析》</a>的数据契约和目录规范展开。分析工具仍可以是 pandas；在它的上游，我们需要先理清数据如何组织。</p>
+<div class="callout callout-style-default callout-note callout-titled" title="本讲要点">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+本讲要点
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>建立粒度、主键和复用意识；能解释 append、merge、reshape 和聚合的区别；能选择文件或数据库保存方式，并把处理过程写成别人可以重跑的工作流。完整教学代码见 <a href="../notebooks/financial-data/financial-data.html#sec-csmar-mini">Notebook 的小表实验</a>，真实项目见 <a href="../notebooks/financial-data/financial-data.html#sec-csmar-04">CSMAR 合并阶段</a>。</p>
+</div>
+</div>
+<section id="sec-financial-management-tables" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="sec-financial-management-tables"><span class="header-section-number">3.1</span> 一个金融研究中的多表场景</h2>
+<p>设想我们要比较某年不同企业的资产规模和交易活跃程度。资产来自年度财务表，换手率来自日行情，公司名称来自身份表。目标是每个公司每年一行，因此所有数据最终必须与这个单位相容。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>数据表</th>
+<th>每行代表什么</th>
+<th>候选键</th>
+<th>在年度研究中的用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>日行情</td>
+<td>某证券某交易日</td>
+<td>证券代码、日期</td>
+<td>先形成年度交易特征</td>
+</tr>
+<tr class="even">
+<td>指数日行情</td>
+<td>某指数某交易日</td>
+<td>指数代码、日期</td>
+<td>市场表现或共同时间信息</td>
+</tr>
+<tr class="odd">
+<td>宏观月表</td>
+<td>某指标某地区某月</td>
+<td>指标、地区、月份</td>
+<td>明确聚合及可得时间后连接</td>
+</tr>
+<tr class="even">
+<td>年度财务表</td>
+<td>某公司某年某报表口径</td>
+<td>公司标识、年度、报表类型</td>
+<td>保留所需财务口径</td>
+</tr>
+<tr class="odd">
+<td>身份历史表</td>
+<td>某标识在某有效期间对应的对象</td>
+<td>标识、有效起始时间</td>
+<td>处理名称、代码或上市状态变化</td>
+</tr>
+</tbody>
+</table>
+<p>来源讲义用公司静态表、年度表和日表解释这一过程。静态公司表是有意简化：真实行业、所有权、简称和证券代码可能变化，不能把当前值无条件倒填过去。证券代码与公司 ID 也不是天然一一对应。</p>
+<div id="fig-financial-management-grain" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-financial-management-grain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/financial-data-fig02-grain-20260916-074850.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-financial-management-grain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;3.1: 先解释每张表的粒度和主键，再组织分析底表。原图来自《数据分析与经济决策》课程。
+</figcaption>
+</figure>
+</div>
+<p>图中 <code>company_info</code> 视作静态表，适合说明连接关系；真实研究需另行验证有效时间。<code>code</code> 是技术连接键的示意，不等于已经解决了公司身份问题。底表行数正常，也仍可能连接到错误时期的属性。</p>
+</section>
+<section id="sec-financial-management-keys" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="sec-financial-management-keys"><span class="header-section-number">3.2</span> 主键与粒度：先说明一行代表什么</h2>
+<p>主键是能唯一识别一行的变量或组合；粒度是每行对应的经济对象与时间层级。键可以帮助检查粒度，却不能凭空定义粒度。给每行生成不同的流水号，当然能够唯一，但不能证明一行就是一个公司年度。</p>
+<p>设候选键为 <span class="math inline">\(K\)</span>，总行数为 <span class="math inline">\(N\)</span>，不同键值组合的数量为 <span class="math inline">\(U(K)\)</span>。必要的键检查为：</p>
+<p><span class="math display">\[
+U(K)=N,\qquad \text{Missing}(K)=0.
+\]</span></p>
+<p>第二个条件要求键中没有缺失。即使所有缺失组合只出现一次，仍然没有足够身份信息完成可靠连接。发现重复时，要查看它对应不同报表、不同期间、多个证券、修订版本，还是重复导出，不能直接删除重复键。</p>
+<section id="用三张小表建立直觉" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="用三张小表建立直觉"><span class="header-section-number">3.2.1</span> 用三张小表建立直觉</h3>
+<p>下面全部为虚构教学数据，金额单位任意但一致，换手率以百分数记录。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>firm</th>
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">assets</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td style="text-align: right;">2020</td>
+<td style="text-align: right;">100</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td style="text-align: right;">2020</td>
+<td style="text-align: right;">200</td>
+</tr>
+</tbody>
+</table>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>firm</th>
+<th>date</th>
+<th style="text-align: right;">turnover</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>2020-01-02</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td>A</td>
+<td>2020-01-03</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td>B</td>
+<td>2020-01-02</td>
+<td style="text-align: right;">2</td>
+</tr>
+</tbody>
+</table>
+<p>公司表另有 A、B 两行及其虚构行业。年度表的键是 <code>(firm, year)</code>，日表的键是 <code>(firm, date)</code>，公司表在这个简化例子中的键是 <code>firm</code>。先写出这些关系，再决定操作；变量恰好同名不能替代经济判断。</p>
+</section>
+<section id="错误合并为什么可能不报错" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="错误合并为什么可能不报错"><span class="header-section-number">3.2.2</span> 错误合并为什么可能不报错</h3>
+<p>把两张表直接按公司和年份连接，A 的资产 100 会被复制到两天，B 的资产保留一次，于是年度表从 2 行变为 3 行。代码可以正常完成，但它改变了观测权重：A 在后续不加说明的逐行计算中出现两次。</p>
+<div id="fig-financial-management-wrongmerge" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-financial-management-wrongmerge-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/financial-data-fig04-merge-20260916-101501.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-financial-management-wrongmerge-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;3.2: 目标为公司年度时，先将日表聚合到年度，再合并。原图来自《数据分析与经济决策》课程。
+</figcaption>
+</figure>
+</div>
+<p>图中 <code>ret_mean</code> 代表期间内平均日收益，不能将其误称实际年度持有回报。此处的可运行小表改用平均换手率，使学生先集中理解粒度。A 的平均换手率为 <code>(1+3)/2=2</code>，B 为 2。聚合后每公司每年一行，与年度表连接后仍为 2 行。</p>
+<p>同一个连接在另一种目标下可能合理：若研究日收益与已公开财务特征的关系，日表可以作为母表，将当时可得的财务信息广播到后续交易日。此时目标本来就是证券日度，验收应检查日度键和信息可得时点，而不是强制保留年度行数。</p>
+</section>
+</section>
+<section id="sec-financial-management-operations" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="sec-financial-management-operations"><span class="header-section-number">3.3</span> 追加、合并、变形和聚合</h2>
+<p>这些操作都能把文件变成一个表，但改变的对象不同。学生如果只要求 Agent 合并所有数据，实际上尚未给出可执行的数据设计。</p>
+<section id="append增加同类记录" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="append增加同类记录"><span class="header-section-number">3.3.1</span> Append：增加同类记录</h3>
+<p>追加把相同含义的列纵向排列，例如将按年份分开的行情文件连接起来。追加前核对列名、类型、单位和覆盖时期，追加后检查总行数、来源标签与重复键。</p>
+<p>若一个文件止于 2020 年底，另一个从 2020 年开始，两者有重叠期，行数相加正确仍可能重复。应保留文件来源列，将重叠记录交给规则判断。本章 CSMAR 股东表有两个导出分片，<a href="../notebooks/financial-data/financial-data.html#sec-csmar-02">Notebook 第 02 节</a>实际检查了拼接后的完整键。</p>
+</section>
+<section id="merge沿键增加信息" class="level3" data-number="3.3.2">
+<h3 data-number="3.3.2" class="anchored" data-anchor-id="merge沿键增加信息"><span class="header-section-number">3.3.2</span> Merge：沿键增加信息</h3>
+<p>合并前先判断关系：一对一表示双方键均唯一；多对一表示母表可多行对应同一条右表信息；一对多则会使左侧信息重复。多对多可能是业务事实，但必须先解释预期组合数，不能作为默认连接方式。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>连接方式</th>
+<th>保留哪些键</th>
+<th>需要追查什么</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>left</td>
+<td>左表全部键及其匹配</td>
+<td>右侧未匹配为什么出现</td>
+</tr>
+<tr class="even">
+<td>inner</td>
+<td>两侧共同键</td>
+<td>谁被丢弃，是否改变目标总体</td>
+</tr>
+<tr class="odd">
+<td>outer</td>
+<td>两侧键的并集</td>
+<td>仅左、仅右和共同观测各有多少</td>
+</tr>
+</tbody>
+</table>
+<p>下面接续 <a href="../notebooks/financial-data/financial-data.html#sec-csmar-04">Notebook 第 04 节</a>已生成的 <code>views</code>，按已识别的 A 口径建立两侧年度视图。代码在该节有对应执行单元；读者可 clone 仓库、取得授权数据后从第 00 节顺序运行，不应单独执行一个尚未定义 <code>views</code> 的片段。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A/B 保留在年度视图中；本次只连接 A 口径，未销毁 B 记录。</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>left <span class="op">=</span> views[<span class="st">"balance"</span>].query(<span class="st">"Typrep == 'A'"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>right <span class="op">=</span> views[<span class="st">"income"</span>].query(<span class="st">"Typrep == 'A'"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>keys <span class="op">=</span> [<span class="st">"stock_code"</span>, <span class="st">"fiscal_year"</span>]</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>require_key(left, keys, <span class="st">"资产负债表 A"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>require_key(right, keys, <span class="st">"利润表 A"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>merged <span class="op">=</span> left.merge(</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    right, on<span class="op">=</span>keys, how<span class="op">=</span><span class="st">"outer"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    validate<span class="op">=</span><span class="st">"one_to_one"</span>, indicator<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    suffixes<span class="op">=</span>(<span class="st">"_balance"</span>, <span class="st">"_income"</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>validate</code> 使非预期重复直接失败，<code>indicator</code> 留下匹配状态。它们解决结构核验的一部分，不能确认字段单位或证券身份是否正确。两个季度表误用年度键，或者两表都只剩一个错误版本，也可能在技术层面通过唯一性检查。</p>
+</section>
+<section id="reshape同一信息换一种排列" class="level3" data-number="3.3.3">
+<h3 data-number="3.3.3" class="anchored" data-anchor-id="reshape同一信息换一种排列"><span class="header-section-number">3.3.3</span> Reshape：同一信息换一种排列</h3>
+<p>宽表可能把 <code>assets_2019</code> 与 <code>assets_2020</code> 放在不同列；长表用 <code>year</code> 列保存年份，用 <code>assets</code> 列保存数值。改成长表后，年份更容易筛选、滞后和连接。<code>melt</code> 常用于宽转长，<code>pivot</code> 用于长转宽，但后者要求指定的行列组合唯一。</p>
+<p>不要为了让 <code>pivot</code> 成功就改用默认取均值的 <code>pivot_table</code>，那会把变形悄悄变成聚合。若一家公司同年有两种报表，应该保留报表类型维度或明确选择规则。教学小表中的宽长往返检查会验证数值和键是否保持。</p>
+</section>
+<section id="aggregate为目标粒度定义统计量" class="level3" data-number="3.3.4">
+<h3 data-number="3.3.4" class="anchored" data-anchor-id="aggregate为目标粒度定义统计量"><span class="header-section-number">3.3.4</span> Aggregate：为目标粒度定义统计量</h3>
+<p>日度换手率可以计算均值，年度营业收入通常按年度报告口径取得；季度累计收入不能随意相加得到全年收入。聚合算子必须对应变量含义。</p>
+<p>日简单收益率 <span class="math inline">\(r_{id}\)</span> 使用小数表示，<span class="math inline">\(d\)</span> 为期间内交易日。若数据完整、公司行为口径一致且没有额外现金流处理问题，期间复合收益为：</p>
+<p><span class="math display">\[
+R_{it}=\prod_{d\in\mathcal D_{it}}(1+r_{id})-1.
+\]</span></p>
+<p><span class="math inline">\(\mathcal D_{it}\)</span> 为证券 <span class="math inline">\(i\)</span> 在期间 <span class="math inline">\(t\)</span> 纳入计算的交易日集合。平均日收益乘交易日数是另一种近似或年化均值指标，不能替代这个实际期间复合收益。教学数值 +10% 和 −10% 的两日回报为 −1%，算术均值为 0，直观体现了差别。</p>
+<p>日收益波动率通常以日收益的标准差表示，年化还需要假定与约定。不能用平均绝对收益直接冒充标准差，也不能不检查缺失交易日便宣称计算了完整年度风险。完整金融模型将在后续章节展开，这里先把字段名称写准确。</p>
+</section>
+</section>
+<section id="sec-financial-management-storage" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="sec-financial-management-storage"><span class="header-section-number">3.4</span> 存储格式也是数据契约</h2>
+<p>《金融数据分析》课程提出的数据契约意识很有用：接收方除了得到一个文件，还要知道它承诺了怎样的结构。格式保存部分技术信息，数据字典保存经济含义，两者必须配合。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>格式</th>
+<th>适合什么工作</th>
+<th>需要额外注意</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CSV</td>
+<td>分享、小表、人工检查、跨工具交换</td>
+<td>不保存可靠的字段类型契约，明确编码与读入规则</td>
+</tr>
+<tr class="even">
+<td>Excel</td>
+<td>人工录入、多个工作表和报告展示</td>
+<td>表头、格式、公式与实际数值分开核对</td>
+</tr>
+<tr class="odd">
+<td>Parquet</td>
+<td>标准化中间表、反复分析和选择列</td>
+<td>保存类型仍不等于保存全部经济定义</td>
+</tr>
+<tr class="even">
+<td>SQLite</td>
+<td>本地多表关系、SQL 查询和约束</td>
+<td>表结构、索引和约束需要明确建立</td>
+</tr>
+<tr class="odd">
+<td>DuckDB</td>
+<td>面向本地文件的分析查询</td>
+<td>结果仍受原数据粒度和类型限制</td>
+</tr>
+</tbody>
+</table>
+<div id="fig-financial-management-storage" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-financial-management-storage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/financial-data-fig05-storage-20260916-101501.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-financial-management-storage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;3.3: CSV 与 Parquet 的存储直觉。原图来自《数据分析与经济决策》课程。
+</figcaption>
+</figure>
+</div>
+<p>CSV 接近逐行排列的文本，Parquet 按列组织并保存 schema，因此选择少数列、压缩相似数值和重复分析时常有优势。不过，压缩比和读取速度取决于数据、列数、压缩方式和缓存。不能把某一份课程示例的性能倍数当普遍结果，也不需要设定一个固定文件大小作为唯一切换阈值。</p>
+<section id="类型编码与经济定义" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="类型编码与经济定义"><span class="header-section-number">3.4.1</span> 类型、编码与经济定义</h3>
+<p>用引号包住 CSV 中的 <code>000001</code> 不保证所有读取器都将其保留为字符串，应在读取时明确类型。Parquet 可以保存字符串、日期等类型，但若转换前类型已经错了，它也会忠实保存错误。将 <code>roe</code> 保存为浮点数并不能告诉别人 5 表示 5% 还是 500%。</p>
+<p>数据字典至少记录变量名、含义、原始字段、类型、单位、缺失编码、报告口径、有效期间和构造公式。代码中的映射与字典保持一致；来源说明没有单位时写待确认，不根据常识补上人民币元。</p>
+</section>
+<section id="读取时只取需要的信息" class="level3" data-number="3.4.2">
+<h3 data-number="3.4.2" class="anchored" data-anchor-id="读取时只取需要的信息"><span class="header-section-number">3.4.2</span> 读取时只取需要的信息</h3>
+<p>读取 Parquet 时可以指定需要的列；查询引擎还能结合文件统计信息与分区跳过部分数据。这样减少不必要的读入和内存使用。CSV 的 <code>usecols</code> 可以减少保留的列和内存占用，但仍要解析文本结构，不能与列式文件的物理读取机制完全等同。</p>
+<p>若按年份保存多个分区，需保证各分区使用一致的 schema，新增年份时记录字段变动。分区不等于样本筛选：2014 年支持数据虽然不属于研究期，仍可能用于 2015 年平均资产分母，应保留可追溯关系。</p>
+</section>
+</section>
+<section id="sec-financial-management-sql" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="sec-financial-management-sql"><span class="header-section-number">3.5</span> SQLite 与 SQL：把多张表放在一起</h2>
+<p>来源讲义用 SQLite 演示从多文件到统一查询的过渡。SQLite 数据库可以是一个本地文件，Python 的 <code>sqlite3</code> 模块提供访问接口；也可用内存数据库演示，不需要部署数据库服务器。建库不是必经步骤，反复查询和多表协作时才体现价值。</p>
+<section id="从表结构到查询结果" class="level3" data-number="3.5.1">
+<h3 data-number="3.5.1" class="anchored" data-anchor-id="从表结构到查询结果"><span class="header-section-number">3.5.1</span> 从表结构到查询结果</h3>
+<p>基本流程是先定义表结构与约束，再导入数据，检查行数、期间和键，之后用 SQL 筛选或连接，将结果读回 pandas。<code>DataFrame.to_sql()</code> 提供方便的写表方法，但不会自动理解哪个组合应为业务主键。需要约束时应明确建表，或先核验再建立唯一索引。</p>
+<p>在<a href="../notebooks/financial-data/financial-data.html#sec-csmar-mini">教学小表实验</a>中，公司和年度表写入内存数据库，<code>(firm, year)</code> 建立唯一索引，然后执行下面的查询。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> c.industry, <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> n, <span class="fu">AVG</span>(f.assets) <span class="kw">AS</span> mean_assets</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> annual <span class="kw">AS</span> f</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> company <span class="kw">AS</span> c <span class="kw">ON</span> f.firm <span class="op">=</span> c.firm</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> f.<span class="dt">year</span> <span class="op">=</span> <span class="dv">2020</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> c.industry</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> c.industry;</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>FROM</code> 选母表，<code>JOIN</code> 添加行业信息，<code>WHERE</code> 限制年度，<code>GROUP BY</code> 按行业分组，<code>COUNT</code> 和 <code>AVG</code> 返回组内数量与平均资产。结果与同一小表的 pandas 实现进行比较。两种软件得到同样结果是一项实现检查，仍需确认两者没有使用同一种错误定义。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>目的</th>
+<th>pandas 思路</th>
+<th>SQL 表达</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>选列</td>
+<td>指定列列表</td>
+<td><code>SELECT</code></td>
+</tr>
+<tr class="even">
+<td>筛选</td>
+<td>布尔条件</td>
+<td><code>WHERE</code></td>
+</tr>
+<tr class="odd">
+<td>排序与取前几行</td>
+<td><code>sort_values</code>、<code>head</code></td>
+<td><code>ORDER BY</code>、<code>LIMIT</code></td>
+</tr>
+<tr class="even">
+<td>分组汇总</td>
+<td><code>groupby</code></td>
+<td><code>GROUP BY</code> 与聚合函数</td>
+</tr>
+<tr class="odd">
+<td>连接关系表</td>
+<td><code>merge</code></td>
+<td><code>JOIN ... ON ...</code></td>
+</tr>
+<tr class="even">
+<td>检查重复组合</td>
+<td><code>duplicated</code></td>
+<td><code>GROUP BY ... HAVING COUNT(*) &gt; 1</code></td>
+</tr>
+</tbody>
+</table>
+<p>SQL 聚合也要关注缺失：<code>COUNT(*)</code> 统计行，<code>COUNT(assets)</code> 统计该字段非空值，<code>AVG(assets)</code> 忽略 NULL。报告平均数时同时报告有效样本量，避免不同指标的均值来自不同人群却被当作共同样本比较。</p>
+</section>
+<section id="四类实际查询怎样设定" class="level3" data-number="3.5.2">
+<h3 data-number="3.5.2" class="anchored" data-anchor-id="四类实际查询怎样设定"><span class="header-section-number">3.5.2</span> 四类实际查询怎样设定</h3>
+<p><strong>年度交易概览。</strong> 先按证券和年份计算观测交易日数、平均换手率与收益统计，再连接年度属性。每个指标写清小数或百分数、是否年化、缺失日处理。不能将一个带百分号的平均值重复乘 100。</p>
+<p><strong>异常成交日。</strong> 可以将某日成交量与同年均值比较，找出值得检查的观测。但全年均值含未来交易日，因此适合事后描述；若用于当时的交易信号，应换成截至当日之前可得的基准。</p>
+<p><strong>日行情与月度指标。</strong> 提取月份后连接月表，可以把同一月值重复到多天。它解决频率匹配，不解决信息可得性。若月统计值在次月发布，当月交易决策不能使用它，应根据发布日期作可得信息连接。</p>
+<p><strong>日行情与财务表。</strong> 若目标为年度研究，先聚合行情再连接；若目标为日度预测，使用已公告且在有效期间内的财务记录。不能用字符串年份相同作为唯一经济依据。</p>
+<p>这些查询保留了来源讲义的应用场景，并将结构关系、指标定义和信息时间一起纳入验收。学生应先用很小的数据验证，再处理整批文件。</p>
+</section>
+<section id="建立可重跑的文件数据库" class="level3" data-number="3.5.3">
+<h3 data-number="3.5.3" class="anchored" data-anchor-id="建立可重跑的文件数据库"><span class="header-section-number">3.5.3</span> 建立可重跑的文件数据库</h3>
+<p>从多个 CSV 建库时，应显式列出输入文件和字段映射，不能靠文件行数推断公司信息表是长表还是宽表。不同 schema 分别处理，缺少必须字段时报告，而不是跳过后继续给出完成结论。</p>
+<p>生成数据库写入派生目录，保留原始 CSV。每次运行可以写入新版本数据库，核验完成后再由规则决定是否替换使用入口。<code>if_exists='replace'</code> 会替换指定表，适合明确的重建任务，不能在未知已有成果上随意使用。写入完成还要检查读取后的类型、行数和查询结果，而不只看文件存在。</p>
+</section>
+</section>
+<section id="sec-financial-management-duckdb" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="sec-financial-management-duckdb"><span class="header-section-number">3.6</span> DuckDB 与 Parquet：查询本地大文件</h2>
+<p>当资料分布在多个 Parquet 文件，且任务主要是筛选、分组和连接时，可以考虑 DuckDB。它提供对 Parquet 等文件的分析查询，不必先把全部记录加载到 pandas。具体接口见 <a href="https://duckdb.org/docs/stable/data/parquet/overview">DuckDB 官方 Parquet 文档</a>。本章介绍使用位置，不要求学生为完成 CSMAR 案例安装新的数据库系统。</p>
+<p>选择工具时先问瓶颈在哪里。如果只是几张小表，pandas 已足够；如果相同关系表要反复查询，SQLite 可以集中管理；如果任务是在大量本地列式文件中筛选聚合，DuckDB 提供另一种路线。把所有数据换个后缀或导入数据库，并不会自动使错误合并变正确。</p>
+<p>性能比较应使用相同输入、列、筛选条件和聚合定义，先比较结果是否一致，再讨论时间。首次读取与缓存读取、是否包含建库时间、是否只取需要列都会影响比较。这里不沿用来源讲义的机器计时，也不把工具排序当成研究结论。</p>
+<p>在多人机构环境中还会遇到服务器数据库、权限控制和任务调度。它们扩大了数据规模和协作方式，但主键、schema、来源追踪和验收规则仍然适用。理解本章的小表比背诵更多产品名更有迁移价值。</p>
+</section>
+<section id="sec-financial-management-contract" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="sec-financial-management-contract"><span class="header-section-number">3.7</span> 目录、命名、字典与交接</h2>
+<p>数据项目长期可维护，依赖于别人能否在没有原作者口头解释时找到输入与运行入口。目录和文档要服务于这个目标。</p>
+<section id="按数据生命周期分层" class="level3" data-number="3.7.1">
+<h3 data-number="3.7.1" class="anchored" data-anchor-id="按数据生命周期分层"><span class="header-section-number">3.7.1</span> 按数据生命周期分层</h3>
+<pre class="text"><code>project/
+  README.md                 项目目的、环境、运行顺序
+  AGENTS.md                 Agent 工作边界
+  DATA_PROTOCOL.md          数据定义与验收规则
+  data/raw/                 获得的原始文件，只读
+  data/interim/             标准化表、可重建数据库
+  data/processed/           候选底表与研究版本
+  notebooks/                教学解释、代码与保存的输出
+  tools/                    可复用处理脚本
+  audit/                    来源清单、样本流、匹配和分布
+  decisions.md              已确认决定与待裁定事项</code></pre>
+<p>这是独立学生项目的通用示意。FinEco 中受限 raw/interim/processed 位于授权数据根，公开 <code>data/financial-data/</code> 只放说明与汇总，详见<a href="../data/financial-data/README.md">运行说明</a>。不要为了符合示意目录而移动教师原始资料。</p>
+<p>原始数据、标准化表和研究样本承担不同责任。标准化可以更正字段类型与确认后的单位，但不默认删除金融行业；研究样本可以执行论文规则，但须保留从基础库重建的路径。规则改变时生成新研究版本，不反向改掉原始输入。</p>
+</section>
+<section id="文件名要能排序和辨认" class="level3" data-number="3.7.2">
+<h3 data-number="3.7.2" class="anchored" data-anchor-id="文件名要能排序和辨认"><span class="header-section-number">3.7.2</span> 文件名要能排序和辨认</h3>
+<p>使用主题、范围和版本，例如 <code>financial_annual_2014_2025_v1.parquet</code>。日期采用可排序格式，版本写清顺序。避免只有“最终版”“老师改过的”等依赖记忆的名称。已有数据库导出文件保留原名，通过 manifest 建立规范数据集名称，不为美观而修改原始文件。</p>
+<p>相同文件名可能有不同内容，因此记录 SHA256。哈希相同支持字节未变，不能证明来源内容本身正确；文件重新编码后哈希不同，也不必然意味着经济数值变了。应结合 schema、覆盖和变量比较判断。</p>
+</section>
+<section id="数据字典与-readme-各写什么" class="level3" data-number="3.7.3">
+<h3 data-number="3.7.3" class="anchored" data-anchor-id="数据字典与-readme-各写什么"><span class="header-section-number">3.7.3</span> 数据字典与 README 各写什么</h3>
+<p>字典围绕字段，README 围绕项目。字典解释 <code>total_assets</code> 来自哪个源字段、使用什么金额单位、属于什么报表；README 说明数据从哪里获得、需要什么环境、先运行哪份代码、输出在哪里、哪些内容不能分发。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>文档</th>
+<th>最少需要回答</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>来源清单</td>
+<td>哪个提供方、哪次导出、哪些条件、哪些文件及指纹</td>
+</tr>
+<tr class="even">
+<td>字段字典</td>
+<td>含义、类型、单位、缺失、口径、有效时期</td>
+</tr>
+<tr class="odd">
+<td>处理协议</td>
+<td>哪些操作允许，哪些必须等待人工决定</td>
+</tr>
+<tr class="even">
+<td>审计报告</td>
+<td>样本量如何变化、键是否唯一、哪些异常未解决</td>
+</tr>
+<tr class="odd">
+<td>决策记录</td>
+<td>谁根据什么依据，在何时批准了哪条规则</td>
+</tr>
+<tr class="even">
+<td>运行说明</td>
+<td>如何获取授权数据、执行、核对和交接</td>
+</tr>
+</tbody>
+</table>
+<p>可以委托 Agent 生成这些文档的初稿，但字段含义须有来源，不能把它从列名猜出的解释写成事实。所有权不能靠控制人名称含几个关键词便自动二分，缺失单位不能靠数量级自动决定。</p>
+</section>
+</section>
+<section id="sec-financial-management-workflow" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="sec-financial-management-workflow"><span class="header-section-number">3.8</span> 从小任务到可复用工作流</h2>
+<p>现在可以把全章连起来：先列来源和粒度，检查类型与键，明确聚合规则，再连接数据并保存审计，最后将经过核验的中间结果供下游重复使用。</p>
+<pre class="text"><code>任务：把年度财务与日行情形成年度分析底表。
+输入：已列明来源与 schema 的年度表、日表、身份历史表。
+目标：年度底表；保留原字段，单独增加指定的交易指标。
+约束：原始数据只读，不猜单位，不自动去重或填补缺失。
+步骤：检查键与期间，说明聚合公式，再合并并保留匹配标识。
+验收：输入输出数量、双方键检查、匹配状态、分组未匹配率、
+变量单位、支持期与信息日期检查；SQL/pandas 对照时比较结果。
+停止条件：重复原因不清、身份有效期缺失、口径不一致。</code></pre>
+<p>读者可以 clone 仓库后运行 <a href="../notebooks/financial-data/financial-data.html#sec-csmar-04">Notebook 第 04–05 节</a>，观察真实财务表如何落实这些步骤。代码已经提供；学生的任务是能够解释为什么采取这些操作，以及现有证据还不足以支持什么。</p>
+<p>本讲练习：给一张证券日表和一张公司年表各写出主键；指出同一个连接在年度描述与日度预测中的不同条件；说明 CSV、Parquet 和 SQLite 分别保存了哪些信息；为一次追加后的重复设计核查规则。下一讲进入<a href="../lectures/financial-data-cleaning.html">清洗、变量构造和审计</a>。</p>
+</section>
+<section id="本讲来源" class="level2" data-number="3.9">
+<h2 data-number="3.9" class="anchored" data-anchor-id="本讲来源"><span class="header-section-number">3.9</span> 本讲来源</h2>
+<p>主要依据《数据分析与经济决策》的<a href="https://lianxhcn.github.io/ds2026/Lecture/data_manage/lecture_data_management.html">数据管理：从多表合并到可复用工作流</a>，补充《金融数据分析》的格式契约与项目规范。三张管理图均复用前者原图，新增教学数值明确为虚构。技术细节可查 <a href="https://docs.python.org/3/library/sqlite3.html">Python sqlite3 文档</a>、<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.merge.html">pandas merge 文档</a>与 <a href="https://duckdb.org/docs/stable/data/parquet/overview">DuckDB Parquet 文档</a>。读取日期为 2026-09-16。</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "已复制");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "已复制");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../lectures/financial-data.html" class="pagination-link" aria-label="数据流程与获取">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">数据流程与获取</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../lectures/financial-data-cleaning.html" class="pagination-link" aria-label="数据清洗与审计">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">数据清洗与审计</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>LN429 · 中山大学岭南学院</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/lectures/financial-data-management.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p><a href="https://www.lianxh.cn">连享会</a> · Quarto Book</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

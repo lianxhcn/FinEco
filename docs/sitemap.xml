@@ -2,62 +2,78 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://lianxhcn.github.io/FinEco/index.html</loc>
-    <lastmod>2026-09-15T09:18:21.883Z</lastmod>
+    <lastmod>2026-09-16T05:15:04.568Z</lastmod>
   </url>
   <url>
     <loc>https://lianxhcn.github.io/FinEco/resources.html</loc>
-    <lastmod>2026-09-15T09:18:22.175Z</lastmod>
+    <lastmod>2026-09-16T05:14:20.372Z</lastmod>
   </url>
   <url>
     <loc>https://lianxhcn.github.io/FinEco/getting-started.html</loc>
-    <lastmod>2026-09-15T09:18:21.781Z</lastmod>
+    <lastmod>2026-09-16T05:14:20.331Z</lastmod>
   </url>
   <url>
     <loc>https://lianxhcn.github.io/FinEco/syllabus.html</loc>
-    <lastmod>2026-09-15T09:18:22.727Z</lastmod>
+    <lastmod>2026-09-16T05:14:20.404Z</lastmod>
   </url>
   <url>
     <loc>https://lianxhcn.github.io/FinEco/homework.html</loc>
-    <lastmod>2026-09-15T09:18:21.836Z</lastmod>
+    <lastmod>2026-09-16T05:14:20.332Z</lastmod>
   </url>
   <url>
     <loc>https://lianxhcn.github.io/FinEco/exercises/hw-01.html</loc>
-    <lastmod>2026-09-15T09:18:21.298Z</lastmod>
+    <lastmod>2026-09-16T05:14:20.113Z</lastmod>
   </url>
   <url>
     <loc>https://lianxhcn.github.io/FinEco/settings.html</loc>
-    <lastmod>2026-09-15T09:18:22.644Z</lastmod>
+    <lastmod>2026-09-16T05:14:20.402Z</lastmod>
   </url>
   <url>
     <loc>https://lianxhcn.github.io/FinEco/publishing.html</loc>
-    <lastmod>2026-09-15T09:18:22.079Z</lastmod>
+    <lastmod>2026-09-16T05:14:20.369Z</lastmod>
   </url>
   <url>
     <loc>https://lianxhcn.github.io/FinEco/lectures/intro.html</loc>
-    <lastmod>2026-09-15T09:18:21.927Z</lastmod>
+    <lastmod>2026-09-16T05:14:20.340Z</lastmod>
   </url>
   <url>
     <loc>https://lianxhcn.github.io/FinEco/notebooks/intro/portfolio-python.html</loc>
-    <lastmod>2026-09-15T09:18:22.030Z</lastmod>
+    <lastmod>2026-09-16T05:14:20.368Z</lastmod>
   </url>
   <url>
     <loc>https://lianxhcn.github.io/FinEco/notebooks/intro/policy-stata.html</loc>
-    <lastmod>2026-09-15T09:18:21.980Z</lastmod>
+    <lastmod>2026-09-16T05:14:20.361Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lianxhcn.github.io/FinEco/lectures/financial-data.html</loc>
+    <lastmod>2026-09-16T05:14:20.338Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lianxhcn.github.io/FinEco/lectures/financial-data-management.html</loc>
+    <lastmod>2026-09-16T05:14:20.337Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lianxhcn.github.io/FinEco/lectures/financial-data-cleaning.html</loc>
+    <lastmod>2026-09-16T05:17:07.100Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lianxhcn.github.io/FinEco/notebooks/financial-data/financial-data.html</loc>
+    <lastmod>2026-09-16T05:14:20.358Z</lastmod>
   </url>
   <url>
     <loc>https://lianxhcn.github.io/FinEco/lectures/bootstrap.html</loc>
-    <lastmod>2026-09-15T09:18:16.648Z</lastmod>
+    <lastmod>2026-09-16T05:14:20.335Z</lastmod>
   </url>
   <url>
     <loc>https://lianxhcn.github.io/FinEco/notebooks/bootstrap/bootstrap-demo.html</loc>
-    <lastmod>2026-09-15T08:58:36.045Z</lastmod>
+    <lastmod>2026-09-16T05:14:20.349Z</lastmod>
   </url>
   <url>
     <loc>https://lianxhcn.github.io/FinEco/notebooks/bootstrap/bootstrap-stata.html</loc>
-    <lastmod>2026-09-15T08:58:36.319Z</lastmod>
+    <lastmod>2026-09-16T05:14:20.355Z</lastmod>
   </url>
   <url>
     <loc>https://lianxhcn.github.io/FinEco/resources/references.html</loc>
-    <lastmod>2026-09-15T09:18:22.987Z</lastmod>
+    <lastmod>2026-09-16T05:15:04.587Z</lastmod>
   </url>
 </urlset>

@@ -58,7 +58,7 @@ FINANCIAL ECONOMETRICS · LN429 · 2026 秋季
 | 环境准备要点 | 10 分钟 | [Agent 与手动步骤](settings.qmd) |
 | 一页研究计划 | 5 分钟 | [作业要求](exercises/hw-01.qmd) |
 
-本网站当前完整提供第一讲及其配套内容。其余主题列在[课程安排](syllabus.qmd#sec-course-topics)中，将随授课陆续加入。网页已经包含运行后的代码与结果，课堂阅读不需要启动 Stata 或 Python。
+本网站已提供研究流程、金融数据工作流和 Bootstrap 及其配套实验。金融数据单元依次阅读[流程与获取](lectures/financial-data.qmd)、[数据管理](lectures/financial-data-management.qmd)、[清洗与审计](lectures/financial-data-cleaning.qmd)，再进入 [CSMAR：Agent 实战](notebooks/financial-data/financial-data.ipynb)。其余主题列在[课程安排](syllabus.qmd#sec-course-topics)中，将随授课陆续加入。网页已经包含运行后的代码与结果，课堂阅读不需要启动 Stata 或 Python。
 
 ## 课前与课后
 

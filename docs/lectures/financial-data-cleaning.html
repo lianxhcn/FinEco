@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>4&nbsp; 数据清洗、变量构造与质量审计 – 金融计量经济学</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../notebooks/financial-data/financial-data.html" rel="next">
+<link href="../lectures/financial-data-management.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0626ff4d7a71b55c8707dcae1d04a9b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-d59a9bb4a0246dd4330968064f99cf3e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+<link rel="icon" type="image/png" sizes="40x40" href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../lectures/financial-data-cleaning.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">数据清洗与审计</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">金融计量经济学</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/lianxhcn/FinEco" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="切换阅读器模式">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🏠 前言</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📚 课程资料</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../getting-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📌 课件使用</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../syllabus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📅 课程安排</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../homework.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🚀 作业</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../exercises/hw-01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">hw-01</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">🛠️ 环境配置</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">软件配置</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../publishing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">同步与发布</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">研究基础</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">研究流程</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/intro/portfolio-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">组合实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/intro/policy-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">政策实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/financial-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">数据流程与获取</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/financial-data-management.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">数据管理</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/financial-data-cleaning.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">数据清洗与审计</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/financial-data/financial-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">CSMAR：Agent 实战</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/bootstrap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Bootstrap</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/bootstrap/bootstrap-demo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Python 实验</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/bootstrap/bootstrap-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Stata 实验</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">附录</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../resources/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">公共书目</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目录</h2>
+   
+  <ul>
+  <li><a href="#sec-financial-cleaning-ready" id="toc-sec-financial-cleaning-ready" class="nav-link active" data-scroll-target="#sec-financial-cleaning-ready"><span class="header-section-number">4.1</span> 什么叫作可以使用的数据</a></li>
+  <li><a href="#sec-financial-cleaning-single" id="toc-sec-financial-cleaning-single" class="nav-link" data-scroll-target="#sec-financial-cleaning-single"><span class="header-section-number">4.2</span> 单张表先做哪些检查</a>
+  <ul class="collapse">
+  <li><a href="#类型转换与分类变量" id="toc-类型转换与分类变量" class="nav-link" data-scroll-target="#类型转换与分类变量"><span class="header-section-number">4.2.1</span> 类型转换与分类变量</a></li>
+  <li><a href="#缺失先解释为什么没有值" id="toc-缺失先解释为什么没有值" class="nav-link" data-scroll-target="#缺失先解释为什么没有值"><span class="header-section-number">4.2.2</span> 缺失：先解释为什么没有值</a></li>
+  <li><a href="#重复区分记录重复与对象不同" id="toc-重复区分记录重复与对象不同" class="nav-link" data-scroll-target="#重复区分记录重复与对象不同"><span class="header-section-number">4.2.3</span> 重复：区分记录重复与对象不同</a></li>
+  <li><a href="#异常值阈值是检查入口" id="toc-异常值阈值是检查入口" class="nav-link" data-scroll-target="#异常值阈值是检查入口"><span class="header-section-number">4.2.4</span> 异常值：阈值是检查入口</a></li>
+  </ul></li>
+  <li><a href="#sec-financial-cleaning-selection" id="toc-sec-financial-cleaning-selection" class="nav-link" data-scroll-target="#sec-financial-cleaning-selection"><span class="header-section-number">4.3</span> 缩尾、截尾与样本选择</a>
+  <ul class="collapse">
+  <li><a href="#基础库与论文样本分开" id="toc-基础库与论文样本分开" class="nav-link" data-scroll-target="#基础库与论文样本分开"><span class="header-section-number">4.3.1</span> 基础库与论文样本分开</a></li>
+  <li><a href="#样本流如何记录" id="toc-样本流如何记录" class="nav-link" data-scroll-target="#样本流如何记录"><span class="header-section-number">4.3.2</span> 样本流如何记录</a></li>
+  </ul></li>
+  <li><a href="#sec-financial-data-clean" id="toc-sec-financial-data-clean" class="nav-link" data-scroll-target="#sec-financial-data-clean"><span class="header-section-number">4.4</span> 财务比率：让公式对应经济含义</a>
+  <ul class="collapse">
+  <li><a href="#leverage负债超过资产不自动等于错误" id="toc-leverage负债超过资产不自动等于错误" class="nav-link" data-scroll-target="#leverage负债超过资产不自动等于错误"><span class="header-section-number">4.4.1</span> Leverage：负债超过资产不自动等于错误</a></li>
+  <li><a href="#roa平均资产为什么需要上一年" id="toc-roa平均资产为什么需要上一年" class="nav-link" data-scroll-target="#roa平均资产为什么需要上一年"><span class="header-section-number">4.4.2</span> ROA：平均资产为什么需要上一年</a></li>
+  <li><a href="#roe极端值先看权益" id="toc-roe极端值先看权益" class="nav-link" data-scroll-target="#roe极端值先看权益"><span class="header-section-number">4.4.3</span> ROE：极端值先看权益</a></li>
+  <li><a href="#top1构造与交叉核验" id="toc-top1构造与交叉核验" class="nav-link" data-scroll-target="#top1构造与交叉核验"><span class="header-section-number">4.4.4</span> Top1：构造与交叉核验</a></li>
+  </ul></li>
+  <li><a href="#sec-financial-data-audit" id="toc-sec-financial-data-audit" class="nav-link" data-scroll-target="#sec-financial-data-audit"><span class="header-section-number">4.5</span> 怎样知道 Agent 做对了</a>
+  <ul class="collapse">
+  <li><a href="#结构样本流与合并" id="toc-结构样本流与合并" class="nav-link" data-scroll-target="#结构样本流与合并"><span class="header-section-number">4.5.1</span> 结构、样本流与合并</a></li>
+  <li><a href="#分布与会计关系" id="toc-分布与会计关系" class="nav-link" data-scroll-target="#分布与会计关系"><span class="header-section-number">4.5.2</span> 分布与会计关系</a></li>
+  <li><a href="#时间审计哪一天才知道这条信息" id="toc-时间审计哪一天才知道这条信息" class="nav-link" data-scroll-target="#时间审计哪一天才知道这条信息"><span class="header-section-number">4.5.3</span> 时间审计：哪一天才知道这条信息</a></li>
+  </ul></li>
+  <li><a href="#sec-financial-data-replication" id="toc-sec-financial-data-replication" class="nav-link" data-scroll-target="#sec-financial-data-replication"><span class="header-section-number">4.6</span> 从论文和复现包学习数据规则</a></li>
+  <li><a href="#sec-financial-cleaning-text" id="toc-sec-financial-cleaning-text" class="nav-link" data-scroll-target="#sec-financial-cleaning-text"><span class="header-section-number">4.7</span> 非结构化数据与 LLM</a>
+  <ul class="collapse">
+  <li><a href="#文本解析标签与研究自由度" id="toc-文本解析标签与研究自由度" class="nav-link" data-scroll-target="#文本解析标签与研究自由度"><span class="header-section-number">4.7.1</span> 文本解析、标签与研究自由度</a></li>
+  </ul></li>
+  <li><a href="#sec-financial-cleaning-protocol" id="toc-sec-financial-cleaning-protocol" class="nav-link" data-scroll-target="#sec-financial-cleaning-protocol"><span class="header-section-number">4.8</span> 把研究规则写成可执行协议</a></li>
+  <li><a href="#从理论走向完整案例" id="toc-从理论走向完整案例" class="nav-link" data-scroll-target="#从理论走向完整案例"><span class="header-section-number">4.9</span> 从理论走向完整案例</a></li>
+  <li><a href="#sec-financial-data-references" id="toc-sec-financial-data-references" class="nav-link" data-scroll-target="#sec-financial-data-references"><span class="header-section-number">4.10</span> 参考文献与数据资产</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/lectures/financial-data-cleaning.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../lectures/financial-data-cleaning.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">数据清洗与审计</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-financial-data-cleaning" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">数据清洗、变量构造与质量审计</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>文件能够读入、表格能够连接之后，研究数据仍未准备好。一个空白值可能是没有披露，一个大比率可能来自很小的分母，一个重复公司年度可能对应不同证券。软件能把它们全部变得整齐，但每项处理都可能改变样本或变量含义。</p>
+<p>本章以<a href="https://lianxhcn.github.io/ds2026/Lecture/data_clean/lecture_data_clean.html">《数据分析与经济决策》的数据清洗讲义</a>及<a href="https://lianxhcn.github.io/dsfin/">《金融数据分析》</a>相关材料为基础，保留单表诊断、多表检查、样本选择和文本结构化的教学顺序，并补充本单元的数据协议与审计要求。上一讲已经说明<a href="../lectures/financial-data-management.html">粒度和连接</a>，这里集中处理定义和判断。</p>
+<div class="callout callout-style-default callout-note callout-titled" title="本讲要点">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+本讲要点
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>能区分发现异常与决定处理；能说明变量公式、单位、支持期和信息日期；能审查缺失、重复、极端值和样本筛选；能写出 Agent 必须报告的验收证据。数值小例子为教学设定，CSMAR 结果另在完整案例中解释。</p>
+</div>
+</div>
+<section id="sec-financial-cleaning-ready" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="sec-financial-cleaning-ready"><span class="header-section-number">4.1</span> 什么叫作可以使用的数据</h2>
+<p>清洗的目标应当与研究问题对应。一个没有缺失、没有重复、分布平滑的表格，可能已经删掉了最重要的企业。与其只问数据是否整洁，不如分别检查结构、语义与研究适用性。</p>
+<p><strong>结构清楚。</strong> 每行的观测单位、每列的类型和键可解释，日期和数字能够按规则读取。这里包括技术一致性，但不以强行改成数值列作为成功标准。</p>
+<p><strong>语义清楚。</strong> 单位、报表口径、缺失含义和时间归属有依据。一个浮点数究竟代表元、万元还是百分比，软件无法仅凭存储类型判断。</p>
+<p><strong>适合当前研究。</strong> 样本选择和信息可得时间符合问题设定。当前行业代码可以描述今天的公司分布，却未必适合回填十年前的行业比较。</p>
+<p>以虚构企业的一条贷款公告为例：文本写“贷款 2 亿元，期限 3 年，年利率 4.2%”。转换后金额应有单位，利率要区分 4.2 与 0.042，期限要说明年或月；若公告没有贷款期限，不能因为大多数贷款是 3 年便填入 3。技术结构与经济定义必须一起形成。</p>
+</section>
+<section id="sec-financial-cleaning-single" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="sec-financial-cleaning-single"><span class="header-section-number">4.2</span> 单张表先做哪些检查</h2>
+<p>先保留原始输入，再检查 schema、记录覆盖、键和分布。读入阶段的错误会传递到所有后续结果：把证券代码当整数、把 <code>--</code> 当文字数值、把季度累计值当单季流量，都会在表面正常的程序中造成问题。</p>
+<section id="类型转换与分类变量" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="类型转换与分类变量"><span class="header-section-number">4.2.1</span> 类型转换与分类变量</h3>
+<p>数值、字符和类别描述不同信息。证券代码即使只有数字，也主要用作标识；行业码即使按整数存储，也没有大小和等距含义。有序信用评级有顺序，但相邻评级差距未必相等，不能未经说明把 1、2、3 当连续量。</p>
+<p>转换时保留原值或原始来源，列出失败数量和失败模式。如果数值字段含逗号、货币符号或百分号，应根据定义统一；若字段混有多个单位，先识别单位再转换，不能一次删除所有非数字字符。</p>
+<p>日期应区分交易日、报告期末、公告日和下载日。字符串的格式一致只说明解析方便，不能证明日期的角色一致。无效日期转成缺失后仍要报告新增缺失，不能把转换成功率隐去。</p>
+</section>
+<section id="缺失先解释为什么没有值" class="level3" data-number="4.2.2">
+<h3 data-number="4.2.2" class="anchored" data-anchor-id="缺失先解释为什么没有值"><span class="header-section-number">4.2.2</span> 缺失：先解释为什么没有值</h3>
+<p>来源清洗讲义强调缺失诊断。实际研究至少要区分未发生、不适用、未披露、数据库未收录和读取失败。例如研发费用缺失可能与制度或披露有关，无法直接推断研发为零。</p>
+<p>下面是明确虚构的教学小表。A 的研发为 0，B 为缺失，C 为 2；资产均为 100。已观测研发率的均值为 1%，把 B 填零后变为约 0.67%。这个变化反映了填补假设与分母样本改变，不是新增了 B 的真实信息。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>企业</th>
+<th style="text-align: right;">研发</th>
+<th style="text-align: right;">资产</th>
+<th>已知含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">100</td>
+<td>明确记录为零</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td style="text-align: right;">缺失</td>
+<td style="text-align: right;">100</td>
+<td>原因尚不清楚</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">100</td>
+<td>明确记录为正</td>
+</tr>
+</tbody>
+</table>
+<p>完整案例的<a href="../notebooks/financial-data/financial-data.html#sec-csmar-mini">教学小表单元</a>验证了这一算术差异。它只说明填补会改变统计量，不证明某一种处理在所有场景中正确。</p>
+<p>完整样本删除容易实现，但可能让研究对象发生系统变化；均值填补压缩变异，也不自动恢复正确关系。增加缺失指示变量可以记录缺失模式，不能保证消除选择偏误。插补需要具体假设、辅助信息和适当推断，本讲不把任何方案设为通用默认。</p>
+<p>诊断时按年、行业或可识别群体统计缺失率，并看缺失是否在某个字段启用年份前集中出现。几个字段各自只有少量缺失，联合要求全部非缺失仍可能明显缩小样本，因此还要报告分析变量联合可用的样本量。</p>
+</section>
+<section id="重复区分记录重复与对象不同" class="level3" data-number="4.2.3">
+<h3 data-number="4.2.3" class="anchored" data-anchor-id="重复区分记录重复与对象不同"><span class="header-section-number">4.2.3</span> 重复：区分记录重复与对象不同</h3>
+<p>完全相同的导出行、键重复但数值不同、不同季度和不同报表类型，应分别处理。即使两行所有数值相同，也要确认不是两类经济记录恰好相等；删行需要依据和记录。</p>
+<p>若财务表中同公司同年有 A/B 两类，问题是目标口径尚未选定；若同证券同报告日出现多个版本，问题是修订链与可得时间；若同公司同年对应两个证券，问题是身份映射。<code>drop_duplicates</code> 只能执行指定规则，不能替我们回答上述问题。</p>
+</section>
+<section id="异常值阈值是检查入口" class="level3" data-number="4.2.4">
+<h3 data-number="4.2.4" class="anchored" data-anchor-id="异常值阈值是检查入口"><span class="header-section-number">4.2.4</span> 异常值：阈值是检查入口</h3>
+<p>极端值可能来自单位差异、录入错误、小分母，也可能是真实危机。应同时查看分子、分母、相邻时期和相关字段，必要时追溯原始披露。箱线图、分位数和 z 分数适合发现候选问题，不能单凭被标红就删除。</p>
+<p>标准化变量通常指用均值与标准差改变尺度；数据标准化层则可能指统一命名和类型，两者不是同一操作。对数变换也有经济含义：零值和负值不能直接取对数，给所有值加 1 需要解释单位和尺度，不能作为通用排错手段。</p>
+</section>
+</section>
+<section id="sec-financial-cleaning-selection" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="sec-financial-cleaning-selection"><span class="header-section-number">4.3</span> 缩尾、截尾与样本选择</h2>
+<p>缩尾改变极端观测的数值，截尾删除规定范围以外的观测。两者影响不同，应分开说明。设某个明确样本中的下、上分位阈值分别为 <span class="math inline">\(q_{a}\)</span>、<span class="math inline">\(q_{1-a}\)</span>，缩尾值为：</p>
+<p><span class="math display">\[
+x^{w}_{it}=\min\{\max(x_{it},q_{a}),q_{1-a}\}.
+\]</span></p>
+<p><span class="math inline">\(x_{it}\)</span> 为企业 <span class="math inline">\(i\)</span> 在年份 <span class="math inline">\(t\)</span> 的原变量，<span class="math inline">\(a\)</span> 为下尾比例，例如 0.01；阈值来自全样本还是各年度、是否按行业计算，都需要额外指定。程序的分位数插值方式也会影响小样本阈值。缩尾后必须保留原变量，并报告上下尾各改变多少记录。</p>
+<p>在不同年份尺度变化明显时，全样本与逐年缩尾可能改变不同观测；在小行业内计算分位数也可能很不稳定。比例通常写进研究方案或依据相关文献选择，不能通过反复试比例获得想要的显著性。基础数据库保留原始值，研究版本再执行已确认规则。</p>
+<section id="基础库与论文样本分开" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="基础库与论文样本分开"><span class="header-section-number">4.3.1</span> 基础库与论文样本分开</h3>
+<p>修复错误连接与删除金融行业是不同任务。前者要纠正实现错误，后者定义研究对象。删除 ST、要求连续若干年数据、排除新上市企业，都会改变样本。适用时可以执行，但不能永久抹去基础层信息。</p>
+<p>设 <span class="math inline">\(S_{it}=1\)</span> 表示某条观测通过当前样本规则。研究者实际看到的是条件分布 <span class="math inline">\(P(Y,X\mid S=1)\)</span>，它可能不同于目标总体的分布。若缺失、退出或筛选与经营状况有关，最终均值和回归关系均可能变化。这里的表达只说明选择的存在，不能据此断定偏差方向。</p>
+<p>举例说，用今天仍上市的企业回溯过去，会遗漏已经退出的企业；要求连续五年财务齐全，又可能排除新上市和早期退出者。应先写总体定义，再逐步记录规则，而非用最方便的交集作为天然研究样本。</p>
+</section>
+<section id="样本流如何记录" class="level3" data-number="4.3.2">
+<h3 data-number="4.3.2" class="anchored" data-anchor-id="样本流如何记录"><span class="header-section-number">4.3.2</span> 样本流如何记录</h3>
+<p>每步记录输入、条件、输出和原因，并保留可重跑代码。合并可能增加行，追加会增加行，筛选可能减少行，样本流不应一律叫作删除记录表。若使用 outer merge，分别记录共同、仅左和仅右；若只保留共同样本，应将这次限制单独列出来。</p>
+<p>检查未匹配是否集中于新上市、退市、金融行业或特殊年份，使用组内数量作为未匹配率分母。总体匹配率很高，也可能把一个小但重要的群体几乎全部排除。真实分组审计见 <a href="../notebooks/financial-data/financial-data.html#sec-csmar-08">Notebook 第 08 节</a>。</p>
+</section>
+</section>
+<section id="sec-financial-data-clean" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="sec-financial-data-clean"><span class="header-section-number">4.4</span> 财务比率：让公式对应经济含义</h2>
+<p>本节用资产负债率和盈利比率说明分子、分母和时间怎样对齐。</p>
+<section id="leverage负债超过资产不自动等于错误" class="level3" data-number="4.4.1">
+<h3 data-number="4.4.1" class="anchored" data-anchor-id="leverage负债超过资产不自动等于错误"><span class="header-section-number">4.4.1</span> Leverage：负债超过资产不自动等于错误</h3>
+<p>这一小节用一个常用比率说明分子分母检查。企业总负债相对于总资产的大小，可以用下式描述：</p>
+<p><span id="eq-financial-data-leverage"><span class="math display">\[
+Leverage_{it}=\frac{Liabilities_{it}}{Assets_{it}}.
+\tag{4.1}\]</span></span></p>
+<p><span class="math inline">\(i\)</span> 为企业，<span class="math inline">\(t\)</span> 为年度；分子为年末负债合计，分母为同日总资产，均来自同一合并报表。两者使用同一货币尺度时，比值没有货币单位，0.6 表示 60%。分母为零时不计算比率，分子或分母缺失则保持缺失。</p>
+</section>
+<section id="roa平均资产为什么需要上一年" class="level3" data-number="4.4.2">
+<h3 data-number="4.4.2" class="anchored" data-anchor-id="roa平均资产为什么需要上一年"><span class="header-section-number">4.4.2</span> ROA：平均资产为什么需要上一年</h3>
+<p>这一小节比较利润与资产存量如何对齐。利润是一个年度内形成的流量，资产是某个时点的存量。用期末资产简单直观；用期初期末均值则试图更接近年度投入资产的平均规模，两者都需要说明具体定义。</p>
+<p><span id="eq-financial-data-roa"><span class="math display">\[
+\begin{aligned}
+ROA^{eop}_{it}&amp;=\frac{NetIncome_{it}}{Assets_{it}},\\
+ROA^{avg}_{it}&amp;=\frac{NetIncome_{it}}
+{(Assets_{it}+Assets_{i,t-1})/2}.
+\end{aligned}
+\tag{4.2}\]</span></span></p>
+<p><span class="math inline">\(NetIncome_{it}\)</span> 是企业 <span class="math inline">\(i\)</span> 在年份 <span class="math inline">\(t\)</span> 的合并净利润；<span class="math inline">\(Assets_{it}\)</span> 与 <span class="math inline">\(Assets_{i,t-1}\)</span> 分别为当年与上一年年末资产。<code>eop</code> 表示期末，<code>avg</code> 表示两时点平均。分子分母需使用相同币种和金额单位，比率用小数表示；0.05 对应 5%。平均值不是对全年每日资产的精确测量。</p>
+<p>教学例子中，利润为 10，期初资产 100、期末资产 200，金额使用同一单位。期末口径为 5%，平均口径为约 6.67%。差异来自分母定义。这组数值只用于教学，与任何真实公司无关。</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="本批财务单位仍需补核">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+本批财务单位仍需补核
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>配套 TXT 给出了财务字段含义，但没有充分列明金额币种与单位。流水线未对财务金额自行缩放，跨表 ROA/ROE 当前作为条件性候选比较。需要补财务数据库说明或导出设置后，才能冻结正式研究口径。</p>
+</div>
+</div>
+</section>
+<section id="roe极端值先看权益" class="level3" data-number="4.4.3">
+<h3 data-number="4.4.3" class="anchored" data-anchor-id="roe极端值先看权益"><span class="header-section-number">4.4.3</span> ROE：极端值先看权益</h3>
+<p>这一小节解释盈利比率对分母的敏感性。净利润与总权益匹配时，期末口径写为 <span class="math inline">\(ROE^{eop}_{it}=NetIncome_{it}/Equity_{it}\)</span>；平均口径将分母换为 <span class="math inline">\((Equity_{it}+Equity_{i,t-1})/2\)</span>。<span class="math inline">\(Equity\)</span> 为同一合并报表中的总权益，单位应与年度净利润一致。</p>
+<p>若研究母公司股东获得的利润，应另将归母净利润与归母权益对应。归母权益不等于母公司单体报表权益。本章保留这些候选和原始分子分母，不宣布唯一正确定义。</p>
+<p>教学例子中，净利润为 1、权益只有 0.01，比率达到 100，即 10,000%。大比率可能来自很小的分母。近零权益可以产生极端比率，但仍需同时检查分子、符号与会计口径。</p>
+</section>
+<section id="top1构造与交叉核验" class="level3" data-number="4.4.4">
+<h3 data-number="4.4.4" class="anchored" data-anchor-id="top1构造与交叉核验"><span class="header-section-number">4.4.4</span> Top1：构造与交叉核验</h3>
+<p>这一小节说明怎样使用同一概念的两个来源。十大股东表中的持股排名为 1 时，S0301b 给出第一大股东持股百分比。本章保留 <code>top1_pct</code> 原值，再除以 100 得到比例变量 <code>top1</code>。股东持股数量也同时保留。</p>
+<p>完整批次比较见 <a href="../notebooks/financial-data/financial-data.html#sec-csmar-06">Notebook 第 06–08 节</a>。</p>
+</section>
+</section>
+<section id="sec-financial-data-audit" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="sec-financial-data-audit"><span class="header-section-number">4.5</span> 怎样知道 Agent 做对了</h2>
+<p>这一节把验证落实为证据。审计不只检查异常数值，也检查处理是否回答了原问题。逐个观察执行是否成功、键是否唯一、对象是否正确、时间是否合理，可以避免把不同层次的通过混在一起。</p>
+<section id="结构样本流与合并" class="level3" data-number="4.5.1">
+<h3 data-number="4.5.1" class="anchored" data-anchor-id="结构样本流与合并"><span class="header-section-number">4.5.1</span> 结构、样本流与合并</h3>
+<p>这一小节解决谁留下、谁消失以及谁被重复使用。Structure Audit 检查年份、证券和公司覆盖，以及两个层次的键。Sample Flow 逐步记录 N before、Removed、N after 和 Reason。Merge Audit 报告 matched、master only、using only。</p>
+<p>读合并结果时，不能只看总体匹配率。需要按年和可识别群体比较：新上市公司是否更容易缺少上一年财务，退市公司的年收益是否缺失，金融行业是否缺少某些不适用项目。配套实验最后一格直接用组内样本数计算未匹配率。新上市与非新上市两个组的规模不同，不能只比较未匹配绝对数量。</p>
+<p>本章的<a href="../data/financial-data/AUDIT_REPORT.md">审计报告</a>提供完整样本流、合并表和按年缺失率入口；这些表由程序生成，讲义不手工另造一套结果。</p>
+</section>
+<section id="分布与会计关系" class="level3" data-number="4.5.2">
+<h3 data-number="4.5.2" class="anchored" data-anchor-id="分布与会计关系"><span class="header-section-number">4.5.2</span> 分布与会计关系</h3>
+<p>这一小节检查数值是否具有可解释的量级和关系。每个关键变量报告非缺失 N、均值、标准差、最小值、p1、p25、中位数、p75、p99 和最大值。极端分位数与最大值差异很大时，应追查尾部，而非立即修改它。</p>
+<p>资产负债表还提供一个内部核查条件：</p>
+<p><span id="eq-financial-data-accounting"><span class="math display">\[
+Assets_{it}\approx Liabilities_{it}+Equity_{it}.
+\tag{4.3}\]</span></span></p>
+<p>这里三个量均是同一企业、同一年末、同一报表类型和同一金额单位下的资产、负债、总权益。约等号允许数据库精度或舍入导致的小差异。案例诊断容差取 1 个原始金额单位与资产绝对值的 <span class="math inline">\(10^{-8}\)</span> 两者较大值；它是明确记录的技术阈值，不是会计规则或删除标准。</p>
+</section>
+<section id="时间审计哪一天才知道这条信息" class="level3" data-number="4.5.3">
+<h3 data-number="4.5.3" class="anchored" data-anchor-id="时间审计哪一天才知道这条信息"><span class="header-section-number">4.5.3</span> 时间审计：哪一天才知道这条信息</h3>
+<p>这一小节区分信息描述的时间与信息可获得的时间。<code>fiscal_year</code> 是财务所属年度；<code>report_date</code> 是报表统计截止日；<code>predisclosure_date</code> 是首次预约披露日；<code>actual_announcement_date</code> 是实际披露日。</p>
+<p>假设某年度财报截止于 12 月 31 日，到次年 4 月才公开。研究次年 1 月的投资决策时，不能因为该数据属于上一财年就假定它已经可得。这会引入前视偏误，即用当时尚不知道的信息解释当时的决策或收益。</p>
+<p>还有一个更隐蔽的问题：目前下载的财务数值可能已经更正，而配套公告日期未必是该版本的发布日期。因此，<strong>有实际披露日仍不足以证明完整历史可得性</strong>。需要财报版本链、必要时还要日内公告和交易时间，才能设计相应回测。</p>
+</section>
+</section>
+<section id="sec-financial-data-replication" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="sec-financial-data-replication"><span class="header-section-number">4.6</span> 从论文和复现包学习数据规则</h2>
+<p>这一节说明如何学习领域规则，而不照搬所谓论文惯例。论文正文通常篇幅有限，具体筛选、时间对齐和变量构造往往藏在 README 与代码中。课堂任务是把这些规则提取出来，判断是否适用于当前研究。</p>
+<p>本章选择 Chen and Zimmermann (<a href="https://doi.org/10.1561/104.00000112">2022</a>) 的公开项目作为局部阅读案例。完整研究涉及很多资产定价信号，本科课堂只读<a href="https://github.com/OpenSourceAP/CrossSection/">仓库 README</a>和<a href="https://github.com/OpenSourceAP/CrossSection/blob/master/Signals/pyCode/Predictors/AssetGrowth.py">AssetGrowth.py</a>，不要求复现全部组合或回归。</p>
+<p>该脚本读入月度中间表，使用总资产构造资产增长信号。它依赖上游已经完成公司—证券连接与月度展开。<code>shift(12)</code> 表示移动 12 行；只有上游保证月份结构时，它才对应 12 个月。学生应追问这个条件在哪里建立，而不是把该写法直接移植到有年份断档的 CSMAR 数据。</p>
+<p>进一步查看 <a href="https://github.com/OpenSourceAP/CrossSection/blob/master/Signals/pyCode/DataDownloads/CompustatAnnual.py">CompustatAnnual.py</a>，可以发现币种和报表筛选、指定项目填零、连接有效期与六个月信息滞后等规则。它们属于这个项目的具体实现，不能自动授权本章填零或以固定滞后替代实际公告日。</p>
+<p>阅读时填写一张规则表：Population、Sample、Data source、Unit、Key、Variable definitions、Exclusions、Missing-value rules、Outlier rules、Merge rules、Timing、Final sample。找不到的字段写 <code>pending</code>，不能从一个变量脚本推断整篇论文的最终样本数。本章的<a href="../data/financial-data/replication-reading.md">复现包阅读记录</a>区分了已经查到的规则和仍需追查的内容。</p>
+<p>代码公开与原始数据公开也不同。该项目部分输入来自受限数据库。本次只做代码阅读与规则提取，没有下载或执行其受限数据流程。当前仓库会更新，不能默认今天的 Python 实现与论文发表时的软件版本完全相同。</p>
+</section>
+<section id="sec-financial-cleaning-text" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="sec-financial-cleaning-text"><span class="header-section-number">4.7</span> 非结构化数据与 LLM</h2>
+<p>这一节建立文本、图片与表格数据之间的联系。结构化数据以明确行列保存；非结构化资料可能是年报 PDF、公告、新闻、电话会议音频或图片。把它们整理成变量，增加的是一个测量过程。</p>
+<p>例如，希望测量一家企业是否面临供应链风险。经济状态本身、公司写下的文本、模型给出的标签，是不同对象。可以用下面的过程表示：</p>
+<p><span id="eq-financial-data-measurement"><span class="math display">\[
+Y^{*}_{it}\longrightarrow Text_{it}
+\longrightarrow Model\longrightarrow\widehat{Y}_{it}.
+\tag{4.4}\]</span></span></p>
+<p><span class="math inline">\(Y^{*}_{it}\)</span> 是企业 <span class="math inline">\(i\)</span> 在年份 <span class="math inline">\(t\)</span> 的目标状态，如有无供应链风险；<span class="math inline">\(Text_{it}\)</span> 是对应可得文本；<span class="math inline">\(Model\)</span> 包含模型和提示词等测量程序；<span class="math inline">\(\widehat{Y}_{it}\)</span> 是输出标签。二元标签通常取 0 或 1，属于分类结果，没有货币单位。文本没有写到风险，不一定表示真实风险为零；模型输出也不是 ground truth。</p>
+<p>验证样本应由人按清楚的定义标注，并与调提示词使用的材料分开。对二元分类，可以检查 accuracy (全部标签判断正确的比例)、precision (被模型判为正的项目中真正为正的比例) 和 recall (真正为正的项目中被模型识别出来的比例)。若正类很少，全部判为负也可能得到很高 accuracy，因此不能只看一个总指标。</p>
+<p>还应检查错误是否集中于某些行业、年份、文档长度或表述方式。一个整体准确率不错的标签，在某些群体上系统误判，仍可能扭曲后续比较。保存文本来源、抓取时间、截断规则、模型版本、提示词、参数和人工裁定，才能复查。</p>
+<section id="文本解析标签与研究自由度" class="level3" data-number="4.7.1">
+<h3 data-number="4.7.1" class="anchored" data-anchor-id="文本解析标签与研究自由度"><span class="header-section-number">4.7.1</span> 文本解析、标签与研究自由度</h3>
+<p>下列材料分别说明解析、工具调用和测量配置问题。关键判断已在本节解释，选读用于进一步操作。</p>
+<ul>
+<li>《数据分析与经济决策》课程的<a href="https://lianxhcn.github.io/ds2026/Lecture/text_analysis/lecture_text_analysis_01_claude.html">文本分析</a>可作为概念与操作扩展。</li>
+<li><a href="https://www.lianxh.cn/details/1630.html">Marker：高效 PDF 文档解析与结构化提取工具</a>：了解文档解析环节，软件参数另查当前官方文档。</li>
+<li><a href="https://www.lianxh.cn/details/1650.html">LLM Agent：大语言模型的智能体图解</a>：理解模型调用工具的工作方式。</li>
+<li><a href="https://www.lianxh.cn/details/1804.html">Prompt-Hacking：比 p-hacking 更隐蔽的显著性幻觉</a>：讨论测量配置自由度的风险；本章不直接沿用其中实验数字。</li>
+</ul>
+<p>链接标题在 <code>2026-09-16</code> 核验，部分网页正文解析受限。AI 摘要适合初筛，正式研究仍须精读原论文并验证数据、测量和推断。</p>
+</section>
+</section>
+<section id="sec-financial-cleaning-protocol" class="level2" data-number="4.8">
+<h2 data-number="4.8" class="anchored" data-anchor-id="sec-financial-cleaning-protocol"><span class="header-section-number">4.8</span> 把研究规则写成可执行协议</h2>
+<p>经过前面的讨论，可以看出一项数据任务不仅要指定公式，还要指定允许操作和无法判断时怎么办。本单元的 <a href="../data/financial-data/DATA_PROTOCOL.md">DATA_PROTOCOL.md</a>分为四层：全局规则、项目规则、任务规则和审计规则。</p>
+<p>全局规则约束原始数据只读、不得猜测定义或静默删行；项目规则说明总体、期间、粒度和授权；任务规则描述某一步输入输出；审计规则提前规定什么证据才算完成。规则应简明但明确，相同项目的多个任务共用这些基础约束，不必在每次提示词里重新编造。</p>
+<p>例如要求构造 Leverage 时，需要同时说明：分子分母字段、报表口径、单位、缺失传播、零分母处理、保留原变量，以及不把比率大于 1 自动删除。任务完成后既报告数值分布，也报告每一种不可计算的原因。</p>
+<pre class="text"><code>HUMAN REVIEW REQUIRED
+问题：研发字段存在缺失。
+证据：字段说明与分年缺失表尚不能区分零投入与未披露。
+当前处理：保持缺失，保留原记录，不自行填零。
+需要补充：披露制度、字段定义和本研究的经济口径。
+影响：研发相关分析的样本和结果尚不能冻结。</code></pre>
+<p>这样的报告把不确定性变成下一步具体工作。数据审计通过、工程执行通过、研究口径批准和公开发布，是不同状态，不能用一个“完成”替代。</p>
+</section>
+<section id="从理论走向完整案例" class="level2" data-number="4.9">
+<h2 data-number="4.9" class="anchored" data-anchor-id="从理论走向完整案例"><span class="header-section-number">4.9</span> 从理论走向完整案例</h2>
+<p>前两讲说明数据如何获得与组织，本讲说明怎样判断处理是否合理。下一章 <a href="../notebooks/financial-data/financial-data.html">CSMAR 实战</a>从原始 ZIP 开始，展示规则文档、分阶段提示词、实际运行代码、结果解释及人工裁定。</p>
+<p>课堂可选讲缺失、重复、盈利比率和时间审计；对 SQL 或文本感兴趣的学生可沿链接继续阅读。自学时请完成三项工作：给一个缺失填补建议写出所需证据；比较两个 ROA 定义的共同样本；对一份 Agent 审计报告区分已经验证的事实与尚未批准的研究决定。</p>
+<p>本章参考《数据分析与经济决策》和《金融数据分析》的数据清洗与文本材料，结合本地实际审计修订。论文与代码来源见下一节书目；真实 CSMAR 汇总位于配套 Notebook，教学小表与其严格区分。</p>
+</section>
+<section id="sec-financial-data-references" class="level2" data-number="4.10">
+<h2 data-number="4.10" class="anchored" data-anchor-id="sec-financial-data-references"><span class="header-section-number">4.10</span> 参考文献与数据资产</h2>
+<ol type="1">
+<li>Chen, A. Y., &amp; Zimmermann, T. (<strong>2022</strong>). Open source cross-sectional asset pricing. <em>Critical Finance Review</em>, 11(2), 207–264. <a href="https://doi.org/10.1561/104.00000112">Link</a> (<a href="https://github.com/OpenSourceAP/CrossSection/">rep</a>), <a href="https://www.cfr-cologne.de/download/workingpaper/cfr-20-04.pdf">PDF</a>, <a href="https://scholar.google.com/scholar?q=Open+Source+Cross-Sectional+Asset+Pricing+Chen+Zimmermann">Google</a>. PDF 为机构工作论文版本，可能与刊发版有差异。</li>
+</ol>
+<p>数据定义依据本批 CSMAR 配套字段说明和基本信息数据库说明书；下载日期未知，读取与外部链接核验日期为 <code>2026-09-16</code>。上述课程材料用于改编粒度、管理和清洗解释，两张图片保留原图来源。本章数值均来自本地真实执行，明确标注的手算与小表属于教学示例。</p>
+<p><a href="../data/financial-data/SOURCE_MANIFEST.md">来源清单</a> · <a href="../data/financial-data/DATA_DICTIONARY.md">字段字典</a> · <a href="../data/financial-data/DATA_PROTOCOL.md">Agent 协议</a> · <a href="../data/financial-data/AUDIT_REPORT.md">审计报告</a> · <a href="../data/financial-data/DATA_GAPS.md">待审事项</a> · <a href="../data/financial-data/README.md">运行说明</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "已复制");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "已复制");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../lectures/financial-data-management.html" class="pagination-link" aria-label="数据管理">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">数据管理</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../notebooks/financial-data/financial-data.html" class="pagination-link" aria-label="CSMAR：Agent 实战">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">CSMAR：Agent 实战</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>LN429 · 中山大学岭南学院</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/lectures/financial-data-cleaning.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p><a href="https://www.lianxh.cn">连享会</a> · Quarto Book</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
