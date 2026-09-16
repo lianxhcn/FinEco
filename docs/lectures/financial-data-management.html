@@ -402,8 +402,9 @@ window.Quarto = {
 </header>
 
 
-<p>下载完成后，目录里可能同时出现个股日行情、市场指数、宏观月度指标、年度财务表和公司信息。单独打开任何一个文件都不困难；困难在于下周换一个研究问题时，能否再次准确地找到、连接并解释这些数据。</p>
-<p>本章以<a href="https://lianxhcn.github.io/ds2026/Lecture/data_manage/lecture_data_management.html">《数据分析与经济决策》课程的数据管理讲义</a>为主体，保留多表场景、主键与粒度、存储格式、SQL 查询和工作流，结合<a href="https://lianxhcn.github.io/dsfin/">《金融数据分析》</a>的数据契约和目录规范展开。分析工具仍可以是 pandas；在它的上游，我们需要先理清数据如何组织。</p>
+<p>把数据下载到硬盘以后，真正麻烦的事情往往才刚刚开始。一个金融研究项目很快就会积累出很多文件：个股日行情、市场指数、宏观月度指标、年度财务表、公司基本信息，也许还有公告和分析师预测。单独打开其中任何一张表都不困难，困难的是怎样让这些表在同一个研究中配合起来。</p>
+<p>更实际地说，今天我们也许只是计算一个年度指标，下周却想换一个研究问题，重新连接其中几张表。如果每次都从头回忆哪个文件是什么、应该按什么变量合并，数据管理就会不断消耗时间，也很容易把不同粒度的数据错误地拼在一起。本讲讨论的，就是怎样把零散文件组织成可以反复使用的分析底座。</p>
+<p>本章以<a href="https://lianxhcn.github.io/ds2026/Lecture/data_manage/lecture_data_management.html">《数据分析与经济决策》课程的数据管理讲义</a>为主线，保留其中的多表场景、主键与粒度、存储格式、SQL 查询和可复用工作流，并结合<a href="https://lianxhcn.github.io/dsfin/">《金融数据分析》</a>中的数据契约与目录规范。这里并不是要用数据库替代 pandas。更准确地说，pandas 仍然负责大量具体的数据分析工作，只是在进入 pandas 之前，我们先把每张表是什么、彼此怎样连接、处理后的结果怎样保存理清楚。</p>
 <div class="callout callout-style-default callout-note callout-titled" title="本讲要点">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -419,7 +420,8 @@ window.Quarto = {
 </div>
 <section id="sec-financial-management-tables" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="sec-financial-management-tables"><span class="header-section-number">3.1</span> 一个金融研究中的多表场景</h2>
-<p>设想我们要比较某年不同企业的资产规模和交易活跃程度。资产来自年度财务表，换手率来自日行情，公司名称来自身份表。目标是每个公司每年一行，因此所有数据最终必须与这个单位相容。</p>
+<p>先从一个很小的研究任务开始。假设我们想比较某一年不同企业的资产规模和交易活跃程度。资产规模来自年度财务表，换手率来自每天的股票行情，公司名称和行业又来自公司身份表。也就是说，这个看似简单的统计至少要用到三张表，而且三张表的时间频率并不相同。</p>
+<p>如果我们的最终分析单位是<strong>公司—年度</strong>，那么最后的底表应当做到每家公司每年只有一行。这样一来，日行情就不能原封不动地直接并入年度财务表，而要先转成与公司年度相容的统计量。<strong>先确定最终一行代表什么，再决定怎样连接数据</strong>，是本章最核心的习惯。</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 25%">
@@ -468,7 +470,8 @@ window.Quarto = {
 </tr>
 </tbody>
 </table>
-<p>来源讲义用公司静态表、年度表和日表解释这一过程。静态公司表是有意简化：真实行业、所有权、简称和证券代码可能变化，不能把当前值无条件倒填过去。证券代码与公司 ID 也不是天然一一对应。</p>
+<p>来源讲义用公司静态表、年度表和日表来演示这个过程，这种简化很适合课堂，因为我们可以暂时把注意力集中在粒度和连接关系上。不过，真实项目会更复杂。公司的行业分类、所有权性质、证券简称甚至证券代码都可能随时间变化，因此今天看到的公司属性不能无条件倒填到十年前。</p>
+<p>同样，证券代码只是市场交易层面的标识，公司 ID 则试图标识经济实体，两者也不一定始终保持一一对应。教学小表先把这些复杂性暂时放在一边，但进入真实数据后必须重新检查。</p>
 <div id="fig-financial-management-grain" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-financial-management-grain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -479,19 +482,34 @@ window.Quarto = {
 </figcaption>
 </figure>
 </div>
-<p>图中 <code>company_info</code> 视作静态表，适合说明连接关系；真实研究需另行验证有效时间。<code>code</code> 是技术连接键的示意，不等于已经解决了公司身份问题。底表行数正常，也仍可能连接到错误时期的属性。</p>
+<p><a href="#fig-financial-management-grain" class="quarto-xref">图&nbsp;<span>3.1</span></a> 中把 <code>company_info</code> 当作静态表，只是为了直观展示三类表怎样进入同一底表。真实研究中，如果行业或证券代码会变化，就需要进一步记录它们的有效起止时间。图中的 <code>code</code> 也只是一个技术连接键的示意，它能够帮助程序匹配记录，却不能单独证明两边对应的是同一个经济实体、同一个有效时期。</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="行数正常也可能合错">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+行数正常也可能合错
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>判断一次合并是否正确，不能只看最后行数是否符合预期。错误的时期属性、身份映射或报表口径完全可能在不改变行数的情况下进入底表，因此还必须检查键、匹配关系和经济含义。</p>
+</div>
+</div>
 </section>
 <section id="sec-financial-management-keys" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="sec-financial-management-keys"><span class="header-section-number">3.2</span> 主键与粒度：先说明一行代表什么</h2>
-<p>主键是能唯一识别一行的变量或组合；粒度是每行对应的经济对象与时间层级。键可以帮助检查粒度，却不能凭空定义粒度。给每行生成不同的流水号，当然能够唯一，但不能证明一行就是一个公司年度。</p>
+<p>多表管理中最先要建立的两个概念是<strong>粒度</strong>和<strong>主键</strong>。粒度回答这一行在经济上代表什么，例如一家公司、某家公司的一年，或者某只证券的一个交易日；主键则回答用哪些变量能够唯一找到这一行。</p>
+<p>两者相关，但不能混为一谈。一个好的业务主键通常反映了数据的自然粒度。例如公司年度表常用 <code>(firm, year)</code> 唯一识别观测。但如果我们给每一行临时生成一个不同的流水号，它当然也能在技术上唯一识别记录，却丝毫不能说明这些记录究竟是一家公司年度、一个交易日还是两种报表口径的混合。因此，应该先用经济含义说明粒度，再用主键检查数据是否符合这个粒度。</p>
 <p>设候选键为 <span class="math inline">\(K\)</span>，总行数为 <span class="math inline">\(N\)</span>，不同键值组合的数量为 <span class="math inline">\(U(K)\)</span>。必要的键检查为：</p>
 <p><span class="math display">\[
 U(K)=N,\qquad \text{Missing}(K)=0.
 \]</span></p>
-<p>第二个条件要求键中没有缺失。即使所有缺失组合只出现一次，仍然没有足够身份信息完成可靠连接。发现重复时，要查看它对应不同报表、不同期间、多个证券、修订版本，还是重复导出，不能直接删除重复键。</p>
+<p>式中的第一个条件检查候选键是否真的唯一，第二个条件检查键本身是否完整。键中有缺失时，即使这些记录碰巧各只出现一次，我们也没有足够的信息确认它们到底对应哪个对象，因此不能据此完成可靠连接。</p>
+<p>如果发现候选键重复，更不能马上执行去重。同公司同年出现两行，可能是合并报表与母公司报表并存，也可能是季度与年度记录混在一起，还可能来自财报修订、多个证券映射或重复导出。只有先解释重复为什么出现，才能决定保留、展开还是删除哪一条。</p>
 <section id="用三张小表建立直觉" class="level3" data-number="3.2.1">
 <h3 data-number="3.2.1" class="anchored" data-anchor-id="用三张小表建立直觉"><span class="header-section-number">3.2.1</span> 用三张小表建立直觉</h3>
-<p>下面全部为虚构教学数据，金额单位任意但一致，换手率以百分数记录。</p>
+<p>粒度和主键如果只停留在定义上，很容易在真正合并时又回到按同名变量直接连接的习惯。下面用三张最小教学表把概念固定下来：先分别写清每张表的一行代表什么，再判断它们能否直接连接。以下数据全部为虚构设定，金额单位任意但一致，换手率以百分数记录。</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -539,11 +557,13 @@ U(K)=N,\qquad \text{Missing}(K)=0.
 </tr>
 </tbody>
 </table>
-<p>公司表另有 A、B 两行及其虚构行业。年度表的键是 <code>(firm, year)</code>，日表的键是 <code>(firm, date)</code>，公司表在这个简化例子中的键是 <code>firm</code>。先写出这些关系，再决定操作；变量恰好同名不能替代经济判断。</p>
+<p>再假设有一张公司表，只含 A、B 两家公司及其虚构行业。在这个最小例子里，年度财务表的自然键是 <code>(firm, year)</code>，日行情表的自然键是 <code>(firm, date)</code>，公司表则以 <code>firm</code> 唯一识别公司。</p>
+<p>把这三个键写出来以后，后面的操作就容易判断了：年度表和公司表可以按 <code>firm</code> 做多对一连接，而日表若要进入公司年度底表，则需要先把日期维度聚合到年度。反过来，如果只看到几张表都有一个叫 <code>firm</code> 的列，就直接按同名变量合并，程序虽然可能运行成功，却没有完成真正的数据设计。</p>
 </section>
 <section id="错误合并为什么可能不报错" class="level3" data-number="3.2.2">
 <h3 data-number="3.2.2" class="anchored" data-anchor-id="错误合并为什么可能不报错"><span class="header-section-number">3.2.2</span> 错误合并为什么可能不报错</h3>
-<p>把两张表直接按公司和年份连接，A 的资产 100 会被复制到两天，B 的资产保留一次，于是年度表从 2 行变为 3 行。代码可以正常完成，但它改变了观测权重：A 在后续不加说明的逐行计算中出现两次。</p>
+<p>现在故意做一次错误操作。假设我们从日行情中提取年份，然后直接按 <code>firm</code> 和 <code>year</code> 把它与年度财务表连接。A 公司在 2020 年有两个交易日，于是资产 100 会被复制两次；B 公司只有一个交易日，于是资产 200 只出现一次。原来的两行年度表因此变成三行。</p>
+<p>从程序角度看，这次 <code>merge</code> 完全可以成功，没有任何语法错误。但从统计含义看，A 公司已经在后续逐行统计中获得了两倍权重。这个例子说明，<strong>最危险的数据错误往往不是程序报错，而是程序顺利运行却改变了观测单位。</strong></p>
 <div id="fig-financial-management-wrongmerge" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-financial-management-wrongmerge-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -554,21 +574,27 @@ U(K)=N,\qquad \text{Missing}(K)=0.
 </figcaption>
 </figure>
 </div>
-<p>图中 <code>ret_mean</code> 代表期间内平均日收益，不能将其误称实际年度持有回报。此处的可运行小表改用平均换手率，使学生先集中理解粒度。A 的平均换手率为 <code>(1+3)/2=2</code>，B 为 2。聚合后每公司每年一行，与年度表连接后仍为 2 行。</p>
-<p>同一个连接在另一种目标下可能合理：若研究日收益与已公开财务特征的关系，日表可以作为母表，将当时可得的财务信息广播到后续交易日。此时目标本来就是证券日度，验收应检查日度键和信息可得时点，而不是强制保留年度行数。</p>
+<p><a href="#fig-financial-management-wrongmerge" class="quarto-xref">图&nbsp;<span>3.2</span></a> 展示了正确的思路：如果目标是公司年度，先把日表整理成公司年度层面的统计量，再与年度财务表连接。图中的 <code>ret_mean</code> 只是期间内日收益的平均值，不能把它解释成投资者实际持有一年的累计回报。为了让课堂先把注意力放在<strong>粒度</strong>而不是收益率公式上，配套可运行小表使用平均换手率。</p>
+<p>在例子中，A 的两个交易日换手率分别为 1 和 3，年度平均值是 2；B 的换手率也是 2。聚合以后，每家公司每年重新回到一行，再与年度财务表连接，底表仍然只有 A、B 两行。这时，年度粒度才真正保持住了。</p>
+<p>需要说明的是，刚才的一对多复制并不在所有研究中都是错误。如果研究问题本来就是日度的，例如考察每日收益与最近一期已披露财务特征的关系，那么日行情就应该作为母表，财务信息也确实需要重复到后续许多交易日。</p>
+<p>区别在于，这一次目标粒度从一开始就是<strong>证券—交易日</strong>。因此，我们应检查的是日度主键是否唯一，以及每个交易日所连接的财务信息在当时是否已经公开，而不是机械要求合并后仍保持年度表的行数。<strong>操作是否正确，取决于它是否与目标粒度一致。</strong></p>
 </section>
 </section>
 <section id="sec-financial-management-operations" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="sec-financial-management-operations"><span class="header-section-number">3.3</span> 追加、合并、变形和聚合</h2>
-<p>这些操作都能把文件变成一个表，但改变的对象不同。学生如果只要求 Agent 合并所有数据，实际上尚未给出可执行的数据设计。</p>
+<p>实际项目中，最常用的表格操作大致可以归为四类：追加 (append)、合并 (merge)、变形 (reshape) 和聚合 (aggregate)。它们都可能让多份数据最终出现在一张表里，但每一种操作改变数据结构的方式不同。</p>
+<p>因此，给 Agent 一句「把这些数据合并起来」通常还不够。研究者至少要说明哪些文件是同类记录需要纵向追加，哪些表提供不同字段需要沿主键连接，哪些数据只是宽长排列不同，以及哪些高频记录必须先聚合到目标粒度。</p>
 <section id="append增加同类记录" class="level3" data-number="3.3.1">
 <h3 data-number="3.3.1" class="anchored" data-anchor-id="append增加同类记录"><span class="header-section-number">3.3.1</span> Append：增加同类记录</h3>
-<p>追加把相同含义的列纵向排列，例如将按年份分开的行情文件连接起来。追加前核对列名、类型、单位和覆盖时期，追加后检查总行数、来源标签与重复键。</p>
-<p>若一个文件止于 2020 年底，另一个从 2020 年开始，两者有重叠期，行数相加正确仍可能重复。应保留文件来源列，将重叠记录交给规则判断。本章 CSMAR 股东表有两个导出分片，<a href="../notebooks/financial-data/financial-data.html#sec-csmar-02">Notebook 第 02 节</a>实际检查了拼接后的完整键。</p>
+<p>Append 适用于同一种记录被拆在多个文件里的情形。例如，一份文件保存 2019 年行情，另一份保存 2020 年行情，两者的列含义和观测单位相同，就可以把第二份数据接到第一份数据的下面。它增加的是<strong>记录数</strong>，而不是变量数。</p>
+<p>在追加之前，应先核对两边的列名、字段类型、单位和时间范围是否一致；追加以后，则要检查总行数是否符合预期，并最好保留一个来源标签。这样一旦出现重叠期间或字段定义变化，我们仍能追查某条记录来自哪个文件。</p>
+<p>例如，一个文件覆盖 2015—2020 年，另一个覆盖 2020—2025 年。把两者追加以后，最终行数等于两个文件行数之和，这个算术关系完全正确，但 2020 年很可能被保存了两遍。此时不能因为行数算对了就认为追加完成，而要继续检查完整业务键。</p>
+<p>因此，追加时保留来源列很有用：发现重叠后，可以比较同一键在两个文件中的内容，再根据数据版本或导出说明决定如何处理。本章 CSMAR 股东表正好包含两个导出分片，<a href="../notebooks/financial-data/financial-data.html#sec-csmar-02">Notebook 第 02 节</a>实际检查了拼接后的完整键。</p>
 </section>
 <section id="merge沿键增加信息" class="level3" data-number="3.3.2">
 <h3 data-number="3.3.2" class="anchored" data-anchor-id="merge沿键增加信息"><span class="header-section-number">3.3.2</span> Merge：沿键增加信息</h3>
-<p>合并前先判断关系：一对一表示双方键均唯一；多对一表示母表可多行对应同一条右表信息；一对多则会使左侧信息重复。多对多可能是业务事实，但必须先解释预期组合数，不能作为默认连接方式。</p>
+<p>Merge 与 append 不同，它不是把更多行接到下面，而是沿着主键给现有观测增加新的信息。合并之前最重要的判断，是两张表在连接键上的关系。一对一表示左右两边的键都唯一；多对一表示左表可以有多行对应右表的一条信息，例如日行情连接公司静态属性；一对多则意味着左表的一条记录会在结果中复制成多行。</p>
+<p>多对多连接有时确实是业务事实，例如一家公司对应多个证券、一个事件对应多个参与者，但这种情况下必须事先说明预期组合关系。若没有明确理由，多对多通常不是更灵活的 merge，而是一个需要停下来检查的数据结构信号。</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -595,7 +621,8 @@ U(K)=N,\qquad \text{Missing}(K)=0.
 </tr>
 </tbody>
 </table>
-<p>下面接续 <a href="../notebooks/financial-data/financial-data.html#sec-csmar-04">Notebook 第 04 节</a>已生成的 <code>views</code>，按已识别的 A 口径建立两侧年度视图。代码在该节有对应执行单元；读者可 clone 仓库、取得授权数据后从第 00 节顺序运行，不应单独执行一个尚未定义 <code>views</code> 的片段。</p>
+<p>下面的代码接续 <a href="../notebooks/financial-data/financial-data.html#sec-csmar-04">Notebook 第 04 节</a>已经生成的 <code>views</code>。在前面的步骤中，原始财务表已经识别出 A/B 两种报表口径；这里没有把 B 记录删除，而只是为本次连接分别取出 A 口径的资产负债表和利润表，再按公司年度键进行合并。</p>
+<p>因此，这段代码不是一个可以脱离上下文单独运行的例子。读者取得授权数据后，应从 Notebook 第 00 节开始顺序执行，让 <code>views</code>、键检查函数和字段定义都来自同一套流程。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A/B 保留在年度视图中；本次只连接 A 口径，未销毁 B 记录。</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>left <span class="op">=</span> views[<span class="st">"balance"</span>].query(<span class="st">"Typrep == 'A'"</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>right <span class="op">=</span> views[<span class="st">"income"</span>].query(<span class="st">"Typrep == 'A'"</span>)</span>
@@ -607,27 +634,34 @@ U(K)=N,\qquad \text{Missing}(K)=0.
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    validate<span class="op">=</span><span class="st">"one_to_one"</span>, indicator<span class="op">=</span><span class="va">True</span>,</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    suffixes<span class="op">=</span>(<span class="st">"_balance"</span>, <span class="st">"_income"</span>)</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><code>validate</code> 使非预期重复直接失败，<code>indicator</code> 留下匹配状态。它们解决结构核验的一部分，不能确认字段单位或证券身份是否正确。两个季度表误用年度键，或者两表都只剩一个错误版本，也可能在技术层面通过唯一性检查。</p>
+<p>这里特意使用 <code>validate="one_to_one"</code> 和 <code>indicator=True</code>。前者把我们对连接关系的预期写进代码：如果任一侧出现非预期重复，合并会直接失败；后者则保留每条记录来自左表、右表还是双方匹配的信息，便于后续审计。</p>
+<p>不过，这些参数只能帮助检查<strong>结构</strong>。即使合并满足一对一，也不能证明字段单位正确，更不能证明证券身份和财务口径已经核对无误。例如，把两个季度表都错误地压成年度键，仍可能在技术上通过唯一性检查。因此，程序检查和经济定义检查需要配合使用。</p>
 </section>
 <section id="reshape同一信息换一种排列" class="level3" data-number="3.3.3">
 <h3 data-number="3.3.3" class="anchored" data-anchor-id="reshape同一信息换一种排列"><span class="header-section-number">3.3.3</span> Reshape：同一信息换一种排列</h3>
-<p>宽表可能把 <code>assets_2019</code> 与 <code>assets_2020</code> 放在不同列；长表用 <code>year</code> 列保存年份，用 <code>assets</code> 列保存数值。改成长表后，年份更容易筛选、滞后和连接。<code>melt</code> 常用于宽转长，<code>pivot</code> 用于长转宽，但后者要求指定的行列组合唯一。</p>
-<p>不要为了让 <code>pivot</code> 成功就改用默认取均值的 <code>pivot_table</code>，那会把变形悄悄变成聚合。若一家公司同年有两种报表，应该保留报表类型维度或明确选择规则。教学小表中的宽长往返检查会验证数值和键是否保持。</p>
+<p>Reshape 改变的是同一批信息的排列方式，而不是增加新的经济信息。比如，宽表可能把 <code>assets_2019</code>、<code>assets_2020</code> 分别放在两列；长表则增加一个 <code>year</code> 列，把资产统一放在 <code>assets</code> 列中。对面板数据而言，长表通常更方便按年份筛选、构造滞后变量和与其他公司年度表连接。</p>
+<p>在 pandas 中，<code>melt</code> 常用于把宽表转成长表，<code>pivot</code> 则可以把长表重新展开成宽表。但 <code>pivot</code> 要求给定的行列组合能够唯一确定一个值。如果不能唯一，真正的问题通常不是函数选错了，而是数据里还存在另一个没有被说明的维度。</p>
+<p>例如，一家公司同一年同时存在合并报表和母公司报表，那么 <code>(firm, year)</code> 本来就不能唯一确定资产值。此时应该把报表类型保留下来，或者先明确本研究采用哪一种口径。若只是为了让代码运行而改用会自动取均值的 <code>pivot_table</code>，就把<strong>重新排列数据</strong>悄悄变成了<strong>对不同报表求平均</strong>，经济含义已经完全改变。</p>
+<p>因此，教学小表在宽转长、长转宽以后还会检查键和数值是否保持一致。这种往返检查比单看函数没有报错更有意义。</p>
 </section>
 <section id="aggregate为目标粒度定义统计量" class="level3" data-number="3.3.4">
 <h3 data-number="3.3.4" class="anchored" data-anchor-id="aggregate为目标粒度定义统计量"><span class="header-section-number">3.3.4</span> Aggregate：为目标粒度定义统计量</h3>
-<p>日度换手率可以计算均值，年度营业收入通常按年度报告口径取得；季度累计收入不能随意相加得到全年收入。聚合算子必须对应变量含义。</p>
+<p>Aggregate 的任务，是把较高频或更细粒度的数据转换到目标粒度。这里最容易犯的错误，是看到很多行就机械地求和或求平均。不同变量对应的聚合规则并不相同：日度换手率可以在明确口径下取期间平均，年度营业收入通常直接使用年度报告值，而季度财报中的累计收入则不能简单把四个季度累计数再次相加。</p>
+<p>所以，聚合不是一个纯粹的技术步骤。选择 <code>mean</code>、<code>sum</code>、<code>last</code> 还是复合计算，都必须与变量的经济含义相匹配。</p>
 <p>日简单收益率 <span class="math inline">\(r_{id}\)</span> 使用小数表示，<span class="math inline">\(d\)</span> 为期间内交易日。若数据完整、公司行为口径一致且没有额外现金流处理问题，期间复合收益为：</p>
 <p><span class="math display">\[
 R_{it}=\prod_{d\in\mathcal D_{it}}(1+r_{id})-1.
 \]</span></p>
-<p><span class="math inline">\(\mathcal D_{it}\)</span> 为证券 <span class="math inline">\(i\)</span> 在期间 <span class="math inline">\(t\)</span> 纳入计算的交易日集合。平均日收益乘交易日数是另一种近似或年化均值指标，不能替代这个实际期间复合收益。教学数值 +10% 和 −10% 的两日回报为 −1%，算术均值为 0，直观体现了差别。</p>
-<p>日收益波动率通常以日收益的标准差表示，年化还需要假定与约定。不能用平均绝对收益直接冒充标准差，也不能不检查缺失交易日便宣称计算了完整年度风险。完整金融模型将在后续章节展开，这里先把字段名称写准确。</p>
+<p>其中，<span class="math inline">\(\mathcal D_{it}\)</span> 表示证券 <span class="math inline">\(i\)</span> 在期间 <span class="math inline">\(t\)</span> 中实际纳入计算的交易日集合。这个公式把每天的财富增长因子连续相乘，因此得到的是这段期间内的复合收益。</p>
+<p>一个两天的小例子就能看出它与平均日收益的区别：第一天上涨 10%，第二天下跌 10%，算术平均收益是 0，但两天后的财富从 1 变成 <span class="math inline">\(1.1\times0.9=0.99\)</span>，实际复合收益为 −1%。因此，平均日收益乘交易日数最多是另一种近似或年化均值口径，不能直接替代期间复合回报。</p>
+<p>风险指标也有同样的问题。日收益波动率通常由日收益的标准差计算；若要年化，还需要明确交易日数以及相应假设。平均绝对收益虽然也能反映波动大小，却不是标准差，不能只因为数值看起来相近就使用同一个变量名。</p>
+<p>此外，如果某只股票一年中缺失了大量交易日，直接对现有记录计算年度波动率也需要说明覆盖情况。收益与风险的完整定义会在后面的金融模型章节系统讨论，本章只要求在数据管理阶段不要让字段名称超出实际计算含义。</p>
 </section>
 </section>
 <section id="sec-financial-management-storage" class="level2" data-number="3.4">
 <h2 data-number="3.4" class="anchored" data-anchor-id="sec-financial-management-storage"><span class="header-section-number">3.4</span> 存储格式也是数据契约</h2>
-<p>《金融数据分析》课程提出的数据契约意识很有用：接收方除了得到一个文件，还要知道它承诺了怎样的结构。格式保存部分技术信息，数据字典保存经济含义，两者必须配合。</p>
+<p>当中间数据开始被不同脚本、Notebook 或同学重复使用时，仅仅把文件发过去已经不够。更有用的做法是把数据看成一种契约：接收方不仅拿到若干数值，还应该知道每一行代表什么、哪些变量必须存在、类型和单位是什么、缺失怎样编码，以及这份文件是由哪一步生成的。</p>
+<p>文件格式只能保存其中一部分技术信息。例如 Parquet 可以较好地保存字段类型，但它并不知道 <code>roe=0.05</code> 的经济含义。经济口径仍然需要数据字典和处理说明来补充。因此，存储格式和文档是配套关系，而不是二选一。</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -679,24 +713,31 @@ R_{it}=\prod_{d\in\mathcal D_{it}}(1+r_{id})-1.
 </figcaption>
 </figure>
 </div>
-<p>CSV 接近逐行排列的文本，Parquet 按列组织并保存 schema，因此选择少数列、压缩相似数值和重复分析时常有优势。不过，压缩比和读取速度取决于数据、列数、压缩方式和缓存。不能把某一份课程示例的性能倍数当普遍结果，也不需要设定一个固定文件大小作为唯一切换阈值。</p>
+<p>从直觉上看，CSV 接近把每一行按文本写出来，而 Parquet 更接近按列组织数据并同时保存字段结构 (schema)。正因为如此，当数据列很多、只读取其中少数变量，或者同一份大表要反复用于分析时，Parquet 往往更节省空间和读取时间。</p>
+<p>但往往更快并不等于任何数据上都会快固定倍数。文件大小、变量类型、压缩方式、磁盘缓存以及实际读取列数都会影响性能。课程示例可以帮助理解机制，却不应把某一次机器测试的倍数变成通用经验，也没有必要规定超过多少 MB 就必须换 Parquet。</p>
 <section id="类型编码与经济定义" class="level3" data-number="3.4.1">
 <h3 data-number="3.4.1" class="anchored" data-anchor-id="类型编码与经济定义"><span class="header-section-number">3.4.1</span> 类型、编码与经济定义</h3>
-<p>用引号包住 CSV 中的 <code>000001</code> 不保证所有读取器都将其保留为字符串，应在读取时明确类型。Parquet 可以保存字符串、日期等类型，但若转换前类型已经错了，它也会忠实保存错误。将 <code>roe</code> 保存为浮点数并不能告诉别人 5 表示 5% 还是 500%。</p>
-<p>数据字典至少记录变量名、含义、原始字段、类型、单位、缺失编码、报告口径、有效期间和构造公式。代码中的映射与字典保持一致；来源说明没有单位时写待确认，不根据常识补上人民币元。</p>
+<p>上一讲已经讨论了原始文件读入时怎样避免标识变量、日期和缺失编码被误解释。本节不再重复这些读取细节，而是进一步问：<strong>当一张派生数据要交给下一段代码或另一位使用者时，哪些信息必须随文件一起传下去？</strong></p>
+<p>Parquet 等格式可以较稳定地保存字符串、日期和数值等技术类型，但它们仍然无法说明变量的经济单位和研究口径。比如 <code>roe</code> 保存为浮点数，只能说明它可以参与数值运算，却不能告诉我们 5 表示 5%、500%，还是数据库中的另一种缩放口径。CSV 保存的类型信息更少，因此更需要在读取规则和数据字典中显式说明。技术字段结构与经济定义必须同时存在。</p>
+<p>一份真正有用的数据字典，至少要让后来使用数据的人回答这些问题：变量叫什么，经济含义是什么，来自哪个原始字段，保存成什么类型，单位和缺失编码是什么，使用哪种报表口径，在什么时期有效，如果是构造变量又用了什么公式。这样，代码里的字段映射才能与书面定义互相核对。</p>
+<p>如果原始说明没有给出单位，就把单位标为待确认，而不是根据数值大小猜成元或万元。数据管理的目标不是尽快把所有空白补齐，而是让已知与未知都清楚地留下来。</p>
 </section>
 <section id="读取时只取需要的信息" class="level3" data-number="3.4.2">
 <h3 data-number="3.4.2" class="anchored" data-anchor-id="读取时只取需要的信息"><span class="header-section-number">3.4.2</span> 读取时只取需要的信息</h3>
-<p>读取 Parquet 时可以指定需要的列；查询引擎还能结合文件统计信息与分区跳过部分数据。这样减少不必要的读入和内存使用。CSV 的 <code>usecols</code> 可以减少保留的列和内存占用，但仍要解析文本结构，不能与列式文件的物理读取机制完全等同。</p>
-<p>若按年份保存多个分区，需保证各分区使用一致的 schema，新增年份时记录字段变动。分区不等于样本筛选：2014 年支持数据虽然不属于研究期，仍可能用于 2015 年平均资产分母，应保留可追溯关系。</p>
+<p>列式存储还有一个实际好处：分析时往往只需要大表中的少数变量。读取 Parquet 可以直接指定所需列，查询引擎还可能利用分区和文件统计信息跳过不相关的数据块，因此不必每次把整张表都送进内存。</p>
+<p>CSV 也可以通过 <code>usecols</code> 只保留需要的变量，这同样能减少后续内存占用，但底层仍要解析文本文件的结构，因此与列式文件只读取相关列的物理机制并不完全一样。理解这个区别即可，不必把它变成工具优劣排名。</p>
+<p>如果进一步按年份、市场或其他维度把数据保存成多个分区，还要保证不同分区使用相容的字段结构，并把字段新增、改名或单位变化记录下来。否则，同一个查询跨年份运行时可能得到含义不一致的列。</p>
+<p>还要区分<strong>存储分区</strong>和<strong>研究样本</strong>。例如正式回归可能从 2015 年开始，但构造 2015 年平均资产时需要 2014 年的期初资产。2014 年数据因此仍属于支持数据，不能因为它不在最终回归期就从基础层永久删除。</p>
 </section>
 </section>
 <section id="sec-financial-management-sql" class="level2" data-number="3.5">
 <h2 data-number="3.5" class="anchored" data-anchor-id="sec-financial-management-sql"><span class="header-section-number">3.5</span> SQLite 与 SQL：把多张表放在一起</h2>
-<p>来源讲义用 SQLite 演示从多文件到统一查询的过渡。SQLite 数据库可以是一个本地文件，Python 的 <code>sqlite3</code> 模块提供访问接口；也可用内存数据库演示，不需要部署数据库服务器。建库不是必经步骤，反复查询和多表协作时才体现价值。</p>
+<p>当关系表越来越多、同样的筛选与连接需要反复执行时，可以把这些表放进一个轻量级数据库。来源讲义选择 SQLite 来演示这一过渡。SQLite 的特点是整个数据库可以保存在一个本地文件中，Python 自带的 <code>sqlite3</code> 模块就能访问，也可以直接建立内存数据库做课堂练习，不需要另外部署服务器。</p>
+<p>这里并不是说学了 SQL 就应该把所有 CSV 都建成数据库。如果只有几张小表，一次性用 pandas 完成分析完全合理。SQLite 的价值主要出现在多表关系需要长期保存、查询重复出现、或者希望通过约束进一步检查数据结构的时候。</p>
 <section id="从表结构到查询结果" class="level3" data-number="3.5.1">
 <h3 data-number="3.5.1" class="anchored" data-anchor-id="从表结构到查询结果"><span class="header-section-number">3.5.1</span> 从表结构到查询结果</h3>
-<p>基本流程是先定义表结构与约束，再导入数据，检查行数、期间和键，之后用 SQL 筛选或连接，将结果读回 pandas。<code>DataFrame.to_sql()</code> 提供方便的写表方法，但不会自动理解哪个组合应为业务主键。需要约束时应明确建表，或先核验再建立唯一索引。</p>
+<p>把数据写入 SQLite 后，比较规范的流程仍然与前面的原则一致：先定义表结构和必要约束，再导入数据，核对行数、期间和键，之后才用 SQL 做筛选、连接和汇总，必要时把查询结果重新读回 pandas 继续分析。</p>
+<p><code>DataFrame.to_sql()</code> 可以很方便地把 DataFrame 写成数据库表，但它并不知道 <code>(firm, year)</code> 为什么应该唯一，也不会自动替我们建立业务主键。如果希望数据库本身帮助阻止重复键，就需要显式建表或在核验以后建立唯一索引。</p>
 <p>在<a href="../notebooks/financial-data/financial-data.html#sec-csmar-mini">教学小表实验</a>中，公司和年度表写入内存数据库，<code>(firm, year)</code> 建立唯一索引，然后执行下面的查询。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> c.industry, <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> n, <span class="fu">AVG</span>(f.assets) <span class="kw">AS</span> mean_assets</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> annual <span class="kw">AS</span> f</span>
@@ -704,7 +745,8 @@ R_{it}=\prod_{d\in\mathcal D_{it}}(1+r_{id})-1.
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> f.<span class="dt">year</span> <span class="op">=</span> <span class="dv">2020</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> c.industry</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> c.industry;</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><code>FROM</code> 选母表，<code>JOIN</code> 添加行业信息，<code>WHERE</code> 限制年度，<code>GROUP BY</code> 按行业分组，<code>COUNT</code> 和 <code>AVG</code> 返回组内数量与平均资产。结果与同一小表的 pandas 实现进行比较。两种软件得到同样结果是一项实现检查，仍需确认两者没有使用同一种错误定义。</p>
+<p>这条 SQL 可以按语句顺序读：<code>FROM</code> 指定年度表作为数据来源，<code>JOIN</code> 按公司标识加入行业信息，<code>WHERE</code> 只保留 2020 年，<code>GROUP BY</code> 再把企业按行业分组，最后由 <code>COUNT</code> 和 <code>AVG</code> 分别计算组内企业数与平均资产。</p>
+<p>Notebook 中还会用 pandas 对同一小表做一次等价计算。两种实现得到相同结果，可以帮助我们检查代码是否写错，但这只是<strong>实现层面的交叉验证</strong>。如果两边都使用了错误的资产定义或错误的行业映射，它们仍然会一致地给出错误答案。</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -746,34 +788,57 @@ R_{it}=\prod_{d\in\mathcal D_{it}}(1+r_{id})-1.
 </tr>
 </tbody>
 </table>
-<p>SQL 聚合也要关注缺失：<code>COUNT(*)</code> 统计行，<code>COUNT(assets)</code> 统计该字段非空值，<code>AVG(assets)</code> 忽略 NULL。报告平均数时同时报告有效样本量，避免不同指标的均值来自不同人群却被当作共同样本比较。</p>
+<p>SQL 中的缺失规则也需要熟悉。<code>COUNT(*)</code> 统计表中有多少行，而 <code>COUNT(assets)</code> 只统计 <code>assets</code> 非空的记录；<code>AVG(assets)</code> 在计算均值时同样会忽略 NULL。于是，同一张表上几个变量的平均值可能分别基于不同数量的企业。</p>
+<p>因此，在报告均值时最好同时给出相应的有效样本量。否则，两组均值看起来可以直接比较，实际上分母人群可能已经不同。</p>
 </section>
 <section id="四类实际查询怎样设定" class="level3" data-number="3.5.2">
 <h3 data-number="3.5.2" class="anchored" data-anchor-id="四类实际查询怎样设定"><span class="header-section-number">3.5.2</span> 四类实际查询怎样设定</h3>
-<p><strong>年度交易概览。</strong> 先按证券和年份计算观测交易日数、平均换手率与收益统计，再连接年度属性。每个指标写清小数或百分数、是否年化、缺失日处理。不能将一个带百分号的平均值重复乘 100。</p>
-<p><strong>异常成交日。</strong> 可以将某日成交量与同年均值比较，找出值得检查的观测。但全年均值含未来交易日，因此适合事后描述；若用于当时的交易信号，应换成截至当日之前可得的基准。</p>
-<p><strong>日行情与月度指标。</strong> 提取月份后连接月表，可以把同一月值重复到多天。它解决频率匹配，不解决信息可得性。若月统计值在次月发布，当月交易决策不能使用它，应根据发布日期作可得信息连接。</p>
-<p><strong>日行情与财务表。</strong> 若目标为年度研究，先聚合行情再连接；若目标为日度预测，使用已公告且在有效期间内的财务记录。不能用字符串年份相同作为唯一经济依据。</p>
-<p>这些查询保留了来源讲义的应用场景，并将结构关系、指标定义和信息时间一起纳入验收。学生应先用很小的数据验证，再处理整批文件。</p>
+<p>前面的 SQL 语法只有放回具体研究任务中才有意义。下面四类查询分别对应年度聚合、异常识别、跨频率连接和信息时间匹配，适合直接对照检查目标粒度与时间口径。</p>
+<ul>
+<li><strong>年度交易概览</strong>：如果最终要做公司年度分析，可以先从日行情中按证券和年份汇总交易日数、平均换手率以及已经明确定义的收益统计，再连接年度财务属性。这里最容易出错的是单位和口径：某个涨跌幅字段原本已经以百分数保存，就不能在后面再次乘 100；某个波动率若只是日频标准差，也不能在没有说明的情况下直接写成年化波动率。</li>
+<li><strong>异常成交日</strong>：一个常见的描述方法，是把某一天的成交量与该股票当年平均成交量比较，从而找出异常活跃的交易日。用于事后描述时，这样做没有问题；但如果想把它变成实时交易信号，就不能使用全年平均值，因为这个均值包含未来月份的信息。此时应改用截至当日之前已经能够计算的历史基准。</li>
+<li><strong>日行情与月度指标</strong>：技术上可以先把交易日转换成月份，再把同一个月度值重复到该月所有交易日。这解决了两张表频率不同的问题，却没有自动解决信息可得性。如果某个 3 月指标直到 4 月中旬才发布，那么 3 月交易日不能使用这个最终数值做实时预测，还需要根据真实发布日期建立时间匹配。</li>
+<li><strong>日行情与财务表</strong>：如果目标是年度研究，通常先把日行情聚合到公司年度，再与财务数据连接；如果目标是日度预测，则应从每个交易日出发，寻找当时已经公告、仍处于有效期内的最近一期财务信息。两种任务都可能包含年份字段，但经济上的匹配逻辑完全不同，不能只因为年份相同就认为财务信息与交易日已经正确对齐。</li>
+</ul>
+<p>这几类查询看起来只是 SQL 或 pandas 练习，背后其实都在重复同一个判断框架：先确认目标粒度，再定义指标，最后核对信息在什么时间可得。</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="先在小表上验证连接逻辑">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+先在小表上验证连接逻辑
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>真正处理几百万行数据以前，先用几十行甚至手工可核对的小表跑通一次。小数据上都解释不清的连接关系，放大到整批文件后只会更难发现。</p>
+</div>
+</div>
 </section>
 <section id="建立可重跑的文件数据库" class="level3" data-number="3.5.3">
 <h3 data-number="3.5.3" class="anchored" data-anchor-id="建立可重跑的文件数据库"><span class="header-section-number">3.5.3</span> 建立可重跑的文件数据库</h3>
-<p>从多个 CSV 建库时，应显式列出输入文件和字段映射，不能靠文件行数推断公司信息表是长表还是宽表。不同 schema 分别处理，缺少必须字段时报告，而不是跳过后继续给出完成结论。</p>
-<p>生成数据库写入派生目录，保留原始 CSV。每次运行可以写入新版本数据库，核验完成后再由规则决定是否替换使用入口。<code>if_exists='replace'</code> 会替换指定表，适合明确的重建任务，不能在未知已有成果上随意使用。写入完成还要检查读取后的类型、行数和查询结果，而不只看文件存在。</p>
+<p>如果要把多个 CSV 批量写入数据库，输入文件和字段映射最好显式列出，而不是让程序根据文件大小、行数或文件名猜测「这大概是哪张表」。不同字段结构应按照各自规则处理；某个输入缺少必须字段时，就应明确报告这一批数据不能继续，而不是悄悄跳过后仍然输出「数据库构建完成」。</p>
+<p>这种做法看起来保守，却能避免一个常见问题：脚本最后确实生成了数据库文件，但里面少了一张关键表，而使用者直到后面查询为空时才发现。</p>
+<p>数据库属于派生资产，应与原始 CSV 分开保存。这样即使建库规则需要修改，也可以从原始输入重新生成，而不必在数据库里反复修改。比较稳妥的做法是先写出一个新版本，完成结构和结果核验后，再决定是否更新正式使用入口。</p>
+<p>尤其要谨慎使用 <code>if_exists='replace'</code>。它适合明确知道某张表可以完全重建的任务，但如果当前数据库中已经有人工维护或尚未备份的内容，直接 replace 会把原表覆盖。写入完成以后，还应重新读取检查类型、行数和关键查询，而不是只确认 <code>.db</code> 文件已经出现。</p>
 </section>
 </section>
 <section id="sec-financial-management-duckdb" class="level2" data-number="3.6">
 <h2 data-number="3.6" class="anchored" data-anchor-id="sec-financial-management-duckdb"><span class="header-section-number">3.6</span> DuckDB 与 Parquet：查询本地大文件</h2>
-<p>当资料分布在多个 Parquet 文件，且任务主要是筛选、分组和连接时，可以考虑 DuckDB。它提供对 Parquet 等文件的分析查询，不必先把全部记录加载到 pandas。具体接口见 <a href="https://duckdb.org/docs/stable/data/parquet/overview">DuckDB 官方 Parquet 文档</a>。本章介绍使用位置，不要求学生为完成 CSMAR 案例安装新的数据库系统。</p>
-<p>选择工具时先问瓶颈在哪里。如果只是几张小表，pandas 已足够；如果相同关系表要反复查询，SQLite 可以集中管理；如果任务是在大量本地列式文件中筛选聚合，DuckDB 提供另一种路线。把所有数据换个后缀或导入数据库，并不会自动使错误合并变正确。</p>
-<p>性能比较应使用相同输入、列、筛选条件和聚合定义，先比较结果是否一致，再讨论时间。首次读取与缓存读取、是否包含建库时间、是否只取需要列都会影响比较。这里不沿用来源讲义的机器计时，也不把工具排序当成研究结论。</p>
-<p>在多人机构环境中还会遇到服务器数据库、权限控制和任务调度。它们扩大了数据规模和协作方式，但主键、schema、来源追踪和验收规则仍然适用。理解本章的小表比背诵更多产品名更有迁移价值。</p>
+<p>当数据已经按年份或主题保存成多个 Parquet 文件，而且日常任务主要是筛选、分组和连接时，DuckDB 提供了另一种很方便的路线。它可以直接对本地 Parquet 文件执行分析型 SQL，不必先把整批数据全部读成 pandas DataFrame。具体接口可查 <a href="https://duckdb.org/docs/stable/data/parquet/overview">DuckDB 官方 Parquet 文档</a>。</p>
+<p>本章介绍 DuckDB 的目的，是让学生知道文件很多以后还有什么工具可用，而不是要求为了本次 CSMAR 案例另外安装一套数据库系统。</p>
+<p>工具选择可以从当前瓶颈出发，而不需要追求更高级的方案。只有几张中小规模表时，pandas 已经足够直观；若多张关系表需要长期保存并反复查询，SQLite 可以把它们集中起来；若主要面对大量本地列式文件，DuckDB 可能更方便直接查询。</p>
+<p>需要反复强调的是，换工具不会自动修复数据逻辑。把 CSV 全部转成 Parquet，或者把所有表导入数据库，仍然不能让一个错误的主键变正确。数据管理先解决定义和关系，再讨论性能。</p>
+<p>如果要比较 pandas、SQLite 和 DuckDB 的性能，应先保证它们处理的是同一批输入、同一组列、相同筛选条件和相同聚合定义，并先确认结果一致，再比较运行时间。否则，一个工具更快，可能只是因为它少读了几列，或者根本没有执行同样的任务。</p>
+<p>计时本身也受很多条件影响：第一次读取与缓存后的读取不同，是否把建库时间算进去也会改变结论。本章因此不沿用来源讲义某台机器上的固定计时结果，只介绍各工具适合出现在哪一类工作流中。</p>
+<p>在多人机构环境中还会遇到服务器数据库、权限控制和任务调度。它们扩大了数据规模和协作方式，但主键、字段结构、来源追踪和验收规则仍然适用。理解本章的小表比背诵更多产品名更有迁移价值。</p>
 </section>
 <section id="sec-financial-management-contract" class="level2" data-number="3.7">
 <h2 data-number="3.7" class="anchored" data-anchor-id="sec-financial-management-contract"><span class="header-section-number">3.7</span> 目录、命名、字典与交接</h2>
-<p>数据项目长期可维护，依赖于别人能否在没有原作者口头解释时找到输入与运行入口。目录和文档要服务于这个目标。</p>
+<p>数据项目能不能长期维护，有一个很实用的判断标准：过几周以后，换一个同学甚至原作者自己，在没有口头提示的情况下，能不能找到原始输入、知道应该先运行什么，并判断某个中间文件是否可以删除或重建。目录结构、文件名和说明文档都应该服务于这个目标，而不是为了看起来整齐。</p>
 <section id="按数据生命周期分层" class="level3" data-number="3.7.1">
 <h3 data-number="3.7.1" class="anchored" data-anchor-id="按数据生命周期分层"><span class="header-section-number">3.7.1</span> 按数据生命周期分层</h3>
+<p>目录分层的目的，是让原始输入、可重建的中间资产和研究样本承担不同责任。下面的结构只是一个独立学生项目的教学示意，先看每一层应该放什么，再与 FinEco 的实际目录规则区分开来。</p>
 <pre class="text"><code>project/
   README.md                 项目目的、环境、运行顺序
   AGENTS.md                 Agent 工作边界
@@ -785,17 +850,22 @@ R_{it}=\prod_{d\in\mathcal D_{it}}(1+r_{id})-1.
   tools/                    可复用处理脚本
   audit/                    来源清单、样本流、匹配和分布
   decisions.md              已确认决定与待裁定事项</code></pre>
-<p>这是独立学生项目的通用示意。FinEco 中受限 raw/interim/processed 位于授权数据根，公开 <code>data/financial-data/</code> 只放说明与汇总，详见<a href="../data/financial-data/README.md">运行说明</a>。不要为了符合示意目录而移动教师原始资料。</p>
-<p>原始数据、标准化表和研究样本承担不同责任。标准化可以更正字段类型与确认后的单位，但不默认删除金融行业；研究样本可以执行论文规则，但须保留从基础库重建的路径。规则改变时生成新研究版本，不反向改掉原始输入。</p>
+<p>上面的目录只是一个独立学生项目的通用示意，用来说明不同生命周期的数据最好分层保存。实际 FinEco 项目已经有自己的工程规则：受限的 raw、interim 和 processed 数据位于授权数据根，公开的 <code>data/financial-data/</code> 只保存说明与汇总，具体位置见<a href="../data/financial-data/README.md">运行说明</a>。</p>
+<p>因此，不要为了让真实项目长得像这张示意图就去移动教师已经保存的原始资料。目录规范的作用是帮助理解责任边界，而不是要求所有项目使用完全相同的文件夹名称。</p>
+<p>原始数据、标准化数据和最终研究样本承担的责任不同。原始层尽量保持数据提供方交付的状态；标准化层可以修正已经确认的字段类型、日期格式和单位；研究样本层才根据具体论文或作业的要求执行行业排除、样本期间和其他筛选。</p>
+<p>这样分层以后，某篇论文决定删除金融行业，并不意味着基础数据库里也应该永久删掉金融企业。以后研究问题改变，只要重新执行研究样本规则即可，而不需要重新下载数据。</p>
 </section>
 <section id="文件名要能排序和辨认" class="level3" data-number="3.7.2">
 <h3 data-number="3.7.2" class="anchored" data-anchor-id="文件名要能排序和辨认"><span class="header-section-number">3.7.2</span> 文件名要能排序和辨认</h3>
-<p>使用主题、范围和版本，例如 <code>financial_annual_2014_2025_v1.parquet</code>。日期采用可排序格式，版本写清顺序。避免只有“最终版”“老师改过的”等依赖记忆的名称。已有数据库导出文件保留原名，通过 manifest 建立规范数据集名称，不为美观而修改原始文件。</p>
-<p>相同文件名可能有不同内容，因此记录 SHA256。哈希相同支持字节未变，不能证明来源内容本身正确；文件重新编码后哈希不同，也不必然意味着经济数值变了。应结合 schema、覆盖和变量比较判断。</p>
+<p>文件名最好让人一眼看出大致内容和版本，例如 <code>financial_annual_2014_2025_v1.parquet</code>。日期使用可以自然排序的格式，版本号也保持明确顺序。相比之下，「最终版」「最新版」「老师改过的」这类名称高度依赖个人记忆，过几天就很难判断谁更新、谁更旧。</p>
+<p>需要保留来源证据的数据库导出文件则不必为了美观重命名。可以让原文件保持下载时名称，再通过数据清单 (manifest) 给它建立一个规范的数据集名称和版本说明。</p>
+<p>文件名不能唯一证明文件内容没有变化，因此对关键输入可以记录 SHA256 等哈希值。以后再次拿到同名文件时，如果哈希相同，可以确认两个文件在字节层面一致；如果哈希不同，则说明内容至少发生过某种变化。</p>
+<p>不过，哈希只是版本识别工具，不是数据质量证明。来源文件本身即使有错误，哈希仍然可以稳定不变；反过来，文件只是重新编码或调整了无关元数据，哈希也会改变。因此，数据版本判断还要结合字段结构、时间覆盖和关键变量比较。</p>
 </section>
 <section id="数据字典与-readme-各写什么" class="level3" data-number="3.7.3">
 <h3 data-number="3.7.3" class="anchored" data-anchor-id="数据字典与-readme-各写什么"><span class="header-section-number">3.7.3</span> 数据字典与 README 各写什么</h3>
-<p>字典围绕字段，README 围绕项目。字典解释 <code>total_assets</code> 来自哪个源字段、使用什么金额单位、属于什么报表；README 说明数据从哪里获得、需要什么环境、先运行哪份代码、输出在哪里、哪些内容不能分发。</p>
+<p>数据字典和 README 经常同时出现，但两者回答的问题不同。数据字典围绕<strong>字段</strong>展开，例如 <code>total_assets</code> 来自哪个原始字段、单位是什么、属于哪一种报表、缺失怎样表示；README 则围绕<strong>项目怎样运行</strong>展开，例如数据从哪里取得、需要什么环境、应该先执行哪份代码、输出保存在哪里，以及哪些文件因为授权不能公开。</p>
+<p>把两者分开以后，查变量定义时不必翻一大段运行说明，第一次接手项目的人也不用从字段表中猜执行顺序。</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -830,22 +900,26 @@ R_{it}=\prod_{d\in\mathcal D_{it}}(1+r_{id})-1.
 </tr>
 </tbody>
 </table>
-<p>可以委托 Agent 生成这些文档的初稿，但字段含义须有来源，不能把它从列名猜出的解释写成事实。所有权不能靠控制人名称含几个关键词便自动二分，缺失单位不能靠数量级自动决定。</p>
+<p>这些文档的格式化和初稿整理很适合交给 Agent，但内容证据仍然要有来源。例如，模型看到列名 <code>owner_type</code> 可以建议「可能与所有权性质有关」，却不能在没有代码表或数据库说明的情况下直接写成「国企=1、民企=0」。同样，金额看起来像几亿元，也不能仅凭数量级推断原始单位一定是「元」。</p>
+<p>Agent 最适合做的是把已经查到的规则整理清楚，并把查不到的地方显式标成待确认，而不是替研究者把所有空白自动补齐。</p>
 </section>
 </section>
 <section id="sec-financial-management-workflow" class="level2" data-number="3.8">
 <h2 data-number="3.8" class="anchored" data-anchor-id="sec-financial-management-workflow"><span class="header-section-number">3.8</span> 从小任务到可复用工作流</h2>
-<p>现在可以把全章连起来：先列来源和粒度，检查类型与键，明确聚合规则，再连接数据并保存审计，最后将经过核验的中间结果供下游重复使用。</p>
+<p>把前面的内容连在一起，一套比较稳定的数据管理工作流就形成了。拿到多张表后，先记录来源，并说明每张表的一行代表什么；接着检查字段类型和主键，决定哪些表可以直接连接、哪些必须先聚合；合并后保留匹配状态和必要审计；最后再把已经核验的中间结果保存下来，供后面的清洗和建模反复使用。</p>
+<p>这套流程的目的不是增加文档工作，而是把原来依赖个人记忆的判断写进数据和代码中。这样下游分析如果出现异常，可以沿着处理链回到具体一步，而不必从头猜测。</p>
 <pre class="text"><code>任务：把年度财务与日行情形成年度分析底表。
-输入：已列明来源与 schema 的年度表、日表、身份历史表。
+输入：已列明来源与字段结构的年度表、日表、身份历史表。
 目标：年度底表；保留原字段，单独增加指定的交易指标。
 约束：原始数据只读，不猜单位，不自动去重或填补缺失。
 步骤：检查键与期间，说明聚合公式，再合并并保留匹配标识。
 验收：输入输出数量、双方键检查、匹配状态、分组未匹配率、
 变量单位、支持期与信息日期检查；SQL/pandas 对照时比较结果。
 停止条件：重复原因不清、身份有效期缺失、口径不一致。</code></pre>
-<p>读者可以 clone 仓库后运行 <a href="../notebooks/financial-data/financial-data.html#sec-csmar-04">Notebook 第 04–05 节</a>，观察真实财务表如何落实这些步骤。代码已经提供；学生的任务是能够解释为什么采取这些操作，以及现有证据还不足以支持什么。</p>
-<p>本讲练习：给一张证券日表和一张公司年表各写出主键；指出同一个连接在年度描述与日度预测中的不同条件；说明 CSV、Parquet 和 SQLite 分别保存了哪些信息；为一次追加后的重复设计核查规则。下一讲进入<a href="../lectures/financial-data-cleaning.html">清洗、变量构造和审计</a>。</p>
+<p>读者可以 clone 仓库后运行 <a href="../notebooks/financial-data/financial-data.html#sec-csmar-04">Notebook 第 04–05 节</a>，看真实财务表怎样把这些原则落实成代码。这里的学习目标不是把合并程序重新抄一遍，而是能够解释每一个关键操作为什么必要：为什么这个键应该唯一，为什么某张日表要先聚合，为什么保留 <code>_merge</code> 状态，以及哪些变量口径当前还没有足够证据冻结。</p>
+<p>当这些问题能够回答清楚时，代码才真正从<strong>能运行</strong>变成<strong>可解释、可检查的工作流</strong>。</p>
+<p>课后可以用四个小问题检查是否真正理解本讲：给一张证券日表和一张公司年表分别写出粒度与主键；说明同一个财务表连接在年度描述和日度预测中为什么使用条件不同；比较 CSV、Parquet 和 SQLite 分别保存了哪些结构信息；最后，为一次跨年份追加后出现的重复键设计一套核查步骤。</p>
+<p>下一讲进入<a href="../lectures/financial-data-cleaning.html">清洗、变量构造和审计</a>。那时我们不再主要问这些表怎样放在一起，而是进一步判断其中的缺失、异常和变量构造是否有合理的经济含义。</p>
 </section>
 <section id="本讲来源" class="level2" data-number="3.9">
 <h2 data-number="3.9" class="anchored" data-anchor-id="本讲来源"><span class="header-section-number">3.9</span> 本讲来源</h2>
