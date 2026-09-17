@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>第二次作业：金融数据分析 – 金融计量经济学</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../settings.html" rel="next">
+<link href="../exercises/hw-01.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0626ff4d7a71b55c8707dcae1d04a9b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-d59a9bb4a0246dd4330968064f99cf3e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+<link rel="icon" type="image/png" sizes="40x40" href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../homework.html">作业</a></li><li class="breadcrumb-item"><a href="../exercises/hw-02.html">第二次作业：金融数据分析</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">金融计量经济学</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/lianxhcn/FinEco" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="切换阅读器模式">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🏠 前言</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📚 课程资料</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../getting-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📌 课件使用</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../syllabus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📅 课程安排</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../homework.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">作业</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../exercises/hw-01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">hw-01</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../exercises/hw-02.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">第二次作业：金融数据分析</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">🛠️ 环境配置</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">软件配置</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../publishing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">同步与发布</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">研究基础</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">研究流程</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/intro/portfolio-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">组合实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/intro/policy-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">政策实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/financial-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">数据流程与获取</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/financial-data-management.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">数据管理</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/financial-data-cleaning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">数据清洗与审计</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/financial-data/financial-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">CSMAR：Agent 实战</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/bootstrap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Bootstrap</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/bootstrap/bootstrap-demo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Python 实验</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/bootstrap/bootstrap-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Stata 实验</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">附录</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../resources/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">公共书目</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目录</h2>
+   
+  <ul>
+  <li><a href="#必做提交与-notebook-写作" id="toc-必做提交与-notebook-写作" class="nav-link active" data-scroll-target="#必做提交与-notebook-写作">1. 【必做】提交与 Notebook 写作</a>
+  <ul class="collapse">
+  <li><a href="#文件开头" id="toc-文件开头" class="nav-link" data-scroll-target="#文件开头">文件开头</a></li>
+  <li><a href="#每个主要环节说明代码解读" id="toc-每个主要环节说明代码解读" class="nav-link" data-scroll-target="#每个主要环节说明代码解读">每个主要环节：说明、代码、解读</a></li>
+  <li><a href="#自主判断与合理性核验" id="toc-自主判断与合理性核验" class="nav-link" data-scroll-target="#自主判断与合理性核验">自主判断与合理性核验</a></li>
+  </ul></li>
+  <li><a href="#必做hw02-1股票收益与组合风险" id="toc-必做hw02-1股票收益与组合风险" class="nav-link" data-scroll-target="#必做hw02-1股票收益与组合风险">2. 【必做】HW02-1：股票收益与组合风险</a>
+  <ul class="collapse">
+  <li><a href="#选股与获取数据" id="toc-选股与获取数据" class="nav-link" data-scroll-target="#选股与获取数据">选股与获取数据</a></li>
+  <li><a href="#数据检查与收益率" id="toc-数据检查与收益率" class="nav-link" data-scroll-target="#数据检查与收益率">数据检查与收益率</a></li>
+  <li><a href="#图形与统计" id="toc-图形与统计" class="nav-link" data-scroll-target="#图形与统计">图形与统计</a></li>
+  <li><a href="#两类组合" id="toc-两类组合" class="nav-link" data-scroll-target="#两类组合">两类组合</a></li>
+  </ul></li>
+  <li><a href="#必做hw02-2房地产公司财务特征" id="toc-必做hw02-2房地产公司财务特征" class="nav-link" data-scroll-target="#必做hw02-2房地产公司财务特征">3. 【必做】HW02-2：房地产公司财务特征</a>
+  <ul class="collapse">
+  <li><a href="#样本与字段" id="toc-样本与字段" class="nav-link" data-scroll-target="#样本与字段">样本与字段</a></li>
+  <li><a href="#数量与产权结构" id="toc-数量与产权结构" class="nav-link" data-scroll-target="#数量与产权结构">数量与产权结构</a></li>
+  <li><a href="#财务指标与时序分析" id="toc-财务指标与时序分析" class="nav-link" data-scroll-target="#财务指标与时序分析">财务指标与时序分析</a></li>
+  </ul></li>
+  <li><a href="#必做完整复现材料与-ai-声明" id="toc-必做完整复现材料与-ai-声明" class="nav-link" data-scroll-target="#必做完整复现材料与-ai-声明">4. 【必做】完整复现材料与 AI 声明</a></li>
+  <li><a href="#按需数据存储与处理比较" id="toc-按需数据存储与处理比较" class="nav-link" data-scroll-target="#按需数据存储与处理比较">5. 【按需】数据存储与处理比较</a>
+  <ul class="collapse">
+  <li><a href="#大文件与受限数据" id="toc-大文件与受限数据" class="nav-link" data-scroll-target="#大文件与受限数据">大文件与受限数据</a></li>
+  <li><a href="#会影响结论的处理" id="toc-会影响结论的处理" class="nav-link" data-scroll-target="#会影响结论的处理">会影响结论的处理</a></li>
+  </ul></li>
+  <li><a href="#可选网站展示与拓展" id="toc-可选网站展示与拓展" class="nav-link" data-scroll-target="#可选网站展示与拓展">6. 【可选】网站展示与拓展</a>
+  <ul class="collapse">
+  <li><a href="#github-pages-网站" id="toc-github-pages-网站" class="nav-link" data-scroll-target="#github-pages-网站">GitHub Pages 网站</a></li>
+  <li><a href="#其他可选内容" id="toc-其他可选内容" class="nav-link" data-scroll-target="#其他可选内容">其他可选内容</a></li>
+  </ul></li>
+  <li><a href="#必做提交检查与评分" id="toc-必做提交检查与评分" class="nav-link" data-scroll-target="#必做提交检查与评分">7. 【必做】提交检查与评分</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/exercises/hw-02.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../homework.html">作业</a></li><li class="breadcrumb-item"><a href="../exercises/hw-02.html">第二次作业：金融数据分析</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">第二次作业：金融数据分析</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="course-actions">
+<p><a href="../homework.html">返回作业总览</a> · <a href="../index.html">课程主页</a> · <a href="https://send2me.cn/dXoHZt1Q/TZOX0ZWijy7xAg">提交作业</a></p>
+</div>
+<p>本次作业包括 <strong>HW02-1：股票收益与组合风险分析</strong> 和 <strong>HW02-2：房地产上市公司财务特征分析</strong>。每题提交一份 Jupyter Notebook 简要分析报告，完整呈现思路、数据处理、代码、结果和解释。</p>
+<div class="callout callout-style-default callout-important callout-titled" title="截止时间与要求分类">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+截止时间与要求分类
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>截止时间：2026 年 9 月 28 日 23:59 (北京时间)。</strong> 通过<a href="https://send2me.cn/dXoHZt1Q/TZOX0ZWijy7xAg">坚果云</a>提交两个已运行的 <code>.ipynb</code> 文件。</p>
+<ul>
+<li><strong>【必做】</strong>：所有学生均须完成，纳入评分。</li>
+<li><strong>【按需】</strong>：满足相应条件时须完成，例如使用网盘就须提供数据获取说明。</li>
+<li><strong>【可选】</strong>：自主拓展，不做不扣分。GitHub Pages 网站和 AI 对话链接均为可选。</li>
+</ul>
+</div>
+</div>
+<section id="必做提交与-notebook-写作" class="level2">
+<h2 class="anchored" data-anchor-id="必做提交与-notebook-写作">1. 【必做】提交与 Notebook 写作</h2>
+<p>个人独立完成，提交文件命名为 <code>学号-姓名-HW02-1.ipynb</code> 和 <code>学号-姓名-HW02-2.ipynb</code>。代码输出、表格和图片须已保存在文件中，中文和负号正常显示，无乱码或未处理的运行错误。</p>
+<section id="文件开头" class="level3">
+<h3 class="anchored" data-anchor-id="文件开头">文件开头</h3>
+<p>每份 Notebook 的第一个单元格使用 Markdown，填写以下信息，并用一段话介绍分析目的和总体思路。第二题相应修改标题。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># HW02-1：股票收益与组合风险分析</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>姓名：</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>学号：</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>作业简介或教师作业页面链接：</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>个人 GitHub 仓库访问地址：</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>HW02-1 目录链接：</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>HW02-2 目录链接：</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>数据来源、获取日期与样本期间：</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>AI 使用声明：未使用 / 使用了哪些工具</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>使用外部数据存储时补充数据获取地址；选择建站或分享 AI 对话时再补充相应链接。坚果云提交版填写姓名和完整学号；公开仓库版以课程编号替代完整学号，分析内容保持一致。</p>
+</section>
+<section id="每个主要环节说明代码解读" class="level3">
+<h3 class="anchored" data-anchor-id="每个主要环节说明代码解读">每个主要环节：说明、代码、解读</h3>
+<p>数据获取、清洗、描述统计、绘图和组合分析等环节均按以下顺序组织。一个环节可以有多个代码块，无需为每行代码单独配文字。</p>
+<ol type="1">
+<li><strong>Step 1：Markdown 分析说明。</strong> 用段落说明要回答什么问题、为什么做这一步、采用什么方法；再用列表列出分析要点、关键口径和检查事项。</li>
+<li><strong>Step 2：代码与实际输出。</strong> 提供实现上述思路的代码，保留表格、图形和必要检查结果。代码应有清楚的中文注释。</li>
+<li><strong>Step 3：Markdown 结果解读。</strong> 用段落引用具体数值、年份、股票或企业组别，解释差异、合理性、可能原因和局限；再用列表总结 2—4 条核心发现。</li>
+</ol>
+<p>不能只写“结果如下”“呈上升趋势”，也不能只重复图表标题。清洗环节要解释问题、处理依据及影响；分析环节要解释发现及证据。将可能原因与已得到支持的结论区分开。</p>
+<p><strong>每题末尾须有总体结论</strong>：串联主要发现，回答本题问题，概括关键处理判断及数据、方法的局限。最终 Notebook 应是一份简要分析报告。</p>
+</section>
+<section id="自主判断与合理性核验" class="level3">
+<h3 class="anchored" data-anchor-id="自主判断与合理性核验">自主判断与合理性核验</h3>
+<p>数据处理的具体决定由学生作出并解释。检查重复记录、缺失值、离群值、单位、日期和分母是否有效，说明保留或处理异常观测的理由及影响数量。</p>
+<p><strong>检查离群值是必做，缩尾不是必做。</strong> 极端收益或比率可能来自错误、公司行为、异常分母，也可能是真实经济状况。不能以消除全部离群值作为完成标准。结果不合理时回查数据和计算，无法解释时如实报告疑点。会明显影响结论的处理比较见第 5 节。</p>
+</section>
+</section>
+<section id="必做hw02-1股票收益与组合风险" class="level2">
+<h2 class="anchored" data-anchor-id="必做hw02-1股票收益与组合风险">2. 【必做】HW02-1：股票收益与组合风险</h2>
+<section id="选股与获取数据" class="level3">
+<h3 class="anchored" data-anchor-id="选股与获取数据">选股与获取数据</h3>
+<p>选择 <strong>10 只 A 股股票，至少覆盖 5 个行业</strong>。样本期间统一为 <strong>2021-01-01 至 2026-09-16</strong>，另取样本开始前最后一个交易日的数据，用于计算首个交易日收益率。优先选择样本开始前已上市、覆盖完整的股票。</p>
+<p>提交选股表，包括代码、简称、行业、上市日期和选股理由。使用同一行业分类标准，注明来源及分类日期；理由可涉及行业、规模、商业模式和代表性，不以事后涨幅作为唯一依据。</p>
+<p>优先通过 AKShare 获取数据。若接口不可用、历史覆盖不足或缺少历史市值，可自行选择 CSMAR 等来源补充或替代。记录来源、下载日期、接口及参数或数据表名称、字段单位、软件版本。跨来源检查代码、日期和复权口径。</p>
+<p>至少获取不复权收盘价、用于计算考虑分红等公司行为调整后收益率的数据、成交量或成交额、历史总市值。接口参考 <a href="https://akshare.akfamily.xyz/data/stock/stock.html">AKShare 股票数据文档</a>，以实际下载版本为准。</p>
+</section>
+<section id="数据检查与收益率" class="level3">
+<h3 class="anchored" data-anchor-id="数据检查与收益率">数据检查与收益率</h3>
+<p>采用日简单收益率。使用复权收盘价时：</p>
+<p><span class="math display">\[
+r_{i,t}=\frac{P^{adj}_{i,t}}{P^{adj}_{i,t-1}}-1
+\]</span></p>
+<p>其中，<span class="math inline">\(P^{adj}_{i,t}\)</span> 为股票 <span class="math inline">\(i\)</span> 在交易日 <span class="math inline">\(t\)</span> 的复权收盘价。解释复权口径，不将复权价视为实际成交价。如直接采用数据库的含现金红利再投资收益率，说明字段定义，统一所有股票口径。</p>
+<p>展示主键唯一性、日期排序、各股票实际覆盖期间及有效观测数、缺失与停牌、异常收益和单位检查。不能将所有缺失收益直接填零，也不能删掉缺失日期后将跨日价格变化当成单日收益。自行制定处理方式并解释。</p>
+</section>
+<section id="图形与统计" class="level3">
+<h3 class="anchored" data-anchor-id="图形与统计">图形与统计</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>内容</th>
+<th>必做要求</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>收盘价</td>
+<td>各股票不复权收盘价时序，可分面展示</td>
+</tr>
+<tr class="even">
+<td>累计表现</td>
+<td>起点为 1 的累计收益曲线</td>
+</tr>
+<tr class="odd">
+<td>日收益率</td>
+<td>日收益率时序及异常波动检查</td>
+</tr>
+<tr class="even">
+<td>波动率</td>
+<td>20 个交易日滚动年化波动率</td>
+</tr>
+<tr class="odd">
+<td>描述统计</td>
+<td>有效观测数、均值、标准差、最小值、中位数、最大值、偏度、超额峰度</td>
+</tr>
+<tr class="even">
+<td>相关性</td>
+<td>日收益率 Pearson 相关系数矩阵或热力图，二选一</td>
+</tr>
+</tbody>
+</table>
+<p>年化波动率用日收益率样本标准差乘以 <span class="math inline">\(\sqrt{252}\)</span>。滚动窗口包含 20 个交易日，不足完整窗口时不计算。注明相关性分析的日期对齐、缺失处理和实际样本量。</p>
+<p>图表标明标题、日期、单位和图例。解释哪些股票收益与波动较大，异常收益是否合理，同行业股票是否更相关，以及收益和风险的关系。</p>
+</section>
+<section id="两类组合" class="level3">
+<h3 class="anchored" data-anchor-id="两类组合">两类组合</h3>
+<p>统一采用每日按目标权重计算收益、忽略交易成本的教学设定。等权组合与市值加权组合分别为：</p>
+<p><span class="math display">\[
+r^{EW}_{p,t}=\sum_{i=1}^{10}0.1r_{i,t}
+\]</span></p>
+<p><span class="math display">\[
+w_{i,t-1}=\frac{MV_{i,t-1}}{\sum_{j=1}^{10}MV_{j,t-1}},
+\qquad r^{VW}_{p,t}=\sum_{i=1}^{10}w_{i,t-1}r_{i,t}
+\]</span></p>
+<p><span class="math inline">\(MV_{i,t-1}\)</span> 为上一交易日收盘时的总市值。不得混用流通市值，不得用当前市值回填历史权重，也不得用复权价格乘股本构造实际市值。核验每日权重和为 1，说明缺失行情和市值的处理。</p>
+<p>比较两组合的累计收益及净值曲线、几何年化收益率、年化波动率和最大回撤。设 <span class="math inline">\(T\)</span> 为连续评价期间的有效日收益个数：</p>
+<p><span class="math display">\[
+R_{\mathrm{ann}}=\left[\prod_{t=1}^{T}(1+r_{p,t})\right]^{252/T}-1
+\]</span></p>
+<p>年化波动率由组合日收益率的样本标准差乘以 <span class="math inline">\(\sqrt{252}\)</span> 得到，不能加权平均个股波动率。最大回撤按净值相对历史峰值的最大跌幅计算，报告为非负数。</p>
+<p>两组合使用相同评价期间。日期缺口须处理并说明，不能把不连续观测直接当成连续交易日年化。解释两种权重的结果差异、权重集中程度和分散投资作用。事后选定样本的结果不等同于历史可实施策略或未来收益。</p>
+</section>
+</section>
+<section id="必做hw02-2房地产公司财务特征" class="level2">
+<h2 class="anchored" data-anchor-id="必做hw02-2房地产公司财务特征">3. 【必做】HW02-2：房地产公司财务特征</h2>
+<section id="样本与字段" class="level3">
+<h3 class="anchored" data-anchor-id="样本与字段">样本与字段</h3>
+<p>自行从 CSMAR 下载 <strong>2005—2015 年房地产 A 股上市公司</strong>年度数据，使用年度合并财务报表，按各年年末上市状态、行业及产权属性构建企业—年度非平衡面板。允许上市、退市、行业或产权变化。</p>
+<p>不能只从目前仍上市的公司向前追溯，也不能用当前行业或产权覆盖历史年份。分类标准跨年变化时说明映射方式。记录下载条件、数据表、字段、单位与日期，提供原始字段和分析变量对应表。</p>
+</section>
+<section id="数量与产权结构" class="level3">
+<h3 class="anchored" data-anchor-id="数量与产权结构">数量与产权结构</h3>
+<p>逐年统计并绘图：房地产上市公司总数；国有、民营、其他及产权不明公司数量；国有与民营分别占当年房地产上市公司总数的比例。</p>
+<p>按当年实际控制人性质制定产权分类规则，非国有不直接等于民营。年度公司数去重计算，不因财务指标缺失而删去公司。存在其他或不明类别时，国有与民营占比之和可以小于 100%。</p>
+</section>
+<section id="财务指标与时序分析" class="level3">
+<h3 class="anchored" data-anchor-id="财务指标与时序分析">财务指标与时序分析</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>指标</th>
+<th>本次作业统一口径</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>资产负债率</td>
+<td>总负债 / 总资产</td>
+</tr>
+<tr class="even">
+<td><code>bankloan</code></td>
+<td>(短期银行借款 + 长期银行借款) / 总负债</td>
+</tr>
+<tr class="odd">
+<td>短期负债占比</td>
+<td>流动负债 / 总负债</td>
+</tr>
+<tr class="even">
+<td>ROA</td>
+<td>合并净利润 / 平均总资产</td>
+</tr>
+<tr class="odd">
+<td>ROE</td>
+<td>合并净利润 / 平均所有者权益</td>
+</tr>
+<tr class="even">
+<td><code>Cash_TA</code></td>
+<td>货币资金 / 总资产</td>
+</tr>
+</tbody>
+</table>
+<p>短期银行借款和长期银行借款直接从 CSMAR 下载，保留字段说明，缺失不自动按零处理。平均总资产和平均所有者权益取上年末与本年末的平均值，须额外下载 <strong>2004 年末</strong>相关数据。利润与权益使用一致的合并口径，不混用归母净利润与包含少数股东权益的总权益。</p>
+<p>现金持有用货币资金衡量，短期负债用流动负债衡量，分别区别于现金及现金等价物、短期银行借款。对零分母、负权益和极端比率，自行确定处理规则，说明经济含义和影响。</p>
+<p>对六个指标分别呈现：</p>
+<ul>
+<li>全部房地产企业历年均值与中位数时序图。</li>
+<li>国有和民营企业历年均值比较图。</li>
+<li>国有和民营企业历年中位数比较图。</li>
+<li>各指标对应的年度有效样本量表。</li>
+</ul>
+<p>可以用分面图组织。平均资产负债率为企业比率的算术平均，不是行业总负债除以总资产。</p>
+<p>解释公司数量、产权结构及财务特征的变化，均值与中位数的差异，国有与民营的差异，以及指标突变是否由离群值、异常分母、样本进出或产权变更引起。描述性差异不能直接解释为产权的因果作用。</p>
+<p>保留样本处理表，记录下载、筛选、合并和变量构造阶段的公司数与企业—年度观测数。检查主键、重复报表、合并关系、未匹配记录、单位、缺失和离群值，并解释主要决定。</p>
+</section>
+</section>
+<section id="必做完整复现材料与-ai-声明" class="level2">
+<h2 class="anchored" data-anchor-id="必做完整复现材料与-ai-声明">4. 【必做】完整复现材料与 AI 声明</h2>
+<p>在个人账号下建立 <code>FinEco-hw</code> 仓库，分别使用 <code>hw02-1/</code> 和 <code>hw02-2/</code>。仓库首页提供两题入口，顶部仓库链接须让教师能够访问；如为私有仓库，须安排教师访问权限。</p>
+<pre class="text"><code>FinEco-hw/
+├── README.md
+├── .gitignore
+├── hw02-1/
+│   ├── hw02-1.ipynb
+│   ├── README.md
+│   ├── requirements.txt
+│   └── data/
+└── hw02-2/
+    ├── hw02-2.ipynb
+    ├── README.md
+    ├── requirements.txt
+    └── data/</code></pre>
+<p>有辅助脚本时另建 <code>code/</code> 并全部保留，核心分析过程仍在 Notebook 中呈现。仓库必须提供复现全部结果所需的代码、数据或明确获取入口、依赖及运行步骤，不能只保存截图或部分代码。</p>
+<p>每题 README 说明来源、下载日期、数据版本、文件位置、依赖、运行入口与顺序、预期主要输出。复现使用本次分析的数据快照，不能只依赖未来重新调用接口。使用相对路径，并从一个新目录按说明获取材料、配置环境、从头运行，验证主要图表。</p>
+<p><strong>AI 使用声明必填，使用 AI 本身可选。</strong> 未使用者填写“未使用”；使用者记录工具、参与环节、至少一条关键提示词和本人核验过程，说明修正过的问题；未发现问题时如实说明检查内容。学生须能解释自己的变量、处理决定与结论。对话链接可选，无法分享时无需编造链接。</p>
+</section>
+<section id="按需数据存储与处理比较" class="level2">
+<h2 class="anchored" data-anchor-id="按需数据存储与处理比较">5. 【按需】数据存储与处理比较</h2>
+<section id="大文件与受限数据" class="level3">
+<h3 class="anchored" data-anchor-id="大文件与受限数据">大文件与受限数据</h3>
+<p>完整复现材料是必做，存储工具自选，无需同时采用以下全部方式：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>存储方式</th>
+<th>使用说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>普通 Git 文件</td>
+<td>存放适合直接入库且允许共享的数据与代码</td>
+</tr>
+<tr class="even">
+<td>Git LFS</td>
+<td>大文件通过指针关联到独立存储，见 <a href="https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-git-large-file-storage">Git LFS 指南</a></td>
+</tr>
+<tr class="odd">
+<td>GitHub Releases</td>
+<td>将数据快照打包为版本附件，见 <a href="https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases">Releases 指南</a></td>
+</tr>
+<tr class="even">
+<td>坚果云或其他网盘</td>
+<td>在仓库提供数据包链接与下载、解压说明</td>
+</tr>
+</tbody>
+</table>
+<p>采用外部存储时，必须在 <code>data/README.md</code> 列出文件名、用途、大小、访问地址和本地存放路径，保证批改期间能够访问。LFS 使用者说明获取真实数据文件的步骤，不能只提供指针文件。使用前查看平台当前配额与计费规则。</p>
+<p>CSMAR 等受限数据按数据库和学校授权范围共享，不上传公开仓库或公开网盘。在许可范围内以受控方式向教师提供；不能转交的数据，提供完整下载条件、字段清单和代码，并明确所需访问权限。更换平台不改变数据权限。不要在公开页面展示完整学号或登录信息。</p>
+</section>
+<section id="会影响结论的处理" class="level3">
+<h3 class="anchored" data-anchor-id="会影响结论的处理">会影响结论的处理</h3>
+<p>删除、填补、缩尾或样本筛选可能明显影响主要结果时，应比较处理前后的关键统计量、图形或结论。重点解释判断依据及结果是否稳健，无需穷举所有处理方法。</p>
+</section>
+</section>
+<section id="可选网站展示与拓展" class="level2">
+<h2 class="anchored" data-anchor-id="可选网站展示与拓展">6. 【可选】网站展示与拓展</h2>
+<section id="github-pages-网站" class="level3">
+<h3 class="anchored" data-anchor-id="github-pages-网站">GitHub Pages 网站</h3>
+<p>可自主选择发布作业网站，<strong>不建站不扣分，也不影响基础评分</strong>。网站不能替代 <code>.ipynb</code> 提交与完整复现材料。</p>
+<p>操作指南：</p>
+<ul>
+<li><a href="../publishing.html#sec-publish-personal">本课程：同步与发布</a>：从个人仓库到网站发布的步骤与 Agent 提示词。</li>
+<li><a href="https://quarto.org/docs/publishing/github-pages.html">Quarto：GitHub Pages 发布</a>：将 Notebook 等内容渲染并发布。</li>
+<li><a href="https://lianxhcn.github.io/quarto_book/">Quarto Book 中文教程</a>：学习网站组织与排版。</li>
+</ul>
+<p>流程为：先运行并保存 Notebook，再用 Quarto 渲染、本地检查、发布与核验链接。网页展示已保存结果，不在访问时实时取数或执行分析。Git LFS 不用于直接托管 Pages 网站资产；大数据仍通过数据获取链接提供。</p>
+<p>选择建站后，在 Notebook 顶部附首页和本题页面地址。公开展示前检查身份信息与数据权限。</p>
+</section>
+<section id="其他可选内容" class="level3">
+<h3 class="anchored" data-anchor-id="其他可选内容">其他可选内容</h3>
+<ul>
+<li>提供可分享的 AI 对话链接。</li>
+<li>为数据文件提供 SHA256 校验值。</li>
+<li>增加题目之外的指标、敏感性分析或其他拓展。</li>
+</ul>
+<p>这些内容均不替代必做任务，不做不扣分。</p>
+</section>
+</section>
+<section id="必做提交检查与评分" class="level2">
+<h2 class="anchored" data-anchor-id="必做提交检查与评分">7. 【必做】提交检查与评分</h2>
+<p>提交前重启内核，从头运行，保存后重新打开检查：分析说明、代码与解读完整；图表和中文正常；无未处理报错；数据与路径可复现；两题仓库链接可访问；提交版有姓名学号；公开材料不含受限数据、完整学号或登录信息。</p>
+<p>每题满分 100 分，两题各占本次作业的 50%，不改变课程总评中作业的比例。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>评价内容</th>
+<th style="text-align: right;">分值</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>数据来源、样本选择与变量口径</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="even">
+<td>清洗、合并、离群值检查及处理依据</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr class="odd">
+<td>指标计算与图表正确性</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="even">
+<td>结果解释、合理性核验与结论深度</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr class="odd">
+<td>Notebook 组织、可复现性与提交规范</td>
+<td style="text-align: right;">10</td>
+</tr>
+</tbody>
+</table>
+<p>评分仅对应必做任务和适用的按需要求。仅交代码图表、缺少思路和解释不能获得完整评价；代码篇幅和图表数量本身不加分。</p>
+<p>参考指南核查日期 (retrieved_date)：2026-09-17。</p>
+<div class="course-actions">
+<p><a href="../homework.html">返回作业总览</a> · <a href="../index.html">课程主页</a> · <a href="https://send2me.cn/dXoHZt1Q/TZOX0ZWijy7xAg">提交作业</a></p>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "已复制");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "已复制");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../exercises/hw-01.html" class="pagination-link" aria-label="hw-01">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">hw-01</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../settings.html" class="pagination-link" aria-label="软件配置">
+        <span class="nav-page-text">软件配置</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>LN429 · 中山大学岭南学院</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/exercises/hw-02.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p><a href="https://www.lianxh.cn">连享会</a> · Quarto Book</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

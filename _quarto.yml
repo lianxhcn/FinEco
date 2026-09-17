@@ -30,6 +30,8 @@ project:
     - requirements.txt
     - resources/environment-agent.md
     - resources/submission-template.md
+    - "!00[0-9]-*/**"
+    - "!logs/**"
 execute:
   enabled: false
 book:
@@ -59,6 +61,7 @@ book:
     - part: homework.qmd
       chapters:
         - exercises/hw-01.qmd
+        - exercises/hw-02.qmd
     - part: "🛠️ 环境配置"
       chapters:
         - settings.qmd
