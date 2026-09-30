@@ -4,7 +4,7 @@
 
 中山大学岭南学院，连玉君，LN429，2 学分、36 学时。面向金融学、经济与金融等专业高年级本科生。Stata 为主要计量软件，Python 用于数据获取、处理与必要分析。
 
-本版包含研究流程、金融数据工作流、Bootstrap 及已执行实验，并提供环境配置、研究计划作业和参考资料。后续章节随授课加入。
+本版包含研究流程、金融数据工作流、条件期望与 OLS、Bootstrap 及已执行实验，并提供环境配置、研究计划作业和参考资料。后续章节随授课加入。
 
 金融数据单元：[流程与获取](https://lianxhcn.github.io/FinEco/lectures/financial-data.html) → [数据管理](https://lianxhcn.github.io/FinEco/lectures/financial-data-management.html) → [清洗与审计](https://lianxhcn.github.io/FinEco/lectures/financial-data-cleaning.html) → [CSMAR 实战](https://lianxhcn.github.io/FinEco/notebooks/financial-data/financial-data.html)。运行与数据下载见 [学生说明](data/financial-data/README.md)。
 
@@ -32,3 +32,5 @@
 ## 后续章节与并行写作
 
 新窗口先读 [项目规则](RULES.md) 和 [总规划与交接](PROJECT_PLAN.md)。总规划包含 20 章状态、文件命名、未决事项与可复制的启动提示词。章节窗口只改自己负责的文件，公共导航、依赖与网站构建由整合窗口统一处理。
+
+OLS 单元：[条件期望与线性投影](https://lianxhcn.github.io/FinEco/lectures/ols.html) · [Stata 实验](https://lianxhcn.github.io/FinEco/notebooks/ols/ols-stata.html)。运行说明见 [OLS 工具说明](tools/ols/README.md)。

@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>6&nbsp; 条件期望与线性投影 – 金融计量经济学</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../notebooks/ols/ols-stata.html" rel="next">
+<link href="../notebooks/financial-data/financial-data.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0626ff4d7a71b55c8707dcae1d04a9b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-d59a9bb4a0246dd4330968064f99cf3e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+<link rel="icon" type="image/png" sizes="40x40" href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../lectures/ols.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">条件期望与 OLS</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">金融计量经济学</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/lianxhcn/FinEco" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="切换阅读器模式">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🏠 前言</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📚 课程资料</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../getting-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📌 课件使用</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../syllabus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📅 课程安排</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../homework.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">作业</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../exercises/hw-01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">hw-01</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../exercises/hw-02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">第二次作业：金融数据分析</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">🛠️ 环境配置</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">软件配置</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../publishing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">同步与发布</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">研究基础</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">研究流程</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/intro/portfolio-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">组合实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/intro/policy-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">政策实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/financial-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">数据流程与获取</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/financial-data-management.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">数据管理</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/financial-data-cleaning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">数据清洗与审计</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/financial-data/financial-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">CSMAR：Agent 实战</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/ols.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">条件期望与 OLS</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/ols/ols-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">OLS：Stata 实验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/bootstrap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Bootstrap</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/bootstrap/bootstrap-demo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Python 实验</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/bootstrap/bootstrap-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Stata 实验</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">附录</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../resources/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">公共书目</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目录</h2>
+   
+  <ul>
+  <li><a href="#sec-ols-intro" id="toc-sec-ols-intro" class="nav-link active" data-scroll-target="#sec-ols-intro"><span class="header-section-number">6.1</span> 导论：从数据到条件分布</a>
+  <ul class="collapse">
+  <li><a href="#一份经典数据mroz-1987" id="toc-一份经典数据mroz-1987" class="nav-link" data-scroll-target="#一份经典数据mroz-1987"><span class="header-section-number">6.1.1</span> 一份经典数据：Mroz (1987)</a></li>
+  <li><a href="#工资是一个随机变量" id="toc-工资是一个随机变量" class="nav-link" data-scroll-target="#工资是一个随机变量"><span class="header-section-number">6.1.2</span> “工资”是一个随机变量</a></li>
+  <li><a href="#条件分布把总体切片" id="toc-条件分布把总体切片" class="nav-link" data-scroll-target="#条件分布把总体切片"><span class="header-section-number">6.1.3</span> 条件分布：把总体“切片”</a></li>
+  <li><a href="#回归的三种用途" id="toc-回归的三种用途" class="nav-link" data-scroll-target="#回归的三种用途"><span class="header-section-number">6.1.4</span> 回归的三种用途</a></li>
+  <li><a href="#本讲路线" id="toc-本讲路线" class="nav-link" data-scroll-target="#本讲路线"><span class="header-section-number">6.1.5</span> 本讲路线</a></li>
+  </ul></li>
+  <li><a href="#sec-ols-cef" id="toc-sec-ols-cef" class="nav-link" data-scroll-target="#sec-ols-cef"><span class="header-section-number">6.2</span> 条件期望函数(CEF)</a>
+  <ul class="collapse">
+  <li><a href="#从条件均值说起" id="toc-从条件均值说起" class="nav-link" data-scroll-target="#从条件均值说起"><span class="header-section-number">6.2.1</span> 从“条件均值”说起</a></li>
+  <li><a href="#同一份数据两种函数形式" id="toc-同一份数据两种函数形式" class="nav-link" data-scroll-target="#同一份数据两种函数形式"><span class="header-section-number">6.2.2</span> 同一份数据，两种函数形式</a></li>
+  <li><a href="#cef-的三条性质" id="toc-cef-的三条性质" class="nav-link" data-scroll-target="#cef-的三条性质"><span class="header-section-number">6.2.3</span> CEF 的三条性质</a></li>
+  <li><a href="#规律与扰动数据的分解" id="toc-规律与扰动数据的分解" class="nav-link" data-scroll-target="#规律与扰动数据的分解"><span class="header-section-number">6.2.4</span> 规律与扰动：数据的分解</a></li>
+  </ul></li>
+  <li><a href="#sec-ols-projection" id="toc-sec-ols-projection" class="nav-link" data-scroll-target="#sec-ols-projection"><span class="header-section-number">6.3</span> 线性投影</a>
+  <ul class="collapse">
+  <li><a href="#为什么要退到线性" id="toc-为什么要退到线性" class="nav-link" data-scroll-target="#为什么要退到线性"><span class="header-section-number">6.3.1</span> 为什么要退到“线性”</a></li>
+  <li><a href="#定义与求解" id="toc-定义与求解" class="nav-link" data-scroll-target="#定义与求解"><span class="header-section-number">6.3.2</span> 定义与求解</a></li>
+  <li><a href="#三个定理投影与-cef-的关系" id="toc-三个定理投影与-cef-的关系" class="nav-link" data-scroll-target="#三个定理投影与-cef-的关系"><span class="header-section-number">6.3.3</span> 三个定理：投影与 CEF 的关系</a></li>
+  <li><a href="#怎样理解最优线性近似" id="toc-怎样理解最优线性近似" class="nav-link" data-scroll-target="#怎样理解最优线性近似"><span class="header-section-number">6.3.4</span> 怎样理解“最优线性近似”</a></li>
+  <li><a href="#从线到平面把投影画出来" id="toc-从线到平面把投影画出来" class="nav-link" data-scroll-target="#从线到平面把投影画出来"><span class="header-section-number">6.3.5</span> 从线到平面：把投影画出来</a></li>
+  <li><a href="#从总体到样本" id="toc-从总体到样本" class="nav-link" data-scroll-target="#从总体到样本"><span class="header-section-number">6.3.6</span> 从总体到样本</a></li>
+  </ul></li>
+  <li><a href="#sec-ols-least-squares" id="toc-sec-ols-least-squares" class="nav-link" data-scroll-target="#sec-ols-least-squares"><span class="header-section-number">6.4</span> 最小二乘：从总体到样本</a>
+  <ul class="collapse">
+  <li><a href="#一元情形公式手算与相关系数" id="toc-一元情形公式手算与相关系数" class="nav-link" data-scroll-target="#一元情形公式手算与相关系数"><span class="header-section-number">6.4.1</span> 一元情形：公式、手算与相关系数</a></li>
+  <li><a href="#残差拟合值与最小二乘的名字" id="toc-残差拟合值与最小二乘的名字" class="nav-link" data-scroll-target="#残差拟合值与最小二乘的名字"><span class="header-section-number">6.4.2</span> 残差、拟合值与最小二乘的名字</a></li>
+  <li><a href="#一次完整演示mroz-数据" id="toc-一次完整演示mroz-数据" class="nav-link" data-scroll-target="#一次完整演示mroz-数据"><span class="header-section-number">6.4.3</span> 一次完整演示(Mroz 数据)</a></li>
+  <li><a href="#sec-ols-code-checks" id="toc-sec-ols-code-checks" class="nav-link" data-scroll-target="#sec-ols-code-checks"><span class="header-section-number">6.4.4</span> 用 Stata 核对三个 OLS 代数性质</a></li>
+  <li><a href="#谁进入了样本一个值得较真的细节" id="toc-谁进入了样本一个值得较真的细节" class="nav-link" data-scroll-target="#谁进入了样本一个值得较真的细节"><span class="header-section-number">6.4.5</span> 谁进入了样本？(一个值得较真的细节)</a></li>
+  <li><a href="#拟合优度r2-在说什么" id="toc-拟合优度r2-在说什么" class="nav-link" data-scroll-target="#拟合优度r2-在说什么"><span class="header-section-number">6.4.6</span> 拟合优度：<span class="math inline">\(R^2\)</span> 在说什么</a></li>
+  <li><a href="#线性到底指什么" id="toc-线性到底指什么" class="nav-link" data-scroll-target="#线性到底指什么"><span class="header-section-number">6.4.7</span> “线性”到底指什么</a></li>
+  <li><a href="#金融视角capm-中的市场-beta-如何用线性回归估计" id="toc-金融视角capm-中的市场-beta-如何用线性回归估计" class="nav-link" data-scroll-target="#金融视角capm-中的市场-beta-如何用线性回归估计"><span class="header-section-number">6.4.8</span> 金融视角：CAPM 中的市场 <span class="math inline">\(\beta\)</span> 如何用线性回归估计</a></li>
+  </ul></li>
+  <li><a href="#sec-ols-outlook" id="toc-sec-ols-outlook" class="nav-link" data-scroll-target="#sec-ols-outlook"><span class="header-section-number">6.5</span> 小结与展望</a></li>
+  <li><a href="#sec-ols-app-cef" id="toc-sec-ols-app-cef" class="nav-link" data-scroll-target="#sec-ols-app-cef"><span class="header-section-number">6.6</span> 附录：CEF 三条性质的证明</a></li>
+  <li><a href="#sec-ols-app-projection" id="toc-sec-ols-app-projection" class="nav-link" data-scroll-target="#sec-ols-app-projection"><span class="header-section-number">6.7</span> 附录：线性投影的推导与三个定理</a></li>
+  <li><a href="#sec-ols-app-ols" id="toc-sec-ols-app-ols" class="nav-link" data-scroll-target="#sec-ols-app-ols"><span class="header-section-number">6.8</span> 附录：OLS 的代数</a></li>
+  <li><a href="#sec-ols-refs" id="toc-sec-ols-refs" class="nav-link" data-scroll-target="#sec-ols-refs"><span class="header-section-number">6.9</span> 参考文献</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/lectures/ols.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../lectures/ols.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">条件期望与 OLS</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-ols" class="quarto-section-identifier"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">条件期望与线性投影</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-note callout-titled" title="本讲要点">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+本讲要点
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>回归的建模对象不是“<span class="math inline">\(Y\)</span> 与 <span class="math inline">\(X\)</span> 之间必须是一条直线”，而是<strong>条件分布</strong>及其特征；本讲先聚焦最常用的条件均值。</li>
+<li>条件期望函数 (CEF) <span class="math inline">\(m(x)=E[Y|X=x]\)</span> 是平方损失下的最优预测；相应预测误差与 <span class="math inline">\(X\)</span> 的函数正交 (要求相应乘积可积)。</li>
+<li>当 CEF 未知而我们希望得到一个低维、可解释的线性概括时，线性投影给出 CEF 的最佳线性近似。这个结论不要求 CEF 本身线性，也不要求同方差或正态分布，但需要相关二阶矩存在且 <span class="math inline">\(E[XX']\)</span> 非奇异。</li>
+<li>OLS 是总体线性投影的样本对应物。这里的“线性”指对所选回归变量的系数线性；原始变量本身可以经过平方、对数和交互等变换。</li>
+</ul>
+</div>
+</div>
+<p><a href="../notebooks/ols/ols-stata.html">Stata 实验与完整执行输出</a></p>
+<section id="sec-ols-intro" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="sec-ols-intro"><span class="header-section-number">6.1</span> 导论：从数据到条件分布</h2>
+<p>教育年限相差一年，工资平均相差多少？</p>
+<p>这个问题看似简单，却几乎包含了实证研究的全部要素：一个被解释的对象(工资)、一个解释变量(教育)、一群需要被观测的个体，以及一个在“平均”意义上成立的答案。我们将用一份经典的微观数据把它逐层打开。而在动手计算之前，这一讲先回答一个更基本的问题——<strong>当我们敲下一个回归命令时，究竟在估计什么？</strong></p>
+<section id="一份经典数据mroz-1987" class="level3" data-number="6.1.1">
+<h3 data-number="6.1.1" class="anchored" data-anchor-id="一份经典数据mroz-1987"><span class="header-section-number">6.1.1</span> 一份经典数据：Mroz (1987)</h3>
+<p>本讲的例子来自一份被广泛使用的微观数据。Mroz (1987) 发表在 <em>Econometrica</em> 上的论文，研究已婚女性的劳动供给行为。常用的教学版数据来自 1975 年 Panel Study of Income Dynamics (PSID)，包含 753 名已婚女性；其中只有 428 名女性有可观测的工资记录。我们关注的核心变量包括：</p>
+<ul>
+<li><strong>wage</strong>——小时工资(美元/小时)；</li>
+<li><strong>educ</strong>——受教育年限(年)；</li>
+<li><strong>exper</strong>——工作经验(年)；</li>
+<li><strong>kidslt6 / kidsge6</strong>——6 岁以下、6 岁及以上子女的数量。</li>
+</ul>
+<p>本章使用 Stata 官方托管的 Wooldridge 数据冻结快照。官方文件将 325 名未就业女性的工资编码为 0；这些零值不能作为观测到的小时工资纳入本章回归。以下代码明确限定就业样本：</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"data/ols/mroz.dta"</span>, <span class="kw">clear</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>* 从仓库根目录运行；官方数据将未就业者工资编码为 0</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">keep</span> <span class="kw">if</span> inlf == 1 &amp; !<span class="fu">missing</span>(wage, educ)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>不过在运行回归之前，先要建立一个容易被跳过、却很关键的观念。</p>
+</section>
+<section id="工资是一个随机变量" class="level3" data-number="6.1.2">
+<h3 data-number="6.1.2" class="anchored" data-anchor-id="工资是一个随机变量"><span class="header-section-number">6.1.2</span> “工资”是一个随机变量</h3>
+<p>面对数据，一个自然的想法是：把每个人的工资看作一个待解释的数字，然后研究这些数字与教育的关系。但严格说来，这样的描述并不完整——因为<strong>在“看到”工资之前，它是不确定的</strong>。</p>
+<p>做一个思想实验：想象你从样本所代表的总体中随机抽取一位女性，问她“你的小时工资是多少”。在观察之前，工资并不是我们已经知道的常数；抽到具体个体后，我们才观测到一个实现值。这里的“事前不确定、事后观测到一个实现值”是把工资作为<strong>随机变量</strong>建模的直觉。</p>
+<p>本章区分总体对象和样本实现。用大写 <span class="math inline">\(Y\)</span> 表示工资随机变量，用大写 <span class="math inline">\(X\)</span> 表示解释变量或解释变量向量；小写 <span class="math inline">\(y_i\)</span>、<span class="math inline">\(x_i\)</span> 表示第 <span class="math inline">\(i\)</span> 个样本观测。于是研究对象从“某个人的工资”转为 <span class="math inline">\(Y\)</span> 的概率分布，以及这个分布如何随 <span class="math inline">\(X\)</span> 改变。样本中的工资只是这一总体分布的实现值。这个视角使我们能够精确定义“给定 <span class="math inline">\(X\)</span> 后的平均关系”，并在 后续模型设定与推断专题 中讨论估计精度，在 后续 FWL 专题 及后续因果章节中区分统计关系与因果效应。</p>
+</section>
+<section id="条件分布把总体切片" class="level3" data-number="6.1.3">
+<h3 data-number="6.1.3" class="anchored" data-anchor-id="条件分布把总体切片"><span class="header-section-number">6.1.3</span> 条件分布：把总体“切片”</h3>
+<div id="fig-ols-01" class="quarto-float quarto-figure quarto-figure-center anchored" alt="小时工资与受教育年限的散点图">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ols-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/gr_OLS_CEF_edu_01_scatter.png" class="img-fluid figure-img" style="width:100.0%" alt="小时工资与受教育年限的散点图">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ols-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;6.1: 小时工资与受教育年限(Mroz 1987 数据)
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-ols-01" class="quarto-xref">图&nbsp;<span>6.1</span></a> 把样本中每个人的受教育年限与小时工资画成散点图。它至少告诉我们三件事。</p>
+<p><strong>第一，同一个受教育水平上，工资差异很大。</strong> 以受过 12 年教育(高中毕业)的女性为例：有人时薪不到 5 美元，也有人超过 10 美元。也就是说，“受过 12 年教育”并不是一个同质的群体——给定教育水平之后，工资仍然构成一个<strong>分布</strong>。</p>
+<p><strong>第二，教育水平更高的群体，工资平均水平更高。</strong> 虽然个体的差异很大，但沿着横轴从左往右看，点云的整体“高度”在上升。这提示教育与工资之间存在某种正向的“平均”关系。</p>
+<p><strong>第三，不同教育水平上的观测数量并不均匀。</strong> 高中毕业(12 年)与大学毕业(16–17 年)附近的观测明显更密集。这一点在后面会反复出现——数据在哪些区域“站得更稳”，直接关系到我们对拟合结果的解读。</p>
+<p>以上观察带来一个关键的概念转变：与其笼统地问“工资与教育是什么关系”，不如<strong>把教育固定住，看工资的分布</strong>。例如：“受过 12 年教育的女性，其工资的分布是什么样？平均工资多少？差异多大？”这种“在 <span class="math inline">\(X=x\)</span> 的条件下，<span class="math inline">\(Y\)</span> 如何分布”的对象称为 <span class="math inline">\(Y\)</span> 关于 <span class="math inline">\(X\)</span> 的<strong>条件分布</strong>，记作 <span class="math inline">\(F_{Y|X}(y|x)\)</span>。这里 <span class="math inline">\(x\)</span> 是给定的解释变量取值，<span class="math inline">\(y\)</span> 是工资分布的一个可能取值。</p>
+<p>“条件”二字的作用是把总体“切片”：不是把所有女性混在一起看，而是比较具有给定 <span class="math inline">\(X\)</span> 特征的人群。<span class="math inline">\(X\)</span> 可以是单个变量 (教育)，也可以是一组变量 (教育、经验、子女数等)。一旦引入条件分布，两个层次就被分开了：不同 <span class="math inline">\(X\)</span> 取值之间的系统差异是一层；给定 <span class="math inline">\(X\)</span> 以后仍然存在的个体差异是另一层。这个分解在 <a href="#eq-ols-03" class="quarto-xref">式&nbsp;<span>6.3</span></a> 中会写成正式公式。</p>
+</section>
+<section id="回归的三种用途" class="level3" data-number="6.1.4">
+<h3 data-number="6.1.4" class="anchored" data-anchor-id="回归的三种用途"><span class="header-section-number">6.1.4</span> 回归的三种用途</h3>
+<p>在给出正式定义之前，先把回归的三种常见用途分开。它们经常使用相似的回归式，但问题本身并不相同：</p>
+<ul>
+<li><strong>描述</strong>：用一个简洁对象概括总体或样本中的统计关系。例如“教育年限较高的人，工资平均也较高”。这里不需要把这种差异解释为教育造成的。</li>
+<li><strong>预测</strong>：利用已知的 <span class="math inline">\(X\)</span> 预测尚未观测的 <span class="math inline">\(Y\)</span>。这时除了拟合关系本身，还要关心预测规则能否推广到新的观测和新的时期。</li>
+<li><strong>因果</strong>：回答“如果改变 <span class="math inline">\(X\)</span>，<span class="math inline">\(Y\)</span> 会怎样”。例如“如果一个人额外接受一年教育，他的工资会变化多少”。这涉及反事实和识别条件，单靠回归拟合不能自动回答。</li>
+</ul>
+<p>本章主要建立描述与预测所需的总体对象和线性近似。因果问题只在需要划清边界时出现，系统讨论留到后续因果章节；后续 FWL 专题 则会从代数上解释多元回归中的“控制变量”到底做了什么。</p>
+</section>
+<section id="本讲路线" class="level3" data-number="6.1.5">
+<h3 data-number="6.1.5" class="anchored" data-anchor-id="本讲路线"><span class="header-section-number">6.1.5</span> 本讲路线</h3>
+<p>接下来的展开顺序是：</p>
+<ol type="1">
+<li><strong>条件期望函数(CEF)</strong>：把“条件均值”正式定义为 <span class="math inline">\(x\)</span> 的函数，并介绍它的三条性质——最优预测、误差正交、方差分解；</li>
+<li><strong>线性投影</strong>：当 CEF 的形式未知时，退一步寻找它的“最优线性近似”——这是“线性回归”的直接来源，也是三个经典定理的内容；</li>
+<li><strong>最小二乘</strong>：用样本矩替代总体矩，把线性投影变成可计算的估计量(OLS)，并用 Mroz 数据完成一次完整演示。</li>
+</ol>
+</section>
+</section>
+<section id="sec-ols-cef" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="sec-ols-cef"><span class="header-section-number">6.2</span> 条件期望函数(CEF)</h2>
+<section id="从条件均值说起" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="从条件均值说起"><span class="header-section-number">6.2.1</span> 从“条件均值”说起</h3>
+<p>对条件分布，我们最关心的特征是它的中心。把“给定 <span class="math inline">\(x\)</span> 时 <span class="math inline">\(y\)</span> 的均值”写成正式的记号，就是本章的主角：</p>
+<p><span id="eq-ols-01"><span class="math display">\[
+m(x)=E[Y|X=x]
+\tag{6.1}\]</span></span></p>
+<p><a href="#eq-ols-01" class="quarto-xref">式&nbsp;<span>6.1</span></a> 要按“给定 <span class="math inline">\(X=x\)</span> 后，<span class="math inline">\(Y\)</span> 的平均值”来读。对每一个给定的 <span class="math inline">\(x\)</span>，<span class="math inline">\(E[Y|X=x]\)</span> 是一个数；让 <span class="math inline">\(x\)</span> 变化，这些条件均值组成函数 <span class="math inline">\(m(\cdot)\)</span>，称为<strong>条件期望函数</strong> (conditional expectation function, CEF)。为简洁起见，后文也会写 <span class="math inline">\(E[Y|X]\)</span>；其中 <span class="math inline">\(E[Y|X]\)</span> 本身是随机变量 <span class="math inline">\(m(X)\)</span>，而 <span class="math inline">\(m(x)\)</span> 表示在具体取值 <span class="math inline">\(x\)</span> 上的函数值。</p>
+<p>对离散的解释变量，CEF 的样本对应物很直观：按 <span class="math inline">\(X\)</span> 的取值分组计算样本均值，就得到 <span class="math inline">\(m(x)\)</span> 的自然估计。例如在 Stata 中：</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"data/ols/mroz.dta"</span>, <span class="kw">clear</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>* 从仓库根目录运行；官方数据将未就业者工资编码为 0</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">keep</span> <span class="kw">if</span> inlf == 1 &amp; !<span class="fu">missing</span>(wage, educ)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">sum</span> wage <span class="kw">if</span> educ == 12</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">sum</span> wage <span class="kw">if</span> educ == 16</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<blockquote class="blockquote">
+<p>公开 Wooldridge 版 Mroz 数据中，教育 12 年组的平均小时工资约为 <strong>3.80</strong> 美元 (<span class="math inline">\(n=212\)</span>)，教育 16 年组约为 <strong>5.15</strong> 美元 (<span class="math inline">\(n=39\)</span>)。本段数值已用本地 Stata 19.5 核对，样本限定为就业女性 (<code>inlf == 1</code>)。</p>
+</blockquote>
+<p>第一条命令做的事情是：把样本“切片”到受过 12 年教育的人群，然后看这群人工资的均值、标准差等信息。<strong>这正是条件均值的样本对应物</strong>——先固定 <span class="math inline">\(x=12\)</span>，再在这个子样本内取平均。第二条命令同理。两条命令的均值之差，就是“教育–工资关系”最原始的一个快照。</p>
+<p>如果把所有实际出现的教育年限都这样处理，就能得到一组“教育水平—组内平均工资”的点。它们不是总体 CEF 本身，而是离散 <span class="math inline">\(X\)</span> 情形下最直接的<strong>样本条件均值</strong>。把这些点与 OLS 线性投影放在同一张图上，可以清楚地区分“逐组均值”与“用一条直线概括所有组均值”这两个对象。</p>
+<div id="fig-ols-cef-groupmeans" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Mroz 数据中各教育年限的样本平均小时工资与 OLS 线性投影">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ols-cef-groupmeans-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/ols-fig03-cef-groupmeans-20260930-152321.png" class="img-fluid figure-img" style="width:90.0%" alt="Mroz 数据中各教育年限的样本平均小时工资与 OLS 线性投影">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ols-cef-groupmeans-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;6.2: 各教育水平的样本条件均值与 OLS 线性投影
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-ols-cef-groupmeans" class="quarto-xref">图&nbsp;<span>6.2</span></a> 中，每个点表示一个实际教育年限上的样本平均工资；点旁的数字标出该组样本量。直线来自对个体层面数据运行 <code>reg wage educ</code> 得到的线性拟合。两者的差别正是本章后面要反复使用的区别：<strong>样本条件均值保留了不同教育组之间可能存在的弯曲形状，线性投影则把这些组均值压缩为一个低维的线性概括。</strong> 如果各组均值大体落在直线附近，线性近似较自然；如果出现系统性弯曲，就应把它视为函数形式选择问题，而不是简单地把某一个组的偏离解释为“异常值”。</p>
+<p>如果 <span class="math inline">\(X\)</span> 是连续变量 (如工作经验)，事情会多一步：精确满足 <span class="math inline">\(X=x\)</span> 的观测可能很少，甚至在连续分布下 <span class="math inline">\(P(X=x)=0\)</span>。这并不妨碍总体 CEF 的定义，但意味着样本中不能简单靠“每个 <span class="math inline">\(x\)</span> 单独分组求均值”来估计它，通常需要局部平滑、分箱或参数化近似。连续 <span class="math inline">\(X\)</span> <strong>并不自动保证 CEF 光滑</strong>；连续性、可微性等性质需要额外条件。无论 <span class="math inline">\(X\)</span> 离散还是连续，CEF 回答的始终是同一个问题：给定 <span class="math inline">\(X=x\)</span> 后，<span class="math inline">\(Y\)</span> 的平均水平是多少？</p>
+</section>
+<section id="同一份数据两种函数形式" class="level3" data-number="6.2.2">
+<h3 data-number="6.2.2" class="anchored" data-anchor-id="同一份数据两种函数形式"><span class="header-section-number">6.2.2</span> 同一份数据，两种函数形式</h3>
+<div id="fig-ols-02" class="quarto-float quarto-figure quarto-figure-center anchored" alt="工资与教育：线性与二次拟合">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ols-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/gr_OLS_CEF_edu_02_lfit_qfit.png" class="img-fluid figure-img" style="width:100.0%" alt="工资与教育：线性与二次拟合">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ols-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;6.3: 小时工资与受教育年限：线性拟合与二次拟合
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-ols-02" class="quarto-xref">图&nbsp;<span>6.3</span></a> 在同一份数据上画了两条线：一条直线(线性拟合)和一条抛物线(二次拟合)。两条线在低教育段几乎重合，在高教育段开始分离——这说明“用哪种形式去逼近 CEF”并不是无关紧要的选择。</p>
+<p>但这里要停下来强调一个事实：<strong>我们并不知道真实的 CEF 长什么样</strong>。它可能是直线，可能是抛物线，也可能比两者都复杂。图上的两条线只是两种候选近似，而不同近似需要一套标准来评价——这正是“最优预测”性质要解决的问题。</p>
+</section>
+<section id="cef-的三条性质" class="level3" data-number="6.2.3">
+<h3 data-number="6.2.3" class="anchored" data-anchor-id="cef-的三条性质"><span class="header-section-number">6.2.3</span> CEF 的三条性质</h3>
+<p>CEF 之所以成为整个回归分析体系的基石，是因为它有三条非常好用的性质。下面每条都按“陈述—直觉—讨论”的顺序展开。</p>
+<p><strong>性质 1(最优预测)</strong>：在所有可测且平方可积的预测函数 <span class="math inline">\(g(X)\)</span> 中，<span class="math inline">\(m(X)=E[Y|X]\)</span> 使均方误差 <span class="math inline">\(E[(Y-g(X))^2]\)</span> 最小。</p>
+<p>这条性质的表述里藏着两个需要拆开看的要点。其一，“所有函数”是字面意义上的——线性的、非线性的、任意复杂的函数都包括在内。因此这是一个<strong>全局最优</strong>结论：以平方误差为标尺，没有任何“用 <span class="math inline">\(x\)</span> 预测 <span class="math inline">\(y\)</span>”的方法能超过条件均值。其二，最优性是相对于“平方误差”这一标尺的——换一把尺子，冠军就会换人。例如改用绝对误差 <span class="math inline">\(E[|Y-g(X)|]\)</span>，任一条件<strong>中位数</strong>都可以作为最优预测。后续模型设定与推断专题 会利用这个事实说明为什么改变损失函数会通向分位数回归。</p>
+<p>正因为“条件均值 = 最优预测”是全局最优结论，“用均值概括 <span class="math inline">\(y|x\)</span>”就不是一种习惯或约定，而是有规范依据的目标选择。证明放在 <a href="#sec-ols-app-cef" class="quarto-xref"><span>小节 6.6</span></a>，思路只用到一步分解：把 <span class="math inline">\(y\)</span> 写成“CEF 加余项”，交叉项由定义正交而消失。</p>
+<p><strong>性质 2(误差正交性)</strong>：定义预测误差 <span class="math inline">\(e=Y-m(X)\)</span>，则对任意使相关期望存在的函数 <span class="math inline">\(h(\cdot)\)</span>，</p>
+<p><span id="eq-ols-02"><span class="math display">\[
+E[e\,h(X)] = 0
+\tag{6.2}\]</span></span></p>
+<p><a href="#eq-ols-02" class="quarto-xref">式&nbsp;<span>6.2</span></a> 中 <span class="math inline">\(h(\cdot)\)</span> 可以是很多不同的函数，例如 <span class="math inline">\(X_j\)</span>、<span class="math inline">\(X_j^2\)</span>、不同变量的交互项，或者更一般的可积变换。它说的是：<strong>一旦用掉了 <span class="math inline">\(x\)</span> 的信息，余项 <span class="math inline">\(e\)</span> 中就不再残留任何“能被 <span class="math inline">\(x\)</span> 解释”的成分</strong>。可以用“榨干”来体会这个性质：条件均值把 <span class="math inline">\(x\)</span> 里关于 <span class="math inline">\(y\)</span> 的(线性与非线性)信息“榨干”之后，剩下的部分才叫 <span class="math inline">\(e\)</span>。</p>
+<p>这里值得比较两种“误差为零”的说法，它们的强弱差别经常被忽视：</p>
+<ul>
+<li><span class="math inline">\(E[e]=0\)</span>——“平均误差为零”，这是一个<strong>弱</strong>条件。由迭代期望律(law of iterated expectations)，只要 <span class="math inline">\(E[e|X]=0\)</span>，无条件版本自动成立；反之则不成立。</li>
+<li><span class="math inline">\(E[e|X]=0\)</span>——“在每一组 <span class="math inline">\(x\)</span> 内部，误差的平均都为零”，这是<strong>强</strong>条件，是由 CEF 定义直接推出的性质。</li>
+</ul>
+<p>打个比方：弱条件只要求“全班平均分等于预期”，强条件要求“每一档分数段内部平均分都等于该段的预期”。后者才是“用尽 <span class="math inline">\(X\)</span> 的均值信息”的准确含义。这里还要提前区分两类误差：本节的 <span class="math inline">\(e=Y-m(X)\)</span> 是<strong>按 CEF 定义出来的预测误差</strong>，所以 <span class="math inline">\(E[e|X]=0\)</span> 是恒等性质；后续若写出一个经济模型或参数化回归方程，其中的扰动项 <span class="math inline">\(u\)</span> 未必等于这个 CEF 误差，此时 <span class="math inline">\(E[u|X]=0\)</span> 就会变成需要论证的模型或识别条件。异方差则讨论 <span class="math inline">\(\operatorname{Var}(u|X)\)</span> 是否随 <span class="math inline">\(X\)</span> 改变。</p>
+<p><strong>性质 3(方差分解)</strong>：<span class="math inline">\(y\)</span> 的总变异可以分解为“条件均值的变异”与“条件方差的平均”：</p>
+<p><span id="eq-ols-03"><span class="math display">\[
+\operatorname{Var}(Y)=\operatorname{Var}\big(m(X)\big)+E\big[\operatorname{Var}(Y|X)\big]
+\tag{6.3}\]</span></span></p>
+<p><a href="#eq-ols-03" class="quarto-xref">式&nbsp;<span>6.3</span></a> 的右边两项各有名字：第一项是<strong>组间变异</strong>——不同 <span class="math inline">\(x\)</span> 组之间平均水平的差异；第二项是<strong>组内变异</strong>——各组内部个体围绕组均值的波动(再取平均)。用一句话概括：</p>
+<blockquote class="blockquote">
+<p>总变异 = 条件均值之间的变异 + 给定 <span class="math inline">\(X\)</span> 后仍然存在的组内变异。</p>
+</blockquote>
+<p>拿工资的例子：全体女性的工资差异可以拆成两部分——不同教育条件下平均工资的差异，以及给定教育后仍然存在的个体差异。第二项并不表示“与 <span class="math inline">\(X\)</span> 无关”：条件方差 <span class="math inline">\(\operatorname{Var}(Y|X)\)</span> 完全可以随 <span class="math inline">\(X\)</span> 改变。</p>
+<p>需要把 <a href="#eq-ols-03" class="quarto-xref">式&nbsp;<span>6.3</span></a> 与后文的 <span class="math inline">\(R^2\)</span> 区分开。<a href="#eq-ols-03" class="quarto-xref">式&nbsp;<span>6.3</span></a> 使用完整的 CEF <span class="math inline">\(m(X)\)</span>；OLS 的 <span class="math inline">\(R^2\)</span> 使用的是<strong>线性投影</strong>。当 CEF 非线性时，两种“可解释变异”一般并不相同；只有在 CEF 恰好属于所选线性函数类时，它们才会对齐。</p>
+</section>
+<section id="规律与扰动数据的分解" class="level3" data-number="6.2.4">
+<h3 data-number="6.2.4" class="anchored" data-anchor-id="规律与扰动数据的分解"><span class="header-section-number">6.2.4</span> 规律与扰动：数据的分解</h3>
+<p>三条性质合起来，允许我们把数据写成</p>
+<p><span id="eq-ols-04"><span class="math display">\[
+Y=m(X)+e, \qquad E[e|X]=0
+\tag{6.4}\]</span></span></p>
+<p><a href="#eq-ols-04" class="quarto-xref">式&nbsp;<span>6.4</span></a> 把随机变量 <span class="math inline">\(Y\)</span> 拆成两部分：<strong>条件均值</strong> <span class="math inline">\(m(X)\)</span> 和<strong>条件均值为零的预测误差</strong> <span class="math inline">\(e\)</span>。给这个分解划三条“边界线”，可以避免日后误用：</p>
+<p>第一，它是<strong>描述性分解，不是模型假设</strong>。只要 <span class="math inline">\(m(x)\)</span> 按条件均值定义，<a href="#eq-ols-04" class="quarto-xref">式&nbsp;<span>6.4</span></a> 自动成立——不需要假设“数据的产生方式”真的由某个模型驱动。</p>
+<p>第二，<strong>“均值独立”不等于“独立”</strong>。<span class="math inline">\(E[e|X]=0\)</span> 只约束了 <span class="math inline">\(e\)</span> 的均值，没有约束它的分布：<span class="math inline">\(e\)</span> 的方差完全可以随 <span class="math inline">\(x\)</span> 变化(后续模型设定与推断专题 的“异方差”的主角)，<span class="math inline">\(e\)</span> 的分布形状也可以随 <span class="math inline">\(x\)</span> 变化。一个有用的脑筋练习：令 <span class="math inline">\(e=X\cdot v\)</span>，其中标量 <span class="math inline">\(X\)</span> 与满足 <span class="math inline">\(E[v]=0\)</span> 的噪声 <span class="math inline">\(v\)</span> 独立——此时 <span class="math inline">\(E[e|X]=0\)</span> 依然成立，但 <span class="math inline">\(e\)</span> 显然与 <span class="math inline">\(X\)</span> 有关(它的“波动大小”随 <span class="math inline">\(x\)</span> 变化)。</p>
+<p>第三，分解的“价值”取决于 <span class="math inline">\(m(x)\)</span> 承载了多少规律——如果 <span class="math inline">\(m(x)\)</span> 挤不出任何变异(<a href="#eq-ols-03" class="quarto-xref">式&nbsp;<span>6.3</span></a> 的第一项为零)，那么“规律 + 扰动”里就只剩扰动，<span class="math inline">\(x\)</span> 对 <span class="math inline">\(y\)</span> 的均值毫无解释力。</p>
+<div class="callout callout-style-default callout-note callout-titled" title="CEF 与“在散点图上随手画一条线”的区别">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+CEF 与“在散点图上随手画一条线”的区别
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>散点图上画出的拟合线是对<strong>当前样本</strong>的概括；CEF 则是总体联合分布的特征 <span class="math inline">\(E[Y|X=x]\)</span>。我们真正要做的是用有限样本估计这个总体对象或它的低维近似，并量化估计的不确定性。</p>
+</div>
+</div>
+<p>CEF 是清楚定义的总体对象，但它的函数形式通常未知。对于连续或高维 <span class="math inline">\(X\)</span>，有限样本也很难靠逐点分组直接恢复整条 CEF；当然，我们可以使用核回归、局部多项式等非参数方法估计它。这里选择另一条路：如果研究者希望用少量系数给 CEF 一个透明、可解释的概括，就在一类预先选定的线性函数中寻找<strong>最佳线性近似</strong>。这不是因为非线性 CEF “不能估计”，而是因为线性投影提供了一个低维基准。</p>
+</section>
+</section>
+<section id="sec-ols-projection" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="sec-ols-projection"><span class="header-section-number">6.3</span> 线性投影</h2>
+<section id="为什么要退到线性" class="level3" data-number="6.3.1">
+<h3 data-number="6.3.1" class="anchored" data-anchor-id="为什么要退到线性"><span class="header-section-number">6.3.1</span> 为什么要退到“线性”</h3>
+<p>CEF 的形式未知时，线性函数不是唯一选择，却是一个特别有用的基准。若把解释变量写成向量 <span class="math inline">\(X\)</span>，线性预测器为 <span class="math inline">\(X'b\)</span>，它有三个优点：</p>
+<ol type="1">
+<li><strong>低维且可计算</strong>。最佳线性预测只依赖二阶矩 <span class="math inline">\(E[XX']\)</span> 与 <span class="math inline">\(E[XY]\)</span>，可以用样本矩估计。</li>
+<li><strong>系数容易解释</strong>。在给定的线性预测器内部，<span class="math inline">\(b_j\)</span> 是拟合函数沿第 <span class="math inline">\(j\)</span> 个回归变量方向的偏斜率。需要强调：这个偏斜率描述的是<strong>线性近似</strong>，并不自动等于真实 CEF 的局部导数，更不自动具有因果含义。</li>
+<li><strong>对函数形式要求低</strong>。定义线性投影并不需要假定真实 CEF 线性、误差同方差或正态分布。只要相关二阶矩存在并且 <span class="math inline">\(E[XX']\)</span> 非奇异，最佳线性预测就有清楚的总体含义。</li>
+</ol>
+<p>因此，本章所说的“线性”是对近似工具的选择，而不是对真实世界形状的断言。</p>
+</section>
+<section id="定义与求解" class="level3" data-number="6.3.2">
+<h3 data-number="6.3.2" class="anchored" data-anchor-id="定义与求解"><span class="header-section-number">6.3.2</span> 定义与求解</h3>
+<p>先把“最优”写成数学。设 <span class="math inline">\(X\)</span> 为 <span class="math inline">\(k\)</span> 维随机向量(含常数项)，考虑一切线性预测 <span class="math inline">\(X'b\)</span>；“最优”采用与性质 1 相同的平方误差标准——使 <span class="math inline">\(E[(Y-X'b)^2]\)</span> 最小。这里需要一组温和的<strong>正则条件</strong>：</p>
+<blockquote class="blockquote">
+<p><strong>正则条件</strong>：① <span class="math inline">\(E[Y^2]&lt;\infty\)</span>；② <span class="math inline">\(E[X'X]&lt;\infty\)</span>；③ 矩阵 <span class="math inline">\(E[XX']\)</span> 正定(可逆)。</p>
+<p>前两条保证相关矩存在，避免“方差无穷大”的病态情形；第三条要求 <span class="math inline">\(X\)</span> 的各分量之间不存在完全线性关系。比如同时放入“教育年限”和“教育年限 <span class="math inline">\(\times 12\)</span>”，两列包含完全相同的信息，<span class="math inline">\(E[XX']\)</span> 就不可逆。后续模型设定与推断专题 会再次遇到这个可逆性要求。</p>
+</blockquote>
+<p><strong>定义(线性投影)</strong> 使均方误差最小的系数 <span class="math inline">\(\beta^{*}\)</span> 称为 <span class="math inline">\(Y\)</span> 对 <span class="math inline">\(X\)</span> 的<strong>线性投影系数</strong>：</p>
+<p><span id="eq-ols-05"><span class="math display">\[
+\beta^{*}=\arg\min_{b}E\big[(Y-X'b)^2\big]
+\tag{6.5}\]</span></span></p>
+<p>随机变量 <span class="math inline">\(X'\beta^{*}\)</span> 称为 <span class="math inline">\(Y\)</span> 基于 <span class="math inline">\(X\)</span> 的<strong>最优线性预测</strong> (best linear predictor, BLP)。</p>
+<p>求解是一步“配方”：把目标函数展开成 <span class="math inline">\(b\)</span> 的二次函数，由一阶条件解出(完整步骤见 <a href="#sec-ols-app-projection" class="quarto-xref"><span>小节 6.7</span></a>)：</p>
+<p><span id="eq-ols-06"><span class="math display">\[
+\beta^{*}=E[XX']^{-1}E[XY]
+\tag{6.6}\]</span></span></p>
+<p><a href="#eq-ols-06" class="quarto-xref">式&nbsp;<span>6.6</span></a> 的结构值得多看一眼：<span class="math inline">\(E[XY]\)</span> 汇总 <span class="math inline">\(X\)</span> 与 <span class="math inline">\(Y\)</span> 的共同变动，<span class="math inline">\(E[XX']\)</span> 描述 <span class="math inline">\(X\)</span> 自身的二阶矩结构。对于只含常数项和一个标量解释变量的一元回归，它会化成更熟悉的“斜率 = 协方差 ÷ 方差”；<a href="#sec-ols-least-squares" class="quarto-xref"><span>小节 6.4</span></a> 会给出相应的样本公式。</p>
+<p>定义<strong>投影误差</strong> <span class="math inline">\(u=Y-X'\beta^{*}\)</span>，一阶条件给出</p>
+<p><span id="eq-ols-projection-orthogonality"><span class="math display">\[
+E[Xu]=0.
+\tag{6.7}\]</span></span></p>
+<p>这里有一个容易与 CEF 误差混淆的区别。CEF 误差 <span class="math inline">\(e=Y-m(X)\)</span> 满足更强的 <span class="math inline">\(E[e|X]=0\)</span>；线性投影误差一般只保证 <a href="#eq-ols-projection-orthogonality" class="quarto-xref">式&nbsp;<span>6.7</span></a>。事实上，</p>
+<p><span id="eq-ols-projection-condmean"><span class="math display">\[
+E[u|X]=m(X)-X'\beta^{*},
+\tag{6.8}\]</span></span></p>
+<p>所以当 CEF 非线性时，投影误差的条件均值通常不为零。只有在线性投影恰好等于 CEF 时，两种误差才重合。</p>
+<p>最后强调一次这个定义的“轻负担”：<span class="math inline">\(\beta^{*}\)</span> 的<strong>定义与求解只用到二阶矩</strong>，不要求 CEF 线性、不要求同方差，也不要求正态分布。只要正则条件成立，线性投影就存在且唯一——它是总体联合分布的一个明确特征。</p>
+</section>
+<section id="三个定理投影与-cef-的关系" class="level3" data-number="6.3.3">
+<h3 data-number="6.3.3" class="anchored" data-anchor-id="三个定理投影与-cef-的关系"><span class="header-section-number">6.3.3</span> 三个定理：投影与 CEF 的关系</h3>
+<p>线性投影与 CEF 是什么关系？沿 Hansen (2022) “CEF → best linear predictor → best linear approximation”的主线，本节把二者关系整理成三条结论；定理命名借用 Angrist and Pischke (2009, Section 3.1) 的 regression justification。证明见 <a href="#sec-ols-app-projection" class="quarto-xref"><span>小节 6.7</span></a>。</p>
+<p><strong>定理 1(线性 CEF 定理)</strong>：如果真实的 CEF 是线性的，即 <span class="math inline">\(m(X)=X'\beta_0\)</span>，那么 <span class="math inline">\(\beta^{*} = \beta_0\)</span>。</p>
+<p>证明思路只有一行：若 <span class="math inline">\(E[Y|X]=X'\beta_0\)</span>，由迭代期望律，</p>
+<p><span id="eq-ols-linear-cef-moment"><span class="math display">\[
+E[XY]=E\big[X\,E[Y|X]\big]=E\big[XX'\beta_0\big]=E[XX']\beta_0,
+\tag{6.9}\]</span></span></p>
+<p>代入 <a href="#eq-ols-06" class="quarto-xref">式&nbsp;<span>6.6</span></a> 即得。这个定理的价值是“理论上刚好对上”：<strong>当条件均值恰好是线性函数时，回归正确地工作</strong>。但它同时暴露出局限——结论依赖“恰好线性”这个未必成立的假设，单独来看其实用价值有限(这正是它排在首位、却最少被引用的原因)。</p>
+<p><strong>定理 2(最佳线性预测定理)</strong>：<span class="math inline">\(X'\beta^{*}\)</span> 在一切线性预测器中具有最小的均方预测误差。</p>
+<p>这是定义的直接翻译，但含义很清楚：即使存在均方误差更小的非线性预测函数，也不存在比 <span class="math inline">\(X'\beta^{*}\)</span> 均方误差更小的<strong>线性</strong>预测函数。线性投影的最优性只是在预先限定的线性函数类内部成立。</p>
+<p><strong>定理 3(回归 CEF 定理)</strong>：<span class="math inline">\(X'\beta^{*}\)</span> 同时给出真实 CEF <span class="math inline">\(m(X)\)</span> 的<strong>最优线性近似</strong>——在一切线性函数中，它使 <span class="math inline">\(E\big[(m(X)-X'b)^2\big]\)</span> 最小。</p>
+<p>定理 3 是三者中最重要的：<strong>不论 CEF 是什么形状，只要正则条件成立，线性投影都是离它“最近”的线性函数</strong>。“近”的含义是均方意义下距离最小，即 <span class="math inline">\(X'\beta^{*}\)</span> 是 <span class="math inline">\(m(X)\)</span> 在线性函数空间中的 <span class="math inline">\(L^2\)</span> 投影。这里不需要把真实 CEF 假定为线性；但“最佳线性近似”也不等于“近似误差一定很小”。</p>
+<p>三个定理合起来，给“回归”画出了一张完整的位置图：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>定理</th>
+<th>成立条件</th>
+<th>结论</th>
+<th>在分析中的角色</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>线性 CEF</td>
+<td>CEF 恰为线性</td>
+<td>投影 = CEF</td>
+<td>特例情形下的“恰好”</td>
+</tr>
+<tr class="even">
+<td>最佳线性预测</td>
+<td>仅需正则条件</td>
+<td>线性函数类内最优</td>
+<td>最低限度的保证</td>
+</tr>
+<tr class="odd">
+<td>回归 CEF</td>
+<td>仅需正则条件</td>
+<td><span class="math inline">\(m(x)\)</span> 的最优线性近似</td>
+<td>投影的“普适身份”</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="怎样理解最优线性近似" class="level3" data-number="6.3.4">
+<h3 data-number="6.3.4" class="anchored" data-anchor-id="怎样理解最优线性近似"><span class="header-section-number">6.3.4</span> 怎样理解“最优线性近似”</h3>
+<p>“最优线性近似”这个称号很漂亮，但它并不意味着线性投影在实用意义上总是“好”的近似——近似的质量取决于 <span class="math inline">\(m(x)\)</span> 偏离线性的程度。这是使用回归时最需要清醒对待的一点。</p>
+<p>假设真实的 CEF 是一条“先降后升”的 U 形曲线，而 <span class="math inline">\(X\)</span> 的取值同时覆盖下降段和上升段。此时最优线性近似的斜率会是多少？它由“整段范围内平均化的协同变动”决定——可能接近零，甚至为正，<strong>既不能读作下降段的斜率，也不能读作上升段的斜率</strong>。一句话：<strong>当 CEF 明显弯曲时，投影系数是由 <span class="math inline">\(X\)</span> 的总体分布加权得到的线性概括，不能当作任何给定点处的边际效应</strong>。这里的“平均”不是把每个 <span class="math inline">\(x\)</span> 等权平均：数据密集的区域在均方误差目标中权重更大。这也意味着，当 CEF 非线性时，即使 <span class="math inline">\(m(x)\)</span> 本身不变，只要不同总体中的 <span class="math inline">\(X\)</span> 分布发生变化，最佳线性投影系数也可能变化。后续模型设定与推断专题 引入平方项和交互项后会再次看到这个边界。</p>
+<div id="fig-ols-04" class="quarto-float quarto-figure quarto-figure-center anchored" alt="非线性条件期望函数与最佳线性近似">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ols-04-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/linear-regression-function-form-20260930.png" class="img-fluid figure-img" style="width:85.0%" alt="非线性条件期望函数与最佳线性近似">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ols-04-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;6.4: 模拟示例：弯曲的 CEF 与其最佳线性近似
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-ols-04" class="quarto-xref">图&nbsp;<span>6.4</span></a> 用一组模拟数据把这个情形画了出来：浅色散点是模拟观测，灰色点划线是事先设定的“真实” CEF，黑色实线是相应的最佳线性近似。面对一条明显弯曲的曲线，最佳线性近似可能接近水平，从而把主要的非线性形状压缩掉。如果只看这条直线，容易误以为 <span class="math inline">\(X\)</span> 对 <span class="math inline">\(Y\)</span> 几乎没有均值关系；实际上关系可能很强，只是线性斜率无法概括。这个例子说明：<strong>在线性投影存在的正则条件下，它总能给出一个明确的线性概括，但这个概括未必保留 CEF 中最重要的形状信息</strong>。</p>
+<p>那为什么计量经济学仍把线性投影当作核心工具？理由可以分三层：</p>
+<ol type="1">
+<li><strong>它是基准</strong>：即使最终目标是估计非线性结构或因果效应，线性投影也提供了“缺失模型时的对照物”——文献里大量实证结果的第一行就是它；</li>
+<li><strong>它是接口</strong>：许多高级方法在机制上就是“反复调用线性投影”。例如 后续 FWL 专题 将要讲的 FWL 定理——先对一部分变量做投影、再对残差做投影，两步都是本章定义的同一件事；</li>
+<li><strong>它与识别问题可以分层讨论</strong>：在线性投影给出统计概括之后，因果分析还要追问这个系数在什么条件下对应目标因果参数。这个问题依赖研究设计和识别假设，不由投影代数本身决定。</li>
+</ol>
+</section>
+<section id="从线到平面把投影画出来" class="level3" data-number="6.3.5">
+<h3 data-number="6.3.5" class="anchored" data-anchor-id="从线到平面把投影画出来"><span class="header-section-number">6.3.5</span> 从线到平面：把投影画出来</h3>
+<p>把定理 3 画出来，可以看到“线性近似”的形态。只有一个解释变量时，拟合对象是一条<strong>线</strong>；当解释变量变成两个(例如 <span class="math inline">\(X_1\)</span> 与 <span class="math inline">\(X_2\)</span>)，拟合对象从线变成<strong>平面</strong>——在三维空间中，它是“数据点云”的线性近似面。</p>
+<div id="fig-ols-03" class="quarto-float quarto-figure quarto-figure-center anchored" alt="三维空间中的回归平面">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ols-03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/Fig_OLS_superPlanent_01.png" class="img-fluid figure-img" style="width:90.0%" alt="三维空间中的回归平面">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ols-03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;6.5: 两个解释变量的线性拟合：从线到平面
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-ols-03" class="quarto-xref">图&nbsp;<span>6.5</span></a> 中，<span class="math inline">\(X_1\)</span>、<span class="math inline">\(X_2\)</span> 方向构成水平坐标平面，<span class="math inline">\(Y\)</span> 为垂直轴；散点表示观测数据，<strong>平面表示拟合模型</strong>(平面上每一点给出一个预测值 <span class="math inline">\(\hat{y}\)</span>)，竖直连线表示实际值与预测值之差(残差)。当解释变量超过两个，“平面”的类比依然成立，只是维数升高为“超平面”——这也是此类模型被称为“超平面拟合”的由来。</p>
+<p>平面图像还提供了理解<strong>多元回归系数</strong>的最佳视角。设拟合平面为</p>
+<p><span id="eq-ols-07"><span class="math display">\[
+\hat{y}=\hat{\beta}_0+\hat{\beta}_1x_1+\hat{\beta}_2x_2
+=10+0.5x_1+2x_2
+\tag{6.10}\]</span></span></p>
+<p>现在在 <span class="math inline">\(x_1=3\)</span> 的位置“切一刀”——保持 <span class="math inline">\(x_1\)</span> 不变，只看拟合平面如何随 <span class="math inline">\(x_2\)</span> 变化。代入 <a href="#eq-ols-07" class="quarto-xref">式&nbsp;<span>6.10</span></a>：</p>
+<p><span id="eq-ols-plane-slice"><span class="math display">\[
+\hat{y}=11.5+2x_2.
+\tag{6.11}\]</span></span></p>
+<p>这是一条关于 <span class="math inline">\(x_2\)</span> 的直线，斜率正是 <span class="math inline">\(\hat{\beta}_2=2\)</span>。因此，准确的说法是：</p>
+<blockquote class="blockquote">
+<p><strong>在这张拟合平面内部，固定 <span class="math inline">\(x_1\)</span> 不变时，<span class="math inline">\(x_2\)</span> 每增加一个单位，拟合值 <span class="math inline">\(\hat y\)</span> 增加 2 个单位。</strong></p>
+</blockquote>
+<p>在图上，“固定 <span class="math inline">\(x_1\)</span>、看 <span class="math inline">\(x_2\)</span>”就是沿平行于 <span class="math inline">\(x_2\)</span> 轴的方向切平面。这个几何图像说明了多元回归系数为什么常被称为 partial slope (偏斜率)。但要把边界说清楚：它是<strong>拟合平面的偏斜率</strong>。如果真实 CEF 非线性，<span class="math inline">\(\hat{\beta}_2\)</span> 一般不等于某个给定点的 <span class="math inline">\(\partial E[Y|X=x]/\partial x_2\)</span>；如果缺乏识别条件，它也不能自动解释为因果效应。后续 FWL 专题 会从代数上说明“控制其他变量”与 residualization 的关系。</p>
+</section>
+<section id="从总体到样本" class="level3" data-number="6.3.6">
+<h3 data-number="6.3.6" class="anchored" data-anchor-id="从总体到样本"><span class="header-section-number">6.3.6</span> 从总体到样本</h3>
+<p><span class="math inline">\(\beta^{*}\)</span> 是总体特征，<span class="math inline">\(E[XX']\)</span> 与 <span class="math inline">\(E[XY]\)</span> 无法直接观测。自然的做法是“照葫芦画瓢”：把总体矩替换为样本矩。这一步的渐近依据来自大数定律：在合适的抽样或弱依赖条件下，样本矩会收敛到相应总体矩。由此得到的估计量正是<strong>最小二乘(OLS)估计量</strong>——它是下一节的主题，也是从本章起、贯穿全课程的主力工具。</p>
+</section>
+</section>
+<section id="sec-ols-least-squares" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="sec-ols-least-squares"><span class="header-section-number">6.4</span> 最小二乘：从总体到样本</h2>
+<p>上节的 <span class="math inline">\(\beta^{*}\)</span> 是总体特征，无法直接计算——因为 <span class="math inline">\(E[XX']\)</span> 和 <span class="math inline">\(E[XY]\)</span> 都是总体矩。但我们有一条现成的路：<strong>照葫芦画瓢，把总体矩替换为样本矩</strong>：</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 42%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>总体</th>
+<th>样本</th>
+<th>替换规则</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\beta^{*} = E[XX']^{-1}E[XY]\)</span></td>
+<td><span class="math inline">\(\hat{\beta} = \left(\tfrac{1}{N}\mathbf{X}'\mathbf{X}\right)^{-1}\left(\tfrac{1}{N}\mathbf{X}'\mathbf{y}\right)\)</span></td>
+<td>矩替换</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(E[XY]\)</span></td>
+<td><span class="math inline">\(\tfrac{1}{N}\mathbf{X}'\mathbf{y}\)</span></td>
+<td>平均替代期望</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(E[XX']\)</span></td>
+<td><span class="math inline">\(\tfrac{1}{N}\mathbf{X}'\mathbf{X}\)</span></td>
+<td>平均替代期望</td>
+</tr>
+</tbody>
+</table>
+<p>约去两处 <span class="math inline">\(1/N\)</span>，就得到了<strong>最小二乘估计量</strong>：</p>
+<p><span id="eq-ols-08"><span class="math display">\[
+\hat{\beta} = (\mathbf{X}'\mathbf{X})^{-1} \mathbf{X}'\mathbf{y}
+\tag{6.12}\]</span></span></p>
+<p><a href="#eq-ols-08" class="quarto-xref">式&nbsp;<span>6.12</span></a> 中，<span class="math inline">\(\mathbf{X}\)</span> 是把每个观测的回归变量行向量 <span class="math inline">\(x_i'\)</span> 堆叠得到的 <span class="math inline">\(N \times k\)</span> <strong>设计矩阵</strong> (第一列为 1，对应常数项)，<span class="math inline">\(\mathbf{y}\)</span> 是 <span class="math inline">\(N \times 1\)</span> 的因变量向量。这里用粗体把样本矩阵 <span class="math inline">\(\mathbf{X}\)</span> 与前文的总体随机向量 <span class="math inline">\(X\)</span> 区分开。只要 <span class="math inline">\(\mathbf{X}'\mathbf{X}\)</span> 可逆，OLS 解就存在且唯一。从形式上看，<span class="math inline">\(\hat{\beta}\)</span> 与 <span class="math inline">\(\beta^{*}\)</span> 使用同一类矩结构：一个由样本矩计算，一个由总体矩定义。它们何时接近，需要依赖样本矩收敛到相应总体矩的条件。</p>
+<p>把这段逻辑再强调一遍：矩替换需要一组保证样本矩收敛到总体矩的条件。对横截面数据，iid 随机抽样是最简单、最常用的一组基准条件，因此可以直接调用大数定律把 <span class="math inline">\(\hat{\beta}\)</span> 与 <span class="math inline">\(\beta^{*}\)</span> 连接起来。它不是唯一可能的条件：时间序列、面板和聚类数据存在依赖结构，需要使用相应的平稳性、弱依赖或 cluster-level 渐近条件。后续章节会分别处理这些情形。</p>
+<section id="一元情形公式手算与相关系数" class="level3" data-number="6.4.1">
+<h3 data-number="6.4.1" class="anchored" data-anchor-id="一元情形公式手算与相关系数"><span class="header-section-number">6.4.1</span> 一元情形：公式、手算与相关系数</h3>
+<p>当 <span class="math inline">\(x\)</span> 只有一个变量(加常数项)时，解具有最直观的形式：</p>
+<p><span id="eq-ols-09"><span class="math display">\[
+\hat{\beta} = \frac{\sum_{i=1}^{N}(x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{N}(x_i - \bar{x})^2},
+\qquad
+\hat{\alpha} = \bar{y} - \hat{\beta}\,\bar{x}
+\tag{6.13}\]</span></span></p>
+<p><a href="#eq-ols-09" class="quarto-xref">式&nbsp;<span>6.13</span></a> 中 <span class="math inline">\(\bar{x}\)</span>、<span class="math inline">\(\bar{y}\)</span> 为样本均值。分子是 <span class="math inline">\(x\)</span> 与 <span class="math inline">\(y\)</span> 的(未标准化)协方差——度量同向变动的程度；分母是 <span class="math inline">\(x\)</span> 的样本方差。所以斜率的直觉读法是“<strong>在样本线性拟合中，<span class="math inline">\(x\)</span> 相差一个单位时，拟合值 <span class="math inline">\(\hat y\)</span> 相差多少</strong>”；截距的作用则是让回归线穿过样本中心 <span class="math inline">\((\bar{x}, \bar{y})\)</span>。</p>
+<p>为了把“手算”落到纸面，我们造一组刻意简化的数据——五位女性的教育与工资(<strong>仅用于演示计算过程，数字经过简化</strong>)：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">个体</th>
+<th style="text-align: center;">educ <span class="math inline">\(x_i\)</span></th>
+<th style="text-align: center;">wage <span class="math inline">\(y_i\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">12</td>
+<td style="text-align: center;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">14</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">16</td>
+<td style="text-align: center;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">18</td>
+<td style="text-align: center;">9</td>
+</tr>
+</tbody>
+</table>
+<p>样本均值：<span class="math inline">\(\bar{x} = 14\)</span>，<span class="math inline">\(\bar{y} = 6.4\)</span>。把每个观测对中心的偏离列出：<span class="math inline">\(x\)</span> 的偏离为 <span class="math inline">\(-4, -2, 0, 2, 4\)</span>；<span class="math inline">\(y\)</span> 的偏离为 <span class="math inline">\(-2.4, -1.4, -0.4, 1.6, 2.6\)</span>。于是</p>
+<p><span id="eq-ols-hand-sxy"><span class="math display">\[
+\sum (x_i - \bar{x})(y_i - \bar{y}) = (-4)(-2.4) + (-2)(-1.4) + 0 + 2(1.6) + 4(2.6) = 26
+\tag{6.14}\]</span></span></p>
+<p><span id="eq-ols-hand-sxx"><span class="math display">\[
+\sum (x_i - \bar{x})^2 = 16 + 4 + 0 + 4 + 16 = 40
+\tag{6.15}\]</span></span></p>
+<p>所以 <span class="math inline">\(\hat{\beta} = 26/40 = 0.65\)</span>，<span class="math inline">\(\hat{\alpha} = 6.4 - 0.65 \times 14 = -2.7\)</span>。拟合值与残差分别是：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">个体</th>
+<th style="text-align: center;"><span class="math inline">\(y_i\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\hat{y}_i\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\hat{e}_i = y_i - \hat{y}_i\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3.8</td>
+<td style="text-align: center;">0.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5.1</td>
+<td style="text-align: center;">−0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">6.4</td>
+<td style="text-align: center;">−0.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">7.7</td>
+<td style="text-align: center;">0.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">9</td>
+<td style="text-align: center;">9.0</td>
+<td style="text-align: center;">0.0</td>
+</tr>
+</tbody>
+</table>
+<p>留一眼看最后一列：<strong>残差之和恰为零</strong>(<span class="math inline">\(0.2 - 0.1 - 0.4 + 0.3 + 0 = 0\)</span>)。这不是巧合——下一小节会说明它是一条必然的代数性质。</p>
+<p><strong>斜率与相关系数。</strong> 把 <a href="#eq-ols-09" class="quarto-xref">式&nbsp;<span>6.13</span></a> 的分子分母同乘除样本标准差，可以把斜率写成</p>
+<p><span id="eq-ols-10"><span class="math display">\[
+\hat{\beta} = \hat{r} \cdot \frac{s_y}{s_x}
+\tag{6.16}\]</span></span></p>
+<p><a href="#eq-ols-10" class="quarto-xref">式&nbsp;<span>6.16</span></a> 中 <span class="math inline">\(\hat{r}\)</span> 是 <span class="math inline">\(x\)</span> 与 <span class="math inline">\(y\)</span> 的样本相关系数，<span class="math inline">\(s_y / s_x\)</span> 是两者的标准差之比。这个分解非常有用：<strong>回归斜率 = 相关强度 × 尺度之比</strong>。它解释了为什么“相关性最高”的变量未必有“最大的回归系数”——只要尺度不同，比较系数就会失真；也让相关系数与一元回归之间的关系变得透明：代数上，<span class="math inline">\(\hat\beta=0\)</span> 当且仅当 <span class="math inline">\(\hat r=0\)</span>；在经典简单回归的常规推断下，相应的零相关与零斜率检验也等价。</p>
+</section>
+<section id="残差拟合值与最小二乘的名字" class="level3" data-number="6.4.2">
+<h3 data-number="6.4.2" class="anchored" data-anchor-id="残差拟合值与最小二乘的名字"><span class="header-section-number">6.4.2</span> 残差、拟合值与最小二乘的名字</h3>
+<p>记拟合值向量 <span class="math inline">\(\hat{\mathbf{y}}=\mathbf{X}\hat{\beta}\)</span>，残差向量 <span class="math inline">\(\hat{\mathbf{e}}=\mathbf{y}-\hat{\mathbf{y}}\)</span>。最小二乘的目标是最小化残差平方和</p>
+<p><span id="eq-ols-11"><span class="math display">\[
+RSS = \sum_{i=1}^{N} \hat{e}_i^2
+\tag{6.17}\]</span></span></p>
+<p>——“最小二乘”的名字正来源于此。从这里出发可以直接推出(推导见 <a href="#sec-ols-app-ols" class="quarto-xref"><span>小节 6.8</span></a>) <strong>正规方程</strong>：</p>
+<p><span id="eq-ols-normal-equations"><span class="math display">\[
+\mathbf{X}'\hat{\mathbf{e}}=0
+\tag{6.18}\]</span></span></p>
+<p>它说明：样本残差与设计矩阵中的每一列都正交。这与总体 CEF 误差的正交性在形式上相似，但强度不同：CEF 误差满足对任意适当的 <span class="math inline">\(h(X)\)</span> 都有 <span class="math inline">\(E[e h(X)]=0\)</span>；OLS 残差只对<strong>实际放进设计矩阵的回归变量</strong>满足样本正交。由第一行(常数项对应的方程)立得 <span class="math inline">\(\sum_i \hat{e}_i = 0\)</span>——前面手算示例中“残差之和为零”的出处；由整组方程还可推出：<strong>回归线必然穿过样本均值点 <span class="math inline">\((\bar{x}, \bar{y})\)</span></strong>，<span class="math inline">\(y\)</span> 的拟合值均值等于实际均值 <span class="math inline">\(\bar{\hat{y}} = \bar{y}\)</span>。</p>
+<div id="fig-ols-05" class="quarto-float quarto-figure quarto-figure-center anchored" alt="回归线、拟合值与残差">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ols-05-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/gr_OLS_sum_of_squares.png" class="img-fluid figure-img" style="width:85.0%" alt="回归线、拟合值与残差">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ols-05-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;6.6: 样本回归线、拟合值与残差(示意图)
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-ols-05" class="quarto-xref">图&nbsp;<span>6.6</span></a> 把上述对象画在一起：实心点为观测值 <span class="math inline">\(y_i\)</span>，空心圆为其在回归线上的拟合值 <span class="math inline">\(\hat{y}_i\)</span>，两者的竖直距离就是残差 <span class="math inline">\(\hat{e}_i\)</span>。“最小二乘”要做的事情，可以理解为移动直线的位置与斜率，使所有这些竖直距离的<strong>平方和</strong>达到最小——为什么是平方而不是绝对距离？一方面平方处理起来方便(可导、有闭式解)，另一方面平方会“重罚”大偏离，让拟合更在意离群的观测。两把尺子的差别(平方 vs 绝对)在下一章讨论分位数回归时还会再来。</p>
+</section>
+<section id="一次完整演示mroz-数据" class="level3" data-number="6.4.3">
+<h3 data-number="6.4.3" class="anchored" data-anchor-id="一次完整演示mroz-数据"><span class="header-section-number">6.4.3</span> 一次完整演示(Mroz 数据)</h3>
+<p>把流程在 Stata 里走一遍，只需要几行命令：</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"data/ols/mroz.dta"</span>, <span class="kw">clear</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>* 从仓库根目录运行；官方数据将未就业者工资编码为 0</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">keep</span> <span class="kw">if</span> inlf == 1 &amp; !<span class="fu">missing</span>(wage, educ)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage educ</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> wage_hat             <span class="co">// 默认生成线性拟合值 xb</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> e_hat, residuals     <span class="co">// 显式生成 OLS 残差</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>样本回归结果为：</p>
+<p><span id="eq-ols-mroz"><span class="math display">\[
+\widehat{wage}=-2.092+0.495\,educ,
+\qquad SE:(0.848)\ (0.066),
+\qquad N=428,\ R^2=0.117.
+\tag{6.19}\]</span></span></p>
+<p>以上结果来自冻结的官方教学数据，样本限定为 <code>inlf == 1</code> 且 <code>wage</code>、<code>educ</code> 非缺失；标准误为常规同方差标准误。</p>
+<p><strong>先把数字读成句子。</strong></p>
+<ul>
+<li><strong>斜率 0.50</strong>：在样本的线性拟合中，<strong>教育年限相差 1 年，对应的拟合小时工资相差约 0.50 美元</strong>。这是教育与工资统计关系的一个低维概括。它不能直接读作“某个人多读一年书后，工资会增加 0.50 美元”，也不能在 CEF 明显非线性时解释成某个教育水平上的局部边际效应。</li>
+<li><strong>截距 −2.09</strong>：数学含义是“教育年限为零时的拟合工资”。样本中几乎没有教育年限接近零的观测，所以这个数字没有现实解释力——<strong>对截距不做外推式解读，是读回归表的好习惯</strong>。</li>
+<li><strong>标准误 (0.85) (0.07)</strong>：在相应抽样与方差假设下，用来估计系数估计量的抽样标准差。标准误如何构造、何时需要 robust 或 clustered 版本，将在 后续模型设定与推断专题 讨论。</li>
+<li><strong><span class="math inline">\(N = 428\)</span></strong>：参与估计的样本量。注意它小于数据的全部观测数——因为代码明确限定了就业且工资、教育非缺失的女性(这个“样本选择”现象在劳动经济学中非常重要，此处先提一笔)。</li>
+<li><strong><span class="math inline">\(R^2 = 0.12\)</span></strong>：在这一个样本里，<code>educ</code> 的线性拟合部分对应工资总平方离差的约 12%。这个数字描述拟合程度，不是教育因果作用的比例。</li>
+</ul>
+<p><strong>如何读一次回归输出？</strong> 上面的五条其实给出了通用套路——遇到任何一次回归，先不问“对不对”，依次问四个问题：</p>
+<ol type="1">
+<li><strong>系数是多少、它度量的是哪两个变量的关系</strong>？(对应“读成句子”)</li>
+<li><strong>标准误多大</strong>——估计精度如何？(后续模型设定与推断专题 的推断部分从这里展开)</li>
+<li><strong>样本量是多少</strong>——这条结论建立在多少数据上？是否存在样本选择的边界？</li>
+<li><strong><span class="math inline">\(R^2\)</span> 多少</strong>——当前线性拟合对应了多少样本平方离差？这个数字只能评价拟合程度，不能代替因果判断。</li>
+</ol>
+<p>正式的输出表还有几列固定信息。逐列认识它们，是从“看个大概”进阶到“读表”的第一步：</p>
+<ul>
+<li><strong>Coefficient</strong>：系数估计值——本章的主角；</li>
+<li><strong>Std. err.</strong>：标准误——估计量抽样不确定性的尺度，具体构造见 后续模型设定与推断专题；</li>
+<li><strong>t / P&gt;|t|</strong>：用于检验系数是否满足给定原假设的统计量与 <span class="math inline">\(p\)</span> 值，其概率含义与使用条件在 后续模型设定与推断专题 详解；</li>
+<li><strong>[95% Conf. Interval]</strong>：系数的置信区间——一个“区间版本”的估计；</li>
+<li><strong>R-squared / Adj R-squared</strong>：拟合优度及其“惩罚版”(见下节)；</li>
+<li><strong>Root MSE</strong>：基于残差平方和与残差自由度计算的误差尺度估计；其统计解释依赖相应模型假设。</li>
+</ul>
+<p>本章先记住 Coefficient、Std. err. 两列以及 <span class="math inline">\(N\)</span>、<span class="math inline">\(R^2\)</span> 的位置；其余各列的角色，会在 后续模型设定与推断专题 的推断部分逐一归位。</p>
+<p><strong>手算验算。</strong> 软件的输出还可以用“手算”检验：<code>reg</code> 后的估计值可以直接用 <code>display</code> 命令重构(例如用 <code>di _b[educ]</code> 显示系数)，也可以按 <a href="#eq-ols-09" class="quarto-xref">式&nbsp;<span>6.13</span></a> 用 <code>sum</code> 计算的样本矩复现。把样本矩公式与软件输出逐项对照，是理解最小二乘代数最直接的练习之一。</p>
+</section>
+<section id="sec-ols-code-checks" class="level3" data-number="6.4.4">
+<h3 data-number="6.4.4" class="anchored" data-anchor-id="sec-ols-code-checks"><span class="header-section-number">6.4.4</span> 用 Stata 核对三个 OLS 代数性质</h3>
+<p>前面的推导给出了三条可以直接在样本里核对的结果：含常数项时残差均值为零；残差与 <code>educ</code> 的样本内积为零；回归线穿过样本均值点。下面的代码不是新的估计方法，而是把数学结论转成可复现检查：</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"data/ols/mroz.dta"</span>, <span class="kw">clear</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>* 从仓库根目录运行；官方数据将未就业者工资编码为 0</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">keep</span> <span class="kw">if</span> inlf == 1 &amp; !<span class="fu">missing</span>(wage, educ)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage educ</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> <span class="kw">double</span> wage_hat <span class="kw">if</span> <span class="fu">e</span>(<span class="kw">sample</span>), <span class="kw">xb</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> <span class="kw">double</span> e_hat    <span class="kw">if</span> <span class="fu">e</span>(<span class="kw">sample</span>), residuals</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>* 1. 含常数项时，残差均值应只剩数值舍入误差</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="kw">summarize</span> e_hat <span class="kw">if</span> <span class="fu">e</span>(<span class="kw">sample</span>), <span class="kw">meanonly</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="kw">display</span> <span class="fu">r</span>(<span class="kw">mean</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>* 2. 正规方程要求残差与 educ 的样本内积为零</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="kw">generate</span> <span class="kw">double</span> e_educ = e_hat * educ <span class="kw">if</span> <span class="fu">e</span>(<span class="kw">sample</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="kw">summarize</span> e_educ <span class="kw">if</span> <span class="fu">e</span>(<span class="kw">sample</span>), <span class="kw">meanonly</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="kw">display</span> <span class="fu">r</span>(<span class="kw">sum</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>* 3. 回归线应穿过样本均值点：ybar = b0 + b1*xbar</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="kw">summarize</span> educ <span class="kw">if</span> <span class="fu">e</span>(<span class="kw">sample</span>), <span class="kw">meanonly</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> xbar = <span class="fu">r</span>(<span class="kw">mean</span>)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="kw">summarize</span> wage <span class="kw">if</span> <span class="fu">e</span>(<span class="kw">sample</span>), <span class="kw">meanonly</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> ybar = <span class="fu">r</span>(<span class="kw">mean</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="kw">display</span> ybar</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="kw">display</span> _b[<span class="dt">_cons</span>] + _b[educ] * xbar</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>这三项检查的目标不是得到“漂亮的零”，而是识别<strong>浮点计算误差与理论等式的区别</strong>。理论上相应的矩条件为零；软件输出中常会出现 <span class="math inline">\(10^{-14}\)</span> 或 <span class="math inline">\(10^{-13}\)</span> 量级的非零数，这只反映有限精度计算。</p>
+<p>本地 Stata 19.5 的实际计算结果为：残差均值 <span class="math inline">\(-8.3941 \times 10^{-16}\)</span>；<span class="math inline">\(\sum_{i}\hat{e}_{i}educ_{i}=-5.3886 \times 10^{-12}\)</span>。样本均值为 <span class="math inline">\(\bar{x}=12.65887850\)</span> 年、<span class="math inline">\(\bar{y}=4.17768154\)</span> 美元/小时；在 <span class="math inline">\(\bar{x}\)</span> 处的拟合值也是 4.17768154，二者之差在本次机器计算中为 0。最后一项的零是本次浮点运算结果；这些检查验证拟合代数，不能检验教育的外生性。</p>
+</section>
+<section id="谁进入了样本一个值得较真的细节" class="level3" data-number="6.4.5">
+<h3 data-number="6.4.5" class="anchored" data-anchor-id="谁进入了样本一个值得较真的细节"><span class="header-section-number">6.4.5</span> 谁进入了样本？(一个值得较真的细节)</h3>
+<p>最后还要回到演示输出中的一个细节：<span class="math inline">\(N = 428\)</span>。这个数字<strong>小于数据集的全部观测数</strong>——为什么？因为在 1975 年的调查时点，只有<strong>进入劳动力市场并且有工资记录</strong>的女性，才可能被观测到小时工资；对未就业的女性来说，“工资”这个变量根本无从记录。</p>
+<p>这意味着：我们估计的 0.50，实际上是“对<strong>有工资记录的女性</strong>”这一人群的线性投影。如果未就业女性(她们的教育、经历分布与就业者未必相同)的“潜在工资”也能被观测，回归结果可能不同。这类“只有部分个体的结果变量可观测”的情形会引出<strong>样本选择</strong> (sample selection) 问题。Mroz 数据后来也成为讲解劳动供给和样本选择的经典教学数据；本章只记录样本边界，不在这里展开选择模型。</p>
+<p>对读回归的人来说，这里有一条很实用的提醒：<strong>看到任何一个回归结果，第一个该问的不是“系数多大”，而是“这是谁的数据”</strong>。样本的边界，往往比系数本身更决定结论的适用范围。</p>
+</section>
+<section id="拟合优度r2-在说什么" class="level3" data-number="6.4.6">
+<h3 data-number="6.4.6" class="anchored" data-anchor-id="拟合优度r2-在说什么"><span class="header-section-number">6.4.6</span> 拟合优度：<span class="math inline">\(R^2\)</span> 在说什么</h3>
+<p>OLS 还带来另一条正交分解，但它与 <a href="#eq-ols-03" class="quarto-xref">式&nbsp;<span>6.3</span></a> 的总体 CEF 方差分解不是同一个结论。对<strong>包含常数项</strong>的 OLS 回归，样本残差与拟合值正交，因此可以把 <span class="math inline">\(y\)</span> 的总平方离差分解成拟合部分和残差部分：</p>
+<p><span id="eq-ols-anova"><span class="math display">\[
+TSS = \sum_{i=1}^{N}(y_i - \bar{y})^2
+= \underbrace{\sum_{i=1}^{N}(\hat{y}_i - \bar{y})^2}_{ESS}
++ \underbrace{\sum_{i=1}^{N}\hat{e}_i^2}_{RSS}
+\tag{6.20}\]</span></span></p>
+<p>其中 <span class="math inline">\(TSS\)</span> 是<strong>总平方和</strong>(“样本中的一切变异”)、<span class="math inline">\(ESS\)</span> 是<strong>可解释平方和</strong>(回归线能“搬动”的变异)、<span class="math inline">\(RSS\)</span> 是<strong>残差平方和</strong>(回归线“搬不动”的变异)。基于这个分解，定义决定系数</p>
+<p><span id="eq-ols-12"><span class="math display">\[
+R^2 = 1 - \frac{RSS}{TSS} = \frac{ESS}{TSS}
+\tag{6.21}\]</span></span></p>
+<p><a href="#eq-ols-12" class="quarto-xref">式&nbsp;<span>6.21</span></a> 的读法是：样本中 <span class="math inline">\(y\)</span> 的总平方离差有多大比例被当前<strong>线性拟合值</strong>所占据。演示中的 <span class="math inline">\(R^2=0.117\)</span> 表示，工资围绕样本均值的平方离差中约有 11.7% 与 <code>educ</code> 的线性拟合部分对应。这里的“解释”只是平方和分解的统计术语，不是因果解释。一元回归里还有一个联系值得记住：<span class="math inline">\(R^2\)</span> 恰是样本相关系数的平方，即 <span class="math inline">\(R^2 = \hat{r}^2\)</span>——这也是相关系数与回归共享同一个“解释力”概念的体现(多元回归中这个等式不再成立，<span class="math inline">\(R^2\)</span> 会同时反映多个变量的联合贡献)。</p>
+<div class="callout callout-style-default callout-important callout-titled" title="$R^2$ 的两个常见误读">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="math inline">\(R^2\)</span> 的两个常见误读
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>第一，<strong>高 <span class="math inline">\(R^2\)</span> 不代表模型正确</strong>：把更多变量(哪怕是与 <span class="math inline">\(y\)</span> 无关的噪声变量)放进回归，<span class="math inline">\(R^2\)</span> 基本只升不降。第二，<strong>低 <span class="math inline">\(R^2\)</span> 不代表模型无用</strong>：在一些高噪声预测问题中，低 <span class="math inline">\(R^2\)</span> 并不少见；是否有用仍取决于研究目标、损失函数和样本外表现。<span class="math inline">\(R^2\)</span> 是描述样本拟合程度的指标，不是“对错”或“因果”的证明。</p>
+</div>
+</div>
+</section>
+<section id="线性到底指什么" class="level3" data-number="6.4.7">
+<h3 data-number="6.4.7" class="anchored" data-anchor-id="线性到底指什么"><span class="header-section-number">6.4.7</span> “线性”到底指什么</h3>
+<div class="callout callout-style-default callout-note callout-titled" title="线性的含义：对参数线性">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+线性的含义：对参数线性
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>“线性回归”中的“线性”，准确地说是<strong>对所选回归变量的系数线性</strong>，而不是要求原始的 <span class="math inline">\(Y\)</span> 与 <span class="math inline">\(X\)</span> 在散点图上呈直线关系。后续模型设定与推断专题 会看到，我们可以把 <span class="math inline">\(X\)</span> 的对数、平方、虚拟变量和交互项作为新的回归变量，只要这些变量的系数以线性方式进入预测函数，仍然可以使用同一套 OLS 代数。换句话说，研究者真正选择的是 feature vector；线性投影发生在所选 features 张成的线性空间中。</p>
+</div>
+</div>
+</section>
+<section id="金融视角capm-中的市场-beta-如何用线性回归估计" class="level3" data-number="6.4.8">
+<h3 data-number="6.4.8" class="anchored" data-anchor-id="金融视角capm-中的市场-beta-如何用线性回归估计"><span class="header-section-number">6.4.8</span> 金融视角：CAPM 中的市场 <span class="math inline">\(\beta\)</span> 如何用线性回归估计</h3>
+<div class="callout callout-style-default callout-note callout-titled" title="金融视角 · CAPM 的回归形式">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+金融视角 · CAPM 的回归形式
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>CAPM 的实证分析常从资产超额收益对市场超额收益的时间序列回归开始：</p>
+<p><span id="eq-ols-capm-market"><span class="math display">\[
+R_{it}-R_{ft}=\alpha_i+\beta_i(R_{mt}-R_{ft})+\varepsilon_{it}.
+\tag{6.22}\]</span></span></p>
+<p>从统计角度看，这个 <strong>market regression</strong> 可以视为资产超额收益对市场超额收益的线性投影。<span class="math inline">\(\beta_i\)</span> 是拟合关系中的市场暴露：市场超额收益变化 1 个百分点时，资产的拟合超额收益变化约 <span class="math inline">\(\beta_i\)</span> 个百分点。<span class="math inline">\(\alpha_i\)</span> 是截距；在业绩评价中它常被称为 abnormal return，但这种解释取决于所采用的基准模型。</p>
+<p>需要把“市场回归”和“CAPM 理论”区分开。上面的回归本身只是一个统计投影；CAPM 还包含关于预期收益与系统风险之间关系的资产定价限制。后续 CAPM 专章会讨论这些额外条件。类似地，加入规模、价值等因子后仍可以做线性 factor regression，但是否具有资产定价含义，需要另行讨论。</p>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-ols-outlook" class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="sec-ols-outlook"><span class="header-section-number">6.5</span> 小结与展望</h2>
+<p>这一章只做了一件事——回答“回归在建模什么”。回看整个逻辑链：</p>
+<ol type="1">
+<li><strong>对象层</strong>：研究对象不是“<span class="math inline">\(y\)</span> 与 <span class="math inline">\(x\)</span> 的关系”这句模糊的话，而是<strong>条件分布</strong> <span class="math inline">\(F_{Y|X}(y|x)\)</span> 及其特征；</li>
+<li><strong>函数层</strong>：最常用的特征是条件均值——CEF <span class="math inline">\(m(x)=E[Y|X=x]\)</span>。它是最优预测(性质 1)，其误差与 <span class="math inline">\(X\)</span> 的适当函数正交(性质 2)，并支撑一条实用的方差分解(性质 3)；</li>
+<li><strong>近似层</strong>：CEF 的形式未知，于是寻找它的最优线性近似——线性投影 <span class="math inline">\(X'\beta^{*}\)</span>。三个定理刻画了它与 CEF 的关系，其中最重要的是“回归 CEF 定理”：<strong>无论 CEF 如何弯曲，投影都是离它最近的线性函数</strong>；</li>
+<li><strong>估计层</strong>：把总体矩替换为样本矩，得到最小二乘估计 <span class="math inline">\(\hat{\beta}\)</span>，并用 Mroz 数据和一组手算示例完成了全流程演示。</li>
+</ol>
+<p>回到教育与工资的关系。我们得到的 0.50 是对<strong>线性投影</strong>的估计——它描述样本中教育与工资的线性共变。但请留一个清醒的边界在心：它还不能读作“多读一年书能多挣 0.50 美元”——后者需要对“如果改变教育”的回答，属于识别层的问题。本章建立的框架，恰好把这层区别表达得清清楚楚：<strong>描述、预测、因果三种问题是三个不同层次的追问，而本章解决的是前两层的地基。</strong></p>
+<p><strong>展望：不止于“均值”。</strong> 本章集中讨论条件均值，但同一套提问顺序可以用于其他条件特征：先明确关心的条件泛函，再选择函数形式和估计准则。下面只画出几条接口，具体方法留到后续章节：</p>
+<ul>
+<li>令目标为<strong>条件概率</strong> <span class="math inline">\(P(Y=1|X=x)\)</span> (例如“是否违约”)，可以用 <span class="math inline">\(\Phi(x'\beta)\)</span> 或 logistic response function 等参数化形式刻画，从而得到 Probit / Logit 一类模型；</li>
+<li>令 <span class="math inline">\(S(Y|X=x)\)</span> 为<strong>条件中位数</strong>或<strong>条件分位数</strong>，则通向分位数回归——金融中估计 VaR、研究“不同收入群体”的异质性回报都用到它；</li>
+<li>若直接对整个条件分布 <span class="math inline">\(f(Y|X;\theta)\)</span> 指定参数化分布族，则可以使用极大似然 (MLE) 等准则估计参数——这是参数统计的标准路径。</li>
+</ul>
+<p>换句话说，本章的真正遗产不是某一个公式，而是一个<strong>建模观</strong>：</p>
+<blockquote class="blockquote">
+<p>先问“关心 <span class="math inline">\(y|x\)</span> 的哪个特征(泛函)”，再问“用什么函数形式去逼近它”，最后问“用什么准则去估计”。</p>
+</blockquote>
+<p>后续模型设定与推断专题 会沿着“目标对象 → 函数形式 → 估计准则”的框架继续展开，重点进入变量变换、虚拟变量、交互项以及标准误和检验；Probit、Logit 和分位数回归在这一阶段主要承担“模型地图”的作用，为后续专题建立接口。</p>
+<p><strong>延伸阅读。</strong> 本章的主线主要参照 Hansen (2022, Chapter 2) 对 CEF、best linear predictor 与 best linear approximation 的处理；“线性 CEF—最佳线性预测—Regression-CEF”三条回归理由的组织方式参照 Angrist and Pischke (2009, Section 3.1)。更传统的回归入门路径可参见 Wooldridge (2020, Chapters 2–3) 与 James et al.&nbsp;(2023, Chapter 3)。</p>
+</section>
+<section id="sec-ols-app-cef" class="level2" data-number="6.6">
+<h2 data-number="6.6" class="anchored" data-anchor-id="sec-ols-app-cef"><span class="header-section-number">6.6</span> 附录：CEF 三条性质的证明</h2>
+<p>为记号简洁，以下用 <span class="math inline">\(E\)</span> 表示总体期望，并简写 <span class="math inline">\(m\equiv m(X)\)</span>、<span class="math inline">\(g\equiv g(X)\)</span>。</p>
+<p><strong>性质 1(最优预测)的证明</strong></p>
+<p>对任意适当的函数 <span class="math inline">\(g(X)\)</span>，</p>
+<p><span id="eq-ols-app-cef-loss-expand"><span class="math display">\[
+\begin{aligned}
+E[(Y-g)^2] &amp;= E\big[(Y-m)+(m-g)\big]^2 \\
+&amp;=E[(Y-m)^2]+2E[(Y-m)(m-g)]+E[(m-g)^2].
+\end{aligned}
+\tag{6.23}\]</span></span></p>
+<p>其中交叉项由迭代期望律(LIE)为零：</p>
+<p><span id="eq-ols-app-cef-crosszero"><span class="math display">\[
+E[(Y-m)(m-g)] = E\Big( E\big[(Y-m)(m-g)\big|X\big] \Big)
+= E\Big( (m-g)\,E[Y-m|X] \Big) = E\big[(m-g)\cdot 0\big] = 0
+\tag{6.24}\]</span></span></p>
+<p>(第二个等号把关于 <span class="math inline">\(X\)</span> 的函数提出条件期望；第三个等号用了 <span class="math inline">\(E[Y|X]=m\)</span>。)因此</p>
+<p><span id="eq-ols-app-cef-loss-result"><span class="math display">\[
+E[(Y-g)^2] = E[(Y-m)^2] + E[(m-g)^2] \ge E[(Y-m)^2],
+\tag{6.25}\]</span></span></p>
+<p>等号当且仅当 <span class="math inline">\(g(X)=m(X)\)</span> (几乎处处)时成立。∎</p>
+<p><strong>性质 2(误差正交)的证明</strong></p>
+<p>对任意函数 <span class="math inline">\(h(X)\)</span>：</p>
+<p><span id="eq-ols-app-cef-orth"><span class="math display">\[
+E[e\,h(X)] = E\Big( E[e\,h(X)\big|X]\Big) = E\Big(h(X)\,E[e|X]\Big) = E\big[h(X)\cdot 0\big] = 0,
+\tag{6.26}\]</span></span></p>
+<p>其中 <span class="math inline">\(E[e|X] = E[Y-m(X)|X] = E[Y|X]-m(X) = 0\)</span>。∎</p>
+<p><strong>性质 3(方差分解)的证明</strong></p>
+<p>由 <span class="math inline">\(E[Y^2] = E\big(E[Y^2|X]\big) = E\big(\operatorname{Var}(Y|X) + (E[Y|X])^2\big) = E[\operatorname{Var}(Y|X)] + E[m^2]\)</span>，以及 <span class="math inline">\((E[Y])^2 = (E[m])^2\)</span>，得</p>
+<p><span id="eq-ols-app-cef-var"><span class="math display">\[
+\operatorname{Var}(Y) = E[Y^2]-(E[Y])^2
+= E[\operatorname{Var}(Y|X)] + E[m^2] - (E[m])^2
+= E[\operatorname{Var}(Y|X)] + \operatorname{Var}(m). \qquad \blacksquare
+\tag{6.27}\]</span></span></p>
+</section>
+<section id="sec-ols-app-projection" class="level2" data-number="6.7">
+<h2 data-number="6.7" class="anchored" data-anchor-id="sec-ols-app-projection"><span class="header-section-number">6.7</span> 附录：线性投影的推导与三个定理</h2>
+<p><strong><a href="#eq-ols-06" class="quarto-xref">式&nbsp;<span>6.6</span></a>(<span class="math inline">\(\beta^{*}\)</span> 的解)的推导</strong></p>
+<p>最小化 <span class="math inline">\(Q(b) = E[(Y-X'b)^2] = E[Y^2] - 2\,b'E[XY] + b'E[XX']b\)</span>。一阶条件为</p>
+<p><span id="eq-ols-app-proj-foc"><span class="math display">\[
+\frac{\partial Q}{\partial b} = -2E[XY] + 2E[XX']\,b = 0 \quad\Longrightarrow\quad E[XX']\,b = E[XY].
+\tag{6.28}\]</span></span></p>
+<p>当 <span class="math inline">\(E[XX']\)</span> 可逆时解得 <span class="math inline">\(b = E[XX']^{-1}E[XY] = \beta^{*}\)</span>；又因二阶矩阵 <span class="math inline">\(2E[XX']\)</span> 半正定(正定当 <span class="math inline">\(E[XX']\)</span> 可逆)，该驻点即全局最小值。∎</p>
+<p><strong>定理 1(线性 CEF)的证明</strong></p>
+<p>设 <span class="math inline">\(m(X)=X'\beta_0\)</span>。由迭代期望律，</p>
+<p><span id="eq-ols-app-linear-cef-moment"><span class="math display">\[
+E[XY]=E\big[X\,E[Y|X]\big] = E\big[XX'\beta_0\big] = E[XX']\,\beta_0.
+\tag{6.29}\]</span></span></p>
+<p>代入 <span class="math inline">\(\beta^{*} = E[XX']^{-1}E[XY]\)</span> 得 <span class="math inline">\(\beta^{*} = \beta_0\)</span>。∎</p>
+<p><strong>定理 2(最佳线性预测)的证明</strong></p>
+<p>对任意 <span class="math inline">\(b\)</span>，把 <span class="math inline">\(Y-X'b\)</span> 写成 <span class="math inline">\((Y-X'\beta^{*})+X'(\beta^{*}-b)\)</span>，展开平方的期望：</p>
+<p><span id="eq-ols-app-blp-expand"><span class="math display">\[
+E[(Y-X'b)^2] = E[(Y-X'\beta^{*})^2]
++ 2(\beta^{*}-b)'\,E\big[X(Y-X'\beta^{*})\big]
++ (\beta^{*}-b)'\,E[XX'\,](\beta^{*}-b).
+\tag{6.30}\]</span></span></p>
+<p>一阶条件保证 <span class="math inline">\(E[X(Y-X'\beta^{*})] = 0\)</span>，故交叉项为零，于是</p>
+<p><span id="eq-ols-app-blp-result"><span class="math display">\[
+E[(Y-X'b)^2] = E[(Y-X'\beta^{*})^2] + (\beta^{*}-b)'\,E[XX'\,](\beta^{*}-b)
+\ \ge\ E[(Y-X'\beta^{*})^2],
+\tag{6.31}\]</span></span></p>
+<p>其中第二项因 <span class="math inline">\(E[XX']\)</span> 半正定而不小于零；取等号当且仅当 <span class="math inline">\(b = \beta^{*}\)</span>(<span class="math inline">\(E[XX']\)</span> 可逆时)。∎</p>
+<p><strong>定理 3(回归 CEF)的证明</strong></p>
+<p>需证 <span class="math inline">\(\beta^{*}\)</span> 也是 <span class="math inline">\(\min_b E[(m(X)-X'b)^2]\)</span> 的解(即“<span class="math inline">\(X'\beta^{*}\)</span> 是 <span class="math inline">\(m(X)\)</span> 的最优线性近似”)。该问题的一阶条件是</p>
+<p><span id="eq-ols-app-regcef-foc"><span class="math display">\[
+E\big[X(m(X)-X'b)\big] = 0.
+\tag{6.32}\]</span></span></p>
+<p>把 <span class="math inline">\(b = \beta^{*}\)</span> 代入左边：</p>
+<p><span id="eq-ols-app-regcef-zero"><span class="math display">\[
+E[X\,m(X)] - E[XX'\,]\beta^{*} = E[XY] - E[XY] = 0,
+\tag{6.33}\]</span></span></p>
+<p>其中第一个等号用了 <span class="math inline">\(E[Xm(X)]=E\big[XE[Y|X]\big]=E[XY]\)</span>(LIE)，第二个等号用了 <span class="math inline">\(\beta^{*}\)</span> 的定义(<a href="#eq-ols-06" class="quarto-xref">式&nbsp;<span>6.6</span></a>)。目标函数是 <span class="math inline">\(b\)</span> 的凸二次函数，因此一阶条件即最优性条件。∎</p>
+</section>
+<section id="sec-ols-app-ols" class="level2" data-number="6.8">
+<h2 data-number="6.8" class="anchored" data-anchor-id="sec-ols-app-ols"><span class="header-section-number">6.8</span> 附录：OLS 的代数</h2>
+<p><strong><a href="#eq-ols-08" class="quarto-xref">式&nbsp;<span>6.12</span></a>(<span class="math inline">\(\hat\beta\)</span> 的解)的推导</strong></p>
+<p>最小化 <span class="math inline">\((\mathbf{y}-\mathbf{X}b)'(\mathbf{y}-\mathbf{X}b)\)</span> 对 <span class="math inline">\(b\)</span> 求导：<span class="math inline">\(\partial/\partial b=-2\mathbf{X}'(\mathbf{y}-\mathbf{X}b)\)</span>。令其为零，得正规方程</p>
+<p><span id="eq-ols-app-ols-foc"><span class="math display">\[
+\mathbf{X}'\mathbf{X}\,b=\mathbf{X}'\mathbf{y} \quad\Longrightarrow\quad \hat\beta=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{y}
+\tag{6.34}\]</span></span></p>
+<p>(当 <span class="math inline">\(\mathbf{X}'\mathbf{X}\)</span> 可逆)。∎</p>
+<p><strong>残差正交性</strong>：由正规方程，<span class="math inline">\(\mathbf{X}'(\mathbf{y}-\mathbf{X}\hat\beta)=\mathbf{X}'\hat{\mathbf e}=0\)</span>。当 <span class="math inline">\(\mathbf{X}\)</span> 含常数项 (第一列为 1) 时，第一行给出 <span class="math inline">\(\sum_i \hat e_i = 0\)</span>，于是回归线穿过样本均值点：<span class="math inline">\(\bar{\hat y} = \bar y\)</span>。</p>
+<p><strong>一元斜率的推导</strong>：当设计矩阵只包含常数项与一个标量解释变量 <span class="math inline">\(x\)</span> 时，正规方程是两个方程的线性系统：</p>
+<p><span id="eq-ols-app-simple-normal"><span class="math display">\[
+\begin{cases}
+N\hat\alpha + (\sum_i x_i)\hat\beta = \sum_i y_i,\\[2pt]
+(\sum_i x_i)\hat\alpha + (\sum_i x_i^2)\hat\beta = \sum_i x_i y_i.
+\end{cases}
+\tag{6.35}\]</span></span></p>
+<p>求解即得 <a href="#eq-ols-09" class="quarto-xref">式&nbsp;<span>6.13</span></a> 中的两个表达式。∎</p>
+<p><strong><span class="math inline">\(R^2\)</span> 的分解形式</strong>：当含常数项时，由 <span class="math inline">\(\sum_i \hat e_i = 0\)</span> 与残差正交性可证</p>
+<p><span id="eq-ols-app-r2-decomp"><span class="math display">\[
+TSS = \sum_i (y_i-\bar y)^2 = \sum_i (\hat y_i - \bar y)^2 + \sum_i \hat e_i^2 = ESS + RSS,
+\tag{6.36}\]</span></span></p>
+<p>即 <a href="#eq-ols-12" class="quarto-xref">式&nbsp;<span>6.21</span></a> 与 <span class="math inline">\(R^2 = ESS/TSS\)</span> 等价。∎</p>
+</section>
+<section id="sec-ols-refs" class="level2" data-number="6.9">
+<h2 data-number="6.9" class="anchored" data-anchor-id="sec-ols-refs"><span class="header-section-number">6.9</span> 参考文献</h2>
+<ol type="1">
+<li>Angrist, J. D., &amp; Pischke, J.-S. (<strong>2009</strong>). <em>Mostly Harmless Econometrics: An Empiricist’s Companion</em>. Princeton University Press. <a href="">Link</a>, <a href="">PDF</a>, <a href="https://scholar.google.com/scholar?q=Mostly+Harmless+Econometrics+An+Empiricist%27s+Companion">Google</a></li>
+<li>Hansen, B. E. (<strong>2022</strong>). <em>Econometrics</em>. Princeton University Press. <a href="https://users.ssc.wisc.edu/~behansen/econometrics/">Link</a> , <a href="">PDF</a>, <a href="https://scholar.google.com/scholar?q=Bruce+E+Hansen+Econometrics+2022">Google</a></li>
+<li>James, G., Witten, D., Hastie, T., Tibshirani, R., &amp; Taylor, J. (<strong>2023</strong>). <em>An Introduction to Statistical Learning with Applications in Python</em>. Springer. <a href="https://doi.org/10.1007/978-3-031-38747-0">Link</a>, <a href="https://link.springer.com/content/pdf/10.1007/978-3-031-38747-0.pdf">PDF</a>, <a href="https://scholar.google.com/scholar?q=An+Introduction+to+Statistical+Learning+with+Applications+in+Python">Google</a></li>
+<li>Mroz, T. A. (<strong>1987</strong>). The sensitivity of an empirical model of married women’s hours of work to economic and statistical assumptions. <em>Econometrica</em>, 55(4), 765–799. <a href="https://doi.org/10.2307/1911029">Link</a> , <a href="https://doi.org/10.2307/1911029">PDF</a>, <a href="https://scholar.google.com/scholar?q=The+sensitivity+of+an+empirical+model+of+married+women%27s+hours+of+work+to+economic+and+statistical+assumptions">Google</a></li>
+<li>Wooldridge, J. M. (<strong>2020</strong>). <em>Introductory Econometrics: A Modern Approach</em> (7th ed.). Cengage. <a href="">Link</a>, <a href="">PDF</a>, <a href="https://scholar.google.com/scholar?q=Wooldridge+Introductory+Econometrics+A+Modern+Approach+7th+2020">Google</a></li>
+</ol>
+<p><strong>数据与软件来源</strong>：本章 Mroz 示例使用 Stata 官方托管的 Wooldridge 数据文件：<code>https://www.stata.com/data/jwooldridge/eacsap/mroz</code>。Stata 官方资料将其说明为 Mroz (1987) 的 1975 PSID 数据。</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "已复制");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "已复制");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../notebooks/financial-data/financial-data.html" class="pagination-link" aria-label="CSMAR：Agent 实战">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">CSMAR：Agent 实战</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../notebooks/ols/ols-stata.html" class="pagination-link" aria-label="OLS：Stata 实验">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">OLS：Stata 实验</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>LN429 · 中山大学岭南学院</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/lectures/ols.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p><a href="https://www.lianxh.cn">连享会</a> · Quarto Book</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

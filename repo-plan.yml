@@ -26,3 +26,9 @@ approval:
   push: true
 notes: "retrieved_date: 2026-09-09；用户授权完成首讲和上线；行情为公开接口教学快照，政策数据为模拟。未分发受限教材或 CSMAR 数据，许可证待定。"
 
+
+last_publication:
+  retrieved_date: "2026-09-30"
+  topic: ols
+  work_scope: "lectures/ols.qmd, notebooks/ols, tools/ols, data/ols, OLS figure, navigation and rendered docs"
+  authorization: "用户明确表示可以推送了"

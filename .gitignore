@@ -10,3 +10,6 @@
 .env.*
 !.env.example
 /env/local_paths.ps1
+
+# Local OLS execution artifacts
+/output/ols/
