@@ -41,7 +41,8 @@ book:
   title: "金融计量经济学"
   subtitle: "从研究问题到可复现的金融分析"
   author: "连玉君 · 中山大学岭南学院"
-  date: "2026-09-09"
+  # 发布当天重新渲染，自动采用本地日期。
+  date: today
   date-format: iso
   site-url: https://lianxhcn.github.io/FinEco/
   repo-url: https://github.com/lianxhcn/FinEco

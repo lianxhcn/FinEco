@@ -18,7 +18,7 @@
 
 1. 按网站的环境准备页面配置 Python 和 Stata。
 2. 在仓库根目录运行 `python tools/run_notebooks.py`，重新执行两个 Notebook。Stata 路径通过 `STATA_EXE` 环境变量提供。
-3. 运行 `powershell -ExecutionPolicy Bypass -File tools/build_book.ps1` 构建静态网站；渲染不执行代码。
+3. 运行 `powershell -ExecutionPolicy Bypass -File tools/build_book.ps1` 构建静态网站；渲染不执行代码。首页发布日期由 `_quarto.yml` 中的 `book.date: today` 自动生成；每次发布须在发布当天重新构建，使日期对应本次发布。
 4. 检查 `docs/` 后提交并推送。GitHub Pages 从 `main` 分支的 `/docs` 发布。
 
 数据获取脚本为 `tools/fetch_intro_prices.py`，重复获取会更新快照，常规复现无需联网取数。数据说明见 `data/intro/README.md`。
