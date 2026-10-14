@@ -1,0 +1,2208 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>9&nbsp; 线性回归：Stata 实验 – 金融计量经济学</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../lectures/bootstrap.html" rel="next">
+<link href="../../lectures/linear-regression.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-0626ff4d7a71b55c8707dcae1d04a9b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-d59a9bb4a0246dd4330968064f99cf3e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<link rel="icon" type="image/png" sizes="40x40" href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png">
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../../notebooks/linear-regression/linear-regression-stata.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">线性回归：Stata 实验</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../../index.html" class="sidebar-logo-link">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">金融计量经济学</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/lianxhcn/FinEco" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="切换阅读器模式">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🏠 前言</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📚 课程资料</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../getting-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📌 课件使用</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../syllabus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📅 课程安排</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../homework.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">作业</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../exercises/hw-01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">hw-01</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../exercises/hw-02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">第二次作业：金融数据分析</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">🛠️ 环境配置</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">软件配置</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../publishing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">同步与发布</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">研究基础</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">研究流程</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/intro/portfolio-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">组合实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/intro/policy-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">政策实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/financial-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">数据流程与获取</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/financial-data-management.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">数据管理</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/financial-data-cleaning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">数据清洗与审计</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/financial-data/financial-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">CSMAR：Agent 实战</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/ols.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">条件期望与 OLS</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/ols/ols-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">OLS：Stata 实验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/linear-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">线性回归：解释与设定</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/linear-regression/linear-regression-stata.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">线性回归：Stata 实验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/bootstrap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Bootstrap</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/bootstrap/bootstrap-demo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Python 实验</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/bootstrap/bootstrap-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Stata 实验</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">附录</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../resources/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">公共书目</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目录</h2>
+   
+  <ul>
+  <li><a href="#运行准备" id="toc-运行准备" class="nav-link active" data-scroll-target="#运行准备"><span class="header-section-number">9.1</span> 运行准备</a></li>
+  <li><a href="#案例情境一个系数三种读法" id="toc-案例情境一个系数三种读法" class="nav-link" data-scroll-target="#案例情境一个系数三种读法"><span class="header-section-number">9.2</span> 案例情境：一个系数，三种读法</a></li>
+  <li><a href="#概念讲解回归到底在估计什么" id="toc-概念讲解回归到底在估计什么" class="nav-link" data-scroll-target="#概念讲解回归到底在估计什么"><span class="header-section-number">9.3</span> 概念讲解：回归到底在估计什么</a></li>
+  <li><a href="#代码实操" id="toc-代码实操" class="nav-link" data-scroll-target="#代码实操"><span class="header-section-number">9.4</span> 代码实操</a></li>
+  <li><a href="#结果解释与因果护栏写作无代码" id="toc-结果解释与因果护栏写作无代码" class="nav-link" data-scroll-target="#结果解释与因果护栏写作无代码"><span class="header-section-number">9.5</span> 结果解释与因果护栏（写作，无代码）</a></li>
+  <li><a href="#阅读结果" id="toc-阅读结果" class="nav-link" data-scroll-target="#阅读结果"><span class="header-section-number">9.6</span> 阅读结果</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.dev/lianxhcn/FinEco/blob/main/notebooks/linear-regression/linear-regression-stata.ipynb" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../../notebooks/linear-regression/linear-regression-stata.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">线性回归：Stata 实验</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-linear-regression-lab" class="quarto-section-identifier"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">线性回归：Stata 实验</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><a href="../../lectures/linear-regression.html">返回理论篇</a> · <a href="../../data/linear-regression/README.md">数据说明</a> · <a href="../../tools/linear-regression/linear-regression.do">完整 do-file</a></p>
+<p>本实验保留工资、汽车和企业财务案例，核对去均值、FWL、虚拟变量的两种参数化，以及中心化前后的拟合等价性。数据均读取本地快照；网页只展示从头运行后保存的实际结果，不执行代码或实时取数。企业数据来源的部分口径未完整说明，结果只作教学演示。</p>
+<p>从仓库根目录运行 <code>python tools/linear-regression/run_notebook.py</code>。需要已配置的 <code>STATA_EXE</code> 和 nbstata 环境。</p>
+<section id="运行准备" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="运行准备"><span class="header-section-number">9.1</span> 运行准备</h2>
+<p>校验冻结数据并检查 SSC 命令；已安装的命令不会重复安装。</p>
+<div id="e09c046d" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-10-14T08:42:25.331189Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-14T08:42:25.330662Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-14T08:42:25.428037Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-14T08:42:25.427029Z&quot;}" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>* 线性回归：估计、FWL、虚拟变量与交乘项。</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>* 从 FinEco 仓库根目录运行；数据为本地冻结快照。</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>* 图形导出到 figs/raw，机器核对值保存至 logs/linear-regression。</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>* 二维聚类的缺失标准误与警告保留为少簇推断边界演示。</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">capture</span> <span class="kw">mkdir</span> <span class="st">"logs"</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">capture</span> <span class="kw">mkdir</span> <span class="st">"logs/linear-regression"</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">capture</span> <span class="kw">mkdir</span> <span class="st">"figs"</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">capture</span> <span class="kw">mkdir</span> <span class="st">"figs/raw"</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="kw">clear</span> <span class="ot">all</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="kw">set</span> <span class="kw">more</span> <span class="kw">off</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>* 数据全部读取本地冻结快照；从 FinEco 仓库根目录执行。</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="kw">global</span> D <span class="st">"data/linear-regression"</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>* 所需 SSC 命令；用户已授权安装，已有命令不重复安装。</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="kw">foreach</span> cmd <span class="kw">in</span> estout binscatter ftools reghdfe {</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">capture</span> which <span class="ot">`cmd'</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> <span class="dt">_rc</span> {</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="kw">ssc</span> install <span class="ot">`cmd'</span>, <span class="kw">replace</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>*===========================================================================</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="案例情境一个系数三种读法" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="案例情境一个系数三种读法"><span class="header-section-number">9.2</span> 案例情境：一个系数，三种读法</h2>
+<p>按顺序运行，比较同一段中不同设定的输出。</p>
+<div id="2eaf96c1" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-10-14T08:42:25.432041Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-14T08:42:25.432041Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-14T08:42:26.454719Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-14T08:42:26.453708Z&quot;}" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>*===========================================================================</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"$D/mroz.dta"</span>, <span class="kw">clear</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>* 只保留在职女性(wage&gt;0)、剔除个别极端高薪，并把人数过少的教育年限并组</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">drop</span> <span class="kw">if</span> wage==0</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">drop</span> <span class="kw">if</span> wage&gt;17</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">replace</span> educ = 9  <span class="kw">if</span> educ&lt;=9</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="kw">replace</span> educ = 14 <span class="kw">if</span> educ==15</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage educ</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="kw">assert</span> <span class="fu">e</span>(<span class="kw">N</span>) == 421</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>file open check <span class="kw">using</span> <span class="st">"logs/linear-regression/results.txt"</span>, write <span class="kw">replace</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>file write check <span class="st">"mroz_N="</span> (<span class="fu">e</span>(<span class="kw">N</span>)) <span class="dt">_n</span> <span class="st">"mroz_b="</span> (_b[educ]) <span class="dt">_n</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>* wage = -2.74 + 0.52*educ：0.52 该读成<span class="st">"因果/比较/预测"</span>中的哪一种？</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>*===========================================================================</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(325 observations deleted)
+(7 observations deleted)
+(18 real changes made)
+(6 real changes made)
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(1, 419)       =    115.85
+       Model |  516.105831         1  516.105831   Prob &gt; F        =    0.0000
+    Residual |    1866.698       419   4.4551265   R-squared       =    0.2166
+-------------+----------------------------------   Adj R-squared   =    0.2147
+       Total |  2382.80383       420  5.67334246   Root MSE        =    2.1107
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |      0.522      0.048    10.76   0.000        0.426       0.617
+       _cons |     -2.744      0.624    -4.40   0.000       -3.971      -1.517
+------------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+</section>
+<section id="概念讲解回归到底在估计什么" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="概念讲解回归到底在估计什么"><span class="header-section-number">9.3</span> 概念讲解：回归到底在估计什么</h2>
+<p>按顺序运行，比较同一段中不同设定的输出。</p>
+<div id="fc563bac" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-10-14T08:42:26.457717Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-14T08:42:26.457717Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-14T08:42:33.445181Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-14T08:42:33.443472Z&quot;}" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>*===========================================================================</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>**## 条件期望函数 (CEF)：按 X 分组求平均</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">bysort</span> educ: <span class="kw">egen</span> wage_m = <span class="kw">mean</span>(wage)   <span class="co">// E(wage | educ)</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">egen</span> <span class="fu">tag</span> = <span class="fu">tag</span>(educ)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="kw">format</span> wage* %3.1f</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ot">list</span> educ wage_m <span class="kw">if</span> <span class="fu">tag</span>==1, <span class="kw">clean</span> <span class="kw">noobs</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>* 某一组的 CEF = 条件均值（下面两条等价）</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="kw">sum</span> wage <span class="kw">if</span> educ==12</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage <span class="kw">if</span> educ==12, <span class="kw">noheader</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>* CEF 散点图（灰点=个体，菱形=各组均值，红线=OLS 拟合）</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="kw">twoway</span> (<span class="kw">scatter</span> wage educ, mcolor(gs10) msize(vsmall) jitter(2)) <span class="co">///</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>(<span class="kw">scatter</span> wage_m educ <span class="kw">if</span> <span class="fu">tag</span>==1, mcolor(<span class="bn">navy</span>) msize(medlarge) <span class="co">///</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="bn">msymbol</span>(D)) <span class="co">///</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>       (<span class="kw">lfit</span> wage educ, lcolor(<span class="bn">cranberry</span>) lwidth(<span class="bn">medthick</span>)), <span class="co">///</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>       <span class="bn">legend</span>(<span class="kw">order</span>(2 <span class="st">"各教育年限的平均工资 E[wage|educ]"</span> 3 <span class="st">"OLS 拟合直线"</span>) <span class="co">///</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>              <span class="bn">rows</span>(2) <span class="kw">size</span>(small) pos(11) <span class="bn">ring</span>(0)) <span class="co">///</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>       <span class="bn">xtitle</span>(<span class="st">"受教育年限 educ"</span>) <span class="bn">ytitle</span>(<span class="st">"时薪 wage"</span>) <span class="kw">xlabel</span>(9(1)17)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="st">"figs/raw/linear-reg-fig01-cef-edu-20261014-163740.png"</span> , <span class="co">///</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> <span class="kw">width</span>(1200)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>**## 回归估计的就是 CEF（个体 = 分组均值加权回归）</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="kw">bysort</span> educ: <span class="kw">egen</span> Nj = <span class="fu">count</span>(educ)</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>eststo <span class="kw">clear</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>eststo m1: <span class="kw">reg</span> wage   educ                       <span class="co">// 个体回归</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>eststo m2: <span class="kw">reg</span> wage_m educ <span class="kw">if</span> <span class="fu">tag</span>==1             <span class="co">// 只用 8 个组均值</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>eststo m3: <span class="kw">reg</span> wage_m educ <span class="kw">if</span> <span class="fu">tag</span>==1 [<span class="kw">aweight</span>=Nj] <span class="co">// 组均值，按组容量加权</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>esttab m1 m2 m3, nogap mtitle(individual groupmean groupmean_aw) <span class="co">///</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>       b(%5.3f) se(%5.3f) <span class="fu">scalar</span>(<span class="kw">N</span> r2)</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>* 第 (1)(3) 列点估计相同；组均值是总体 CEF 的样本估计</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>**## 线性投影 &amp; 换一个 f(.) 就是换一个模型</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> educ2 = educ^2</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>eststo <span class="kw">clear</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>eststo s1: <span class="kw">reg</span> wage  educ             <span class="co">// (1) 线性</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>eststo s2: <span class="kw">reg</span> wage  educ educ2       <span class="co">// (2) 平方项：允许弯曲</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>eststo s3: <span class="kw">reg</span> lwage educ             <span class="co">// (3) 对数：改变尺度</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>esttab s1 s2 s3, nogap mtitle(linear <span class="kw">quad</span> <span class="fu">log</span>) b(%5.3f) se(%5.3f) <span class="co">///</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scalar</span>(<span class="kw">N</span> r2)</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>* 四种设定的拟合线画在同一张散点图上</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage educ</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> yhat_lin</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage educ c.educ#c.educ</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> yhat_quad</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> lwage educ</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> lyhat</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> yhat_log = <span class="fu">exp</span>(lyhat)  <span class="co">// 指数还原，不是条件均值</span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> Dhi = (educ&gt;13)</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage c.educ##i.Dhi</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> yhat_dum</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a><span class="kw">sort</span> educ</span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="kw">twoway</span> (<span class="kw">scatter</span> wage educ, mcolor(gs11) msize(vsmall) jitter(2)) <span class="co">///</span></span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>       (<span class="kw">line</span> yhat_lin  educ, lcolor(<span class="bn">navy</span>)      lwidth(<span class="bn">medthick</span>)) <span class="co">///</span></span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>(<span class="kw">line</span> yhat_quad educ, lcolor(<span class="bn">cranberry</span>) lwidth(<span class="bn">medthick</span>) <span class="co">///</span></span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>    lpattern(<span class="kw">dash</span>)) <span class="co">///</span></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>(<span class="kw">line</span> yhat_log educ, lcolor(<span class="bn">forest_green</span>) lwidth(<span class="bn">medthick</span>) <span class="co">///</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>    lpattern(shortdash)) <span class="co">///</span></span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>(<span class="kw">line</span> yhat_dum educ, lcolor(<span class="bn">dkorange</span>) lwidth(<span class="bn">medthick</span>) <span class="co">///</span></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>    lpattern(longdash)), <span class="co">///</span></span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>       <span class="bn">legend</span>(<span class="kw">order</span>(2 <span class="st">"线性"</span> 3 <span class="st">"加平方项"</span> 4 <span class="st">"对数(还原)"</span> 5 <span class="st">"分段(虚拟变量)"</span>) <span class="co">///</span></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>              <span class="bn">rows</span>(1) <span class="kw">size</span>(small) pos(6)) <span class="co">///</span></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>       <span class="bn">xtitle</span>(<span class="st">"受教育年限 educ"</span>) <span class="bn">ytitle</span>(<span class="st">"时薪 wage"</span>) <span class="kw">xlabel</span>(9(1)17)</span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="co">///</span></span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>    <span class="st">"figs/raw/linear-reg-fig02-four-models-20261014-163740.png"</span> , <span class="co">///</span></span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> <span class="kw">width</span>(1300)</span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>**## 2.5–2.7 系数含义、比较 vs 影响、多元回归偏效应</span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>* 更明显的偏效应例子：nlsw88 中 tenure(任职年限) 在控制 ttl_exp(总工龄) 后骤降</span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> nlsw88, <span class="kw">clear</span></span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>eststo <span class="kw">clear</span></span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>eststo n1: <span class="kw">reg</span> wage tenure</span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>eststo n2: <span class="kw">reg</span> wage tenure ttl_exp</span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a>eststo n3: <span class="kw">reg</span> wage tenure ttl_exp grade</span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>esttab n1 n2 n3, se <span class="kw">star</span>(* 0.10 ** 0.05 *** 0.01) r2 <span class="co">///</span></span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>       mtitle(<span class="st">"只放 tenure"</span> <span class="st">"+总工龄"</span> <span class="st">"+受教育"</span>)</span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>* tenure 0.186*** → 0.041(不显著)：控制总工龄后，<span class="st">"纯任职"</span>效应很小</span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a><span class="fu">corr</span> tenure ttl_exp</span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>**## 常数项与 FWL：同一样本核对</span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage tenure ttl_exp grade</span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> <span class="kw">byte</span> sample_fwl = <span class="fu">e</span>(<span class="kw">sample</span>)</span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> b_full = _b[tenure]</span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a>file write check <span class="st">"tenure_full="</span> (b_full) <span class="dt">_n</span></span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage ttl_exp grade <span class="kw">if</span> sample_fwl</span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> <span class="kw">double</span> wage_r <span class="kw">if</span> sample_fwl, residuals</span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> tenure ttl_exp grade <span class="kw">if</span> sample_fwl</span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> <span class="kw">double</span> tenure_r <span class="kw">if</span> sample_fwl, residuals</span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage_r tenure_r <span class="kw">if</span> sample_fwl, <span class="kw">noconstant</span></span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> fwl_gap = _b[tenure_r]-b_full</span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a><span class="kw">assert</span> <span class="fu">abs</span>(fwl_gap) &lt; 1e-10</span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>file write check <span class="st">"fwl_gap="</span> (fwl_gap) <span class="dt">_n</span></span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a>* 只处理 <span class="fu">y</span> 的反例。</span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage_r tenure <span class="kw">if</span> sample_fwl</span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>file write check <span class="st">"y_only_b="</span> (_b[tenure]) <span class="dt">_n</span></span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a>* 单变量回归去均值的核对。</span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage tenure <span class="kw">if</span> sample_fwl</span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> b_simple = _b[tenure]</span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a><span class="kw">quietly</span> <span class="kw">summarize</span> wage <span class="kw">if</span> sample_fwl</span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> <span class="kw">double</span> wage_dm = wage-<span class="fu">r</span>(<span class="kw">mean</span>) <span class="kw">if</span> sample_fwl</span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a><span class="kw">quietly</span> <span class="kw">summarize</span> tenure <span class="kw">if</span> sample_fwl</span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> <span class="kw">double</span> tenure_dm = tenure-<span class="fu">r</span>(<span class="kw">mean</span>) <span class="kw">if</span> sample_fwl</span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage_dm tenure_dm <span class="kw">if</span> sample_fwl, <span class="kw">noconstant</span></span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a><span class="kw">assert</span> <span class="fu">abs</span>(_b[tenure_dm]-b_simple) &lt; 1e-10</span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a>file write check <span class="st">"demean_gap="</span> (_b[tenure_dm]-b_simple) <span class="dt">_n</span></span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a>*===========================================================================</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    educ   wage_m  
+       9      2.5  
+      10      3.2  
+      11      2.6  
+      12      3.4  
+      13      3.9  
+      14      4.1  
+      16      4.7  
+      17      7.4  
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        wage |        208    3.433929    1.759613      .1616     11.933
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+       _cons |      3.434      0.122    28.15   0.000        3.193       3.674
+------------------------------------------------------------------------------
+file figs/raw/linear-reg-fig01-cef-edu-20261014-163740.png written in PNG forma
+&gt; t
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(1, 419)       =    115.85
+       Model |  516.105831         1  516.105831   Prob &gt; F        =    0.0000
+    Residual |    1866.698       419   4.4551265   R-squared       =    0.2166
+-------------+----------------------------------   Adj R-squared   =    0.2147
+       Total |  2382.80383       420  5.67334246   Root MSE        =    2.1107
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |      0.522      0.048    10.76   0.000        0.426       0.617
+       _cons |     -2.744      0.624    -4.40   0.000       -3.971      -1.517
+------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =         8
+-------------+----------------------------------   F(1, 6)         =     23.55
+       Model |  13.7292056         1  13.7292056   Prob &gt; F        =    0.0028
+    Residual |   3.4975139         6  .582918983   R-squared       =    0.7970
+-------------+----------------------------------   Adj R-squared   =    0.7631
+       Total |  17.2267195         7  2.46095993   Root MSE        =    .76349
+
+------------------------------------------------------------------------------
+      wage_m | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |      0.497      0.102     4.85   0.003        0.247       0.748
+       _cons |     -2.361      1.334    -1.77   0.127       -5.626       0.904
+------------------------------------------------------------------------------
+(sum of wgt is 421)
+
+      Source |       SS           df       MS      Number of obs   =         8
+-------------+----------------------------------   F(1, 6)         =     25.47
+       Model |   9.8072367         1   9.8072367   Prob &gt; F        =    0.0023
+    Residual |  2.31064314         6   .38510719   R-squared       =    0.8093
+-------------+----------------------------------   Adj R-squared   =    0.7775
+       Total |  12.1178798         7  1.73112569   Root MSE        =    .62057
+
+------------------------------------------------------------------------------
+      wage_m | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |      0.522      0.103     5.05   0.002        0.269       0.774
+       _cons |     -2.744      1.331    -2.06   0.085       -6.001       0.514
+------------------------------------------------------------------------------
+
+------------------------------------------------------------
+                      (1)             (2)             (3)   
+               individual       groupmean    groupmean_aw   
+------------------------------------------------------------
+educ                0.522***        0.497**         0.522** 
+                  (0.048)         (0.102)         (0.103)   
+_cons              -2.744***       -2.361          -2.744   
+                  (0.624)         (1.334)         (1.331)   
+------------------------------------------------------------
+N                     421               8               8   
+r2                  0.217           0.797           0.809   
+------------------------------------------------------------
+Standard errors in parentheses
+* p&lt;0.05, ** p&lt;0.01, *** p&lt;0.001
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(1, 419)       =    115.85
+       Model |  516.105831         1  516.105831   Prob &gt; F        =    0.0000
+    Residual |    1866.698       419   4.4551265   R-squared       =    0.2166
+-------------+----------------------------------   Adj R-squared   =    0.2147
+       Total |  2382.80383       420  5.67334246   Root MSE        =    2.1107
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |      0.522      0.048    10.76   0.000        0.426       0.617
+       _cons |     -2.744      0.624    -4.40   0.000       -3.971      -1.517
+------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(2, 418)       =     64.91
+       Model |  564.686216         2  282.343108   Prob &gt; F        =    0.0000
+    Residual |  1818.11762       418  4.34956368   R-squared       =    0.2370
+-------------+----------------------------------   Adj R-squared   =    0.2333
+       Total |  2382.80383       420  5.67334246   Root MSE        =    2.0856
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |     -1.123      0.494    -2.27   0.024       -2.094      -0.151
+       educ2 |      0.062      0.018     3.34   0.001        0.025       0.098
+       _cons |      7.915      3.248     2.44   0.015        1.529      14.300
+------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(1, 419)       =     62.68
+       Model |   25.738915         1   25.738915   Prob &gt; F        =    0.0000
+    Residual |  172.051265       419  .410623544   R-squared       =    0.1301
+-------------+----------------------------------   Adj R-squared   =    0.1281
+       Total |   197.79018       420     .470929   Root MSE        =     .6408
+
+------------------------------------------------------------------------------
+       lwage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |      0.116      0.015     7.92   0.000        0.088       0.145
+       _cons |     -0.321      0.189    -1.69   0.091       -0.694       0.051
+------------------------------------------------------------------------------
+
+------------------------------------------------------------
+                      (1)             (2)             (3)   
+                   linear            quad             log   
+------------------------------------------------------------
+educ                0.522***       -1.123*          0.116***
+                  (0.048)         (0.494)         (0.015)   
+educ2                               0.062***                
+                                  (0.018)                   
+_cons              -2.744***        7.915*         -0.321   
+                  (0.624)         (3.248)         (0.189)   
+------------------------------------------------------------
+N                     421             421             421   
+r2                  0.217           0.237           0.130   
+------------------------------------------------------------
+Standard errors in parentheses
+* p&lt;0.05, ** p&lt;0.01, *** p&lt;0.001
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(1, 419)       =    115.85
+       Model |  516.105831         1  516.105831   Prob &gt; F        =    0.0000
+    Residual |    1866.698       419   4.4551265   R-squared       =    0.2166
+-------------+----------------------------------   Adj R-squared   =    0.2147
+       Total |  2382.80383       420  5.67334246   Root MSE        =    2.1107
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |      0.522      0.048    10.76   0.000        0.426       0.617
+       _cons |     -2.744      0.624    -4.40   0.000       -3.971      -1.517
+------------------------------------------------------------------------------
+(option xb assumed; fitted values)
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(2, 418)       =     64.91
+       Model |  564.686216         2  282.343108   Prob &gt; F        =    0.0000
+    Residual |  1818.11762       418  4.34956368   R-squared       =    0.2370
+-------------+----------------------------------   Adj R-squared   =    0.2333
+       Total |  2382.80383       420  5.67334246   Root MSE        =    2.0856
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |     -1.123      0.494    -2.27   0.024       -2.094      -0.151
+             |
+      c.educ#|
+      c.educ |      0.062      0.018     3.34   0.001        0.025       0.098
+             |
+       _cons |      7.915      3.248     2.44   0.015        1.529      14.300
+------------------------------------------------------------------------------
+(option xb assumed; fitted values)
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(1, 419)       =     62.68
+       Model |   25.738915         1   25.738915   Prob &gt; F        =    0.0000
+    Residual |  172.051265       419  .410623544   R-squared       =    0.1301
+-------------+----------------------------------   Adj R-squared   =    0.1281
+       Total |   197.79018       420     .470929   Root MSE        =     .6408
+
+------------------------------------------------------------------------------
+       lwage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |      0.116      0.015     7.92   0.000        0.088       0.145
+       _cons |     -0.321      0.189    -1.69   0.091       -0.694       0.051
+------------------------------------------------------------------------------
+(option xb assumed; fitted values)
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(3, 417)       =     43.36
+       Model |  566.520474         3  188.840158   Prob &gt; F        =    0.0000
+    Residual |  1816.28336       417  4.35559559   R-squared       =    0.2378
+-------------+----------------------------------   Adj R-squared   =    0.2323
+       Total |  2382.80383       420  5.67334246   Root MSE        =     2.087
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |      0.308      0.113     2.74   0.006        0.087       0.530
+       1.Dhi |     -9.368      2.772    -3.38   0.001      -14.817      -3.920
+             |
+  Dhi#c.educ |
+          1  |      0.653      0.192     3.40   0.001        0.275       1.030
+             |
+       _cons |     -0.267      1.311    -0.20   0.839       -2.845       2.311
+------------------------------------------------------------------------------
+(option xb assumed; fitted values)
+file figs/raw/linear-reg-fig02-four-models-20261014-163740.png written in PNG f
+&gt; ormat
+(NLSW, 1988 extract)
+
+      Source |       SS           df       MS      Number of obs   =     2,231
+-------------+----------------------------------   F(1, 2229)      =     72.66
+       Model |  2339.38077         1  2339.38077   Prob &gt; F        =    0.0000
+    Residual |  71762.4469     2,229  32.1949066   R-squared       =    0.0316
+-------------+----------------------------------   Adj R-squared   =    0.0311
+       Total |  74101.8276     2,230  33.2295191   Root MSE        =    5.6741
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      tenure |      0.186      0.022     8.52   0.000        0.143       0.229
+       _cons |      6.681      0.177    37.69   0.000        6.334       7.029
+------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =     2,231
+-------------+----------------------------------   F(2, 2228)      =     84.01
+       Model |  5196.37604         2  2598.18802   Prob &gt; F        =    0.0000
+    Residual |  68905.4516     2,228  30.9270429   R-squared       =    0.0701
+-------------+----------------------------------   Adj R-squared   =    0.0693
+       Total |  74101.8276     2,230  33.2295191   Root MSE        =    5.5612
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      tenure |      0.041      0.026     1.56   0.118       -0.010       0.092
+     ttl_exp |      0.301      0.031     9.61   0.000        0.239       0.362
+       _cons |      3.772      0.349    10.81   0.000        3.087       4.456
+------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =     2,229
+-------------+----------------------------------   F(3, 2225)      =    128.82
+       Model |  10963.7014         3  3654.56714   Prob &gt; F        =    0.0000
+    Residual |  63124.2663     2,225  28.3704568   R-squared       =    0.1480
+-------------+----------------------------------   Adj R-squared   =    0.1468
+       Total |  74087.9678     2,228  33.2531274   Root MSE        =    5.3264
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      tenure |      0.038      0.025     1.51   0.132       -0.011       0.087
+     ttl_exp |      0.233      0.030     7.68   0.000        0.173       0.292
+       grade |      0.649      0.046    14.24   0.000        0.560       0.739
+       _cons |     -3.864      0.632    -6.12   0.000       -5.103      -2.625
+------------------------------------------------------------------------------
+
+------------------------------------------------------------
+                      (1)             (2)             (3)   
+              只放 tenure         +总工龄         +受教育   
+------------------------------------------------------------
+tenure              0.186***       0.0409          0.0378   
+                 (0.0218)        (0.0262)        (0.0251)   
+
+ttl_exp                             0.301***        0.233***
+                                 (0.0313)        (0.0303)   
+
+grade                                               0.649***
+                                                 (0.0456)   
+
+_cons               6.681***        3.772***       -3.864***
+                  (0.177)         (0.349)         (0.632)   
+------------------------------------------------------------
+N                    2231            2231            2229   
+R-sq                0.032           0.070           0.148   
+------------------------------------------------------------
+Standard errors in parentheses
+* p&lt;0.10, ** p&lt;0.05, *** p&lt;0.01
+(obs=2,231)
+
+             |   tenure  ttl_exp
+-------------+------------------
+      tenure |   1.0000
+     ttl_exp |   0.5766   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     2,229
+-------------+----------------------------------   F(3, 2225)      =    128.82
+       Model |  10963.7014         3  3654.56714   Prob &gt; F        =    0.0000
+    Residual |  63124.2663     2,225  28.3704568   R-squared       =    0.1480
+-------------+----------------------------------   Adj R-squared   =    0.1468
+       Total |  74087.9678     2,228  33.2531274   Root MSE        =    5.3264
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      tenure |      0.038      0.025     1.51   0.132       -0.011       0.087
+     ttl_exp |      0.233      0.030     7.68   0.000        0.173       0.292
+       grade |      0.649      0.046    14.24   0.000        0.560       0.739
+       _cons |     -3.864      0.632    -6.12   0.000       -5.103      -2.625
+------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =     2,229
+-------------+----------------------------------   F(2, 2226)      =    191.98
+       Model |  10899.2144         2  5449.60722   Prob &gt; F        =    0.0000
+    Residual |  63188.7533     2,226  28.3866816   R-squared       =    0.1471
+-------------+----------------------------------   Adj R-squared   =    0.1463
+       Total |  74087.9678     2,228  33.2531274   Root MSE        =    5.3279
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+     ttl_exp |      0.259      0.025    10.36   0.000        0.210       0.308
+       grade |      0.650      0.046    14.25   0.000        0.561       0.740
+       _cons |     -3.974      0.628    -6.33   0.000       -5.205      -2.743
+------------------------------------------------------------------------------
+(17 missing values generated)
+
+      Source |       SS           df       MS      Number of obs   =     2,229
+-------------+----------------------------------   F(2, 2226)      =    553.90
+       Model |  22454.4755         2  11227.2378   Prob &gt; F        =    0.0000
+    Residual |  45119.4889     2,226  20.2693122   R-squared       =    0.3323
+-------------+----------------------------------   Adj R-squared   =    0.3317
+       Total |  67573.9644     2,228  30.3294275   Root MSE        =    4.5021
+
+------------------------------------------------------------------------------
+      tenure | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+     ttl_exp |      0.687      0.021    32.52   0.000        0.645       0.728
+       grade |      0.020      0.039     0.52   0.606       -0.056       0.095
+       _cons |     -2.911      0.531    -5.49   0.000       -3.951      -1.871
+------------------------------------------------------------------------------
+(17 missing values generated)
+
+      Source |       SS           df       MS      Number of obs   =     2,229
+-------------+----------------------------------   F(1, 2228)      =      2.28
+       Model |  64.4869925         1  64.4869925   Prob &gt; F        =    0.1315
+    Residual |  63124.2663     2,228   28.332256   R-squared       =    0.0010
+-------------+----------------------------------   Adj R-squared   =    0.0006
+       Total |  63188.7533     2,229  28.3484761   Root MSE        =    5.3228
+
+------------------------------------------------------------------------------
+      wage_r | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+    tenure_r |      0.038      0.025     1.51   0.132       -0.011       0.087
+------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =     2,229
+-------------+----------------------------------   F(1, 2227)      =      1.52
+       Model |  43.0583016         1  43.0583016   Prob &gt; F        =    0.2180
+    Residual |   63145.695     2,227  28.3546004   R-squared       =    0.0007
+-------------+----------------------------------   Adj R-squared   =    0.0002
+       Total |  63188.7533     2,228  28.3611999   Root MSE        =    5.3249
+
+------------------------------------------------------------------------------
+      wage_r | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      tenure |      0.025      0.020     1.23   0.218       -0.015       0.065
+       _cons |     -0.151      0.166    -0.91   0.365       -0.477       0.176
+------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =     2,229
+-------------+----------------------------------   F(1, 2227)      =     73.12
+       Model |  2355.32774         1  2355.32774   Prob &gt; F        =    0.0000
+    Residual |    71732.64     2,227  32.2104356   R-squared       =    0.0318
+-------------+----------------------------------   Adj R-squared   =    0.0314
+       Total |  74087.9678     2,228  33.2531274   Root MSE        =    5.6754
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      tenure |      0.187      0.022     8.55   0.000        0.144       0.230
+       _cons |      6.680      0.177    37.67   0.000        6.332       7.027
+------------------------------------------------------------------------------
+(17 missing values generated)
+(17 missing values generated)
+
+      Source |       SS           df       MS      Number of obs   =     2,229
+-------------+----------------------------------   F(1, 2228)      =     73.16
+       Model |  2355.32774         1  2355.32774   Prob &gt; F        =    0.0000
+    Residual |    71732.64     2,228  32.1959785   R-squared       =    0.0318
+-------------+----------------------------------   Adj R-squared   =    0.0314
+       Total |  74087.9678     2,229   33.238209   Root MSE        =    5.6742
+
+------------------------------------------------------------------------------
+     wage_dm | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+   tenure_dm |      0.187      0.022     8.55   0.000        0.144       0.230
+------------------------------------------------------------------------------</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="linear-regression-stata_files/figure-html/cell-5-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="代码实操" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="代码实操"><span class="header-section-number">9.4</span> 代码实操</h2>
+<p>按顺序运行，比较同一段中不同设定的输出。</p>
+<div id="24bc8292" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-10-14T08:42:33.449704Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-14T08:42:33.448706Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-14T08:42:40.847045Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-14T08:42:40.845032Z&quot;}" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>*===========================================================================</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>**## 跑第一个回归：从命令到拟合值</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"$D/mroz.dta"</span>, <span class="kw">clear</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="kw">drop</span> <span class="kw">if</span> wage==0 | wage&gt;17</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="kw">replace</span> educ = 9 <span class="kw">if</span> educ&lt;=9</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="kw">replace</span> educ = 14 <span class="kw">if</span> educ==15</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage educ</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> wage_hat            <span class="co">// 拟合值</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> e_hat, residual     <span class="co">// 残差</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="ot">list</span> wage wage_hat e_hat <span class="kw">in</span> 1/3, <span class="kw">clean</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>**## 读懂一张回归表（esttab）</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>eststo <span class="kw">clear</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>eststo t1: <span class="kw">reg</span> wage educ</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>eststo t2: <span class="kw">reg</span> wage educ exper</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>esttab t1 t2, se <span class="kw">star</span>(* 0.10 ** 0.05 *** 0.01) r2 mtitle(<span class="st">"模型1"</span> <span class="st">"模型2"</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>**## 换个单位，系数会变吗：变量的尺度</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> wage_cents  = wage*100</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> educ_months = educ*12</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>eststo <span class="kw">clear</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>eststo a0: <span class="kw">reg</span> wage       educ</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>eststo a1: <span class="kw">reg</span> wage_cents educ</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>eststo a2: <span class="kw">reg</span> wage       educ_months</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>esttab a0 a1 a2, nogap mtitle(wage wage_cents educ_months) <span class="co">///</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>       b(%7.4f) se(%7.4f) <span class="fu">scalar</span>(r2)</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>**## 对数与标准化：系数怎么读</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>* 3.4a 对数-水平：半弹性（%）</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> lwage educ</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>* 3.4b 对数-对数：弹性（Cobb-Douglas）</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"$D/B1_production.dta"</span>, <span class="kw">clear</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> lnY lnL lnK</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>* 3.4c 标准化系数：以标准差为单位比较</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"$D/mroz.dta"</span>, <span class="kw">clear</span></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="kw">drop</span> <span class="kw">if</span> wage==0 | wage&gt;17</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> lwage educ exper, beta</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>**## 因子变量：把类别放进回归</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> auto, <span class="kw">clear</span></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="kw">label</span> <span class="kw">define</span> forlbl 0 <span class="st">"国产车"</span> 1 <span class="st">"进口车"</span></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="kw">label</span> <span class="kw">values</span> foreign forlbl</span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> price i.foreign <span class="kw">weight</span></span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> dummy_slope = _b[<span class="kw">weight</span>]</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>file write check <span class="st">"dummy_b="</span> (_b[1.foreign]) <span class="dt">_n</span></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> price ibn.foreign <span class="kw">weight</span>, <span class="kw">noconstant</span></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a><span class="kw">assert</span> <span class="fu">abs</span>(_b[<span class="kw">weight</span>]-dummy_slope) &lt; 1e-10</span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> price i.foreign##c.<span class="kw">weight</span></span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>file write check <span class="st">"foreign_slope_diff="</span> (_b[1.foreign#c.<span class="kw">weight</span>]) <span class="dt">_n</span></span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a><span class="kw">twoway</span> (<span class="kw">scatter</span> price <span class="kw">weight</span> <span class="kw">if</span> foreign==0, mcolor(<span class="bn">navy</span>) <span class="bn">msymbol</span>(O) <span class="co">///</span></span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>    msize(small)) <span class="co">///</span></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>(<span class="kw">scatter</span> price <span class="kw">weight</span> <span class="kw">if</span> foreign==1, mcolor(<span class="bn">cranberry</span>) <span class="bn">msymbol</span>(T) <span class="co">///</span></span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>    msize(small)) <span class="co">///</span></span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>       (<span class="kw">lfit</span> price <span class="kw">weight</span> <span class="kw">if</span> foreign==0, lcolor(<span class="bn">navy</span>)) <span class="co">///</span></span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>       (<span class="kw">lfit</span> price <span class="kw">weight</span> <span class="kw">if</span> foreign==1, lcolor(<span class="bn">cranberry</span>)), <span class="co">///</span></span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>       <span class="bn">legend</span>(<span class="kw">order</span>(1 <span class="st">"国产车"</span> 2 <span class="st">"进口车"</span>) <span class="bn">rows</span>(1) pos(6)) <span class="co">///</span></span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>       <span class="bn">xtitle</span>(<span class="st">"车重 weight"</span>) <span class="bn">ytitle</span>(<span class="st">"价格 price"</span>)</span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="co">///</span></span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>    <span class="st">"figs/raw/linear-reg-fig03-dummy-shift-20261014-163740.png"</span> , <span class="co">///</span></span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> <span class="kw">width</span>(1200)</span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>**## 交叉项：让边际效应随另一个变量变</span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"$D/xtcs.dta"</span>, <span class="kw">clear</span></span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>xtset code <span class="fu">year</span></span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a><span class="kw">global</span> zz <span class="st">"tang fr ndts L.tobin i.year"</span></span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> tl npr <span class="kw">size</span> <span class="ot">$zz</span>, <span class="kw">robust</span> <span class="kw">noheader</span>       <span class="co">// 不含交叉项：npr 系数为负</span></span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> tl npr <span class="kw">size</span> c.npr#c.<span class="kw">size</span> <span class="ot">$zz</span>, <span class="kw">robust</span> <span class="kw">noheader</span></span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>file write check <span class="st">"npr_b="</span> (_b[npr]) <span class="dt">_n</span> <span class="st">"interaction_b="</span> <span class="co">///</span></span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>    (_b[c.npr#c.<span class="kw">size</span>]) <span class="dt">_n</span></span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>* 边际效应 dtl/dnpr = 1.729 - 0.100*<span class="kw">size</span></span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a><span class="kw">qui</span> <span class="kw">reg</span> tl npr <span class="kw">size</span> c.npr#c.<span class="kw">size</span> <span class="ot">$zz</span>, <span class="kw">robust</span></span>
+<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a><span class="kw">keep</span> <span class="kw">if</span> <span class="fu">e</span>(<span class="kw">sample</span>)</span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>margins, <span class="kw">dydx</span>(npr) <span class="fu">at</span>(<span class="kw">size</span>=(19(1)24))</span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>marginsplot, <span class="kw">yline</span>(0, lpattern(<span class="kw">dash</span>) lcolor(<span class="kw">red</span>)) <span class="kw">recast</span>(<span class="kw">line</span>) <span class="co">///</span></span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a>    recastci(rarea) <span class="co">///</span></span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>    <span class="bn">xtitle</span>(<span class="st">"公司规模 size"</span>) <span class="bn">ytitle</span>(<span class="st">"npr 对 tl 的边际效应"</span>)</span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="co">///</span></span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>    <span class="st">"figs/raw/linear-reg-fig04-margins-npr-20261014-163740.png"</span> , <span class="co">///</span></span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> <span class="kw">width</span>(1200)</span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>**## 中心化：相同样本、相同模型，只改变参考点</span>
+<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"$D/xtcs.dta"</span>, <span class="kw">clear</span></span>
+<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>xtset code <span class="fu">year</span></span>
+<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> tl c.npr##c.<span class="kw">size</span> <span class="ot">$zz</span>, <span class="kw">robust</span></span>
+<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> <span class="kw">byte</span> sample_center = <span class="fu">e</span>(<span class="kw">sample</span>)</span>
+<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> interaction_before = _b[c.npr#c.<span class="kw">size</span>]</span>
+<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> <span class="kw">double</span> fitted_before <span class="kw">if</span> sample_center</span>
+<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a><span class="kw">quietly</span> <span class="kw">summarize</span> <span class="kw">size</span> <span class="kw">if</span> sample_center</span>
+<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> size_mean = <span class="fu">r</span>(<span class="kw">mean</span>)</span>
+<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> <span class="kw">double</span> size_c = <span class="kw">size</span>-size_mean</span>
+<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> tl c.npr##c.size_c <span class="ot">$zz</span> <span class="kw">if</span> sample_center, <span class="kw">robust</span></span>
+<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> <span class="kw">double</span> fitted_after <span class="kw">if</span> sample_center</span>
+<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a><span class="kw">assert</span> <span class="fu">abs</span>(_b[c.npr#c.size_c]-interaction_before) &lt; 1e-10</span>
+<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a><span class="kw">assert</span> <span class="fu">abs</span>(fitted_after-fitted_before) &lt; 1e-10 <span class="kw">if</span> sample_center</span>
+<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a>file write check <span class="st">"center_gap="</span> (_b[c.npr#c.size_c]-interaction_before) <span class="dt">_n</span></span>
+<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a>**## 平方项：允许先升后降</span>
+<span id="cb6-100"><a href="#cb6-100" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> nlsw88, <span class="kw">clear</span></span>
+<span id="cb6-101"><a href="#cb6-101" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> ttl_exp2 = ttl_exp^2</span>
+<span id="cb6-102"><a href="#cb6-102" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage ttl_exp ttl_exp2 hours age tenure married south i.race</span>
+<span id="cb6-103"><a href="#cb6-103" aria-hidden="true" tabindex="-1"></a><span class="kw">di</span> <span class="st">"拐点 TP = "</span> %3.1f -_b[ttl_exp]/(2*_b[ttl_exp2])   <span class="co">// 27.2 年</span></span>
+<span id="cb6-104"><a href="#cb6-104" aria-hidden="true" tabindex="-1"></a><span class="kw">global</span> tp: <span class="kw">di</span> %3.1f -_b[ttl_exp]/(2*_b[ttl_exp2])</span>
+<span id="cb6-105"><a href="#cb6-105" aria-hidden="true" tabindex="-1"></a><span class="kw">keep</span> <span class="kw">if</span> <span class="fu">e</span>(<span class="kw">sample</span>)</span>
+<span id="cb6-106"><a href="#cb6-106" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> slope_linear = _b[ttl_exp]</span>
+<span id="cb6-107"><a href="#cb6-107" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> slope_square = _b[ttl_exp2]</span>
+<span id="cb6-108"><a href="#cb6-108" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> intercept = _b[<span class="dt">_cons</span>]</span>
+<span id="cb6-109"><a href="#cb6-109" aria-hidden="true" tabindex="-1"></a>* 其余变量固定为估计样本均值，使图的高度也对应图注。</span>
+<span id="cb6-110"><a href="#cb6-110" aria-hidden="true" tabindex="-1"></a><span class="kw">foreach</span> v <span class="kw">in</span> hours age tenure married south {</span>
+<span id="cb6-111"><a href="#cb6-111" aria-hidden="true" tabindex="-1"></a>    <span class="kw">quietly</span> <span class="kw">summarize</span> <span class="ot">`v'</span></span>
+<span id="cb6-112"><a href="#cb6-112" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scalar</span> intercept = intercept + _b[<span class="ot">`v'</span>]*<span class="fu">r</span>(<span class="kw">mean</span>)</span>
+<span id="cb6-113"><a href="#cb6-113" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-114"><a href="#cb6-114" aria-hidden="true" tabindex="-1"></a><span class="kw">quietly</span> <span class="fu">count</span> <span class="kw">if</span> race == 2</span>
+<span id="cb6-115"><a href="#cb6-115" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> intercept = intercept + _b[2.race]*<span class="fu">r</span>(<span class="kw">N</span>)/_N</span>
+<span id="cb6-116"><a href="#cb6-116" aria-hidden="true" tabindex="-1"></a><span class="kw">quietly</span> <span class="fu">count</span> <span class="kw">if</span> race == 3</span>
+<span id="cb6-117"><a href="#cb6-117" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> intercept = intercept + _b[3.race]*<span class="fu">r</span>(<span class="kw">N</span>)/_N</span>
+<span id="cb6-118"><a href="#cb6-118" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> b0 = intercept</span>
+<span id="cb6-119"><a href="#cb6-119" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> b1 = _b[ttl_exp]</span>
+<span id="cb6-120"><a href="#cb6-120" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> b2 = _b[ttl_exp2]</span>
+<span id="cb6-121"><a href="#cb6-121" aria-hidden="true" tabindex="-1"></a>file write check <span class="st">"square_turn="</span> (-_b[ttl_exp]/(2*_b[ttl_exp2])) <span class="dt">_n</span></span>
+<span id="cb6-122"><a href="#cb6-122" aria-hidden="true" tabindex="-1"></a><span class="kw">sum</span> ttl_exp</span>
+<span id="cb6-123"><a href="#cb6-123" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> mn: <span class="kw">di</span> %3.1f <span class="fu">r</span>(<span class="fu">min</span>)</span>
+<span id="cb6-124"><a href="#cb6-124" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> mx: <span class="kw">di</span> %3.1f <span class="fu">r</span>(<span class="fu">max</span>)</span>
+<span id="cb6-125"><a href="#cb6-125" aria-hidden="true" tabindex="-1"></a><span class="kw">twoway</span> (<span class="kw">function</span> <span class="fu">y</span> = <span class="ot">`b2'</span>*x^2 + <span class="ot">`b1'</span>*x + <span class="ot">`b0'</span>, <span class="kw">range</span>(<span class="ot">`mn'</span> <span class="ot">`mx'</span>) <span class="co">///</span></span>
+<span id="cb6-126"><a href="#cb6-126" aria-hidden="true" tabindex="-1"></a>    lcolor(<span class="bn">navy</span>) lwidth(<span class="bn">medthick</span>)), <span class="co">///</span></span>
+<span id="cb6-127"><a href="#cb6-127" aria-hidden="true" tabindex="-1"></a>       <span class="bn">xline</span>(<span class="ot">$tp</span>, lpattern(<span class="kw">dash</span>) lcolor(<span class="bn">cranberry</span>)) <span class="co">///</span></span>
+<span id="cb6-128"><a href="#cb6-128" aria-hidden="true" tabindex="-1"></a>       <span class="bn">xtitle</span>(<span class="st">"工作经验 ttl_exp"</span>) <span class="bn">ytitle</span>(<span class="st">"时薪 wage（其他变量取均值处）"</span>) <span class="co">///</span></span>
+<span id="cb6-129"><a href="#cb6-129" aria-hidden="true" tabindex="-1"></a>       <span class="kw">xlabel</span>(<span class="ot">`mn'</span> 5(5)25 <span class="ot">$tp</span>) <span class="kw">note</span>(<span class="st">"拐点 TP = $tp 年"</span>)</span>
+<span id="cb6-130"><a href="#cb6-130" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="co">///</span></span>
+<span id="cb6-131"><a href="#cb6-131" aria-hidden="true" tabindex="-1"></a>    <span class="st">"figs/raw/linear-reg-fig05-square-ushape-20261014-163740.png"</span> , <span class="co">///</span></span>
+<span id="cb6-132"><a href="#cb6-132" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> <span class="kw">width</span>(1200)</span>
+<span id="cb6-133"><a href="#cb6-133" aria-hidden="true" tabindex="-1"></a>* 注意：拐点 27 落在数据右端，多数样本在上升段，别把外推讲成规律</span>
+<span id="cb6-134"><a href="#cb6-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-135"><a href="#cb6-135" aria-hidden="true" tabindex="-1"></a>**## 3.7b 断点回归初步：用 binscatter 看断点处的跳跃</span>
+<span id="cb6-136"><a href="#cb6-136" aria-hidden="true" tabindex="-1"></a>* 需 -binscatter- 命令：ssc install binscatter</span>
+<span id="cb6-137"><a href="#cb6-137" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> nlsw88, <span class="kw">clear</span></span>
+<span id="cb6-138"><a href="#cb6-138" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> lnwage = <span class="fu">ln</span>(wage)</span>
+<span id="cb6-139"><a href="#cb6-139" aria-hidden="true" tabindex="-1"></a>binscatter lnwage hours, rd(40) <span class="kw">line</span>(qfit) <span class="co">///</span></span>
+<span id="cb6-140"><a href="#cb6-140" aria-hidden="true" tabindex="-1"></a>    <span class="bn">xtitle</span>(<span class="st">"周工作时长 hours"</span>) <span class="bn">ytitle</span>(<span class="st">"ln(wage)"</span>)</span>
+<span id="cb6-141"><a href="#cb6-141" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="st">"figs/raw/linear-reg-fig06-rdd-hours-20261014-163740.png"</span> <span class="co">///</span></span>
+<span id="cb6-142"><a href="#cb6-142" aria-hidden="true" tabindex="-1"></a>    , <span class="kw">replace</span> <span class="kw">width</span>(1200)</span>
+<span id="cb6-143"><a href="#cb6-143" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> D40        = (hours&gt;40)</span>
+<span id="cb6-144"><a href="#cb6-144" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> hours_c    = (hours-40)/10</span>
+<span id="cb6-145"><a href="#cb6-145" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> hours_c_sq = hours_c^2</span>
+<span id="cb6-146"><a href="#cb6-146" aria-hidden="true" tabindex="-1"></a>eststo <span class="kw">clear</span></span>
+<span id="cb6-147"><a href="#cb6-147" aria-hidden="true" tabindex="-1"></a>eststo r1: <span class="kw">reg</span> lnwage D40 hours_c              <span class="co">// 线性设定</span></span>
+<span id="cb6-148"><a href="#cb6-148" aria-hidden="true" tabindex="-1"></a>eststo r2: <span class="kw">reg</span> lnwage D40 hours_c hours_c_sq</span>
+<span id="cb6-149"><a href="#cb6-149" aria-hidden="true" tabindex="-1"></a>file write check <span class="st">"threshold_b="</span> (_b[D40]) <span class="dt">_n</span></span>
+<span id="cb6-150"><a href="#cb6-150" aria-hidden="true" tabindex="-1"></a>esttab r1 r2, nogap b(%6.4f) t(%5.2f) mtitle(linear <span class="kw">quad</span>)</span>
+<span id="cb6-151"><a href="#cb6-151" aria-hidden="true" tabindex="-1"></a>* D40 = hours=40 处的跳跃：线性 0.061(n.<span class="fu">s</span>.) vs 加平方项 0.163***</span>
+<span id="cb6-152"><a href="#cb6-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-153"><a href="#cb6-153" aria-hidden="true" tabindex="-1"></a>**## 稳健标准误与聚类标准误</span>
+<span id="cb6-154"><a href="#cb6-154" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> nlsw88, <span class="kw">clear</span></span>
+<span id="cb6-155"><a href="#cb6-155" aria-hidden="true" tabindex="-1"></a><span class="kw">global</span> x <span class="st">"age ttl_exp union collgrad"</span></span>
+<span id="cb6-156"><a href="#cb6-156" aria-hidden="true" tabindex="-1"></a><span class="kw">qui</span> <span class="kw">reg</span> wage <span class="ot">$x</span> i.industry i.occupation</span>
+<span id="cb6-157"><a href="#cb6-157" aria-hidden="true" tabindex="-1"></a><span class="kw">keep</span> <span class="kw">if</span> <span class="fu">e</span>(<span class="kw">sample</span>)</span>
+<span id="cb6-158"><a href="#cb6-158" aria-hidden="true" tabindex="-1"></a>eststo <span class="kw">clear</span></span>
+<span id="cb6-159"><a href="#cb6-159" aria-hidden="true" tabindex="-1"></a>eststo c1: <span class="kw">reg</span> wage <span class="ot">$x</span>                            <span class="co">// 同方差</span></span>
+<span id="cb6-160"><a href="#cb6-160" aria-hidden="true" tabindex="-1"></a>eststo c2: <span class="kw">reg</span> wage <span class="ot">$x</span>, <span class="kw">robust</span>                    <span class="co">// 异方差稳健</span></span>
+<span id="cb6-161"><a href="#cb6-161" aria-hidden="true" tabindex="-1"></a>eststo c3: <span class="kw">reg</span> wage <span class="ot">$x</span>, <span class="kw">vce</span>(<span class="kw">cluster</span> industry)     <span class="co">// 一维聚类</span></span>
+<span id="cb6-162"><a href="#cb6-162" aria-hidden="true" tabindex="-1"></a>* 二维聚类需 -reghdfe-：ssc install reghdfe</span>
+<span id="cb6-163"><a href="#cb6-163" aria-hidden="true" tabindex="-1"></a>eststo c4: reghdfe wage <span class="ot">$x</span>, noabsorb <span class="kw">cluster</span>(industry occupation)</span>
+<span id="cb6-164"><a href="#cb6-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-165"><a href="#cb6-165" aria-hidden="true" tabindex="-1"></a>* 结果对比</span>
+<span id="cb6-166"><a href="#cb6-166" aria-hidden="true" tabindex="-1"></a>esttab c1 c2 c3 c4, mtitle(OLS Robust Clus1 Clus2) <span class="fu">s</span>(<span class="kw">N</span> r2) <span class="co">///</span></span>
+<span id="cb6-167"><a href="#cb6-167" aria-hidden="true" tabindex="-1"></a>       b(%5.3f) se(%5.4f) <span class="kw">star</span>(* 0.1 ** 0.05 *** 0.01) nogap <span class="kw">keep</span>(<span class="ot">$x</span>)</span>
+<span id="cb6-168"><a href="#cb6-168" aria-hidden="true" tabindex="-1"></a>* 系数完全相同，只有 <span class="kw">SE</span> 变；industry 仅 12 个聚类——聚类数偏少要当心</span>
+<span id="cb6-169"><a href="#cb6-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-170"><a href="#cb6-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-171"><a href="#cb6-171" aria-hidden="true" tabindex="-1"></a>*===========================================================================</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(332 observations deleted)
+(18 real changes made)
+(6 real changes made)
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(1, 419)       =    115.85
+       Model |  516.105831         1  516.105831   Prob &gt; F        =    0.0000
+    Residual |    1866.698       419   4.4551265   R-squared       =    0.2166
+-------------+----------------------------------   Adj R-squared   =    0.2147
+       Total |  2382.80383       420  5.67334246   Root MSE        =    2.1107
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |      0.522      0.048    10.76   0.000        0.426       0.617
+       _cons |     -2.744      0.624    -4.40   0.000       -3.971      -1.517
+------------------------------------------------------------------------------
+(option xb assumed; fitted values)
+
+         wage    wage_hat        e_hat  
+  1.    3.354   3.5144481   -.16044802  
+  2.   1.3889   3.5144481   -2.1255481  
+  3.   4.5455   3.5144481    1.0310517  
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(1, 419)       =    115.85
+       Model |  516.105831         1  516.105831   Prob &gt; F        =    0.0000
+    Residual |    1866.698       419   4.4551265   R-squared       =    0.2166
+-------------+----------------------------------   Adj R-squared   =    0.2147
+       Total |  2382.80383       420  5.67334246   Root MSE        =    2.1107
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |      0.522      0.048    10.76   0.000        0.426       0.617
+       _cons |     -2.744      0.624    -4.40   0.000       -3.971      -1.517
+------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(2, 418)       =     68.40
+       Model |  587.526847         2  293.763424   Prob &gt; F        =    0.0000
+    Residual |  1795.27699       418  4.29492102   R-squared       =    0.2466
+-------------+----------------------------------   Adj R-squared   =    0.2430
+       Total |  2382.80383       420  5.67334246   Root MSE        =    2.0724
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |      0.524      0.048    11.01   0.000        0.431       0.618
+       exper |      0.051      0.013     4.08   0.000        0.026       0.076
+       _cons |     -3.448      0.637    -5.42   0.000       -4.699      -2.196
+------------------------------------------------------------------------------
+
+--------------------------------------------
+                      (1)             (2)   
+                    模型1           模型2   
+--------------------------------------------
+educ                0.522***        0.524***
+                 (0.0485)        (0.0476)   
+
+exper                              0.0512***
+                                 (0.0125)   
+
+_cons              -2.744***       -3.448***
+                  (0.624)         (0.637)   
+--------------------------------------------
+N                     421             421   
+R-sq                0.217           0.247   
+--------------------------------------------
+Standard errors in parentheses
+* p&lt;0.10, ** p&lt;0.05, *** p&lt;0.01
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(1, 419)       =    115.85
+       Model |  516.105831         1  516.105831   Prob &gt; F        =    0.0000
+    Residual |    1866.698       419   4.4551265   R-squared       =    0.2166
+-------------+----------------------------------   Adj R-squared   =    0.2147
+       Total |  2382.80383       420  5.67334246   Root MSE        =    2.1107
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |      0.522      0.048    10.76   0.000        0.426       0.617
+       _cons |     -2.744      0.624    -4.40   0.000       -3.971      -1.517
+------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(1, 419)       =    115.85
+       Model |  5161058.31         1  5161058.31   Prob &gt; F        =    0.0000
+    Residual |    18666980       419   44551.265   R-squared       =    0.2166
+-------------+----------------------------------   Adj R-squared   =    0.2147
+       Total |  23828038.3       420  56733.4246   Root MSE        =    211.07
+
+------------------------------------------------------------------------------
+  wage_cents | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |     52.153      4.846    10.76   0.000       42.629      61.678
+       _cons |   -274.394     62.418    -4.40   0.000     -397.086    -151.702
+------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(1, 419)       =    115.85
+       Model |  516.105831         1  516.105831   Prob &gt; F        =    0.0000
+    Residual |    1866.698       419   4.4551265   R-squared       =    0.2166
+-------------+----------------------------------   Adj R-squared   =    0.2147
+       Total |  2382.80383       420  5.67334246   Root MSE        =    2.1107
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+ educ_months |      0.043      0.004    10.76   0.000        0.036       0.051
+       _cons |     -2.744      0.624    -4.40   0.000       -3.971      -1.517
+------------------------------------------------------------------------------
+
+------------------------------------------------------------
+                      (1)             (2)             (3)   
+                     wage      wage_cents     educ_months   
+------------------------------------------------------------
+educ               0.5215***      52.1532***                
+                 (0.0485)        (4.8455)                   
+educ_months                                        0.0435***
+                                                 (0.0040)   
+_cons             -2.7439***     -2.7e+02***      -2.7439***
+                 (0.6242)       (62.4183)        (0.6242)   
+------------------------------------------------------------
+N                     421             421             421   
+r2                 0.2166          0.2166          0.2166   
+------------------------------------------------------------
+Standard errors in parentheses
+* p&lt;0.05, ** p&lt;0.01, *** p&lt;0.001
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(1, 419)       =     62.68
+       Model |   25.738915         1   25.738915   Prob &gt; F        =    0.0000
+    Residual |  172.051265       419  .410623544   R-squared       =    0.1301
+-------------+----------------------------------   Adj R-squared   =    0.1281
+       Total |   197.79018       420     .470929   Root MSE        =     .6408
+
+------------------------------------------------------------------------------
+       lwage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        educ |      0.116      0.015     7.92   0.000        0.088       0.145
+       _cons |     -0.321      0.189    -1.69   0.091       -0.694       0.051
+------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =        27
+-------------+----------------------------------   F(2, 24)        =    200.25
+       Model |  14.2115618         2  7.10578089   Prob &gt; F        =    0.0000
+    Residual |  .851633625        24  .035484734   R-squared       =    0.9435
+-------------+----------------------------------   Adj R-squared   =    0.9388
+       Total |  15.0631954        26  .579353669   Root MSE        =    .18837
+
+------------------------------------------------------------------------------
+         lnY | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         lnL |      0.603      0.126     4.79   0.000        0.343       0.863
+         lnK |      0.376      0.085     4.40   0.000        0.200       0.552
+       _cons |      1.171      0.327     3.58   0.002        0.496       1.845
+------------------------------------------------------------------------------
+(332 observations deleted)
+
+      Source |       SS           df       MS      Number of obs   =       421
+-------------+----------------------------------   F(2, 418)       =     44.56
+       Model |  34.7595861         2  17.3797931   Prob &gt; F        =    0.0000
+    Residual |  163.030594       418  .390025344   R-squared       =    0.1757
+-------------+----------------------------------   Adj R-squared   =    0.1718
+       Total |   197.79018       420     .470929   Root MSE        =    .62452
+
+------------------------------------------------------------------------------
+       lwage | Coefficient  Std. err.      t    P&gt;|t|                     Beta
+-------------+----------------------------------------------------------------
+        educ |      0.108      0.013     8.14   0.000                    0.361
+       exper |      0.019      0.004     4.93   0.000                    0.219
+       _cons |     -0.458      0.179    -2.56   0.011                        .
+------------------------------------------------------------------------------
+(1978 automobile data)
+
+      Source |       SS           df       MS      Number of obs   =        74
+-------------+----------------------------------   F(2, 71)        =     35.35
+       Model |   316859273         2   158429637   Prob &gt; F        =    0.0000
+    Residual |   318206123        71  4481776.38   R-squared       =    0.4989
+-------------+----------------------------------   Adj R-squared   =    0.4848
+       Total |   635065396        73  8699525.97   Root MSE        =      2117
+
+------------------------------------------------------------------------------
+       price | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+     foreign |
+     进口车  |   3637.001    668.583     5.44   0.000     2303.885    4970.118
+      weight |      3.321      0.396     8.39   0.000        2.531       4.110
+       _cons |  -4942.844   1345.591    -3.67   0.000    -7625.876   -2259.812
+------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =        74
+-------------+----------------------------------   F(3, 71)        =    232.77
+       Model |  3.1296e+09         3  1.0432e+09   Prob &gt; F        =    0.0000
+    Residual |   318206123        71  4481776.38   R-squared       =    0.9077
+-------------+----------------------------------   Adj R-squared   =    0.9038
+       Total |  3.4478e+09        74  46592355.7   Root MSE        =      2117
+
+------------------------------------------------------------------------------
+       price | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+     foreign |
+     国产车  |  -4942.844   1345.591    -3.67   0.000    -7625.876   -2259.812
+     进口车  |  -1305.843   1021.897    -1.28   0.205    -3343.447     731.762
+             |
+      weight |      3.321      0.396     8.39   0.000        2.531       4.110
+------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =        74
+-------------+----------------------------------   F(3, 70)        =     26.20
+       Model |   335885357         3   111961786   Prob &gt; F        =    0.0000
+    Residual |   299180039        70  4274000.55   R-squared       =    0.5289
+-------------+----------------------------------   Adj R-squared   =    0.5087
+       Total |   635065396        73  8699525.97   Root MSE        =    2067.4
+
+------------------------------------------------------------------------------
+       price | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+     foreign |
+     进口车  |  -2171.597   2829.409    -0.77   0.445    -7814.676    3471.482
+      weight |      2.995      0.416     7.19   0.000        2.165       3.825
+             |
+     foreign#|
+    c.weight |
+     进口车  |      2.367      1.122     2.11   0.038        0.130       4.605
+             |
+       _cons |  -3861.719   1410.404    -2.74   0.008    -6674.681   -1048.757
+------------------------------------------------------------------------------
+file figs/raw/linear-reg-fig03-dummy-shift-20261014-163740.png written in PNG f
+&gt; ormat
+
+Panel variable: code (strongly balanced)
+ Time variable: year, 1998 to 2004
+         Delta: 1 unit
+------------------------------------------------------------------------------
+             |               Robust
+          tl | Coefficient  std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         npr |     -0.371      0.030   -12.20   0.000       -0.431      -0.312
+        size |      0.033      0.004     9.01   0.000        0.026       0.040
+        tang |      0.021      0.019     1.11   0.268       -0.016       0.058
+          fr |     -0.031      0.008    -3.92   0.000       -0.046      -0.015
+        ndts |     -0.342      0.027   -12.66   0.000       -0.395      -0.289
+             |
+       tobin |
+         L1. |     -0.015      0.006    -2.70   0.007       -0.026      -0.004
+             |
+        year |
+       2000  |      0.005      0.008     0.61   0.539       -0.011       0.021
+       2001  |      0.012      0.009     1.29   0.196       -0.006       0.029
+       2002  |      0.013      0.009     1.34   0.181       -0.006       0.031
+       2003  |      0.028      0.009     2.96   0.003        0.009       0.046
+       2004  |      0.037      0.010     3.73   0.000        0.017       0.056
+             |
+       _cons |     -0.127      0.085    -1.50   0.135       -0.293       0.040
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+             |               Robust
+          tl | Coefficient  std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         npr |      1.729      0.656     2.63   0.008        0.442       3.015
+        size |      0.040      0.005     8.67   0.000        0.031       0.050
+             |
+c.npr#c.size |     -0.100      0.032    -3.17   0.002       -0.162      -0.038
+             |
+        tang |      0.022      0.019     1.14   0.255       -0.016       0.059
+          fr |     -0.030      0.008    -3.91   0.000       -0.046      -0.015
+        ndts |     -0.342      0.027   -12.71   0.000       -0.395      -0.289
+             |
+       tobin |
+         L1. |     -0.015      0.006    -2.71   0.007       -0.026      -0.004
+             |
+        year |
+       2000  |      0.007      0.008     0.88   0.381       -0.009       0.023
+       2001  |      0.014      0.009     1.53   0.126       -0.004       0.031
+       2002  |      0.015      0.009     1.62   0.105       -0.003       0.034
+       2003  |      0.030      0.009     3.23   0.001        0.012       0.049
+       2004  |      0.039      0.010     3.98   0.000        0.020       0.059
+             |
+       _cons |     -0.284      0.105    -2.70   0.007       -0.490      -0.077
+------------------------------------------------------------------------------
+(438 observations deleted)
+
+Average marginal effects                                 Number of obs = 2,190
+Model VCE: Robust
+
+Expression: Linear prediction, predict()
+dy/dx wrt:  npr
+1._at: size = 19
+2._at: size = 20
+3._at: size = 21
+4._at: size = 22
+5._at: size = 23
+6._at: size = 24
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+npr          |
+         _at |
+          1  |     -0.172      0.063    -2.72   0.007       -0.296      -0.048
+          2  |     -0.272      0.038    -7.12   0.000       -0.347      -0.197
+          3  |     -0.372      0.030   -12.35   0.000       -0.431      -0.313
+          4  |     -0.472      0.048    -9.75   0.000       -0.567      -0.377
+          5  |     -0.572      0.076    -7.53   0.000       -0.721      -0.423
+          6  |     -0.672      0.106    -6.36   0.000       -0.880      -0.465
+------------------------------------------------------------------------------
+
+Variables that uniquely identify margins: size
+file figs/raw/linear-reg-fig04-margins-npr-20261014-163740.png written in PNG f
+&gt; ormat
+
+Panel variable: code (strongly balanced)
+ Time variable: year, 1998 to 2004
+         Delta: 1 unit
+
+Linear regression                               Number of obs     =      2,628
+                                                F(12, 2615)       =      70.66
+                                                Prob &gt; F          =     0.0000
+                                                R-squared         =     0.3739
+                                                Root MSE          =     .13136
+
+------------------------------------------------------------------------------
+             |               Robust
+          tl | Coefficient  std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         npr |      1.729      0.656     2.63   0.008        0.442       3.015
+        size |      0.040      0.005     8.67   0.000        0.031       0.050
+             |
+c.npr#c.size |     -0.100      0.032    -3.17   0.002       -0.162      -0.038
+             |
+        tang |      0.022      0.019     1.14   0.255       -0.016       0.059
+          fr |     -0.030      0.008    -3.91   0.000       -0.046      -0.015
+        ndts |     -0.342      0.027   -12.71   0.000       -0.395      -0.289
+             |
+       tobin |
+         L1. |     -0.015      0.006    -2.71   0.007       -0.026      -0.004
+             |
+        year |
+       2000  |      0.007      0.008     0.88   0.381       -0.009       0.023
+       2001  |      0.014      0.009     1.53   0.126       -0.004       0.031
+       2002  |      0.015      0.009     1.62   0.105       -0.003       0.034
+       2003  |      0.030      0.009     3.23   0.001        0.012       0.049
+       2004  |      0.039      0.010     3.98   0.000        0.020       0.059
+             |
+       _cons |     -0.284      0.105    -2.70   0.007       -0.490      -0.077
+------------------------------------------------------------------------------
+(option xb assumed; fitted values)
+(438 missing values generated)
+
+Linear regression                               Number of obs     =      2,628
+                                                F(12, 2615)       =      70.66
+                                                Prob &gt; F          =     0.0000
+                                                R-squared         =     0.3739
+                                                Root MSE          =     .13136
+
+------------------------------------------------------------------------------
+             |               Robust
+          tl | Coefficient  std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         npr |     -0.393      0.032   -12.17   0.000       -0.457      -0.330
+      size_c |      0.040      0.005     8.67   0.000        0.031       0.050
+             |
+       c.npr#|
+    c.size_c |     -0.100      0.032    -3.17   0.002       -0.162      -0.038
+             |
+        tang |      0.022      0.019     1.14   0.255       -0.016       0.059
+          fr |     -0.030      0.008    -3.91   0.000       -0.046      -0.015
+        ndts |     -0.342      0.027   -12.71   0.000       -0.395      -0.289
+             |
+       tobin |
+         L1. |     -0.015      0.006    -2.71   0.007       -0.026      -0.004
+             |
+        year |
+       2000  |      0.007      0.008     0.88   0.381       -0.009       0.023
+       2001  |      0.014      0.009     1.53   0.126       -0.004       0.031
+       2002  |      0.015      0.009     1.62   0.105       -0.003       0.034
+       2003  |      0.030      0.009     3.23   0.001        0.012       0.049
+       2004  |      0.039      0.010     3.98   0.000        0.020       0.059
+             |
+       _cons |      0.574      0.020    29.33   0.000        0.536       0.613
+------------------------------------------------------------------------------
+(option xb assumed; fitted values)
+(438 missing values generated)
+(NLSW, 1988 extract)
+
+      Source |       SS           df       MS      Number of obs   =     2,227
+-------------+----------------------------------   F(9, 2217)      =     30.59
+       Model |  8175.46341         9  908.384824   Prob &gt; F        =    0.0000
+    Residual |  65845.3472     2,217  29.7002017   R-squared       =    0.1104
+-------------+----------------------------------   Adj R-squared   =    0.1068
+       Total |  74020.8106     2,226  33.2528349   Root MSE        =    5.4498
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+     ttl_exp |      0.492      0.110     4.49   0.000        0.277       0.707
+    ttl_exp2 |     -0.009      0.005    -1.99   0.046       -0.018      -0.000
+       hours |      0.058      0.012     5.07   0.000        0.036       0.081
+         age |     -0.116      0.039    -3.00   0.003       -0.193      -0.040
+      tenure |      0.047      0.026     1.80   0.072       -0.004       0.099
+     married |     -0.400      0.250    -1.60   0.110       -0.890       0.091
+       south |     -1.283      0.245    -5.24   0.000       -1.763      -0.803
+             |
+        race |
+      Black  |     -1.186      0.282    -4.20   0.000       -1.739      -0.632
+      Other  |      0.242      1.080     0.22   0.823       -1.876       2.360
+             |
+       _cons |      6.444      1.762     3.66   0.000        2.988       9.900
+------------------------------------------------------------------------------
+拐点 TP = 27.2
+(19 observations deleted)
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+     ttl_exp |      2,227    12.56003    4.605169   .1153846   28.88461
+file figs/raw/linear-reg-fig05-square-ushape-20261014-163740.png written in PNG
+&gt;  format
+(NLSW, 1988 extract)
+warning: nquantiles(20) was specified, but only 11 were generated. see help fil
+&gt; e under nquantiles() for explanation.
+file figs/raw/linear-reg-fig06-rdd-hours-20261014-163740.png written in PNG for
+&gt; mat
+(4 missing values generated)
+(4 missing values generated)
+
+      Source |       SS           df       MS      Number of obs   =     2,242
+-------------+----------------------------------   F(2, 2239)      =     50.44
+       Model |  31.8291812         2  15.9145906   Prob &gt; F        =    0.0000
+    Residual |  706.503406     2,239  .315544174   R-squared       =    0.0431
+-------------+----------------------------------   Adj R-squared   =    0.0423
+       Total |  738.332587     2,241  .329465679   Root MSE        =    .56173
+
+------------------------------------------------------------------------------
+      lnwage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         D40 |      0.061      0.038     1.61   0.107       -0.013       0.135
+     hours_c |      0.099      0.014     7.28   0.000        0.073       0.126
+       _cons |      1.887      0.015   125.27   0.000        1.857       1.916
+------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =     2,242
+-------------+----------------------------------   F(3, 2238)      =     39.53
+       Model |  37.1574486         3  12.3858162   Prob &gt; F        =    0.0000
+    Residual |  701.175138     2,238  .313304351   R-squared       =    0.0503
+-------------+----------------------------------   Adj R-squared   =    0.0491
+       Total |  738.332587     2,241  .329465679   Root MSE        =    .55974
+
+------------------------------------------------------------------------------
+      lnwage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         D40 |      0.163      0.045     3.61   0.000        0.075       0.252
+     hours_c |      0.041      0.020     2.06   0.039        0.002       0.079
+  hours_c_sq |     -0.029      0.007    -4.12   0.000       -0.042      -0.015
+       _cons |      1.887      0.015   125.70   0.000        1.857       1.916
+------------------------------------------------------------------------------
+
+--------------------------------------------
+                      (1)             (2)   
+                   linear            quad   
+--------------------------------------------
+D40                0.0611          0.1631***
+                   (1.61)          (3.61)   
+hours_c            0.0995***       0.0407*  
+                   (7.28)          (2.06)   
+hours_c_sq                        -0.0287***
+                                  (-4.12)   
+_cons              1.8869***       1.8867***
+                 (125.27)        (125.70)   
+--------------------------------------------
+N                    2242            2242   
+--------------------------------------------
+t statistics in parentheses
+* p&lt;0.05, ** p&lt;0.01, *** p&lt;0.001
+(NLSW, 1988 extract)
+(385 observations deleted)
+
+      Source |       SS           df       MS      Number of obs   =     1,861
+-------------+----------------------------------   F(4, 1856)      =    156.64
+       Model |  8168.77377         4  2042.19344   Prob &gt; F        =    0.0000
+    Residual |  24197.1304     1,856   13.037247   R-squared       =    0.2524
+-------------+----------------------------------   Adj R-squared   =    0.2508
+       Total |  32365.9042     1,860  17.4010238   Root MSE        =    3.6107
+
+------------------------------------------------------------------------------
+        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         age |     -0.054      0.028    -1.94   0.053       -0.108       0.001
+     ttl_exp |      0.297      0.019    16.05   0.000        0.261       0.334
+       union |      0.975      0.195     4.99   0.000        0.592       1.359
+    collgrad |      3.140      0.196    16.02   0.000        2.755       3.524
+       _cons |      4.858      1.091     4.45   0.000        2.719       6.997
+------------------------------------------------------------------------------
+
+Linear regression                               Number of obs     =      1,861
+                                                F(4, 1856)        =     178.42
+                                                Prob &gt; F          =     0.0000
+                                                R-squared         =     0.2524
+                                                Root MSE          =     3.6107
+
+------------------------------------------------------------------------------
+             |               Robust
+        wage | Coefficient  std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         age |     -0.054      0.027    -1.98   0.047       -0.107      -0.001
+     ttl_exp |      0.297      0.017    17.29   0.000        0.264       0.331
+       union |      0.975      0.206     4.72   0.000        0.570       1.380
+    collgrad |      3.140      0.241    13.04   0.000        2.667       3.612
+       _cons |      4.858      1.066     4.56   0.000        2.767       6.949
+------------------------------------------------------------------------------
+
+Linear regression                               Number of obs     =      1,861
+                                                F(4, 11)          =     697.30
+                                                Prob &gt; F          =     0.0000
+                                                R-squared         =     0.2524
+                                                Root MSE          =     3.6107
+
+                              (Std. err. adjusted for 12 clusters in industry)
+------------------------------------------------------------------------------
+             |               Robust
+        wage | Coefficient  std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         age |     -0.054      0.035    -1.54   0.151       -0.131       0.023
+     ttl_exp |      0.297      0.024    12.57   0.000        0.245       0.349
+       union |      0.975      0.413     2.36   0.038        0.066       1.885
+    collgrad |      3.140      0.393     7.98   0.000        2.274       4.006
+       _cons |      4.858      1.266     3.84   0.003        2.072       7.644
+------------------------------------------------------------------------------
+(MWFE estimator converged in 1 iterations)
+Warning: VCV matrix was non-positive semi-definite; adjustment from Cameron, Ge
+&gt; lbach &amp; Miller applied.
+warning: variance matrix is nonsymmetric or highly singular.
+
+HDFE Linear regression                            Number of obs   =      1,861
+Absorbing 1 HDFE group                            F(   4,     11) =    1092.14
+Statistics robust to heteroskedasticity           Prob &gt; F        =     0.0000
+                                                  R-squared       =     0.2524
+                                                  Adj R-squared   =     0.2508
+Number of clusters (industry) =         12        Within R-sq.    =     0.2524
+Number of clusters (occupation) =         13      Root MSE        =     3.6107
+
+                   (Std. err. adjusted for 12 clusters in industry occupation)
+------------------------------------------------------------------------------
+             |               Robust
+        wage | Coefficient  std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         age |     -0.054          .        .       .            .           .
+     ttl_exp |      0.297          .        .       .            .           .
+       union |      0.975          .        .       .            .           .
+    collgrad |      3.140          .        .       .            .           .
+       _cons |      4.858          .        .       .            .           .
+------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------
+                      (1)             (2)             (3)             (4)   
+                      OLS          Robust           Clus1           Clus2   
+----------------------------------------------------------------------------
+age                -0.054*         -0.054**        -0.054          -0.054   
+                 (0.0278)        (0.0271)        (0.0349)             (.)   
+ttl_exp             0.297***        0.297***        0.297***        0.297   
+                 (0.0185)        (0.0172)        (0.0236)             (.)   
+union               0.975***        0.975***        0.975**         0.975   
+                 (0.1954)        (0.2065)        (0.4133)             (.)   
+collgrad            3.140***        3.140***        3.140***        3.140   
+                 (0.1959)        (0.2407)        (0.3934)             (.)   
+----------------------------------------------------------------------------
+N                1861.000        1861.000        1861.000        1861.000   
+r2                  0.252           0.252           0.252           0.252   
+----------------------------------------------------------------------------
+Standard errors in parentheses
+* p&lt;0.1, ** p&lt;0.05, *** p&lt;0.01</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="linear-regression-stata_files/figure-html/cell-6-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="结果解释与因果护栏写作无代码" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="结果解释与因果护栏写作无代码"><span class="header-section-number">9.5</span> 结果解释与因果护栏（写作，无代码）</h2>
+<p>按顺序运行，比较同一段中不同设定的输出。</p>
+<div id="540cfe1f" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-10-14T08:42:40.854043Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-14T08:42:40.853043Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-14T08:42:40.932047Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-14T08:42:40.924045Z&quot;}" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>*===========================================================================</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>* 统计显著 ≠ 经济显著：用变量实际单位说清<span class="st">"这个数在现实里多大"</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>* 因果护栏：把<span class="st">"导致/提升/影响"</span>改成<span class="st">"相关/更高/在控制…之后"</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>* 结论只对本样本与总体成立（外推边界，见第 3 讲）</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>file <span class="kw">close</span> check</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="kw">display</span> <span class="st">"PASS: FWL、去均值、虚拟变量参数化和中心化核对通过。"</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>PASS: FWL、去均值、虚拟变量参数化和中心化核对通过。</code></pre>
+</div>
+</div>
+</section>
+<section id="阅读结果" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="阅读结果"><span class="header-section-number">9.6</span> 阅读结果</h2>
+<p>工资教育案例使用剔除极端工资并合并教育档位后的样本，不能与原 OLS 章的未截尾样本混用系数。FWL 的核对只针对斜率，不把残差回归的默认标准误当作完整模型的标准误。中心化改变一阶项参考点，同一实际点上的预测与边际效应保持不变。40 小时处仅是分段拟合演示，没有因果 RDD 识别依据。</p>
+<p><a href="../../lectures/linear-regression.html">返回理论篇</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "已复制");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "已复制");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../lectures/linear-regression.html" class="pagination-link" aria-label="线性回归：解释与设定">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">线性回归：解释与设定</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../lectures/bootstrap.html" class="pagination-link" aria-label="Bootstrap">
+        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Bootstrap</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>LN429 · 中山大学岭南学院</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.dev/lianxhcn/FinEco/blob/main/notebooks/linear-regression/linear-regression-stata.ipynb" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p><a href="https://www.lianxh.cn">连享会</a> · Quarto Book</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

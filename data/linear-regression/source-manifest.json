@@ -1,0 +1,23 @@
+[
+  {
+    "file": "mroz.dta",
+    "source": "https://www.stata.com/data/jwooldridge/eacsap/mroz.dta",
+    "sha256": "f1372c62b339763ae79259a4a7c4111670826d7ce362cccaeb625e7d19171e1e",
+    "retrieved_date": "2026-10-14",
+    "simulation": false
+  },
+  {
+    "file": "xtcs.dta",
+    "source": "https://github.com/lianxhcn/PXa2026a/tree/main/examples/ch04/data",
+    "sha256": "3a72a2350fbce9a6e6c6bc05c64f5645d0fd74ea129b1170d79892bdb27e2a27",
+    "retrieved_date": "2026-10-14",
+    "simulation": false
+  },
+  {
+    "file": "B1_production.dta",
+    "source": "https://github.com/lianxhcn/PXa2026a/tree/main/examples/ch04/data",
+    "sha256": "e721aede396b19f93c79ed908702b2e209abc334b7086f58a67d0948390d5a45",
+    "retrieved_date": "2026-10-14",
+    "simulation": false
+  }
+]

@@ -32,3 +32,13 @@ last_publication:
   topic: ols
   work_scope: "lectures/ols.qmd, notebooks/ols, tools/ols, data/ols, OLS figure, navigation and rendered docs"
   authorization: "用户明确表示可以推送了"
+
+linear_regression_publication:
+  retrieved_date: "2026-10-14"
+  repository_mode: single
+  work_scope: "lectures/linear-regression.qmd, notebooks/linear-regression, tools/linear-regression, data/linear-regression, chapter figure manifests, navigation and isolated rendered docs"
+  authorization: "用户要求新增独立章、保留原 OLS 章，仅提交推送本次内容"
+  source: "PXa2026a/lectures/04_ols.qmd; 指定补入 05_FE_intFE.qmd 常数项至虚拟变量片段"
+  visibility: public
+  license: pending
+  pages_source: "main /docs"

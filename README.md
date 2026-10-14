@@ -34,3 +34,5 @@
 新窗口先读 [项目规则](RULES.md) 和 [总规划与交接](PROJECT_PLAN.md)。总规划包含 20 章状态、文件命名、未决事项与可复制的启动提示词。章节窗口只改自己负责的文件，公共导航、依赖与网站构建由整合窗口统一处理。
 
 OLS 单元：[条件期望与线性投影](https://lianxhcn.github.io/FinEco/lectures/ols.html) · [Stata 实验](https://lianxhcn.github.io/FinEco/notebooks/ols/ols-stata.html)。运行说明见 [OLS 工具说明](tools/ols/README.md)。
+
+线性回归新章：[理论讲义](https://lianxhcn.github.io/FinEco/lectures/linear-regression.html) · [Stata 实验](https://lianxhcn.github.io/FinEco/notebooks/linear-regression/linear-regression-stata.html)。保留原 OLS 章，运行与数据说明见 `tools/linear-regression/README.md`。

@@ -2,6 +2,9 @@ project:
   type: book
   output-dir: docs
   resources:
+    - data/linear-regression/**
+    - tools/linear-regression/**
+    - notebooks/linear-regression/linear-regression-stata.ipynb
     - data/ols/**
     - tools/ols/**
     - notebooks/ols/ols-stata.ipynb
@@ -87,6 +90,10 @@ book:
           text: 条件期望与 OLS
         - href: notebooks/ols/ols-stata.ipynb
           text: OLS：Stata 实验
+        - href: lectures/linear-regression.qmd
+          text: 线性回归：解释与设定
+        - href: notebooks/linear-regression/linear-regression-stata.ipynb
+          text: 线性回归：Stata 实验
         - href: lectures/bootstrap.qmd
           text: Bootstrap
         - href: notebooks/bootstrap/bootstrap-demo.ipynb
