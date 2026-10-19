@@ -37,7 +37,7 @@ MC 分析通常按以下步骤展开：
 
 ::: {.callout-note title="本章配套案例与代码"}
 
-[在线阅读统一 Notebook](../notebooks/monte-carlo/monte-carlo-cases.ipynb)。基础抽样与四个案例集中在同一页，展示已执行的代码、图表和结果说明。本地运行使用仓库中的 Notebook 和处理后数据，无需另行下载 ZIP。正文仅保留理解算法所需的核心代码，网页编译不执行计算。
+[在线阅读案例与代码](../notebooks/monte-carlo/monte-carlo-cases.ipynb)。基础抽样与四个案例集中在同一页，包含代码、运行结果和解读。本地复现可直接使用课程仓库中的同名 Notebook 和配套数据。正文保留理解算法所需的核心代码。
 
 :::
 
@@ -153,9 +153,9 @@ print(f"Monte Carlo 偏差：{bhat.mean() - beta1:.6f}")
 
 其中，`rng` 是在循环开始前初始化的随机数发生器，`bhat` 用于保存这 $B$ 个斜率估计值。`bhat.mean()` 给出它们的平均值。
 
-本章配套 Notebook 保存的输出中，估计均值为 2.001526，Monte Carlo 偏差为 0.001526。从本例的结果来看，估计均值接近真值 2，与无偏性的理论结论相符。由于重复次数有限，模拟平均值通常不会恰好等于真值。
+模拟得到的估计均值为 2.001526，Monte Carlo 偏差为 0.001526。从本例的结果来看，估计均值接近真值 2，与无偏性的理论结论相符。由于重复次数有限，模拟平均值通常不会恰好等于真值。
 
-![OLS 无偏性实验：n=100、B=5000，比较估计分布、参数真值与估计均值。](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-case1-fig01-ols-unbiasedness-20261017-203709.png){#fig-mc-ols-unbiased width=88%}
+![OLS 无偏性实验：n=100、B=5000，比较估计分布、参数真值与估计均值。](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-reader-fig03-ols-unbiased-20261019-155320.png){#fig-mc-ols-unbiased width=88%}
 
 需要说明的是，MC 常用于理论上难以直接求解估计量分布或推导有限样本性质的问题，通过数值实验考察其表现，但不能替代一般性结论的数学证明。
 
@@ -188,9 +188,9 @@ OLS 一致性的常见证明利用大数定律，使样本矩收敛到相应的�
 
 这里固定 $B$，是为了比较改变 $n$ 后估计结果的差异，避免把增加样本量与增加重复次数混在一起。无需要求某一次实验中，估计值随 $n$ 增大而逐步接近 2。应比较各组重复抽样结果的整体变化。
 
-配套 Notebook 保存的结果中，随着 $n$ 从 20 增至 2000，估计值的经验标准差由约 0.244 降至 0.023。在本例中，分布图与经验标准差图共同展示了估计结果随样本量增大而趋于集中的现象，与一致性的理论结论相符。经验标准差是便于比较的辅助指标。一致性的定义仍是估计误差超出给定范围的概率趋于 0。
+随着 $n$ 从 20 增至 2000，估计值的经验标准差由约 0.244 降至 0.023。在本例中，分布图与经验标准差图共同展示了估计结果随样本量增大而趋于集中的现象，与一致性的理论结论相符。经验标准差是便于比较的辅助指标。一致性的定义仍是估计误差超出给定范围的概率趋于 0。
 
-![OLS 一致性实验。左图使用相同显示窗口，以全部 B 次估计计算密度，不对窗口内观测重新归一化。右图比较各样本量下的经验标准差，横轴为对数刻度。](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-case1-fig02-ols-consistency-20261017-203709.png){#fig-mc-ols-consistency width=100%}
+![OLS 一致性实验。左图使用相同显示窗口，以全部 B 次估计计算密度，不对窗口内观测重新归一化。右图比较各样本量下的经验标准差，横轴为对数刻度。](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-reader-fig04-ols-consistency-20261019-155320.png){#fig-mc-ols-consistency width=100%}
 
 这个实验增加的是每个样本的观测数 $n$。重复次数 $B$ 保持不变。有限组样本量下的模拟结果提供数值证据，不能证明当 $n$ 趋于无穷时的一般结论。
 
@@ -283,7 +283,7 @@ for delta in [0.0, 0.2, 0.5, 0.8]:
 
 ```
 
-内生性比较图应以真值 1 为参照，展示两种估计结果随 $\delta$ 的变化。本例中，随着 $\delta$ 从 0 增至 0.8，OLS 的估计均值从约 0.999 升至 1.303，IV 的估计均值仍接近 1。这表明，在本组设定下，工具变量保持较强相关性时，IV 的估计均值受内生性变化的影响较小。
+@fig-mc-iv-endogeneity 中的黑色虚线表示参数真值 1。随着 $\delta$ 从 0 增至 0.8，OLS 的估计均值从约 0.999 升至 1.303，IV 的估计均值仍接近 1。这表明，在本组设定下，工具变量保持较强相关性时，IV 的估计均值受内生性变化的影响较小。
 
 ![固定 π=1，改变内生性参数 δ。OLS 与 IV 使用相同样本，黑色虚线标出参数真值 1。](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-case1-fig03-iv-endogeneity-20261017-203709.png){#fig-mc-iv-endogeneity width=88%}
 
@@ -301,7 +301,7 @@ for pi in [1.0, 0.5, 0.2, 0.05]:
 
 ```
 
-弱工具变量比较图应展示 IV 估计值的分布如何随 $\pi$ 变化。本例中，$\pi=1$ 时，IV 估计值的 1% 和 99% 分位数约为 0.887 和 1.101。$\pi=0.05$ 时，两者约为 -13.637 和 23.416。这说明，在当前样本量下，减弱工具变量相关性会使 IV 估计结果明显不稳定。此时应同时查看分布与尾部，保留极端估计值。若绘图限制显示范围，应在图注中注明，统计汇总仍使用全部结果。
+@fig-mc-iv-weak-distribution 比较不同 $\pi$ 下 IV 估计值的经验累积分布。本例中，$\pi=1$ 时，IV 估计值的 1% 和 99% 分位数约为 0.887 和 1.101。$\pi=0.05$ 时，两者约为 -13.637 和 23.416。这说明，在当前样本量下，减弱工具变量相关性会使 IV 估计结果明显不稳定。图中左侧保留全部估计值，右侧放大真值附近，两图均以全部 1200 次估计为分母。这样既能看清主体分布，也不会遗漏极端估计。
 
 ![弱工具变量实验的经验累积分布。左图以对称对数横轴显示全部估计值，右图仅放大真值附近区间，两图均以全部 B=1200 次结果为分母。曲线越陡，估计值越集中；两图均未删除或缩尾处理极端估计。](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-case1-fig04-iv-weak-ecdf-20261017-203709.png){#fig-mc-iv-weak-distribution width=100%}
 
@@ -372,15 +372,15 @@ s_{t}
 \right],
 $$ {#eq-mc-valuation-share}
 
-其中 $\Lambda(x)=e^{x}/(1+e^{x})$，$\bar p$ 为市场参考价格，$\varepsilon_{t}$ 表示企业无法完全控制的市场需求冲击。由于采用 logistic 变换，可以保证 $0<s_{t}<1$，因此不会出现市场份额为负或超过 100% 的情形。
+其中 $\Lambda(x)=e^{x}/(1+e^{x})$，$\bar p$ 为市场参考价格。$\alpha$ 决定参考价格且无需求冲击时的份额水平，$\beta>0$ 控制定价对份额的影响，$\varepsilon_{t}$ 表示市场需求冲击。由于采用 logistic 变换，可以保证 $0<s_{t}<1$，因此不会出现市场份额为负或超过 100% 的情形。
 
 ![企业估值案例中 NPV 的形成机制](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-valuation-fig01-mechanism-corrected-20261017-225145.png){#fig-mc-valuation-mechanism width=95%}
 
 @fig-mc-valuation-mechanism 概括了三类变量之间的关系：
 
 - 决策变量：价格 $p$。
-- 随机变量：市场冲击 $\varepsilon_{t}$、贴现率 $r$。
-- 内生变量：$s_{t},Q_{t},Sales_{t},FCF_{t},NPV$。
+- 不确定性因素：市场冲击 $\varepsilon_{t}$、贴现率 $r$。
+- 模型内生结果：$s_{t},Q_{t},Sales_{t},FCF_{t},NPV$。
 
 ### 从销售额到自由现金流
 
@@ -390,7 +390,7 @@ $$
 VC_{t}=c\,Sales_{t}.
 $$ {#eq-mc-valuation-variable-cost}
 
-其他销售相关项目也可采用类似比例设定。为了把注意力集中在 Monte Carlo 分析上，这里将这些项目合并，写成：
+其中，$VC_{t}$ 为第 $t$ 年的变动成本，$c$ 为变动成本占销售收入的比例。其他销售相关项目也可采用类似比例设定。为了把注意力集中在 Monte Carlo 分析上，这里将这些项目合并，写成：
 
 $$
 FCF_{t}=m\,Sales_{t}-F,
@@ -402,13 +402,13 @@ $$
 FCF_{t}=mpQ_{0}s_{t}-F.
 $$ {#eq-mc-valuation-fcf-share}
 
-其中 $m$ 表示销售收入最终能够转化为自由现金流的综合比例，$F$ 为固定成本。
+其中，$m$ 为现金流转化比例，用于概括与销售额成比例的收支项目，$F$ 为年度固定支出。
 
 固定成本在这个模型中非常重要。它提供了一个真实的盈利门槛，使模拟结果可以同时出现 $NPV>0$ 和 $NPV<0$ 的情形。
 
 ### 贴现率的不确定性
 
-项目期限固定为 10 年，不再随机化。贴现率则设为随机变量，并限定在 $5\%\le r\le12\%$。例如令：
+项目期限固定为 10 年，贴现率设为随机变量，并限定在 $5\%\le r\le12\%$。例如令：
 
 $$
 X_{r}\sim Beta(a,b),
@@ -439,14 +439,14 @@ $$ {#eq-mc-valuation-scenario-npv}
 
 这里，每个情景包含十年的经营结果，最终得到一个 NPV。比较不同定价方案时，保持其余模型设定一致，对每个候选价格分别进行上述模拟，再比较对应的 NPV 分布。
 
-本次实验采用以下教学参数。价格以元计，现金流和初始投资以元计，结果表中的 NPV 换算为百万元。现金流在各年末发生，第 0 期支付初始投资，不另计期末残值。
+本例采用以下教学参数。价格以元计，现金流和初始投资以元计，结果表中的 NPV 换算为百万元。现金流在各年末发生，第 0 期支付初始投资，不另计期末残值。
 
 | 参数 | 设定 |
 |:--|:--|
 | 项目期限与市场规模 | $T=10$，$Q_{0}=1000000$ 件/年 |
 | 需求关系 | $\bar p=100$，$\alpha=-0.4$，$\beta=2.2$ |
 | 年度需求冲击 | 独立抽取 $\varepsilon_{t}\sim N(0,0.55^{2})$ |
-| 现金贡献比例与固定支出 | $m=0.28$，$F=6000000$ 元/年 |
+| 现金流转化比例与固定支出 | $m=0.28$，$F=6000000$ 元/年 |
 | 初始投资 | $I_{0}=35000000$ 元 |
 | 贴现率 | $r=0.05+0.07X_{r}$，$X_{r}\sim Beta(3,4)$ |
 | 模拟设置 | $B=20000$，随机种子为 20261001，基准价格为 80 元 |
@@ -473,8 +473,6 @@ r = r_min + (r_max - r_min) * x_r
 years = np.arange(1, T + 1)
 npv = -I0 + np.sum(fcf / (1 + r[:, None]) ** years, axis=1)
 ```
-
-完整实验见配套 Notebook「企业估值」。
 
 [配套 Notebook：案例二](../notebooks/monte-carlo/monte-carlo-cases.ipynb#sec-mc-nb-valuation)。
 
@@ -570,7 +568,7 @@ $$
 =\frac{\displaystyle\sum_{t=1}^{T}s_{t}(1+r)^{-t}}{A(r,T)}.
 $$ {#eq-mc-valuation-discounted-share}
 
-在本例价格、市场规模、现金贡献比例和年度固定支出均保持不变的条件下，原来的逐年贴现公式可整理为：
+在本例价格、市场规模、现金流转化比例和年度固定支出均保持不变的条件下，原来的逐年贴现公式可整理为：
 
 $$
 NPV=-I_{0}+\left[mpQ_{0}\widetilde{s}(r)-F\right]A(r,T).
@@ -625,7 +623,7 @@ npv_from_share = m * p * Q0 * annuity * (weighted_share - critical_share)
 
 ::: {.callout-note title="数据说明"}
 
-个股的日收益率由通过 AKShare 获取的后复权收盘价计算。为比较同一天的共同波动，我们只保留五只股票都有有效日收益率的日期。数据获取与缺失值处理见配套 Notebook，接口和完整口径见[投资组合数据说明](../resources/monte-carlo/portfolio-report.md)。
+个股的日收益率由通过 AKShare 获取的后复权收盘价计算。为比较同一天的共同波动，我们只保留五只股票都有有效日收益率的日期。配套 Notebook 读取仓库中的处理后数据，并检查日期索引和有效区块。数据来源、收益计算与缺失值处理规则见[投资组合数据说明](../resources/monte-carlo/portfolio-report.md)。
 
 :::
 
@@ -754,7 +752,7 @@ bootstrap_portfolio = boot_returns @ weights
 
 `weights` 为长度为 5 的权重数组，`@` 表示矩阵乘法。两个结果各包含 $B$ 个组合收益率，用于绘制分布和计算风险指标。`rng_param` 与 `rng_boot` 是在两组抽样开始前初始化的随机数发生器，配套实验分别使用种子 20261001 和 20261002。
 
-![历史样本、多元正态模拟与整行重抽样下的组合收益分布](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/portfolio-mc-fig04-portfolio-distributions-20261001-221520.png){#fig-mc-portfolio-dist width=90%}
+![历史样本、多元正态模拟与整行重抽样下的组合收益分布](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-reader-fig12-portfolio-distributions-20261019-155320.png){#fig-mc-portfolio-dist width=90%}
 
 以等权组合为例，历史收益的超额峰度约为 2.59，正态模拟约为 0.04，整行重抽样约为 2.56。正态模拟主要保留均值和协方差，整行重抽样还能反映历史样本的尾部形状。下一节用 VaR 与 ES 比较这些分布差异对应的损失水平。
 
@@ -774,7 +772,7 @@ ES 的有限样本计算细节见配套 Notebook。
 | 等权 | 1.593% | 1.681% | 2.393% | 2.120% |
 | 固定市值加权 | 1.666% | 1.751% | 2.481% | 2.216% |
 
-表中结果来自冻结样本及已保存的模拟输出。在 95% 分位点，正态模拟的 VaR 略高于历史值，但 ES 更低。对本样本而言，单看 VaR 会遗漏正态模型对尾部平均损失的低估，不能将结果概括为正态模型在所有置信水平下都低估风险。
+在本样本的 95% 分位点，正态模拟的 VaR 略高于历史值，但 ES 更低。对本样本而言，单看 VaR 会遗漏正态模型对尾部平均损失的低估，不能将结果概括为正态模型在所有置信水平下都低估风险。
 
 ![相同组合、期限和置信水平下的 VaR 与 ES 比较](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/portfolio-mc-fig05-risk-metrics-20261001-221520.png){#fig-mc-portfolio-risk width=88%}
 
@@ -847,7 +845,7 @@ iid_returns = np.prod(1 + iid_paths, axis=1) @ weights - 1
 
 例如，10 日区块下等权组合的 VaR 为 6.38%，ES 为 8.79%。约 5% 的模拟结果损失超过 6.38%，而最差 5% 结果的平均损失为 8.79%。与独立抽样相比，VaR 较低，ES 却较高，说明损失分位点与尾部平均损失需要分别观察。
 
-![20 日组合累计收益分布。蓝色虚线为匹配的独立抽样，橙色实线为区块抽样。各面板使用相同坐标与分箱。](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-block-fig01-distributions-20261017-183940.png){#fig-mc-portfolio-block-dist width=100%}
+![20 日组合累计收益分布。蓝色虚线为匹配的独立抽样，橙色实线为区块抽样。各面板使用相同坐标与分箱。](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-reader-fig14-block-distributions-20261019-155320.png){#fig-mc-portfolio-block-dist width=100%}
 
 5 日区块与独立抽样的主体分布较接近。20 日区块的分布在零附近更集中，也出现较明显的不规则起伏。此时每条路径直接抽取一个历史 20 日窗口，这些起伏与有限个历史窗口有关，不宜解释为稳定的市场规律。
 
@@ -864,7 +862,7 @@ iid_returns = np.prod(1 + iid_paths, axis=1) @ weights - 1
 
 :::
 
-数据处理、完整风险表、不同种子与重复次数的稳定性检查，以及有效区块覆盖、自相关和 20 日窗口枚举核对，均保留在配套 Notebook 中。
+配套 Notebook 提供完整风险表，以及更换种子、增加重复次数后的比较。补充部分还用收益自相关和完整 20 日窗口，帮助检查区块抽样保留的时间联系及其计算结果。
 
 区块思想也用于经济时间序列预测。Hyndman 和 Athanasopoulos ([2021](https://otexts.com/fpp3/advanced.html)) 的第 12.5 节给出了序列分解后对余项成段抽样的例子，可与本例对照阅读，但两者的抽样对象和分析目标不同。
 
@@ -934,7 +932,7 @@ $$ {#eq-mc-process-brownian-increment}
 
 布朗运动为我们提供了一个随时间累积的标准随机冲击。接下来，我们将它引入资产价格模型，分别设定价格的平均增长趋势和波动程度。
 
-![标准布朗运动模拟路径，横轴为时间，纵轴为累计冲击](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/monte-carlo-fig16-brownian-sample-paths-20261002-094348.png){#fig-mc-brownian width=80%}
+![标准布朗运动模拟路径，横轴为时间，纵轴为累计冲击](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-reader-fig17-brownian-20261019-155320.png){#fig-mc-brownian width=80%}
 
 @fig-mc-brownian 展示同一生成规则产生的不同布朗运动路径。
 
@@ -983,9 +981,9 @@ $$ {#eq-mc-process-gbm-level}
 
 在模拟中，我们为每条路径生成一组覆盖全部时段的随机冲击，就能得到多条价格路径。在保持初始价格、期限与增长率参数一致的条件下，我们可以改变 $\sigma$，比较不同波动程度下的价格路径。随后，我们分别统计期末价格高于初始价格的路径比例，以及观测时点上至少一次跌破阈值的路径比例，用来比较终值风险与途中风险。
 
-![年化波动率较低时的 GBM 价格路径](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/monte-carlo-fig17-gbm-low-volatility-20261002-094348.png){#fig-mc-gbm-low width=78%}
+![年化波动率较低时的 GBM 价格路径](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-reader-fig18-gbm-low-20261019-155320.png){#fig-mc-gbm-low width=78%}
 
-![年化波动率较高时的 GBM 价格路径](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/monte-carlo-fig18-gbm-high-volatility-20261002-094348.png){#fig-mc-gbm-high width=78%}
+![年化波动率较高时的 GBM 价格路径](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-reader-fig19-gbm-high-20261019-155320.png){#fig-mc-gbm-high width=78%}
 
 @fig-mc-gbm-low 和 @fig-mc-gbm-high 分别使用 $\sigma=0.10$ 和 $\sigma=0.35$，两组均设 $S_{0}=100$、$\mu=0.08$、$T=1$、$N=252$，各展示 30 条路径。两组使用不同种子，因此不是固定同一组冲击的逐条配对比较。
 
@@ -1026,7 +1024,7 @@ print(terminal_gain.mean(), breach.mean())
 print((terminal_gain & breach).mean())
 ```
 
-代码逐期累加冲击，并使用 GBM 的精确表达式计算网格价格，未采用 Euler 价格更新。按配套 Notebook 重新运行，2749 条路径期末上涨，1402 条路径在观测时点上曾跌破 75 元，133 条路径同时满足两项条件。分别除以全部 5000 条路径，得到 54.98%、28.04% 和 2.66%。第三项是联合事件概率，不是以期末上涨路径为分母的条件概率。
+代码逐期累加冲击，并使用 GBM 的精确表达式计算网格价格，未采用 Euler 价格更新。本例生成的 5000 条路径中，2749 条路径期末上涨，1402 条路径在观测时点上曾跌破 75 元，133 条路径同时满足两项条件。分别除以全部 5000 条路径，得到 54.98%、28.04% 和 2.66%。第三项是联合事件概率，不是以期末上涨路径为分母的条件概率。
 
 阈值仅用于风险监测，本例没有模拟跌破后的强制平仓或止损交易，不能将这项概率直接解释为止损后的损益。
 
@@ -1089,9 +1087,9 @@ $$ {#eq-mc-process-option}
 
 其中 $Q$ 表示风险中性测度。上式的理论期望与前面的有限次模拟估计相区别。
 
-本次复跑的 MC 价格约为 10.4165，Black–Scholes 价格约为 10.4506，MC 标准误约为 0.0463。两者差异处于有限次模拟的抽样误差范围内，这项核对检验计算实现，不证明真实价格过程符合 GBM。
+在上述参数下，MC 价格约为 10.4165，Black–Scholes 价格约为 10.4506，MC 标准误约为 0.0463。两者差异处于有限次模拟的抽样误差范围内，这项核对检验计算实现，不证明真实价格过程符合 GBM。
 
-![不同重复次数下 MC 期权价格与闭式解的比较](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/monte-carlo-fig19-mc-option-convergence-20261002-094348.png){#fig-mc-option-convergence width=80%}
+![不同重复次数下 MC 期权价格与闭式解的比较](https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-reader-fig20-option-convergence-20261019-155320.png){#fig-mc-option-convergence width=80%}
 
 @fig-mc-option-convergence 展示不同重复次数下的价格估计。单次随机序列中的误差不必随 $B$ 增大而单调下降。
 
@@ -1152,7 +1150,7 @@ $$ {#eq-mc-process-option}
 
 因此，检查模拟结果时，既要看重复次数是否足够，也要看结论是否依赖某些缺乏依据的假设。
 
-对均值和期望的数值计算，还可以研究抽样方式本身。Hickernell、Kirk 和 Sorokin ([2025](https://doi.org/10.48550/arXiv.2502.03644)) 的公开教程介绍了准蒙特卡罗方法，可作为改进计算效率的进阶阅读，不改变本章已有实验的抽样设定。
+对均值和期望的数值计算，还可以研究抽样方式本身。Hickernell、Kirk 和 Sorokin ([2025](https://doi.org/10.48550/arXiv.2502.03644)) 的公开教程介绍了准蒙特卡罗方法，可作为改进计算效率的进阶阅读。
 
 <span id="sec-mc-agent"></span>
 
@@ -1172,9 +1170,9 @@ $$ {#eq-mc-process-option}
 
 ## 参考文献与扩展阅读 {#sec-mc-references}
 
-以下资料按学习任务提供阅读入口，不要求通读。在线教材可直接阅读，商业图书的链接不表示可免费取得全文。没有核实公开 PDF 的条目明确标注，不提供不明来源的下载。
+以下资料按学习任务提供阅读入口，不要求通读。标为免费在线的教材可直接阅读，商业图书的链接通向出版社页面。各条目注明选读位置、难度及其与本章的联系。
 
-1. Downey, A. B. (**2025**). *Think Stats: Exploratory Data Analysis* (3rd ed.). O’Reilly Media. [Link](https://allendowney.github.io/ThinkStats/) (rep), PDF：未核实第三版完整公开 PDF，[Google](<https://scholar.google.com/scholar?q=Think+Stats+Exploratory+Data+Analysis+Downey+third+edition>). [配套 Notebook](https://github.com/AllenDowney/ThinkStats)。
+1. Downey, A. B. (**2025**). *Think Stats: Exploratory Data Analysis* (3rd ed.). O’Reilly Media. [Link](https://allendowney.github.io/ThinkStats/) (rep)，免费在线，[Google](<https://scholar.google.com/scholar?q=Think+Stats+Exploratory+Data+Analysis+Downey+third+edition>). [配套 Notebook](https://github.com/AllenDowney/ThinkStats)。
 
    **数据分析练习 (低—中)**：选读[第 8 章 §8.1–8.2、§8.7](https://allendowney.github.io/ThinkStats/chap08.html)。比较均值与中位数的模拟表现，再引入少量计量单位错误，观察方法的优劣如何变化。对应案例一及模型检查，重点学习稳健性分析。
 
@@ -1182,11 +1180,11 @@ $$ {#eq-mc-process-option}
 
    **方法进阶 (中—高)**：选读[第 2、4、6 节](https://arxiv.org/html/2502.03644v1)，理解低差异点集、随机化和误差控制。它为项目平均 NPV 与期权定价提供增加 $B$ 以外的精度改进思路，但效果依赖具体问题，不能直接推广到所有阈值事件或尾部风险指标。
 
-3. Hilpisch, Y. (**2018**). *Python for Finance: Mastering Data-Driven Finance* (2nd ed.). O’Reilly Media. [Link](https://www.oreilly.com/library/view/python-for-finance/9781492024323/) (rep), PDF：未核实完整公开版，[Google](<https://scholar.google.com/scholar?q=Python+for+Finance+Mastering+Data-Driven+Finance+Hilpisch>). [配套代码](https://github.com/yhilpisch/py4fi2nd)。
+3. Hilpisch, Y. (**2018**). *Python for Finance: Mastering Data-Driven Finance* (2nd ed.). O’Reilly Media. [Link](https://www.oreilly.com/library/view/python-for-finance/9781492024323/) (rep)，出版社页面，[Google](<https://scholar.google.com/scholar?q=Python+for+Finance+Mastering+Data-Driven+Finance+Hilpisch>). [配套代码](https://github.com/yhilpisch/py4fi2nd)。
 
    **金融编程 (中)**：从第 12 章的随机过程、风险度量与方差缩减入手，再选读第 18 章的金融模型模拟。对应案例三、四，可进一步比较 GBM 与跳跃模型。公开代码采用较早的 Python 环境，运行前需检查兼容性。
 
-4. Hyndman, R. J., & Athanasopoulos, G. (**2021**). *Forecasting: Principles and Practice* (3rd ed.). OTexts. [Link](https://otexts.com/fpp3/), PDF：未核实完整公开版，[Google](<https://scholar.google.com/scholar?q=Forecasting+Principles+and+Practice+Hyndman+Athanasopoulos>).
+4. Hyndman, R. J., & Athanasopoulos, G. (**2021**). *Forecasting: Principles and Practice* (3rd ed.). OTexts. [Link](https://otexts.com/fpp3/)，免费在线，[Google](<https://scholar.google.com/scholar?q=Forecasting+Principles+and+Practice+Hyndman+Athanasopoulos>).
 
    **时间联系 (中)**：选读[第 12.5 节](https://otexts.com/fpp3/advanced.html)。以季度水泥产量为例，先分解序列，再对余项成段重抽样，生成用于预测的多条序列。可对照案例三理解区块方法，但该书的预测与 bagging 目标不同于本章的持有期损失分析。全书免费在线，出版年与在线更新日期分开理解。
 
@@ -1194,11 +1192,11 @@ $$ {#eq-mc-process-option}
 
    **实验设计 (中)**：重点读第 3 节的 ADEMP 框架，以及第 5.2–5.3 节的评价指标、MC 误差和重复次数。对应案例一与章末检查，可据此设计自己的方法比较实验。文章开放获取。
 
-6. Pinder, J. P. (**2022**). *Introduction to Business Analytics Using Simulation* (2nd ed.). Academic Press. [Link](https://shop.elsevier.com/books/introduction-to-business-analytics-using-simulation/pinder/978-0-323-91717-9), PDF：未核实完整公开版，[Google](<https://scholar.google.com/scholar?q=Introduction+to+Business+Analytics+Using+Simulation+Pinder>).
+6. Pinder, J. P. (**2022**). *Introduction to Business Analytics Using Simulation* (2nd ed.). Academic Press. [Link](https://shop.elsevier.com/books/introduction-to-business-analytics-using-simulation/pinder/978-0-323-91717-9)，出版社页面，[Google](<https://scholar.google.com/scholar?q=Introduction+to+Business+Analytics+Using+Simulation+Pinder>).
 
    **商业决策 (低—中)**：先读第 2–3 章的决策树、决策与模拟，再按需选读第 5–7 章的主观、经验和理论概率分布，以及第 8 章的模拟精度。适合在案例二之后系统学习如何将不确定性纳入经营方案比较。
 
-7. Zivot, E. (**2021**). *Introduction to Computational Finance and Financial Econometrics with R*. Online course text. [Link](https://bookdown.org/compfinezbook/introcompfinr/), PDF：未核实完整公开版，[Google](<https://scholar.google.com/scholar?q=Introduction+to+Computational+Finance+and+Financial+Econometrics+with+R+Zivot>).
+7. Zivot, E. (**2021**). *Introduction to Computational Finance and Financial Econometrics with R*. Online course text. [Link](https://bookdown.org/compfinezbook/introcompfinr/)，免费在线，[Google](<https://scholar.google.com/scholar?q=Introduction+to+Computational+Finance+and+Financial+Econometrics+with+R+Zivot>).
 
    **金融估计入门 (低—中)**：选读[第 7.6 节](https://bookdown.org/compfinezbook/introcompfinr/Using-Monte-Carlo-Simulation.html)，优先看均值、方差估计的重复抽样实验。对应案例一，可将书中的样本量与重复次数符号转换为本章的 $n$ 与 $B$，比较偏差和标准误。免费在线，代码使用 R；年份按所读在线版记录。
 

@@ -74,3 +74,15 @@ monte_carlo_publication:
   publication_gate: "整书静态构建、范围核查和 MC 页面验证通过后方可推送"
   pages_source: "main /docs"
   preserve_unrelated_changes: true
+
+monte_carlo_reader_revision_publication:
+  retrieved_date: "2026-10-19"
+  repository_mode: single
+  work_scope: "MC 正文、统一 Notebook 与构建器、两份学生数据说明、12 幅 MC 新图及图床清单、MC 静态网页与搜索条目；排除历史分册、ZIP、内部台账及其他章修改"
+  authorization: "教师本轮明确要求：提交，推送，发布"
+  commit_and_push_authorized: true
+  publication_gate: "66 个代码单元两次执行、两轮 26 页整书静态编译、1178 项链接及当前文件指纹核对通过"
+  release_inventory: "logs/monte-carlo/reader-fixes-20261019/publication-inventory.json"
+  pages_source: "main /docs"
+  preserve_unrelated_changes: true
+  verification_limit: "桌面页面与折叠框通过；窄屏结构通过，手机实机视觉走读未完成"

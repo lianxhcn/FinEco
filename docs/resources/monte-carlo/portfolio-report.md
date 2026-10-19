@@ -15,7 +15,7 @@
 | `data/monte-carlo/stock_pool.csv` | 股票标识、行业和权重。 |
 | `data/monte-carlo/portfolio-results/portfolio_weights.csv` | 单日及多日实验使用的两组期初权重。 |
 
-学生克隆仓库后可直接运行 `notebooks/monte-carlo/monte-carlo-cases.ipynb`。运行不需要供应商原始缓存或其他教师本机文件，结果写入 `output/monte-carlo/cases/`，不会覆盖输入数据。
+克隆仓库后可直接运行 `notebooks/monte-carlo/monte-carlo-cases.ipynb`，无需重新下载行情。结果写入 `output/monte-carlo/cases/`，不修改输入数据。
 
 ## 组合与比较方法
 
@@ -31,6 +31,6 @@
 - 共同有效日筛选可能遗漏停牌及复牌附近的部分风险，不能把保留样本解释为完整交易史。
 - 联合正态模型仅用均值和协方差刻画分布，可能低估尾部损失。历史重抽样也不能自动生成样本中未出现过的冲击。
 - 市值权重取自样本末日，含有事后信息。正态与历史方法、独立与区块方法的风险差异，只对应本案例的样本和设定。
-- 数据来源和抓取日期用于说明复现依据，不表示取得了供应商原始资料的再分发授权。原始供应商缓存不随网站提供，不作为学生运行依赖。
+- 数据来源和抓取日期用于说明复现依据。本仓库提供案例运行所需的处理后数据，不提供供应商原始资料。
 
-完整代码、风险指标表、分布图和稳定性检查见[统一案例 Notebook](../../notebooks/monte-carlo/monte-carlo-cases.ipynb)。网页使用其已保存输出，Quarto 渲染时不执行代码，也不重新获取行情。
+完整代码、风险指标表、分布图和稳定性比较见[案例与代码](../../notebooks/monte-carlo/monte-carlo-cases.ipynb)。网页可直接阅读运行结果，本地复现请按 Notebook 中的说明依次执行。
