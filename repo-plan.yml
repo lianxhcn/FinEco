@@ -42,3 +42,35 @@ linear_regression_publication:
   visibility: public
   license: pending
   pages_source: "main /docs"
+
+monte_carlo_update:
+  retrieved_date: "2026-10-19"
+  repository_mode: single
+  work_scope: "MC V2 与正式章、统一 Notebook、MC 工具/数据说明/图床清单、必要导航和书目入口；docs 仅替换 MC/书目页及其他页侧栏，不覆盖其他章正文"
+  authorization: "用户接受七项应用阅读资料与网页修订方向，要求全面更新本站；本轮执行本地更新，不推断新的 Git 写操作授权"
+  git_write_authorized_this_turn: false
+  preserve_unrelated_changes: true
+  visibility: public
+  license: pending
+  pages_source: "main /docs；本轮未提交、推送或部署"
+
+monte_carlo_release_fixes:
+  retrieved_date: "2026-10-19"
+  repository_mode: single
+  work_scope: "MC 源稿/V2、统一 Notebook 及构建验证工具、章级 CSS、学生数据说明、必要依赖/资源配置与 docs；首页仅更新日期，保留其他页"
+  authorization: "教师要求修复发布前审核小问题，并评估公式滚动故障；没有新的 Git 提交/推送授权"
+  git_write_authorized_this_turn: false
+  preserve_unrelated_changes: true
+  verification: "教师环境两遍及全新依赖环境一遍执行通过；MC 精准静态渲染与 docs 两页验收通过；第二次全书重建在无关 Bootstrap 页等待后停止，不标为成功"
+  release_inventory: "logs/monte-carlo/release-fixes-20261019/release-inventory.json"
+  quality_report: "logs/monte-carlo/mc02-release-fixes-quality-report.md"
+
+monte_carlo_publication:
+  retrieved_date: "2026-10-19"
+  repository_mode: single
+  work_scope: "MC 正文、统一 Notebook 与配套数据/图形/说明，必要共享 MC 片段和静态网页导航；保留其他章未提交修改"
+  authorization: "教师本轮明确要求：排查 Bootstrap 构建停滞，完整编译核验通过后，只提交推送本次 MC 相关修改并检查 Pages 发布"
+  commit_and_push_authorized: true
+  publication_gate: "整书静态构建、范围核查和 MC 页面验证通过后方可推送"
+  pages_source: "main /docs"
+  preserve_unrelated_changes: true

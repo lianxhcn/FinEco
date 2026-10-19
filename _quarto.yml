@@ -2,6 +2,11 @@ project:
   type: book
   output-dir: docs
   resources:
+    - resources/monte-carlo/downloads/*.zip
+    - notebooks/monte-carlo/*.ipynb
+    - data/monte-carlo/README.md
+    - tools/monte-carlo/monte-carlo.css
+    - resources/monte-carlo/portfolio-report.md
     - data/linear-regression/**
     - tools/linear-regression/**
     - notebooks/linear-regression/linear-regression-stata.ipynb
@@ -100,6 +105,10 @@ book:
           text: Bootstrap：Python 实验
         - href: notebooks/bootstrap/bootstrap-stata.ipynb
           text: Bootstrap：Stata 实验
+        - href: lectures/monte-carlo.qmd
+          text: Monte Carlo 模拟
+        - href: notebooks/monte-carlo/monte-carlo-cases.ipynb
+          text: Monte Carlo：案例与代码
     - part: "附录"
       chapters:
         - resources/references.qmd

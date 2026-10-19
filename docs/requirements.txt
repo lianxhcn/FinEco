@@ -1,6 +1,7 @@
 numpy==2.4.2
 pandas==2.3.3
 scipy==1.15.3
+statsmodels==0.14.6
 matplotlib==3.10.9
 akshare==1.18.39
 nbstata==0.8.6

@@ -1,0 +1,21 @@
+{
+  "retrieved_date": "2026-10-01",
+  "requested_start": "2016-01-01",
+  "requested_end": "2026-09-30",
+  "actual_start": "2016-09-05",
+  "actual_end": "2026-09-30",
+  "n_daily": 2397,
+  "union_market_dates": 2611,
+  "common_prices": 2408,
+  "excluded_daily_dates": 214,
+  "stock_codes": [
+    "600036",
+    "600900",
+    "000002",
+    "000651",
+    "002594"
+  ],
+  "adjustment": "hfq",
+  "seed": 20261001,
+  "B": 100000
+}

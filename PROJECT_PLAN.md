@@ -23,7 +23,7 @@
 | 03 | 研究基础 | OLS | `ols.qmd` | 规划 |
 | 04 | 研究基础 | 模型设定 | `model-specification.qmd` | 规划 |
 | 05 | 研究基础 | Bootstrap | `bootstrap.qmd` | 规划 |
-| 06 | 研究基础 | 蒙特卡洛 | `monte-carlo.qmd` | 规划 |
+| 06 | 研究基础 | 蒙特卡洛 | `monte-carlo.qmd` | 2026-10-19 完成 V2、统一 Notebook 与七项阅读资料整合；依赖、执行、两轮整书构建及页面核验通过，本轮按 MC 范围发布 |
 | 07 | 收益与风险 | CAPM | `capm.qmd` | 规划 |
 | 08 | 收益与风险 | 投资组合 | `portfolio.qmd` | 规划 |
 | 09 | 收益与风险 | ARMA | `arma.qmd` | 规划 |

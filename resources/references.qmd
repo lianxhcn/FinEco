@@ -28,4 +28,6 @@ PDF 标签以 DOI 兜底时，不表示一定能直接下载全文。具体应�
 - [研究流程：参考文献](../lectures/intro.qmd#sec-intro-references)：投资组合、Sharpe 比率和 DDML。
 - [研究流程：数据与复现](../lectures/intro.qmd#sec-intro-sources)：第一讲的行情、政策背景、模拟数据及软件资料。
 
+- [Monte Carlo：参考文献与扩展阅读](../lectures/monte-carlo.qmd#sec-mc-references)：金融估计、商业决策、区块抽样，以及近期的数据分析教材与准蒙特卡罗教程。
+
 随着章节发布，这里增加对应书目入口。完整的章节书目在章节末尾维护，避免两份列表分别更新后出现遗漏。在线课程和数据处理资源见[课程资料](../resources.qmd)。

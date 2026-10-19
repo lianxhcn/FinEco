@@ -1,0 +1,2318 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>11&nbsp; Monte Carlo 模拟：不确定性环境下的金融建模与决策分析 – 金融计量经济学</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../notebooks/monte-carlo/monte-carlo-cases.html" rel="next">
+<link href="../notebooks/bootstrap/bootstrap-stata.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0626ff4d7a71b55c8707dcae1d04a9b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-d59a9bb4a0246dd4330968064f99cf3e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+<link rel="icon" type="image/png" sizes="40x40" href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../tools/monte-carlo/monte-carlo.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../lectures/monte-carlo.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Monte Carlo 模拟</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">金融计量经济学</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/lianxhcn/FinEco" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="切换阅读器模式">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🏠 前言</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📚 课程资料</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../getting-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📌 课件使用</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../syllabus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📅 课程安排</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../homework.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">作业</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../exercises/hw-01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">hw-01</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../exercises/hw-02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">第二次作业：金融数据分析</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">🛠️ 环境配置</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">软件配置</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../publishing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">同步与发布</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">研究基础</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">研究流程</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/intro/portfolio-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">组合实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/intro/policy-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">政策实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/financial-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">数据流程与获取</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/financial-data-management.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">数据管理</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/financial-data-cleaning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">数据清洗与审计</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/financial-data/financial-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">CSMAR：Agent 实战</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/ols.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">条件期望与 OLS</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/ols/ols-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">OLS：Stata 实验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/linear-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">线性回归：解释与设定</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/linear-regression/linear-regression-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">线性回归：Stata 实验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/bootstrap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Bootstrap</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/bootstrap/bootstrap-demo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Python 实验</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/bootstrap/bootstrap-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Stata 实验</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/monte-carlo.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Monte Carlo 模拟</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notebooks/monte-carlo/monte-carlo-cases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monte Carlo：案例与代码</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">附录</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../resources/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">公共书目</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目录</h2>
+   
+  <ul>
+  <li><a href="#sec-mc-why" id="toc-sec-mc-why" class="nav-link active" data-scroll-target="#sec-mc-why"><span class="header-section-number">11.1</span> 为什么需要 Monte Carlo 模拟</a></li>
+  <li><a href="#sec-mc-workflow" id="toc-sec-mc-workflow" class="nav-link" data-scroll-target="#sec-mc-workflow"><span class="header-section-number">11.2</span> Monte Carlo 分析的基本流程</a></li>
+  <li><a href="#sec-mc-basics" id="toc-sec-mc-basics" class="nav-link" data-scroll-target="#sec-mc-basics"><span class="header-section-number">11.3</span> 模拟开始之前：几个基本概念</a>
+  <ul class="collapse">
+  <li><a href="#随机数随机变量与概率分布" id="toc-随机数随机变量与概率分布" class="nav-link" data-scroll-target="#随机数随机变量与概率分布"><span class="header-section-number">11.3.1</span> 随机数、随机变量与概率分布</a></li>
+  <li><a href="#sec-mc-dgp" id="toc-sec-mc-dgp" class="nav-link" data-scroll-target="#sec-mc-dgp"><span class="header-section-number">11.3.2</span> 数据生成过程：模拟中的数据从哪里来</a></li>
+  <li><a href="#随机种子与复现" id="toc-随机种子与复现" class="nav-link" data-scroll-target="#随机种子与复现"><span class="header-section-number">11.3.3</span> 随机种子与复现</a></li>
+  <li><a href="#样本量-n-与重复次数-b" id="toc-样本量-n-与重复次数-b" class="nav-link" data-scroll-target="#样本量-n-与重复次数-b"><span class="header-section-number">11.3.4</span> 样本量 <span class="math inline">\(n\)</span> 与重复次数 <span class="math inline">\(B\)</span></a></li>
+  </ul></li>
+  <li><a href="#sec-mc-econometrics" id="toc-sec-mc-econometrics" class="nav-link" data-scroll-target="#sec-mc-econometrics"><span class="header-section-number">11.4</span> 案例一：用模拟理解计量性质</a>
+  <ul class="collapse">
+  <li><a href="#sec-mc-ols-unbiased" id="toc-sec-mc-ols-unbiased" class="nav-link" data-scroll-target="#sec-mc-ols-unbiased"><span class="header-section-number">11.4.1</span> OLS 的无偏性</a></li>
+  <li><a href="#sec-mc-ols-consistency" id="toc-sec-mc-ols-consistency" class="nav-link" data-scroll-target="#sec-mc-ols-consistency"><span class="header-section-number">11.4.2</span> OLS 的一致性</a></li>
+  <li><a href="#sec-mc-iv" id="toc-sec-mc-iv" class="nav-link" data-scroll-target="#sec-mc-iv"><span class="header-section-number">11.4.3</span> IV：内生性与弱工具变量</a></li>
+  </ul></li>
+  <li><a href="#sec-mc-valuation" id="toc-sec-mc-valuation" class="nav-link" data-scroll-target="#sec-mc-valuation"><span class="header-section-number">11.5</span> 案例二：项目估值</a>
+  <ul class="collapse">
+  <li><a href="#哪些量由企业决定哪些量需要模拟" id="toc-哪些量由企业决定哪些量需要模拟" class="nav-link" data-scroll-target="#哪些量由企业决定哪些量需要模拟"><span class="header-section-number">11.5.1</span> 哪些量由企业决定，哪些量需要模拟</a></li>
+  <li><a href="#sec-mc-valuation-logic" id="toc-sec-mc-valuation-logic" class="nav-link" data-scroll-target="#sec-mc-valuation-logic"><span class="header-section-number">11.5.2</span> 经营逻辑</a></li>
+  <li><a href="#从销售额到自由现金流" id="toc-从销售额到自由现金流" class="nav-link" data-scroll-target="#从销售额到自由现金流"><span class="header-section-number">11.5.3</span> 从销售额到自由现金流</a></li>
+  <li><a href="#贴现率的不确定性" id="toc-贴现率的不确定性" class="nav-link" data-scroll-target="#贴现率的不确定性"><span class="header-section-number">11.5.4</span> 贴现率的不确定性</a></li>
+  <li><a href="#从一个情景到-npv-分布" id="toc-从一个情景到-npv-分布" class="nav-link" data-scroll-target="#从一个情景到-npv-分布"><span class="header-section-number">11.5.5</span> 从一个情景到 NPV 分布</a></li>
+  <li><a href="#sec-mc-valuation-decision" id="toc-sec-mc-valuation-decision" class="nav-link" data-scroll-target="#sec-mc-valuation-decision"><span class="header-section-number">11.5.6</span> 从 NPV 分布进入价格决策</a></li>
+  <li><a href="#sec-mc-valuation-boundary" id="toc-sec-mc-valuation-boundary" class="nav-link" data-scroll-target="#sec-mc-valuation-boundary"><span class="header-section-number">11.5.7</span> NPV = 0 的决策边界</a></li>
+  </ul></li>
+  <li><a href="#sec-mc-portfolio" id="toc-sec-mc-portfolio" class="nav-link" data-scroll-target="#sec-mc-portfolio"><span class="header-section-number">11.6</span> 案例三：用真实数据校准组合风险模型</a>
+  <ul class="collapse">
+  <li><a href="#数据股票池与组合权重" id="toc-数据股票池与组合权重" class="nav-link" data-scroll-target="#数据股票池与组合权重"><span class="header-section-number">11.6.1</span> 数据、股票池与组合权重</a></li>
+  <li><a href="#用历史数据设定联合分布" id="toc-用历史数据设定联合分布" class="nav-link" data-scroll-target="#用历史数据设定联合分布"><span class="header-section-number">11.6.2</span> 用历史数据设定联合分布</a></li>
+  <li><a href="#两种生成方式保留什么" id="toc-两种生成方式保留什么" class="nav-link" data-scroll-target="#两种生成方式保留什么"><span class="header-section-number">11.6.3</span> 两种生成方式保留什么</a></li>
+  <li><a href="#用-var-与-es-比较尾部损失" id="toc-用-var-与-es-比较尾部损失" class="nav-link" data-scroll-target="#用-var-与-es-比较尾部损失"><span class="header-section-number">11.6.4</span> 用 VaR 与 ES 比较尾部损失</a></li>
+  <li><a href="#用区块抽样模拟多日组合收益" id="toc-用区块抽样模拟多日组合收益" class="nav-link" data-scroll-target="#用区块抽样模拟多日组合收益"><span class="header-section-number">11.6.5</span> 用区块抽样模拟多日组合收益</a></li>
+  </ul></li>
+  <li><a href="#sec-mc-process" id="toc-sec-mc-process" class="nav-link" data-scroll-target="#sec-mc-process"><span class="header-section-number">11.7</span> 案例四：从随机变量到随机过程</a>
+  <ul class="collapse">
+  <li><a href="#随机游走" id="toc-随机游走" class="nav-link" data-scroll-target="#随机游走"><span class="header-section-number">11.7.1</span> 随机游走</a></li>
+  <li><a href="#布朗运动" id="toc-布朗运动" class="nav-link" data-scroll-target="#布朗运动"><span class="header-section-number">11.7.2</span> 布朗运动</a></li>
+  <li><a href="#几何布朗运动" id="toc-几何布朗运动" class="nav-link" data-scroll-target="#几何布朗运动"><span class="header-section-number">11.7.3</span> 几何布朗运动</a></li>
+  <li><a href="#终值风险和路径风险" id="toc-终值风险和路径风险" class="nav-link" data-scroll-target="#终值风险和路径风险"><span class="header-section-number">11.7.4</span> 终值风险和路径风险</a></li>
+  </ul></li>
+  <li><a href="#sec-mc-reliable" id="toc-sec-mc-reliable" class="nav-link" data-scroll-target="#sec-mc-reliable"><span class="header-section-number">11.8</span> 如何建立一个可信的 Monte Carlo 模型</a>
+  <ul class="collapse">
+  <li><a href="#要点一评价指标能否回答分析问题" id="toc-要点一评价指标能否回答分析问题" class="nav-link" data-scroll-target="#要点一评价指标能否回答分析问题">要点一：评价指标能否回答分析问题</a></li>
+  <li><a href="#要点二概率分布与参数是否有合理依据" id="toc-要点二概率分布与参数是否有合理依据" class="nav-link" data-scroll-target="#要点二概率分布与参数是否有合理依据">要点二：概率分布与参数是否有合理依据</a></li>
+  <li><a href="#要点三是否保留了必要的变量联系和时间信息" id="toc-要点三是否保留了必要的变量联系和时间信息" class="nav-link" data-scroll-target="#要点三是否保留了必要的变量联系和时间信息">要点三：是否保留了必要的变量联系和时间信息</a></li>
+  <li><a href="#要点四代码是否有误模型是否合理" id="toc-要点四代码是否有误模型是否合理" class="nav-link" data-scroll-target="#要点四代码是否有误模型是否合理">要点四：代码是否有误，模型是否合理</a></li>
+  <li><a href="#要点五增加模拟次数能改善什么不能解决什么" id="toc-要点五增加模拟次数能改善什么不能解决什么" class="nav-link" data-scroll-target="#要点五增加模拟次数能改善什么不能解决什么">要点五：增加模拟次数能改善什么，不能解决什么</a></li>
+  </ul></li>
+  <li><a href="#sec-mc-summary" id="toc-sec-mc-summary" class="nav-link" data-scroll-target="#sec-mc-summary"><span class="header-section-number">11.9</span> 本章小结</a></li>
+  <li><a href="#sec-mc-references" id="toc-sec-mc-references" class="nav-link" data-scroll-target="#sec-mc-references"><span class="header-section-number">11.10</span> 参考文献与扩展阅读</a></li>
+  <li><a href="#sec-mc-notebook" id="toc-sec-mc-notebook" class="nav-link" data-scroll-target="#sec-mc-notebook">本章案例 Notebook</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/lectures/monte-carlo.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/intro.html">研究基础</a></li><li class="breadcrumb-item"><a href="../lectures/monte-carlo.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Monte Carlo 模拟</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Monte Carlo 模拟：不确定性环境下的金融建模与决策分析</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-note callout-titled" title="本讲要点">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+本讲要点
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>根据分析目标设定数据生成过程 (DGP)，说明变量关系、分布与参数依据。</li>
+<li>设计重复实验，区分样本量、模拟次数和持有期限的作用。</li>
+<li>用估计量的重复抽样表现、项目价值分布和损失指标评价结果。</li>
+<li>检查变量之间及不同时点之间的依赖关系，区分数值近似误差与模型设定的局限。</li>
+</ol>
+</div>
+</div>
+<section id="sec-mc-why" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="sec-mc-why"><span class="header-section-number">11.1</span> 为什么需要 Monte Carlo 模拟</h2>
+<p>一次回归得到的估计值，不能说明估计量在重复抽样中如何表现。同样，按几组特定经营条件计算的项目净现值，也不足以说明项目的价值与风险。回答这些问题，需要考察条件变化时可能出现的结果及其分布。</p>
+<p>Monte Carlo (MC) 模拟通过重复抽样进行数值近似。给定变量关系、概率分布和参数，每次生成一组样本或情景，计算并保存目标结果，再用多次结果估计均值、概率或分位数等指标。</p>
+<p>本章从已知参数真值的 OLS 与 IV 实验出发，逐步转向项目估值、真实数据校准的组合风险，以及资产价格的路径风险。四个案例分别说明如何评价估计量、沿经营关系生成项目价值、保留股票间及跨日的联系，以及区分期末结果与途中事件。所有结论都需要结合相应的数据、模型和假设理解。</p>
+<p>本章以案例介绍 MC 的基本思路，不系统展开其理论与算法。希望继续学习的读者，可以从 Zivot (<a href="https://bookdown.org/compfinezbook/introcompfinr/Using-Monte-Carlo-Simulation.html">2021</a>) 的金融估计模拟、Pinder (<a href="https://shop.elsevier.com/books/introduction-to-business-analytics-using-simulation/pinder/978-0-323-91717-9">2022</a>) 的商业决策模拟，以及 Hilpisch (<a href="https://www.oreilly.com/library/view/python-for-finance/9781492024323/">2018</a>) 的 Python 金融应用入手。章末另列具体阅读位置和进阶资料，便于按兴趣选读。</p>
+</section>
+<section id="sec-mc-workflow" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="sec-mc-workflow"><span class="header-section-number">11.2</span> Monte Carlo 分析的基本流程</h2>
+<p>MC 分析通常按以下步骤展开：</p>
+<ol type="1">
+<li><strong>明确分析目标</strong>：确定要评价的估计量、风险事件或决策方案，并选择对应指标。</li>
+<li><strong>设定生成机制</strong>：说明变量关系、概率分布、参数和依赖结构。涉及时间路径时，还需确定期限和观测时点。</li>
+<li><strong>生成并计算</strong>：重复生成样本或情景，按同一计算规则保存结果。比较不同方案时，明确改变哪些条件、保持哪些条件不变。</li>
+<li><strong>汇总并检查</strong>：分析结果分布，检查程序是否正确实现设定，以及结论是否对关键假设敏感。</li>
+</ol>
+<p>后面的基础概念用于说明这些步骤中的共同设置。四个案例再分别补充各自的模型和评价指标，章末归纳模拟设计的检查要点。</p>
+<div class="callout callout-style-default callout-note callout-titled" title="本章配套案例与代码">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+本章配套案例与代码
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="../notebooks/monte-carlo/monte-carlo-cases.html">在线阅读统一 Notebook</a>。基础抽样与四个案例集中在同一页，展示已执行的代码、图表和结果说明。本地运行使用仓库中的 Notebook 和处理后数据，无需另行下载 ZIP。正文仅保留理解算法所需的核心代码，网页编译不执行计算。</p>
+</div>
+</div>
+</section>
+<section id="sec-mc-basics" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="sec-mc-basics"><span class="header-section-number">11.3</span> 模拟开始之前：几个基本概念</h2>
+<section id="随机数随机变量与概率分布" class="level3" data-number="11.3.1">
+<h3 data-number="11.3.1" class="anchored" data-anchor-id="随机数随机变量与概率分布"><span class="header-section-number">11.3.1</span> 随机数、随机变量与概率分布</h3>
+<p>计算机可以生成一串看起来随机的数字，例如 <span class="math inline">\(U\sim U(0,1)\)</span>。这些数字只是计算工具。金融建模真正关心的是随机变量，例如可以用 <span class="math inline">\(R\sim N(\mu,\sigma^{2})\)</span> 表示某个资产收益率的概率模型。概率分布规定了随机变量可能取什么值，以及不同取值出现的相对可能性。</p>
+<p>这里，<span class="math inline">\(U\)</span> 是随机变量，<span class="math inline">\(\sim\)</span> 表示服从某个概率分布，<span class="math inline">\(U(0,1)\)</span> 表示区间 <span class="math inline">\((0,1)\)</span> 上的均匀分布。在该区间内，长度相同的子区间具有相同的取值概率。均匀随机数还可以转换为其他分布的随机数。例如，当连续累积分布函数 <span class="math inline">\(F\)</span> 具有可用的逆函数时，<span class="math inline">\(X=F^{-1}(U)\)</span> 就服从对应的分布，这称为逆分布函数抽样。</p>
+<p>配套 Notebook 的<a href="../notebooks/monte-carlo/monte-carlo-cases.html#sec-mc-nb-basics">基础抽样</a>并列展示均匀、正态和指数分布，并给出上述变换的代码。单次抽样用于生成变量，完整的 MC 实验还需按分析目标计算并汇总结果。软件可以完成抽样，但需要模拟哪些变量、采用什么分布、参数如何确定，以及变量之间如何共同变化，都需要先作设定。下面用 DGP 将这些要素组织起来。</p>
+</section>
+<section id="sec-mc-dgp" class="level3" data-number="11.3.2">
+<h3 data-number="11.3.2" class="anchored" data-anchor-id="sec-mc-dgp"><span class="header-section-number">11.3.2</span> 数据生成过程：模拟中的数据从哪里来</h3>
+<p>进行模拟之前，需要明确数据如何产生。例如，模拟回归估计的结果，需要先生成解释变量和扰动项，再根据设定的方程生成因变量。</p>
+<p><strong>数据生成过程</strong> (data-generating process, DGP) 描述数据的产生机制。在模拟中，设定 DGP 需要明确变量之间的关系、不确定性因素的分布、参数取值，以及变量之间、不同观测或不同时点之间的依赖关系。</p>
+<p>以一个简单的线性关系为例：</p>
+<p><span id="eq-mc-dgp-example"><span class="math display">\[
+Y_{i}=1+2X_{i}+u_{i}.
+\tag{11.1}\]</span></span></p>
+<p>其中，<span class="math inline">\(i\)</span> 表示一个观测，<span class="math inline">\(X_{i}\)</span> 是解释变量，<span class="math inline">\(u_{i}\)</span> 是扰动项，<span class="math inline">\(Y_{i}\)</span> 是因变量，常数项 1 和斜率 2 是预设参数。设 <span class="math inline">\(X_{i}\)</span> 和 <span class="math inline">\(u_{i}\)</span> 均服从标准正态分布，即均值为 0、方差为 1，记为 <span class="math inline">\(X_{i}\sim N(0,1)\)</span> 和 <span class="math inline">\(u_{i}\sim N(0,1)\)</span>。二者相互独立，不同观测之间也独立。按这些设定生成 <span class="math inline">\(X_{i}\)</span> 和 <span class="math inline">\(u_{i}\)</span>，代入方程生成 <span class="math inline">\(Y_{i}\)</span>，即可得到模拟样本。</p>
+<p>这里，线性方程规定变量之间的关系，分布与独立性假设规定输入如何产生。保持方程和输入各自的分布不变，改变 <span class="math inline">\(X_{i}\)</span> 与 <span class="math inline">\(u_{i}\)</span> 的相关关系，也会改变数据的性质。后面的 OLS 与 IV 案例将考察这种变化如何影响估计结果。</p>
+<p>本例的斜率真值为 2，可以用来评价不同样本的估计结果。真实金融数据的生成机制通常未知，需要根据理论、历史数据和分析目标建立近似模型，并检查其能否保留与分析有关的重要特征。模拟结论也受这些设定的限制。</p>
+<p>除 DGP 外，还需要确定样本量、重复次数、随机种子及每次保存的结果。下面介绍这些实验设置。</p>
+</section>
+<section id="随机种子与复现" class="level3" data-number="11.3.3">
+<h3 data-number="11.3.3" class="anchored" data-anchor-id="随机种子与复现"><span class="header-section-number">11.3.3</span> 随机种子与复现</h3>
+<p>上文设定 <span class="math inline">\(X_{i}\sim N(0,1)\)</span>。计算机如何生成这样的随机数？通常先利用伪随机数发生器产生数值序列，再通过相应的抽样算法得到服从目标分布的随机数。</p>
+<p>伪随机数发生器按照确定的规则运行。一个简单例子是递推式：</p>
+<p><span id="eq-mc-seed-recursion"><span class="math display">\[
+z_{k+1}=(5z_{k}+3)\bmod 16,
+\tag{11.2}\]</span></span></p>
+<p>其中，<span class="math inline">\(k\)</span> 表示递推次数，<span class="math inline">\(\bmod 16\)</span> 表示除以 16 后取余数。给定初始值 <span class="math inline">\(z_{0}=1\)</span>，就能依次得到 <span class="math inline">\(8,11,10,\ldots\)</span>。这里的初始值就是种子值 (seed)。规则和种子相同，产生的序列也相同。这种确定性使模拟结果能够复现。</p>
+<p>当然，实际软件中伪随机数发生器的具体算法比上例复杂得多，但给定初始状态后按确定规则生成序列的基本原理相同。生成标准正态随机数还需要相应的抽样算法。因此，为了确保模拟结果可复现，应记录种子与软件环境，并保持发生器和调用顺序一致。注意，在这里的串行模拟中，只需在一组模拟开始前设定一次种子，无需在每次重复时重新设定，以免生成相同的样本。</p>
+</section>
+<section id="样本量-n-与重复次数-b" class="level3" data-number="11.3.4">
+<h3 data-number="11.3.4" class="anchored" data-anchor-id="样本量-n-与重复次数-b"><span class="header-section-number">11.3.4</span> 样本量 <span class="math inline">\(n\)</span> 与重复次数 <span class="math inline">\(B\)</span></h3>
+<p>沿用前面的线性模型，假设每次生成 <span class="math inline">\(n=100\)</span> 个观测，并将实验重复 <span class="math inline">\(B=1000\)</span> 次。这里的两个数字分别控制一次样本的大小和实验重复的次数：</p>
+<ol type="1">
+<li><strong>生成一个样本</strong>：生成 100 组解释变量和扰动项，再生成对应的因变量，得到一个包含 100 个观测的样本。</li>
+<li><strong>保存一个结果</strong>：对这个样本进行回归，保存斜率估计值。</li>
+<li><strong>重复整个过程</strong>：将第 1 步和第 2 步作为一次实验，累计重复 1000 次，得到 1000 个斜率估计值。</li>
+</ol>
+<p>实际设计实验时，可以根据分析目标选择 <span class="math inline">\(n\)</span> 和 <span class="math inline">\(B\)</span>：</p>
+<ul>
+<li>调节 <span class="math inline">\(n\)</span> 的大小，主要用于分析样本量对估计结果的影响。例如，考察某个估计量的小样本表现，可以重点比较较小样本量下的偏差和估计值的离散程度。</li>
+<li>增加模拟次数 <span class="math inline">\(B\)</span>，通常有助于提高模拟汇总指标的数值精度，但也会增加计算成本。初步分析可以先用较小的 <span class="math inline">\(B\)</span> 检查程序，并逐步增加 <span class="math inline">\(B\)</span> 或更换种子，观察关键结果是否稳定。正式分析再根据所需精度和计算资源选择较大的 <span class="math inline">\(B\)</span>。</li>
+</ul>
+</section>
+</section>
+<section id="sec-mc-econometrics" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="sec-mc-econometrics"><span class="header-section-number">11.4</span> 案例一：用模拟理解计量性质</h2>
+<section id="sec-mc-ols-unbiased" class="level3" data-number="11.4.1">
+<h3 data-number="11.4.1" class="anchored" data-anchor-id="sec-mc-ols-unbiased"><span class="header-section-number">11.4.1</span> OLS 的无偏性</h3>
+<p>前面已经设定了线性模型的 DGP 和重复抽样步骤。现在用这个实验考察 OLS 估计量的无偏性。沿用斜率真值 <span class="math inline">\(\beta_{1}=2\)</span> 的设定，记 <span class="math inline">\(\beta_{1}\)</span> 的 OLS 估计量为 <span class="math inline">\(\hat{\beta}_{1}\)</span>。在本例的独立抽样和解释变量与扰动项相互独立等设定下，<span class="math inline">\(\beta_{1}\)</span> 的 OLS 估计量满足：</p>
+<p><span id="eq-mc-ols-unbiased"><span class="math display">\[
+E(\hat{\beta}_{1})=\beta_{1}=2.
+\tag{11.3}\]</span></span></p>
+<p>这就是无偏性：对同一个 DGP 反复抽取同样大小的样本，斜率估计值的期望等于真实参数。期望是重复抽样下的理论概念。模拟中，我们用 <span class="math inline">\(B\)</span> 次斜率估计值的平均值近似这一期望：</p>
+<p><span id="eq-mc-ols-mc-mean"><span class="math display">\[
+\overline{\hat{\beta}}_{1,B}
+=\frac{1}{B}\sum_{b=1}^{B}\hat{\beta}_{1}^{(b)}.
+\tag{11.4}\]</span></span></p>
+<p>其中，<span class="math inline">\(b\)</span> 表示第几次实验，<span class="math inline">\(\hat{\beta}_{1}^{(b)}\)</span> 是第 <span class="math inline">\(b\)</span> 个样本得到的斜率估计值。将其平均值与真值 2 比较，得到 Monte Carlo 偏差：</p>
+<p><span id="eq-mc-ols-mc-bias"><span class="math display">\[
+\widehat{\operatorname{Bias}}_{\mathrm{MC}}
+=\overline{\hat{\beta}}_{1,B}-2.
+\tag{11.5}\]</span></span></p>
+<p>按照前面介绍的步骤，每次重新生成一个包含 <span class="math inline">\(n\)</span> 个观测的样本，进行 OLS 估计并保存斜率，重复 <span class="math inline">\(B\)</span> 次即可计算上述指标。下面取 <span class="math inline">\(n=100\)</span>、<span class="math inline">\(B=5000\)</span>：</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 设置样本量、重复次数及参数真值。</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>n, B <span class="op">=</span> <span class="dv">100</span>, <span class="dv">5000</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>beta0, beta1 <span class="op">=</span> <span class="fl">1.0</span>, <span class="fl">2.0</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 在循环前设定种子，并预留空间保存每次的斜率估计。</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">20261001</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>bhat <span class="op">=</span> np.empty(B)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> repetition <span class="kw">in</span> <span class="bu">range</span>(B):</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 按 DGP 分别独立生成解释变量和扰动项。</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    explanatory <span class="op">=</span> rng.normal(<span class="dv">0</span>, <span class="dv">1</span>, n)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    error <span class="op">=</span> rng.normal(<span class="dv">0</span>, <span class="dv">1</span>, n)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    outcome <span class="op">=</span> beta0 <span class="op">+</span> beta1 <span class="op">*</span> explanatory <span class="op">+</span> error</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 加入常数项，估计 OLS 并保存斜率。</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    design <span class="op">=</span> sm.add_constant(explanatory)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    bhat[repetition] <span class="op">=</span> sm.OLS(outcome, design).fit().params[<span class="dv">1</span>]</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># 输出估计值的平均值及其与真值之差。</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"估计均值：</span><span class="sc">{</span>bhat<span class="sc">.</span>mean()<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Monte Carlo 偏差：</span><span class="sc">{</span>bhat<span class="sc">.</span>mean() <span class="op">-</span> beta1<span class="sc">:.6f}</span><span class="ss">"</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>其中，<code>rng</code> 是在循环开始前初始化的随机数发生器，<code>bhat</code> 用于保存这 <span class="math inline">\(B\)</span> 个斜率估计值。<code>bhat.mean()</code> 给出它们的平均值。</p>
+<p>本章配套 Notebook 保存的输出中，估计均值为 2.001526，Monte Carlo 偏差为 0.001526。从本例的结果来看，估计均值接近真值 2，与无偏性的理论结论相符。由于重复次数有限，模拟平均值通常不会恰好等于真值。</p>
+<div id="fig-mc-ols-unbiased" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mc-ols-unbiased-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-case1-fig01-ols-unbiasedness-20261017-203709.png" class="img-fluid figure-img" style="width:88.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mc-ols-unbiased-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;11.1: OLS 无偏性实验：n=100、B=5000，比较估计分布、参数真值与估计均值。
+</figcaption>
+</figure>
+</div>
+<p>需要说明的是，MC 常用于理论上难以直接求解估计量分布或推导有限样本性质的问题，通过数值实验考察其表现，但不能替代一般性结论的数学证明。</p>
+</section>
+<section id="sec-mc-ols-consistency" class="level3" data-number="11.4.2">
+<h3 data-number="11.4.2" class="anchored" data-anchor-id="sec-mc-ols-consistency"><span class="header-section-number">11.4.2</span> OLS 的一致性</h3>
+<p>接下来我们进一步考察 <span class="math inline">\(\beta_{1}\)</span> 的 OLS 估计量的一致性，即随着样本量增大，估计结果是否会以越来越高的概率落在真实参数附近。</p>
+<p>沿用前面的 DGP，<span class="math inline">\(\beta_{1}\)</span> 的 OLS 估计量具有一致性，记为：</p>
+<p><span id="eq-mc-ols-consistency"><span class="math display">\[
+\hat{\beta}_{1,n}\xrightarrow{p}\beta_{1}=2.
+\tag{11.6}\]</span></span></p>
+<p>这里增加下标 <span class="math inline">\(n\)</span>，强调估计量对应的样本量。其含义是：对任意给定的 <span class="math inline">\(\varepsilon&gt;0\)</span>，估计误差超过 <span class="math inline">\(\varepsilon\)</span> 的概率随 <span class="math inline">\(n\)</span> 增大而趋于 0，即：</p>
+<p><span id="eq-mc-ols-consistency-probability"><span class="math display">\[
+P\left(\left|\hat{\beta}_{1,n}-2\right|&gt;\varepsilon\right)
+\longrightarrow 0
+\qquad (n\longrightarrow\infty).
+\tag{11.7}\]</span></span></p>
+<p>OLS 一致性的常见证明利用大数定律，使样本矩收敛到相应的总体矩，并结合外生性及解释变量具有足够变动等条件得到参数收敛。中心极限定理则主要用于进一步分析经适当缩放的估计误差的极限分布，为大样本标准误和统计推断提供依据。本节只通过 MC 观察一致性，不展开渐近分布。</p>
+<p>实验保留上一小节的 DGP 和估计方法，仅改变样本量：</p>
+<ol type="1">
+<li><strong>设置样本量网格</strong>：取 <span class="math inline">\(n=20,50,100,500,2000\)</span>，各组均重复 <span class="math inline">\(B=3000\)</span> 次。</li>
+<li><strong>逐组进行模拟</strong>：对每个 <span class="math inline">\(n\)</span>，重新生成样本、估计 OLS 并保存斜率，得到该样本量下的 <span class="math inline">\(B\)</span> 个估计值。</li>
+<li><strong>比较结果</strong>：将各组估计值的分布画在可比较的横轴尺度上，以真值 2 为参照，观察估计值是否随样本量增大而更集中，同时比较各组估计值的经验标准差。</li>
+</ol>
+<p>这里固定 <span class="math inline">\(B\)</span>，是为了比较改变 <span class="math inline">\(n\)</span> 后估计结果的差异，避免把增加样本量与增加重复次数混在一起。无需要求某一次实验中，估计值随 <span class="math inline">\(n\)</span> 增大而逐步接近 2。应比较各组重复抽样结果的整体变化。</p>
+<p>配套 Notebook 保存的结果中，随着 <span class="math inline">\(n\)</span> 从 20 增至 2000，估计值的经验标准差由约 0.244 降至 0.023。在本例中，分布图与经验标准差图共同展示了估计结果随样本量增大而趋于集中的现象，与一致性的理论结论相符。经验标准差是便于比较的辅助指标。一致性的定义仍是估计误差超出给定范围的概率趋于 0。</p>
+<div id="fig-mc-ols-consistency" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mc-ols-consistency-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-case1-fig02-ols-consistency-20261017-203709.png" class="img-fluid figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mc-ols-consistency-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;11.2: OLS 一致性实验。左图使用相同显示窗口，以全部 B 次估计计算密度，不对窗口内观测重新归一化。右图比较各样本量下的经验标准差，横轴为对数刻度。
+</figcaption>
+</figure>
+</div>
+<p>这个实验增加的是每个样本的观测数 <span class="math inline">\(n\)</span>。重复次数 <span class="math inline">\(B\)</span> 保持不变。有限组样本量下的模拟结果提供数值证据，不能证明当 <span class="math inline">\(n\)</span> 趋于无穷时的一般结论。</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="延伸练习：标准误到底在估计什么？">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+延伸练习：标准误到底在估计什么？
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>用自己的 Agent 设计一个 Monte Carlo 实验：固定 <span class="math inline">\(n=100\)</span>，重复 <span class="math inline">\(B=5000\)</span> 次，每次保存 <span class="math inline">\(\hat{\beta}_{1}\)</span> 和回归输出中的估计标准误。比较 <span class="math inline">\(5000\)</span> 个 <span class="math inline">\(\hat{\beta}_{1}\)</span> 的经验标准差与估计标准误的平均值，并解释二者为什么应当接近。</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="延伸练习：95% 置信区间中的 95% 是什么意思？">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+延伸练习：95% 置信区间中的 95% 是什么意思？
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>用自己的 Agent 设计一个覆盖率实验：分别取 <span class="math inline">\(n=20,50,500\)</span>，每种样本量重复 <span class="math inline">\(B=5000\)</span> 次。每次构造 <span class="math inline">\(\beta_{1}\)</span> 的 95% 置信区间，记录是否覆盖真实值 2，并比较不同样本量下的实际覆盖率。</p>
+</div>
+</div>
+</section>
+<section id="sec-mc-iv" class="level3" data-number="11.4.3">
+<h3 data-number="11.4.3" class="anchored" data-anchor-id="sec-mc-iv"><span class="header-section-number">11.4.3</span> IV：内生性与弱工具变量</h3>
+<p>前面的 OLS 实验假定解释变量与扰动项相互独立。接下来改变这一设定，考察内生性对 OLS 的影响，以及工具变量法 (IV) 的表现。IV 利用工具变量 <span class="math inline">\(Z_{i}\)</span> 引起的 <span class="math inline">\(X_{i}\)</span> 变动估计 <span class="math inline">\(\beta\)</span>，要求控制 <span class="math inline">\(W_{i}\)</span> 后，<span class="math inline">\(Z_{i}\)</span> 与 <span class="math inline">\(X_{i}\)</span> 相关、与 <span class="math inline">\(u_{i}\)</span> 不相关，且不通过 <span class="math inline">\(X_{i}\)</span> 以外的渠道影响 <span class="math inline">\(Y_{i}\)</span>。若 <span class="math inline">\(Z_{i}\)</span> 对 <span class="math inline">\(X_{i}\)</span> 的解释力很弱，IV 的有限样本表现仍可能很不稳定。</p>
+<section id="设定能够控制内生性和工具变量强度的-dgp" class="level4" data-number="11.4.3.1">
+<h4 data-number="11.4.3.1" class="anchored" data-anchor-id="设定能够控制内生性和工具变量强度的-dgp"><span class="header-section-number">11.4.3.1</span> 设定能够控制内生性和工具变量强度的 DGP</h4>
+<p>考虑包含一个外生控制变量的线性模型：</p>
+<p><span id="eq-mc-iv-outcome"><span class="math display">\[
+Y_{i}=\beta X_{i}+\gamma W_{i}+u_{i}.
+\tag{11.8}\]</span></span></p>
+<p>其中，<span class="math inline">\(W_{i}\)</span> 为外生控制变量，<span class="math inline">\(X_{i}\)</span> 为可能内生的解释变量，<span class="math inline">\(u_{i}\)</span> 为结构扰动项。本例将参数真值设为 <span class="math inline">\(\beta=1\)</span>、<span class="math inline">\(\gamma=1\)</span>。为单独控制内生性与工具变量相关性，设：</p>
+<p><span id="eq-mc-iv-first-stage"><span class="math display">\[
+X_{i}=\pi Z_{i}+\delta u_{i}+v_{i}.
+\tag{11.9}\]</span></span></p>
+<p>令 <span class="math inline">\(Z_{i}\)</span>、<span class="math inline">\(W_{i}\)</span>、<span class="math inline">\(u_{i}\)</span> 和 <span class="math inline">\(v_{i}\)</span> 相互独立，均服从标准正态分布，不同观测之间也独立。其中，<span class="math inline">\(Z_{i}\)</span> 为工具变量，<span class="math inline">\(v_{i}\)</span> 为影响 <span class="math inline">\(X_{i}\)</span> 的另一项随机扰动。两个参数分别控制不同的实验条件：</p>
+<ul>
+<li><span class="math inline">\(\delta\)</span> 控制 <span class="math inline">\(X_{i}\)</span> 中来自结构扰动项 <span class="math inline">\(u_{i}\)</span> 的部分。当 <span class="math inline">\(\delta=0\)</span> 时，<span class="math inline">\(X_{i}\)</span> 与 <span class="math inline">\(u_{i}\)</span> 独立。当 <span class="math inline">\(\delta\ne0\)</span> 时，二者相关，产生内生性。</li>
+<li><span class="math inline">\(\pi\)</span> 控制 <span class="math inline">\(Z_{i}\)</span> 对 <span class="math inline">\(X_{i}\)</span> 的影响。在固定其他设定时，<span class="math inline">\(\pi\)</span> 越接近 0，工具变量提供的相关变动越弱。<span class="math inline">\(Z_{i}\)</span> 始终与 <span class="math inline">\(u_{i}\)</span> 独立，且不直接进入结果方程。</li>
+</ul>
+<p>在模拟中，我们设定 <span class="math inline">\(\delta\)</span> 和 <span class="math inline">\(\pi\)</span>，因而知道内生性如何产生、工具变量的相关性如何变化。实际研究中，<span class="math inline">\(u_{i}\)</span> 不可直接观测，通常无法像本例这样确定 <span class="math inline">\(X_{i}\)</span> 中有多少变动来自 <span class="math inline">\(u_{i}\)</span>。工具变量对 <span class="math inline">\(X_{i}\)</span> 的解释力则可以通过第一阶段回归评估。</p>
+<p>需要注意的是，有效且保持相关性的工具变量，可以在常规条件下保证 IV 估计量的一致性，但有限样本中仍可能存在偏差。因此，本节比较 IV 的有限样本表现，不预设其估计均值必然等于真值。</p>
+<p>下面仅保留单组实验的核心代码，省略包导入等准备语句。完整实现见配套 Notebook。函数在同一样本上估计 OLS 与两阶段最小二乘 (2SLS)，分别保存 <span class="math inline">\(\beta\)</span> 的估计值，供两组比较调用。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_iv(pi, delta, seed, n<span class="op">=</span><span class="dv">500</span>, B<span class="op">=</span><span class="dv">1200</span>):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 每组实验初始化一次，保存两种方法的估计结果。</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> np.random.default_rng(seed)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    estimates <span class="op">=</span> np.empty((B, <span class="dv">2</span>))</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> repetition <span class="kw">in</span> <span class="bu">range</span>(B):</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 独立生成工具变量、控制变量及两项扰动。</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        instrument <span class="op">=</span> rng.normal(size<span class="op">=</span>n)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        control <span class="op">=</span> rng.normal(size<span class="op">=</span>n)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        error <span class="op">=</span> rng.normal(size<span class="op">=</span>n)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        noise <span class="op">=</span> rng.normal(size<span class="op">=</span>n)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 按 DGP 生成 X 和 Y，参数真值均为 1。</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        explanatory <span class="op">=</span> pi <span class="op">*</span> instrument <span class="op">+</span> delta <span class="op">*</span> error <span class="op">+</span> noise</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        outcome <span class="op">=</span> explanatory <span class="op">+</span> control <span class="op">+</span> error</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 两种估计都保留控制变量与常数项。</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        design <span class="op">=</span> sm.add_constant(</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>            np.column_stack([explanatory, control])</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        instruments <span class="op">=</span> sm.add_constant(</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>            np.column_stack([instrument, control])</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        estimates[repetition, <span class="dv">0</span>] <span class="op">=</span> sm.OLS(</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>            outcome, design</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        ).fit().params[<span class="dv">1</span>]</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>        estimates[repetition, <span class="dv">1</span>] <span class="op">=</span> IV2SLS(</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>            outcome, design, instrument<span class="op">=</span>instruments</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>        ).fit().params[<span class="dv">1</span>]</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> estimates</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>其中，<code>design</code> 包含常数项、<span class="math inline">\(X_{i}\)</span> 和 <span class="math inline">\(W_{i}\)</span>。<code>instruments</code> 包含常数项、<span class="math inline">\(Z_{i}\)</span> 和 <span class="math inline">\(W_{i}\)</span>。外生控制变量 <span class="math inline">\(W_{i}\)</span> 同时进入两个矩阵，<span class="math inline">\(X_{i}\)</span> 则使用 <span class="math inline">\(Z_{i}\)</span> 作为工具变量。返回数组的两列分别保存 OLS 和 IV 的估计值。</p>
+<p>运行 IV 代码节选时，配套 Notebook 还提供 <code>from statsmodels.sandbox.regression.gmm import IV2SLS</code> 和 <code>SEED = 20261001</code>，其余导入沿用前面的 OLS 代码。</p>
+</section>
+<section id="实验一改变内生性" class="level4" data-number="11.4.3.2">
+<h4 data-number="11.4.3.2" class="anchored" data-anchor-id="实验一改变内生性"><span class="header-section-number">11.4.3.2</span> 实验一：改变内生性</h4>
+<p>固定 <span class="math inline">\(n=500\)</span>、<span class="math inline">\(B=1200\)</span> 和 <span class="math inline">\(\pi=1\)</span>，依次令 <span class="math inline">\(\delta=0,0.2,0.5,0.8\)</span>。每次生成一个样本，在同一份数据上分别估计 OLS 和 IV，并保存 <span class="math inline">\(\beta\)</span> 的两个估计值。IV 使用 <span class="math inline">\(Z_{i}\)</span> 作为 <span class="math inline">\(X_{i}\)</span> 的工具，同时保留外生控制变量 <span class="math inline">\(W_{i}\)</span>。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 固定工具变量相关性，仅改变内生性参数。</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>endogeneity_results <span class="op">=</span> {}</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> delta <span class="kw">in</span> [<span class="fl">0.0</span>, <span class="fl">0.2</span>, <span class="fl">0.5</span>, <span class="fl">0.8</span>]:</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    endogeneity_results[delta] <span class="op">=</span> simulate_iv(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        pi<span class="op">=</span><span class="fl">1.0</span>, delta<span class="op">=</span>delta, seed<span class="op">=</span>SEED <span class="op">+</span> <span class="bu">int</span>(delta <span class="op">*</span> <span class="dv">1000</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>内生性比较图应以真值 1 为参照，展示两种估计结果随 <span class="math inline">\(\delta\)</span> 的变化。本例中，随着 <span class="math inline">\(\delta\)</span> 从 0 增至 0.8，OLS 的估计均值从约 0.999 升至 1.303，IV 的估计均值仍接近 1。这表明，在本组设定下，工具变量保持较强相关性时，IV 的估计均值受内生性变化的影响较小。</p>
+<div id="fig-mc-iv-endogeneity" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mc-iv-endogeneity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-case1-fig03-iv-endogeneity-20261017-203709.png" class="img-fluid figure-img" style="width:88.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mc-iv-endogeneity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;11.3: 固定 π=1，改变内生性参数 δ。OLS 与 IV 使用相同样本，黑色虚线标出参数真值 1。
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="实验二减弱工具变量相关性" class="level4" data-number="11.4.3.3">
+<h4 data-number="11.4.3.3" class="anchored" data-anchor-id="实验二减弱工具变量相关性"><span class="header-section-number">11.4.3.3</span> 实验二：减弱工具变量相关性</h4>
+<p>固定 <span class="math inline">\(\delta=0.5\)</span>，保持 <span class="math inline">\(n\)</span>、<span class="math inline">\(B\)</span> 及其余设定不变，依次令 <span class="math inline">\(\pi=1,0.5,0.2,0.05\)</span>。按相同流程重复生成样本和估计，重点比较 IV 估计值的离散程度、分位数及极端值。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 固定内生性参数，仅减弱工具变量相关性。</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>weak_results <span class="op">=</span> {}</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> pi <span class="kw">in</span> [<span class="fl">1.0</span>, <span class="fl">0.5</span>, <span class="fl">0.2</span>, <span class="fl">0.05</span>]:</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    weak_results[pi] <span class="op">=</span> simulate_iv(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        pi<span class="op">=</span>pi, delta<span class="op">=</span><span class="fl">0.5</span>, seed<span class="op">=</span>SEED <span class="op">+</span> <span class="bu">int</span>(pi <span class="op">*</span> <span class="dv">10000</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>弱工具变量比较图应展示 IV 估计值的分布如何随 <span class="math inline">\(\pi\)</span> 变化。本例中，<span class="math inline">\(\pi=1\)</span> 时，IV 估计值的 1% 和 99% 分位数约为 0.887 和 1.101。<span class="math inline">\(\pi=0.05\)</span> 时，两者约为 -13.637 和 23.416。这说明，在当前样本量下，减弱工具变量相关性会使 IV 估计结果明显不稳定。此时应同时查看分布与尾部，保留极端估计值。若绘图限制显示范围，应在图注中注明，统计汇总仍使用全部结果。</p>
+<div id="fig-mc-iv-weak-distribution" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mc-iv-weak-distribution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-case1-fig04-iv-weak-ecdf-20261017-203709.png" class="img-fluid figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mc-iv-weak-distribution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;11.4: 弱工具变量实验的经验累积分布。左图以对称对数横轴显示全部估计值，右图仅放大真值附近区间，两图均以全部 B=1200 次结果为分母。曲线越陡，估计值越集中；两图均未删除或缩尾处理极端估计。
+</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="本案例的模拟设计要点">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+本案例的模拟设计要点
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>将研究问题落实到 DGP</strong>：本例通过 <span class="math inline">\(\delta u_{i}\)</span> 引入内生性，通过 <span class="math inline">\(\pi Z_{i}\)</span> 调节工具变量相关性。要设计这样的实验，需要先理解两类问题如何影响估计。</li>
+<li><strong>分开改变关键条件</strong>：实验一固定 <span class="math inline">\(\pi\)</span>、改变 <span class="math inline">\(\delta\)</span>。实验二固定 <span class="math inline">\(\delta\)</span>、改变 <span class="math inline">\(\pi\)</span>。每组比较保持样本量、重复次数和其余模型设定一致，便于解释结果变化来自哪个条件。</li>
+<li><strong>在同一样本上比较方法</strong>：每次生成数据后，同时进行 OLS 与 IV 估计，使两种方法面对相同的样本。</li>
+<li><strong>根据分析目标选择指标</strong>：内生性实验关注估计均值相对真值的偏离。弱工具实验还要查看分位数和极端估计，避免平均值掩盖分布的不稳定性。</li>
+<li><strong>保留完整结果以供检查</strong>：代码保存每次估计值，而不只保存汇总指标，便于绘图、检查异常结果和更换评价指标。</li>
+</ul>
+</div>
+</div>
+<p><a href="../notebooks/monte-carlo/monte-carlo-cases.html#sec-mc-nb-econometrics">配套 Notebook：案例一</a>，包含完整代码、逐次估计结果导出与上述结果图。</p>
+<p>如需自行设计方法比较实验，可参阅 Morris、White 和 Crowther (<a href="https://doi.org/10.1002/sim.8086">2019</a>) 的模拟研究教程。完成本例后，也可按 Downey (<a href="https://allendowney.github.io/ThinkStats/chap08.html">2025</a>) 的小例子加入少量数据错误，考察估计方法的稳健性。</p>
+</section>
+</section>
+</section>
+<section id="sec-mc-valuation" class="level2" data-number="11.5">
+<h2 data-number="11.5" class="anchored" data-anchor-id="sec-mc-valuation"><span class="header-section-number">11.5</span> 案例二：项目估值</h2>
+<p>一家企业准备推出一款学习计时器，需要先投入资金开发产品、购置设备并组织生产。项目经理要判断：这项投资是否值得做，产品价格应该定在什么水平？售价提高，每件产品的收入增加，但也可能失去部分客户。售价降低，销量可能增加，却未必能带来更高的项目价值。</p>
+<p>假设项目运行 10 年。我们先估算每年的潜在市场规模，再根据定价和市场需求判断企业能够获得的市场份额，进而得到销量与销售收入。扣除经营支出、税费和必要的再投资等项目后，可供资金提供者分配的现金称为自由现金流。将未来各年的自由现金流折现到今天，再减去初始投资，就得到项目净现值 (net present value, NPV)。本例用简化的现金流模型概括相关收支，突出收入、成本与项目价值之间的关系。</p>
+<p>项目经理面临的困难是，未来需求无法事先确定，适用的贴现率也存在不确定性。给定一个价格，项目的 NPV 可能为正，也可能为负。因此，我们需要比较不同价格下 NPV 的平均水平、NPV 为正的概率，以及较差情景中的损失，而不能仅将需求、贴现率等不确定因素设为几个特定数值，再据此计算一个 NPV。</p>
+<section id="哪些量由企业决定哪些量需要模拟" class="level3" data-number="11.5.1">
+<h3 data-number="11.5.1" class="anchored" data-anchor-id="哪些量由企业决定哪些量需要模拟"><span class="header-section-number">11.5.1</span> 哪些量由企业决定，哪些量需要模拟</h3>
+<p>本例先区分四类量，再设定它们之间的关系：</p>
+<ul>
+<li><strong>决策变量</strong>：产品价格 <span class="math inline">\(p\)</span>。每轮价格比较先选定一个价格，并假定未来 10 年保持不变。可以将 <span class="math inline">\(p\)</span> 理解为规划期内的代表性平均售价，本例暂不考虑逐年调价。价格由企业选择，不作为随机数抽取。</li>
+<li><strong>不确定性因素</strong>：各年的需求冲击 <span class="math inline">\(\varepsilon_{t}\)</span> 和情景贴现率 <span class="math inline">\(r\)</span>，均用随机变量刻画，其中 <span class="math inline">\(t=1,\ldots,10\)</span>。需求冲击影响各年的市场份额。每个情景抽取一个贴现率，用于折现该情景的全部年度现金流。</li>
+<li><strong>模型内生结果</strong>：市场份额 <span class="math inline">\(s_{t}\)</span>、销量 <span class="math inline">\(Q_{t}\)</span>、销售收入 <span class="math inline">\(Sales_{t}\)</span>、自由现金流 <span class="math inline">\(FCF_{t}\)</span> 和 NPV。这些量由价格、需求冲击、贴现率及经营关系共同确定，不再分别独立抽样。它们也随情景变化，因此在概率意义上同样是随机变量。这里按生成方式区分不确定性因素与模型内生结果。</li>
+<li><strong>固定参数</strong>：项目期限 <span class="math inline">\(T=10\)</span>、初始投资 <span class="math inline">\(I_{0}\)</span>、年度潜在市场规模 <span class="math inline">\(Q_{0}\)</span>、年度固定支出 <span class="math inline">\(F\)</span>，以及现金流转化比例和市场份额函数中的参数。<span class="math inline">\(Q_{0}\)</span> 以产品数量计量，不是销售额。本例先将这些参数固定，再在敏感性分析中改变关键取值。</li>
+</ul>
+<p>前面的 DGP 用于生成回归样本，再通过估计得到系数，以考察估计量的性质。本例的 DGP 则用于生成未来经营情景：给定价格，生成需求冲击和贴现率，再沿市场份额、销量、收入和现金流的关系计算 NPV。每次模拟得到一个项目价值，重复后形成 NPV 分布，用来比较不同定价方案。</p>
+</section>
+<section id="sec-mc-valuation-logic" class="level3" data-number="11.5.2">
+<h3 data-number="11.5.2" class="anchored" data-anchor-id="sec-mc-valuation-logic"><span class="header-section-number">11.5.2</span> 经营逻辑</h3>
+<p>销量：</p>
+<p><span id="eq-mc-valuation-quantity"><span class="math display">\[
+Q_{t}=s_{t}Q_{0}.
+\tag{11.10}\]</span></span></p>
+<p>销售收入：</p>
+<p><span id="eq-mc-valuation-sales"><span class="math display">\[
+Sales_{t}=pQ_{t}.
+\tag{11.11}\]</span></span></p>
+<p>市场份额设为：</p>
+<p><span id="eq-mc-valuation-share"><span class="math display">\[
+s_{t}
+=
+\Lambda
+\left[
+\alpha
+-
+\beta
+\log
+\left(
+\frac{p}{\bar p}
+\right)
++
+\varepsilon_{t}
+\right],
+\tag{11.12}\]</span></span></p>
+<p>其中 <span class="math inline">\(\Lambda(x)=e^{x}/(1+e^{x})\)</span>，<span class="math inline">\(\bar p\)</span> 为市场参考价格，<span class="math inline">\(\varepsilon_{t}\)</span> 表示企业无法完全控制的市场需求冲击。由于采用 logistic 变换，可以保证 <span class="math inline">\(0&lt;s_{t}&lt;1\)</span>，因此不会出现市场份额为负或超过 100% 的情形。</p>
+<div id="fig-mc-valuation-mechanism" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mc-valuation-mechanism-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-valuation-fig01-mechanism-corrected-20261017-225145.png" class="img-fluid figure-img" style="width:95.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mc-valuation-mechanism-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;11.5: 企业估值案例中 NPV 的形成机制
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-mc-valuation-mechanism" class="quarto-xref">图&nbsp;<span>11.5</span></a> 概括了三类变量之间的关系：</p>
+<ul>
+<li>决策变量：价格 <span class="math inline">\(p\)</span>。</li>
+<li>随机变量：市场冲击 <span class="math inline">\(\varepsilon_{t}\)</span>、贴现率 <span class="math inline">\(r\)</span>。</li>
+<li>内生变量：<span class="math inline">\(s_{t},Q_{t},Sales_{t},FCF_{t},NPV\)</span>。</li>
+</ul>
+</section>
+<section id="从销售额到自由现金流" class="level3" data-number="11.5.3">
+<h3 data-number="11.5.3" class="anchored" data-anchor-id="从销售额到自由现金流"><span class="header-section-number">11.5.3</span> 从销售额到自由现金流</h3>
+<p>变动成本可以写成销售额的一定比例：</p>
+<p><span id="eq-mc-valuation-variable-cost"><span class="math display">\[
+VC_{t}=c\,Sales_{t}.
+\tag{11.13}\]</span></span></p>
+<p>其他销售相关项目也可采用类似比例设定。为了把注意力集中在 Monte Carlo 分析上，这里将这些项目合并，写成：</p>
+<p><span id="eq-mc-valuation-fcf"><span class="math display">\[
+FCF_{t}=m\,Sales_{t}-F,
+\tag{11.14}\]</span></span></p>
+<p>将 <a href="#eq-mc-valuation-quantity" class="quarto-xref">式&nbsp;<span>11.10</span></a> 和 <a href="#eq-mc-valuation-sales" class="quarto-xref">式&nbsp;<span>11.11</span></a> 代入 <a href="#eq-mc-valuation-fcf" class="quarto-xref">式&nbsp;<span>11.14</span></a>，得到：</p>
+<p><span id="eq-mc-valuation-fcf-share"><span class="math display">\[
+FCF_{t}=mpQ_{0}s_{t}-F.
+\tag{11.15}\]</span></span></p>
+<p>其中 <span class="math inline">\(m\)</span> 表示销售收入最终能够转化为自由现金流的综合比例，<span class="math inline">\(F\)</span> 为固定成本。</p>
+<p>固定成本在这个模型中非常重要。它提供了一个真实的盈利门槛，使模拟结果可以同时出现 <span class="math inline">\(NPV&gt;0\)</span> 和 <span class="math inline">\(NPV&lt;0\)</span> 的情形。</p>
+</section>
+<section id="贴现率的不确定性" class="level3" data-number="11.5.4">
+<h3 data-number="11.5.4" class="anchored" data-anchor-id="贴现率的不确定性"><span class="header-section-number">11.5.4</span> 贴现率的不确定性</h3>
+<p>项目期限固定为 10 年，不再随机化。贴现率则设为随机变量，并限定在 <span class="math inline">\(5\%\le r\le12\%\)</span>。例如令：</p>
+<p><span id="eq-mc-valuation-beta"><span class="math display">\[
+X_{r}\sim Beta(a,b),
+\tag{11.16}\]</span></span></p>
+<p>再定义：</p>
+<p><span id="eq-mc-valuation-rate"><span class="math display">\[
+r=0.05+0.07X_{r}.
+\tag{11.17}\]</span></span></p>
+<p>这样贴现率始终处于预先设定的区间内。每个 Monte Carlo 情景抽取一个 <span class="math inline">\(r\)</span>，并用同一个 <span class="math inline">\(r\)</span> 折现该情景未来 10 年的现金流。基准设定还假定 <span class="math inline">\(r\)</span> 与需求冲击 <span class="math inline">\(\varepsilon_{t}\)</span> 相互独立。这里的重点不是 Beta 分布本身，而是说明：分布选择必须服从变量的取值边界，而独立性本身也是需要明确说明的模型假设。</p>
+</section>
+<section id="从一个情景到-npv-分布" class="level3" data-number="11.5.5">
+<h3 data-number="11.5.5" class="anchored" data-anchor-id="从一个情景到-npv-分布"><span class="header-section-number">11.5.5</span> 从一个情景到 NPV 分布</h3>
+<p>给定价格 <span class="math inline">\(p\)</span>，一次模拟对应项目完整的十年经营情景。用 <span class="math inline">\(b=1,\ldots,B\)</span> 标记情景，每个情景按以下步骤生成：</p>
+<ol type="1">
+<li><strong>生成不确定性因素</strong>：按前面设定的分布抽取十个年度需求冲击 <span class="math inline">\(\varepsilon_{t}^{(b)}\)</span> 和一个贴现率 <span class="math inline">\(r^{(b)}\)</span>。</li>
+<li><strong>计算经营结果</strong>：将价格和各年的需求冲击代入市场份额模型，得到 <span class="math inline">\(s_{t}^{(b)}\)</span>，再依次计算销量、销售收入和自由现金流。</li>
+<li><strong>计算项目价值</strong>：用该情景的贴现率将十年现金流折现，减去初始投资，得到一个 NPV：</li>
+</ol>
+<p><span id="eq-mc-valuation-scenario-npv"><span class="math display">\[
+NPV^{(b)}=-I_{0}+\sum_{t=1}^{T}\frac{FCF_{t}^{(b)}}{(1+r^{(b)})^{t}},
+\qquad T=10.
+\tag{11.18}\]</span></span></p>
+<ol start="4" type="1">
+<li><strong>重复模拟</strong>：将上述三步累计重复 <span class="math inline">\(B\)</span> 次，得到 <span class="math inline">\(B\)</span> 个 NPV，用其经验分布近似给定价格和模型设定下的项目净现值分布。</li>
+</ol>
+<p>这里，每个情景包含十年的经营结果，最终得到一个 NPV。比较不同定价方案时，保持其余模型设定一致，对每个候选价格分别进行上述模拟，再比较对应的 NPV 分布。</p>
+<p>本次实验采用以下教学参数。价格以元计，现金流和初始投资以元计，结果表中的 NPV 换算为百万元。现金流在各年末发生，第 0 期支付初始投资，不另计期末残值。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">参数</th>
+<th style="text-align: left;">设定</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">项目期限与市场规模</td>
+<td style="text-align: left;"><span class="math inline">\(T=10\)</span>，<span class="math inline">\(Q_{0}=1000000\)</span> 件/年</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">需求关系</td>
+<td style="text-align: left;"><span class="math inline">\(\bar p=100\)</span>，<span class="math inline">\(\alpha=-0.4\)</span>，<span class="math inline">\(\beta=2.2\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">年度需求冲击</td>
+<td style="text-align: left;">独立抽取 <span class="math inline">\(\varepsilon_{t}\sim N(0,0.55^{2})\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">现金贡献比例与固定支出</td>
+<td style="text-align: left;"><span class="math inline">\(m=0.28\)</span>，<span class="math inline">\(F=6000000\)</span> 元/年</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">初始投资</td>
+<td style="text-align: left;"><span class="math inline">\(I_{0}=35000000\)</span> 元</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">贴现率</td>
+<td style="text-align: left;"><span class="math inline">\(r=0.05+0.07X_{r}\)</span>，<span class="math inline">\(X_{r}\sim Beta(3,4)\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">模拟设置</td>
+<td style="text-align: left;"><span class="math inline">\(B=20000\)</span>，随机种子为 20261001，基准价格为 80 元</td>
+</tr>
+</tbody>
+</table>
+<p>在实际应用中，我们需要结合项目的具体情况和公司以往的财务数据，估算或确定这些参数的取值。</p>
+<p>下面保留企业估值模拟的核心计算。完整 Notebook 还包括 NPV 分布、经验 CDF、价格网格、NPV = 0 边界和压力测试。</p>
+<p>代码中的 <code>p_ref</code> 对应市场参考价格 <span class="math inline">\(\bar p\)</span>。</p>
+<p>代码中的 <code>rng</code> 是在模拟开始前初始化的随机数发生器，<code>logistic</code> 为前述市场份额函数。其余变量对应表中的参数。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>eps <span class="op">=</span> rng.normal(<span class="dv">0</span>, sigma_eps, size<span class="op">=</span>(B, T))</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>share <span class="op">=</span> logistic(alpha <span class="op">-</span> beta_price <span class="op">*</span> np.log(p <span class="op">/</span> p_ref) <span class="op">+</span> eps)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>quantity <span class="op">=</span> share <span class="op">*</span> Q0</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>sales <span class="op">=</span> p <span class="op">*</span> quantity</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>fcf <span class="op">=</span> m <span class="op">*</span> sales <span class="op">-</span> F</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>x_r <span class="op">=</span> rng.beta(a_r, b_r, size<span class="op">=</span>B)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> r_min <span class="op">+</span> (r_max <span class="op">-</span> r_min) <span class="op">*</span> x_r</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>years <span class="op">=</span> np.arange(<span class="dv">1</span>, T <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>npv <span class="op">=</span> <span class="op">-</span>I0 <span class="op">+</span> np.<span class="bu">sum</span>(fcf <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> r[:, <span class="va">None</span>]) <span class="op">**</span> years, axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>完整实验见配套 Notebook「企业估值」。</p>
+<p><a href="../notebooks/monte-carlo/monte-carlo-cases.html#sec-mc-nb-valuation">配套 Notebook：案例二</a>。</p>
+<p>基准价格为 80 元时，平均 NPV 为 3.188 百万元，NPV 为正的概率为 68.365%，5% 分位数为 -7.493 百万元。平均净现值为正，并不意味着下行损失可以忽略。<a href="#fig-mc-valuation-npv" class="quarto-xref">图&nbsp;<span>11.6</span></a> 展示其分布和经验累积概率，NPV 不大于 0 的情景占 31.635%。</p>
+<div id="fig-mc-valuation-npv" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mc-valuation-npv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-valuation-fig01-baseline-npv-20261017-215747.png" class="img-fluid figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mc-valuation-npv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;11.6: 基准价格下的 NPV 分布与经验累积分布。每个观测对应一个十年经营情景。
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="sec-mc-valuation-decision" class="level3" data-number="11.5.6">
+<h3 data-number="11.5.6" class="anchored" data-anchor-id="sec-mc-valuation-decision"><span class="header-section-number">11.5.6</span> 从 NPV 分布进入价格决策</h3>
+<p>完成不同价格下的模拟后，我们需要比较各定价方案下项目的预期价值和风险。提高价格会增加每件产品的收入，但可能减少市场份额。因此，我们保持其余模型设定一致，对每个候选价格计算以下三项指标。</p>
+<ul>
+<li><strong>平均 NPV</strong>：将给定价格 <span class="math inline">\(p\)</span> 下的 <span class="math inline">\(B\)</span> 个 NPV 求平均，近似该定价方案下项目的预期净现值 <span class="math inline">\(E(NPV\mid p)\)</span>。平均 NPV 越高，表示在给定模型下项目的预期价值越高。</li>
+<li><strong>NPV 为正的概率</strong>：在某个情景中，NPV 为正表示未来现金流的现值超过初始投资，按该情景的贴现率和净现值准则，项目值得投资。用正 NPV 的情景数除以 <span class="math inline">\(B\)</span>，可以估计给定价格下的 <span class="math inline">\(P(NPV&gt;0\mid p)\)</span>。这一概率反映项目满足上述投资标准的可能性，但不说明取得正 NPV 时能创造多少价值，或出现负 NPV 时会损失多少。</li>
+<li><strong>下行风险</strong>：本例用 NPV 的 5% 分位数描述较差情形下的项目价值，约有 5% 的模拟情景低于该值。在相同口径下，该分位数越低，表示项目在分布下端的价值越低。若分位数为负，其绝对值就是该分位点对应的净现值损失。它不是最坏损失，也不是最差 5% 情景的平均损失。</li>
+</ul>
+<p>某个定价方案下，项目的平均 NPV 可能较高，但在不利情景中的损失也可能较大。另一个方案下，NPV 为正的概率可能较高，但平均 NPV 未必更高。因此，需要结合三项指标比较不同定价方案。</p>
+<p>具体比较可以按以下顺序进行：</p>
+<ol type="1">
+<li><strong>展示各方案的结果</strong>：按候选价格列示三项指标，观察价格变化时，项目的平均 NPV、正 NPV 概率和下行风险如何变化。</li>
+<li><strong>明确企业的选择标准</strong>：如果企业希望在控制风险的同时提高预期净现值，可以将平均 NPV 作为比较目标，并规定可接受的负 NPV 概率上限，或要求 NPV 的 5% 分位数不低于某个水平。</li>
+<li><strong>筛选并比较定价方案</strong>：先保留满足风险约束的方案，再比较这些方案下项目的平均 NPV。若所有方案都不满足约束，就需要重新评估项目条件或调整方案，而不能仅根据平均 NPV 的高低作出选择。</li>
+</ol>
+<p>候选价格从 55 元到 160 元，每隔 5 元取一个值，共 22 个价格。每个价格均模拟 20000 个情景，并使用相同的需求冲击和贴现率，以减少价格比较中的抽样波动。</p>
+<div id="fig-mc-valuation-price-comparison" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mc-valuation-price-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-cases-fig09-notebook-20261019-024933.png" class="img-fluid figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mc-valuation-price-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;11.7: 候选价格下的平均 NPV 与正 NPV 概率。左轴为平均 NPV (百万元)，右轴为正 NPV 概率 (%)。水平点线表示左轴 NPV 为零，两条曲线的交点没有经济含义。
+</figcaption>
+</figure>
+</div>
+<p>下表列出部分候选价格，完整结果见 Notebook。NPV 的单位为百万元。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">价格 (元)</th>
+<th style="text-align: right;">平均 NPV</th>
+<th style="text-align: right;">NPV 为正的概率 (%)</th>
+<th style="text-align: right;">NPV 的 5% 分位数</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">-0.412</td>
+<td style="text-align: right;">46.425</td>
+<td style="text-align: right;">-8.003</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">2.294</td>
+<td style="text-align: right;">65.585</td>
+<td style="text-align: right;">-6.985</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">2.934</td>
+<td style="text-align: right;">68.225</td>
+<td style="text-align: right;">-7.075</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">3.188</td>
+<td style="text-align: right;">68.365</td>
+<td style="text-align: right;">-7.493</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">3.114</td>
+<td style="text-align: right;">66.845</td>
+<td style="text-align: right;">-8.159</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">2.766</td>
+<td style="text-align: right;">64.180</td>
+<td style="text-align: right;">-8.994</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">1.430</td>
+<td style="text-align: right;">56.340</td>
+<td style="text-align: right;">-11.086</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">-2.835</td>
+<td style="text-align: right;">35.520</td>
+<td style="text-align: right;">-16.169</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">-13.264</td>
+<td style="text-align: right;">6.890</td>
+<td style="text-align: right;">-26.512</td>
+</tr>
+</tbody>
+</table>
+<p>在这组候选价格中，80 元对应的平均 NPV 和正 NPV 概率最高，70 元对应的 5% 分位数最高，即该分位点的损失较小。三项指标并不总是指向同一方案。这里尚未指定企业的风险约束，因此不能据此认定唯一的最优价格，结论也不超出给定模型和价格网格。</p>
+<p>上述比较提供的是给定模型和候选价格范围内的选择依据。选定价格后，我们还可以分别设定市场规模下降、固定支出增加等不利条件，检查项目的预期价值和下行风险如何变化。这类压力测试改变经营假设，增加模拟次数则主要减少有限重复次数带来的数值近似误差。</p>
+</section>
+<section id="sec-mc-valuation-boundary" class="level3" data-number="11.5.7">
+<h3 data-number="11.5.7" class="anchored" data-anchor-id="sec-mc-valuation-boundary"><span class="header-section-number">11.5.7</span> NPV = 0 的决策边界</h3>
+<p>前面比较了不同定价方案下的 NPV 分布。接下来进一步问：给定价格和贴现率，企业需要获得多大的市场份额，才能使项目的 NPV 不低于 0？</p>
+<section id="临界市场份额" class="level4" data-number="11.5.7.1">
+<h4 data-number="11.5.7.1" class="anchored" data-anchor-id="临界市场份额"><span class="header-section-number">11.5.7.1</span> 临界市场份额</h4>
+<p>先考虑一个简化情形：未来十年的市场份额均为 <span class="math inline">\(s\)</span>，其他经营参数保持不变。此时，每年的自由现金流都是 <span class="math inline">\(mpsQ_{0}-F\)</span>。将各年的贴现系数加总，得到年金现值因子：</p>
+<p><span id="eq-mc-valuation-annuity"><span class="math display">\[
+A(r,T)=\sum_{t=1}^{T}\frac{1}{(1+r)^{t}}
+=\frac{1-(1+r)^{-T}}{r},\qquad r&gt;0,\quad T=10.
+\tag{11.19}\]</span></span></p>
+<p>它表示未来每年末收到 1 元、持续 <span class="math inline">\(T\)</span> 年的现金流在今天的价值。因此，项目净现值可以写成 <span class="math inline">\(NPV=-I_{0}+(mpsQ_{0}-F)A(r,T)\)</span>。令 NPV 等于 0，解得临界市场份额：</p>
+<p><span id="eq-mc-valuation-threshold"><span class="math display">\[
+s^{*}(p,r)=\frac{F+I_{0}/A(r,T)}{mpQ_{0}}.
+\tag{11.20}\]</span></span></p>
+<p>其中，<span class="math inline">\(F+I_{0}/A(r,T)\)</span> 表示每年需要由销售收入提供的净现金贡献，既要覆盖固定支出，也要补偿初始投资。除以 <span class="math inline">\(mpQ_{0}\)</span>，就得到达到这一要求所需的市场份额。</p>
+<p>给定 <span class="math inline">\(p\)</span> 和 <span class="math inline">\(r\)</span>，若每年的市场份额高于 <span class="math inline">\(s^{*}(p,r)\)</span>，项目 NPV 为正。低于该值时，NPV 为负。若临界份额超过 1，则即使占有整个市场，也无法在这一设定下达到 NPV 为零的门槛。这个门槛用于评价给定价格下的经营要求，本身不说明企业实际能取得多大份额。</p>
+</section>
+<section id="边界带表示什么" class="level4" data-number="11.5.7.2">
+<h4 data-number="11.5.7.2" class="anchored" data-anchor-id="边界带表示什么"><span class="header-section-number">11.5.7.2</span> 边界带表示什么</h4>
+<p>本例将贴现率限定在 5% 至 12%。固定价格时，贴现率越高，<span class="math inline">\(A(r,T)\)</span> 越小，补偿初始投资所需的年度净现金贡献越大，临界市场份额也越高。因此，分别用贴现率的下限和上限计算，就得到两条边界曲线：</p>
+<p><span id="eq-mc-valuation-boundary-endpoints"><span class="math display">\[
+s^{*}(p,0.05),\qquad s^{*}(p,0.12).
+\tag{11.21}\]</span></span></p>
+<p>两条曲线之间的区域就是边界带。在固定年度份额的简化下，可以这样读图：</p>
+<ul>
+<li>份额高于上边界，在给定贴现率区间内，项目 NPV 均为正。</li>
+<li>份额低于下边界，在给定贴现率区间内，项目 NPV 均为负。</li>
+<li>份额位于带内，项目 NPV 的正负取决于具体贴现率。</li>
+</ul>
+<p>边界带由贴现率的取值上下限确定，不是置信区间，也不表示某个比例的模拟情景会落在其中。</p>
+</section>
+<section id="与逐年模拟结果怎样对应" class="level4" data-number="11.5.7.3">
+<h4 data-number="11.5.7.3" class="anchored" data-anchor-id="与逐年模拟结果怎样对应"><span class="header-section-number">11.5.7.3</span> 与逐年模拟结果怎样对应</h4>
+<p>前面的模拟允许市场份额逐年变化，不能直接用十年份额的简单平均值与上述门槛比较。相同的平均份额，若较高份额出现在较早年份，现金流现值会更高。</p>
+<p>为与模拟结果准确对应，可以按各年的贴现系数计算加权平均份额：</p>
+<p><span id="eq-mc-valuation-discounted-share"><span class="math display">\[
+\widetilde{s}(r)
+=\frac{\displaystyle\sum_{t=1}^{T}s_{t}(1+r)^{-t}}{A(r,T)}.
+\tag{11.22}\]</span></span></p>
+<p>在本例价格、市场规模、现金贡献比例和年度固定支出均保持不变的条件下，原来的逐年贴现公式可整理为：</p>
+<p><span id="eq-mc-valuation-npv-weighted-share"><span class="math display">\[
+NPV=-I_{0}+\left[mpQ_{0}\widetilde{s}(r)-F\right]A(r,T).
+\tag{11.23}\]</span></span></p>
+<p>因此，每个模拟情景都可以用自己的贴现率计算 <span class="math inline">\(\widetilde{s}(r)\)</span>，再与同一贴现率下的 <span class="math inline">\(s^{*}(p,r)\)</span> 比较，准确判断该情景 NPV 的正负。各年份额相同时，加权平均份额就等于前面简化情形中的 <span class="math inline">\(s\)</span>。</p>
+<p>对应的核心计算如下，<code>share</code> 和 <code>r</code> 沿用前面的模拟结果。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>discount <span class="op">=</span> (<span class="dv">1</span> <span class="op">+</span> r[:, <span class="va">None</span>]) <span class="op">**</span> (<span class="op">-</span>years)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>annuity <span class="op">=</span> discount.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>weighted_share <span class="op">=</span> (share <span class="op">*</span> discount).<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>) <span class="op">/</span> annuity</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>critical_share <span class="op">=</span> (F <span class="op">+</span> I0 <span class="op">/</span> annuity) <span class="op">/</span> (m <span class="op">*</span> p <span class="op">*</span> Q0)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>npv_from_share <span class="op">=</span> m <span class="op">*</span> p <span class="op">*</span> Q0 <span class="op">*</span> annuity <span class="op">*</span> (weighted_share <span class="op">-</span> critical_share)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>在全部 22 个价格、每个价格 20000 个情景中，用贴现加权份额与对应门槛比较，得到的正负分类与逐年计算的 NPV 完全一致。</p>
+<div id="fig-mc-valuation-weighted-boundary" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mc-valuation-weighted-boundary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-valuation-fig03-weighted-boundary-20261017-215747.png" class="img-fluid figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mc-valuation-weighted-boundary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;11.8: 贴现加权份额与 NPV = 0 边界。左图每个价格随机展示 250 个情景，曲线对应贴现率的上下限，灰色边界带不是置信区间。右图展示基准价格下全部 20000 个情景，每个情景均使用自身贴现率计算加权份额和临界份额。
+</figcaption>
+</figure>
+</div>
+<p>临界份额说明项目需要达到什么经营水平，模拟得到的份额则反映价格与需求条件下可能实现什么水平。将两者结合，可以解释哪些情景达到投资门槛，以及调整价格如何同时改变所需份额和实际份额。</p>
+<div class="callout callout-style-default callout-note callout-titled" title="本案例的 MC 模拟设计要点">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+本案例的 MC 模拟设计要点
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>先建立结构关系，再生成情景</strong>：用经营关系连接市场份额、销量、收入、现金流与 NPV。沿这些关系计算结果，可以保留变量之间的联系，减少需要单独设定分布的变量。</li>
+<li><strong>围绕分析目标选择不确定性因素</strong>：本例重点模拟需求冲击和贴现率，将其余参数暂时固定。实际应用中，需要结合业务知识和数据依据作出取舍，并通过敏感性分析检查关键设定的影响。</li>
+<li><strong>让生成方式符合取值约束</strong>：市场份额通过 logistic 函数限制在 0 与 1 之间，贴现率通过有界随机变量的变换落入指定区间。满足取值范围后，还需检查分布形状及变量间、跨年份的依赖设定是否合理。</li>
+<li><strong>用同一套模型比较决策方案</strong>：改变候选价格时，保持其他设定一致，结合平均 NPV、正 NPV 概率和下行风险比较方案，再按企业目标与风险约束作出选择。模拟提供的是给定模型下的决策依据，其可信度仍需通过模型检查和压力测试评估。</li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="sec-mc-portfolio" class="level2" data-number="11.6">
+<h2 data-number="11.6" class="anchored" data-anchor-id="sec-mc-portfolio"><span class="header-section-number">11.6</span> 案例三：用真实数据校准组合风险模型</h2>
+<p>前两个案例的 DGP 均预先设定。然而，在实际金融分析中，很难仅凭理论和主观假设刻画股票收益的分布及其相互关系。此时，可以根据历史数据估计平均收益、波动及股票间的相关性，将这些特征纳入模拟模型，生成体现股票间联动关系的模拟收益率，据此估计组合的收益分布与潜在损失。</p>
+<p>本例考察五只股票构成的组合在一个交易日内可能获得的收益或发生的损失，具体采用两种方法：</p>
+<ul>
+<li>根据历史数据估计收益分布的参数，再从该分布抽样。</li>
+<li>直接抽取某个历史交易日五只股票的收益。</li>
+</ul>
+<p>无论采用哪种方法，每次抽样都得到五只股票各自的收益率，再按相同的组合权重计算组合收益率。重复多次后，就可以比较两种方法得到的组合收益分布，重点观察较大损失出现的频率和程度。在单日比较的基础上，本例再用区块抽样分析 20 日持有期的累计收益与损失。</p>
+<section id="数据股票池与组合权重" class="level3" data-number="11.6.1">
+<h3 data-number="11.6.1" class="anchored" data-anchor-id="数据股票池与组合权重"><span class="header-section-number">11.6.1</span> 数据、股票池与组合权重</h3>
+<p>本例选取招商银行、长江电力、万科 A、格力电器和比亚迪五只股票，分别涉及银行、电力、房地产、家电和汽车行业。样本区间为 2016-09-05 至 2026-09-30，共 2397 日。</p>
+<p>组合权重采用两种设定：等权组合中每只股票的权重均为 20%，市值加权组合则按 2026-09-30 各只股票总市值占五只股票总市值之和的比例确定权重。比较不同模拟方法时，各组合的权重保持不变。</p>
+<p><span id="sec-mc-data-source"></span></p>
+<div class="callout callout-style-default callout-note callout-titled" title="数据说明">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+数据说明
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>个股的日收益率由通过 AKShare 获取的后复权收盘价计算。为比较同一天的共同波动，我们只保留五只股票都有有效日收益率的日期。数据获取与缺失值处理见配套 Notebook，接口和完整口径见<a href="../resources/monte-carlo/portfolio-report.md">投资组合数据说明</a>。</p>
+</div>
+</div>
+</section>
+<section id="用历史数据设定联合分布" class="level3" data-number="11.6.2">
+<h3 data-number="11.6.2" class="anchored" data-anchor-id="用历史数据设定联合分布"><span class="header-section-number">11.6.2</span> 用历史数据设定联合分布</h3>
+<p>先看根据历史数据估计分布参数的方法。为同时模拟五只股票，需要说明每只股票的平均收益和波动，以及股票之间如何共同变化。这些信息可以用均值向量和协方差矩阵表示。</p>
+<p>将同一个交易日的五个收益率放在一起，记为：</p>
+<p><span id="eq-mc-portfolio-return-vector"><span class="math display">\[
+\mathbf{R}_{t}=(R_{1t},R_{2t},\ldots,R_{5t})'.
+\tag{11.24}\]</span></span></p>
+<p>其中，<span class="math inline">\(R_{jt}\)</span> 表示第 <span class="math inline">\(j\)</span> 只股票在第 <span class="math inline">\(t\)</span> 个有效交易日的简单收益率，股票顺序沿用前文。撇号表示转置，因此 <span class="math inline">\(\mathbf{R}_{t}\)</span> 是一个 <span class="math inline">\(5\times1\)</span> 的列向量。</p>
+<p><strong>均值向量</strong> <span class="math inline">\(\boldsymbol{\mu}=E(\mathbf{R}_{t})\)</span> 将五只股票的平均收益依次排列。<strong>协方差矩阵</strong> <span class="math inline">\(\Sigma=\operatorname{Cov}(\mathbf{R}_{t})\)</span> 是一个 <span class="math inline">\(5\times5\)</span> 的矩阵，其中：</p>
+<ul>
+<li>第 <span class="math inline">\(j\)</span> 个对角元素是第 <span class="math inline">\(j\)</span> 只股票收益率的方差，其平方根为该股票的日收益标准差。</li>
+<li>第 <span class="math inline">\(j\)</span> 行、第 <span class="math inline">\(k\)</span> 列的非对角元素是两只股票收益率的协方差。协方差为正，表示二者相对各自均值的偏离倾向于同向变化。协方差为负，则倾向于反向变化。</li>
+</ul>
+<p>样本中每行有同一天五只股票的收益率。因此，可以按列计算平均值，再利用同一行中各股票相对均值的偏离计算协方差。设有效交易日数为 <span class="math inline">\(n=2397\)</span>，估计式为：</p>
+<p><span id="eq-mc-portfolio-sample-moments"><span class="math display">\[
+\begin{aligned}
+\hat{\boldsymbol{\mu}}
+&amp;=\frac{1}{n}\sum_{t=1}^{n}\mathbf{R}_{t},\\
+\hat{\Sigma}
+&amp;=\frac{1}{n-1}\sum_{t=1}^{n}
+(\mathbf{R}_{t}-\hat{\boldsymbol{\mu}})
+(\mathbf{R}_{t}-\hat{\boldsymbol{\mu}})'.
+\end{aligned}
+\tag{11.25}\]</span></span></p>
+<p>其中，<span class="math inline">\(\hat{\Sigma}\)</span> 使用样本协方差的 <span class="math inline">\(n-1\)</span> 分母。对应的核心代码如下，<code>returns</code> 的每行是一个有效交易日，每列是一只股票：</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 按列计算五只股票的平均日收益率。</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>mu_hat <span class="op">=</span> returns.mean().to_numpy()</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 计算五只股票的样本协方差矩阵，默认使用 n-1 分母。</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>Sigma_hat <span class="op">=</span> returns.cov().to_numpy()</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>本样本的平均日收益率如下，以百分比表示，模拟代码中仍使用小数形式：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>股票</th>
+<th>平均日收益率</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>招商银行</td>
+<td>0.0490%</td>
+</tr>
+<tr class="even">
+<td>长江电力</td>
+<td>0.0388%</td>
+</tr>
+<tr class="odd">
+<td>万科 A</td>
+<td>-0.0271%</td>
+</tr>
+<tr class="even">
+<td>格力电器</td>
+<td>0.0397%</td>
+</tr>
+<tr class="odd">
+<td>比亚迪</td>
+<td>0.0921%</td>
+</tr>
+</tbody>
+</table>
+<p>协方差矩阵不仅记录个股波动，也记录股票之间的联系。例如，招商银行的收益方差约为 0.000215，对应的日收益标准差约为 1.47%。它与长江电力的收益协方差约为 0.0000364，为正值。</p>
+<p>为便于比较不同股票之间的联系，还可以将协方差除以两只股票标准差的乘积，得到相关系数：</p>
+<p><span id="eq-mc-portfolio-correlation"><span class="math display">\[
+\rho_{jk}=\frac{\Sigma_{jk}}{\sqrt{\Sigma_{jj}\Sigma_{kk}}}.
+\tag{11.26}\]</span></span></p>
+<p>相关系数没有量纲，取值在 -1 与 1 之间。下图展示样本相关矩阵，两两相关系数约为 0.064 至 0.495。</p>
+<div id="fig-mc-portfolio-corr" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mc-portfolio-corr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/portfolio-mc-fig02-correlation-20261001-221520.png" class="img-fluid figure-img" style="width:76.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mc-portfolio-corr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;11.9: 五只股票的日收益相关矩阵
+</figcaption>
+</figure>
+</div>
+<p>如果分别独立生成各只股票的收益，就会丢失这些共同变化。后面的联合抽样将同时使用 <span class="math inline">\(\hat{\boldsymbol{\mu}}\)</span> 和 <span class="math inline">\(\hat{\Sigma}\)</span>，把个股波动与股票之间的联系一并纳入模型。均值和协方差尚不足以确定完整的联合分布，还需要选择分布形式。</p>
+</section>
+<section id="两种生成方式保留什么" class="level3" data-number="11.6.3">
+<h3 data-number="11.6.3" class="anchored" data-anchor-id="两种生成方式保留什么"><span class="header-section-number">11.6.3</span> 两种生成方式保留什么</h3>
+<p>得到 <span class="math inline">\(\hat{\boldsymbol{\mu}}\)</span> 和 <span class="math inline">\(\hat{\Sigma}\)</span> 后，还需要确定收益率的抽取方式。下面比较两种做法：(1) 为收益设定多元正态分布，再从中抽样；(2) 直接从历史收益表中整行重抽样。</p>
+<p>每次抽样得到五只股票各自的日收益率，再按组合权重计算一个组合日收益率。每种方法重复 <span class="math inline">\(B=100000\)</span> 次，得到 100000 个组合日收益率，用于比较收益分布和损失水平。</p>
+<section id="多元正态模拟用均值和协方差设定分布" class="level4" data-number="11.6.3.1">
+<h4 data-number="11.6.3.1" class="anchored" data-anchor-id="多元正态模拟用均值和协方差设定分布"><span class="header-section-number">11.6.3.1</span> 多元正态模拟：用均值和协方差设定分布</h4>
+<p>这种方法先根据实际数据估计多元正态分布的两类参数，即均值向量和协方差矩阵，再按估计结果进行模拟。与前面使用教学参数的案例相比，这里的参数取值来自历史数据，但采用多元正态分布仍是一项模型假设。</p>
+<p>将五只股票的收益向量设为：</p>
+<p><span id="eq-mc-portfolio-normal"><span class="math display">\[
+\mathbf{R}^{(b)}\sim N_{5}\left(\hat{\boldsymbol{\mu}},\hat{\Sigma}\right).
+\tag{11.27}\]</span></span></p>
+<p>其中，<span class="math inline">\(N_{5}\)</span> 表示五维正态分布，<span class="math inline">\(b=1,\ldots,B\)</span> 为模拟次数。抽样时同时生成五只股票的收益，使它们之间的共同变化由 <span class="math inline">\(\hat{\Sigma}\)</span> 决定。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 每行生成五只股票在一个交易日的收益率。</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>sim_returns <span class="op">=</span> rng_param.multivariate_normal(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    mu_hat, Sigma_hat, size<span class="op">=</span>B</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>sim_returns</code> 是一个 <span class="math inline">\(B\times5\)</span> 的数组，每行对应一次模拟，每列对应一只股票。该方法可以生成历史中没有出现过的收益组合，但分布形状由正态假设决定，不能仅凭匹配均值与协方差就保留历史中的偏度和厚尾。</p>
+</section>
+<section id="历史整行重抽样直接利用观察到的联合收益" class="level4" data-number="11.6.3.2">
+<h4 data-number="11.6.3.2" class="anchored" data-anchor-id="历史整行重抽样直接利用观察到的联合收益"><span class="header-section-number">11.6.3.2</span> 历史整行重抽样：直接利用观察到的联合收益</h4>
+<p>另一种做法是将历史收益表中的每一行视为一种可能结果，从中有放回地抽取 <span class="math inline">\(B\)</span> 行。每次选中一个交易日，就同时取出当天五只股票的收益率：</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 随机选择历史行号，同一交易日可以被多次选中。</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>indices <span class="op">=</span> rng_boot.integers(<span class="dv">0</span>, <span class="bu">len</span>(returns), size<span class="op">=</span>B)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>boot_returns <span class="op">=</span> returns.to_numpy()[indices, :]</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>indices</code> 保存抽中的行号，<code>boot_returns</code> 同样是 <span class="math inline">\(B\times5\)</span> 的数组。整行抽取保留了同一天五只股票的收益组合。若逐列独立抽取，就可能把不同日期的股票收益拼在一起，破坏历史中的共同波动关系。</p>
+<p>这种方法以历史样本的经验联合分布为抽样依据，可以反映样本中的偏度、厚尾及股票间的联系，但结果受已观察到的收益组合限制。两种方法在有限次抽样后，模拟均值、协方差等统计量通常都不会与历史估计值完全相同。</p>
+<p>整行重抽样保留同一交易日五只股票的联系，但不保留相邻日期的先后关系。若要模拟多日累计收益，则可以将抽样单位改为一段连续交易日的联合收益，后文进一步讨论这种区块抽样方法。</p>
+</section>
+<section id="按相同权重计算组合收益" class="level4" data-number="11.6.3.3">
+<h4 data-number="11.6.3.3" class="anchored" data-anchor-id="按相同权重计算组合收益"><span class="header-section-number">11.6.3.3</span> 按相同权重计算组合收益</h4>
+<p>无论采用哪种方法，每行的五个收益率都按权重加总，得到一次模拟的组合日收益率：</p>
+<p><span id="eq-mc-portfolio-return"><span class="math display">\[
+R_{p}^{(b)}=\mathbf{w}'\mathbf{R}^{(b)}.
+\tag{11.28}\]</span></span></p>
+<p>其中，<span class="math inline">\(\mathbf{w}\)</span> 为五维权重向量，与收益表中的股票顺序一致。对应代码为：</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 两种方法使用同一组权重，分别得到 B 个组合收益率。</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>parametric_portfolio <span class="op">=</span> sim_returns <span class="op">@</span> weights</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>bootstrap_portfolio <span class="op">=</span> boot_returns <span class="op">@</span> weights</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>weights</code> 为长度为 5 的权重数组，<code>@</code> 表示矩阵乘法。两个结果各包含 <span class="math inline">\(B\)</span> 个组合收益率，用于绘制分布和计算风险指标。<code>rng_param</code> 与 <code>rng_boot</code> 是在两组抽样开始前初始化的随机数发生器，配套实验分别使用种子 20261001 和 20261002。</p>
+<div id="fig-mc-portfolio-dist" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mc-portfolio-dist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/portfolio-mc-fig04-portfolio-distributions-20261001-221520.png" class="img-fluid figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mc-portfolio-dist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;11.10: 历史样本、多元正态模拟与整行重抽样下的组合收益分布
+</figcaption>
+</figure>
+</div>
+<p>以等权组合为例，历史收益的超额峰度约为 2.59，正态模拟约为 0.04，整行重抽样约为 2.56。正态模拟主要保留均值和协方差，整行重抽样还能反映历史样本的尾部形状。下一节用 VaR 与 ES 比较这些分布差异对应的损失水平。</p>
+</section>
+</section>
+<section id="用-var-与-es-比较尾部损失" class="level3" data-number="11.6.4">
+<h3 data-number="11.6.4" class="anchored" data-anchor-id="用-var-与-es-比较尾部损失"><span class="header-section-number">11.6.4</span> 用 VaR 与 ES 比较尾部损失</h3>
+<p>分布图展示整体形状，风险指标则帮助回答损失可能达到什么程度。令组合单日损失率为 <span class="math inline">\(L=-R_{p}\)</span>，采用相同置信水平比较各方法：</p>
+<ul>
+<li><strong>95% VaR</strong>：损失分布的 95% 分位数，约有 5% 的情景损失超过这一水平。</li>
+<li><strong>95% Expected Shortfall (ES)</strong>：分布最差 5% 情景的平均损失，用来描述进入尾部之后的损失程度。</li>
+</ul>
+<p>两者都是损失率，不是亏损概率。若换算为金额，需要再乘以组合价值，并保持持仓和风险期限的口径一致。</p>
+<p>ES 的有限样本计算细节见配套 Notebook。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>组合</th>
+<th>历史 95% VaR</th>
+<th>正态模拟 95% VaR</th>
+<th>历史 95% ES</th>
+<th>正态模拟 95% ES</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>等权</td>
+<td>1.593%</td>
+<td>1.681%</td>
+<td>2.393%</td>
+<td>2.120%</td>
+</tr>
+<tr class="even">
+<td>固定市值加权</td>
+<td>1.666%</td>
+<td>1.751%</td>
+<td>2.481%</td>
+<td>2.216%</td>
+</tr>
+</tbody>
+</table>
+<p>表中结果来自冻结样本及已保存的模拟输出。在 95% 分位点，正态模拟的 VaR 略高于历史值，但 ES 更低。对本样本而言，单看 VaR 会遗漏正态模型对尾部平均损失的低估，不能将结果概括为正态模型在所有置信水平下都低估风险。</p>
+<div id="fig-mc-portfolio-risk" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mc-portfolio-risk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/portfolio-mc-fig05-risk-metrics-20261001-221520.png" class="img-fluid figure-img" style="width:88.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mc-portfolio-risk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;11.11: 相同组合、期限和置信水平下的 VaR 与 ES 比较
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="用区块抽样模拟多日组合收益" class="level3" data-number="11.6.5">
+<h3 data-number="11.6.5" class="anchored" data-anchor-id="用区块抽样模拟多日组合收益"><span class="header-section-number">11.6.5</span> 用区块抽样模拟多日组合收益</h3>
+<p>前面的整行重抽样每次取出一天的五只股票收益，保留同日联系。若独立抽取 20 行组成多日记录，相邻交易日之间的联系就会被打散。区块抽样将抽样单位改为连续多日的联合收益记录，以保留区块内部的时间联系。</p>
+<section id="持有期限区块长度与持仓规则" class="level4" data-number="11.6.5.1">
+<h4 data-number="11.6.5.1" class="anchored" data-anchor-id="持有期限区块长度与持仓规则"><span class="header-section-number">11.6.5.1</span> 持有期限、区块长度与持仓规则</h4>
+<p>本实验采用以下设置：</p>
+<ul>
+<li><strong>持有期限 <span class="math inline">\(H=20\)</span> 个交易日</strong>：约对应一个月，比较期末累计收益与损失，不将多日风险与前面的单日风险直接比较。</li>
+<li><strong>区块长度 <span class="math inline">\(L=5,10,20\)</span></strong>：分别抽取 4 个、2 个、1 个区块，组成一条 20 日路径。5 日为教学起点，另外两种长度用于观察结果对区块长度的敏感性。</li>
+<li><strong>买入后不调仓</strong>：以等权或市值权重作为期初资金配置，持有期间不再平衡，暂不计交易成本。先计算各只股票的累计收益，再按期初权重汇总组合收益。</li>
+<li><strong>重复次数 <span class="math inline">\(B=100000\)</span></strong>：每种抽样方法生成 100000 条 20 日路径。程序检查和稳定性比较见配套 Notebook。</li>
+</ul>
+</section>
+<section id="怎样抽取区块" class="level4" data-number="11.6.5.2">
+<h4 data-number="11.6.5.2" class="anchored" data-anchor-id="怎样抽取区块"><span class="header-section-number">11.6.5.2</span> 怎样抽取区块</h4>
+<p>先将收益表放回原始价格表保留的交易日索引。只有连续 <span class="math inline">\(L\)</span> 个交易日内五只股票的收益都有效，才将这段记录列入候选区块，避免跨过缺失收益的日期。周末和休市日本来就不在该索引中，不当作缺口。</p>
+<p>候选区块逐日移动，允许重叠。例如，5 日区块可依次取第 1 至 5 日、第 2 至 6 日。随后有放回地抽取完整区块，并将五只股票的记录一并保留。</p>
+<p>对照组则从这些有效区块包含的日收益记录中独立抽取 20 天。两种方式因而具有相同的单日经验抽样分布，主要区别在于是否保留区块内部的连续关系。同一天可能出现在多个重叠区块中，对照组也保留这种抽样权重。</p>
+</section>
+<section id="核心-python-代码" class="level4" data-number="11.6.5.3">
+<h4 data-number="11.6.5.3" class="anchored" data-anchor-id="核心-python-代码"><span class="header-section-number">11.6.5.3</span> 核心 Python 代码</h4>
+<p>下面以 <span class="math inline">\(L=5\)</span> 为例。<code>trading_dates</code> 为原始价格表的完整日期索引，<code>weights</code> 为当前组合长度为 5 的期初权重数组。两个随机数发生器均在抽样前初始化。</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>H, L, B <span class="op">=</span> <span class="dv">20</span>, <span class="dv">5</span>, <span class="dv">100000</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 恢复原始交易日索引，排除跨过缺失收益日期的窗口。</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>values <span class="op">=</span> returns.reindex(trading_dates).to_numpy()</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>starts <span class="op">=</span> [</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    start <span class="cf">for</span> start <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(values) <span class="op">-</span> L <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> np.isfinite(values[start:start <span class="op">+</span> L]).<span class="bu">all</span>()</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>blocks <span class="op">=</span> np.stack([values[start:start <span class="op">+</span> L] <span class="cf">for</span> start <span class="kw">in</span> starts])</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 抽取完整区块，拼成 B 条 20 日路径。</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>chosen <span class="op">=</span> rng_block.integers(<span class="bu">len</span>(blocks), size<span class="op">=</span>(B, H <span class="op">//</span> L))</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>block_paths <span class="op">=</span> blocks[chosen].reshape(B, H, <span class="dv">5</span>)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 对照组从同一个日收益池中独立抽样。</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>pool <span class="op">=</span> blocks.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">5</span>)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>chosen_days <span class="op">=</span> rng_iid.integers(<span class="bu">len</span>(pool), size<span class="op">=</span>(B, H))</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>iid_paths <span class="op">=</span> pool[chosen_days]</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="co"># 买入持有：先计算个股累计价值，再按期初权重加总。</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>block_returns <span class="op">=</span> np.prod(<span class="dv">1</span> <span class="op">+</span> block_paths, axis<span class="op">=</span><span class="dv">1</span>) <span class="op">@</span> weights <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>iid_returns <span class="op">=</span> np.prod(<span class="dv">1</span> <span class="op">+</span> iid_paths, axis<span class="op">=</span><span class="dv">1</span>) <span class="op">@</span> weights <span class="op">-</span> <span class="dv">1</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>两种路径数组的维度均为 <span class="math inline">\(B\times H\times5\)</span>，分别对应路径、持有日和股票。<code>np.prod(1 + ..., axis=1)</code> 对每只股票的每日总收益率连乘，得到期末价值与期初价值之比。按期初权重加总后减去 1，即为组合累计收益率。改变权重数组，可用同一批路径计算另一组合的收益。</p>
+<p>将 <span class="math inline">\(L\)</span> 改为 10 和 20 后，重新构造候选区块及对应的独立抽样对照。这里三个区块长度均可整除持有期限。</p>
+</section>
+<section id="风险指标与收益分布" class="level4" data-number="11.6.5.4">
+<h4 data-number="11.6.5.4" class="anchored" data-anchor-id="风险指标与收益分布"><span class="header-section-number">11.6.5.4</span> 风险指标与收益分布</h4>
+<p>下表中的 VaR、ES 均为 95% 置信水平下的 <strong>20 日损失率</strong>，以百分比表示，没有年化。独立抽样均指当前区块长度对应的匹配对照。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>组合</th>
+<th style="text-align: right;">区块长度</th>
+<th style="text-align: right;">独立抽样 VaR</th>
+<th style="text-align: right;">区块抽样 VaR</th>
+<th style="text-align: right;">独立抽样 ES</th>
+<th style="text-align: right;">区块抽样 ES</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>等权</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6.78</td>
+<td style="text-align: right;">6.67</td>
+<td style="text-align: right;">8.66</td>
+<td style="text-align: right;">8.73</td>
+</tr>
+<tr class="even">
+<td>等权</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">6.76</td>
+<td style="text-align: right;">6.38</td>
+<td style="text-align: right;">8.60</td>
+<td style="text-align: right;">8.79</td>
+</tr>
+<tr class="odd">
+<td>等权</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">6.81</td>
+<td style="text-align: right;">6.08</td>
+<td style="text-align: right;">8.71</td>
+<td style="text-align: right;">7.98</td>
+</tr>
+<tr class="even">
+<td>市值权重</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6.83</td>
+<td style="text-align: right;">6.68</td>
+<td style="text-align: right;">8.76</td>
+<td style="text-align: right;">8.69</td>
+</tr>
+<tr class="odd">
+<td>市值权重</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">6.81</td>
+<td style="text-align: right;">6.56</td>
+<td style="text-align: right;">8.71</td>
+<td style="text-align: right;">8.80</td>
+</tr>
+<tr class="even">
+<td>市值权重</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">6.86</td>
+<td style="text-align: right;">6.26</td>
+<td style="text-align: right;">8.80</td>
+<td style="text-align: right;">8.11</td>
+</tr>
+</tbody>
+</table>
+<p>例如，10 日区块下等权组合的 VaR 为 6.38%，ES 为 8.79%。约 5% 的模拟结果损失超过 6.38%，而最差 5% 结果的平均损失为 8.79%。与独立抽样相比，VaR 较低，ES 却较高，说明损失分位点与尾部平均损失需要分别观察。</p>
+<div id="fig-mc-portfolio-block-dist" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mc-portfolio-block-dist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/mc-block-fig01-distributions-20261017-183940.png" class="img-fluid figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mc-portfolio-block-dist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;11.12: 20 日组合累计收益分布。蓝色虚线为匹配的独立抽样，橙色实线为区块抽样。各面板使用相同坐标与分箱。
+</figcaption>
+</figure>
+</div>
+<p>5 日区块与独立抽样的主体分布较接近。20 日区块的分布在零附近更集中，也出现较明显的不规则起伏。此时每条路径直接抽取一个历史 20 日窗口，这些起伏与有限个历史窗口有关，不宜解释为稳定的市场规律。</p>
+<p>本样本中，区块抽样的 VaR 均低于对应的独立抽样，20 日区块的 ES 也明显较低。因此，保留时间联系不必然提高风险估计，也不能仅因某个区块长度给出的风险较低，就认为它更合适。不同长度的有效窗口及重叠权重略有差异，应先在相同长度内比较两种方式。</p>
+<p>在买入持有规则下，仅调换一条路径内日期的顺序不会改变期末收益。区块抽样在这里保留的是哪些日收益共同组成一段持有期的关系，区块拼接处的联系仍会被截断。它也不会自动反映最新市场状态或生成历史中没有出现过的危机机制。</p>
+<div class="callout callout-style-default callout-note callout-titled" title="本案例的 MC 模拟设计要点">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+本案例的 MC 模拟设计要点
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>先明确风险对象</strong>：单日收益、累计损失与路径风险需要不同的生成机制，不能只更换抽样方法而保留原来的结果解释。</li>
+<li><strong>根据目标保留数据联系</strong>：本例联合生成股票收益或按整行重抽，避免丢失同日共同波动。多日目标还要处理时间依赖。</li>
+<li><strong>按同一口径评价模型</strong>：固定数据、权重、期限和置信水平，再比较分布形状、VaR 与 ES。</li>
+<li><strong>将模型检查与重复次数检查分开</strong>：数值稳定说明计算近似更稳定，模型能否用于风险判断仍取决于数据代表性、分布设定及样本外表现。</li>
+</ul>
+</div>
+</div>
+<p>数据处理、完整风险表、不同种子与重复次数的稳定性检查，以及有效区块覆盖、自相关和 20 日窗口枚举核对，均保留在配套 Notebook 中。</p>
+<p>区块思想也用于经济时间序列预测。Hyndman 和 Athanasopoulos (<a href="https://otexts.com/fpp3/advanced.html">2021</a>) 的第 12.5 节给出了序列分解后对余项成段抽样的例子，可与本例对照阅读，但两者的抽样对象和分析目标不同。</p>
+</section>
+</section>
+</section>
+<section id="sec-mc-process" class="level2" data-number="11.7">
+<h2 data-number="11.7" class="anchored" data-anchor-id="sec-mc-process"><span class="header-section-number">11.7</span> 案例四：从随机变量到随机过程</h2>
+<p>假设我们持有一项当前价格为 100 元的资产，持有期为一年，并将 75 元设为风险监测阈值。我们关心两个问题：(1) 持有期结束时，资产价格高于 100 元的可能性有多大？(2) 在整个持有期内，资产价格至少有一次跌破 75 元的可能性有多大？</p>
+<p>第一个问题只需考察期末价格，第二个问题则需要保留价格随时间变化的轨迹，也就是价格路径。那么，如何描述价格路径的数据生成过程 (DGP) 呢？我们需要设定价格随时间变化的规律，以及各时点的随机冲击如何影响价格。这就从单个随机变量扩展到了随机过程，用一组按时间排列、相互关联的随机变量描述价格变化。</p>
+<p>接下来，我们先用随机游走说明冲击如何逐步累积，再引入布朗运动和保持价格为正的几何布朗运动模型。基于生成的价格路径，我们比较期末上涨与持有期内跌破阈值这两类事件，并考察波动程度对路径风险的影响。</p>
+<section id="随机游走" class="level3" data-number="11.7.1">
+<h3 data-number="11.7.1" class="anchored" data-anchor-id="随机游走"><span class="header-section-number">11.7.1</span> 随机游走</h3>
+<p>我们先从一个简单的 DGP 开始：下一期的取值等于本期取值加上一个随机冲击。设 <span class="math inline">\(X_{k}\)</span> 为第 <span class="math inline">\(k\)</span> 个观测时点的取值，<span class="math inline">\(X_{0}\)</span> 为给定的初始值，各观测时点间隔相同。随机游走可以写为</p>
+<p><span id="eq-mc-process-random-walk"><span class="math display">\[
+X_{k+1}=X_{k}+\varepsilon_{k+1},\qquad
+\varepsilon_{k}\overset{\mathrm{iid}}{\sim}N(0,\tau^{2}).
+\tag{11.29}\]</span></span></p>
+<p>其中 <span class="math inline">\(k=0,1,\ldots,N-1\)</span>，<span class="math inline">\(N\)</span> 为更新步数。<span class="math inline">\(\varepsilon_{k+1}\)</span> 是从第 <span class="math inline">\(k\)</span> 个时点到下一个时点的随机冲击，<span class="math inline">\(\tau&gt;0\)</span> 是每一步冲击的标准差。这里假定各步冲击相互独立、服从相同的正态分布，且均值为零。正态分布是本例的选择，随机游走也可以采用其他冲击分布。</p>
+<p>给定初始值后，我们抽取第一个冲击，加到初始值上得到 <span class="math inline">\(X_{1}\)</span>；再抽取第二个冲击，加到 <span class="math inline">\(X_{1}\)</span> 上得到 <span class="math inline">\(X_{2}\)</span>，依次更新，便形成一条路径。假设 <span class="math inline">\(X_{0}=100\)</span>，前三步冲击分别为 <span class="math inline">\(2\)</span>、<span class="math inline">\(-5\)</span> 和 <span class="math inline">\(1\)</span>，相应取值就依次为 <span class="math inline">\(102\)</span>、<span class="math inline">\(97\)</span> 和 <span class="math inline">\(98\)</span>。当然，这些数字只用于说明更新规则。</p>
+<p>因此，第 <span class="math inline">\(k\)</span> 个时点的取值可以写成初始值与此前全部冲击之和：</p>
+<p><span id="eq-mc-process-walk-sum"><span class="math display">\[
+X_{k}=X_{0}+\sum_{j=1}^{k}\varepsilon_{j}.
+\tag{11.30}\]</span></span></p>
+<p>这里我们需要区分：独立抽取的是每一步新增的冲击，而不是每个时点的取值。例如，<span class="math inline">\(X_{1}=X_{0}+\varepsilon_{1}\)</span>，下一步则是 <span class="math inline">\(X_{2}=X_{1}+\varepsilon_{2}\)</span>。第二个冲击独立于第一个冲击，但 <span class="math inline">\(X_{2}\)</span> 是从 <span class="math inline">\(X_{1}\)</span> 出发继续更新的，第一个冲击的影响仍保留在其中。因此，每一步都要在上一步的取值上加上新冲击，不能把各时点的取值分别独立抽取。</p>
+<p>在这个零均值冲击模型中，<span class="math inline">\(E(X_{k})=X_{0}\)</span>，而 <span class="math inline">\(\operatorname{Var}(X_{k})=k\tau^{2}\)</span>。也就是说，多次模拟路径在同一时点的平均水平仍围绕初始值，但随着累积步数增加，路径之间的分散程度会扩大。</p>
+<p>上面的模型把每一步冲击的标准差固定为 <span class="math inline">\(\tau\)</span>。如果将同一段观察期划分为更多、更短的时间间隔，每一步的冲击大小应怎样调整？接下来，我们通过布朗运动说明冲击大小与时间长度的关系。</p>
+</section>
+<section id="布朗运动" class="level3" data-number="11.7.2">
+<h3 data-number="11.7.2" class="anchored" data-anchor-id="布朗运动"><span class="header-section-number">11.7.2</span> 布朗运动</h3>
+<p>在前面的随机游走中，每一步冲击的方差为 <span class="math inline">\(\tau^{2}\)</span>，经过 <span class="math inline">\(N\)</span> 步后，累积冲击的方差为 <span class="math inline">\(N\tau^{2}\)</span>。如果保持观察期不变，只是把它划分为更多、更短的时段，却仍使用同样大小的冲击，那么整个观察期的累积方差就会增大。因此，每一步冲击的大小需要与这一步代表的时间长度相匹配。</p>
+<p>设观察期长度为 <span class="math inline">\(T\)</span>，以年为时间单位，将其等分为 <span class="math inline">\(N\)</span> 个时段。每段长度为 <span class="math inline">\(\Delta t=T/N\)</span>，经过第 <span class="math inline">\(k\)</span> 步后的时点记为 <span class="math inline">\(t_{k}=k\Delta t\)</span>。例如，将一年分为四段，五个时点依次为 <span class="math inline">\(t_{0}=0\)</span>、<span class="math inline">\(t_{1}=0.25\)</span>、<span class="math inline">\(t_{2}=0.5\)</span>、<span class="math inline">\(t_{3}=0.75\)</span> 和 <span class="math inline">\(t_{4}=1\)</span>。第 <span class="math inline">\(k\)</span> 个时段从 <span class="math inline">\(t_{k-1}\)</span> 到 <span class="math inline">\(t_{k}\)</span>，其长度为 <span class="math inline">\(\Delta t\)</span>。</p>
+<p>我们先把一年累积冲击的方差设为 1，用来建立一个标准的随机冲击模型。如果一年分为 <span class="math inline">\(N\)</span> 段，各段冲击独立、方差相同，那么每段冲击的方差应为 <span class="math inline">\(1/N\)</span>，标准差应为 <span class="math inline">\(\sqrt{1/N}\)</span>。这样，无论一年分为 100 段还是 400 段，累积方差都是 1：前者每段冲击的标准差为 <span class="math inline">\(0.1\)</span>，后者为 <span class="math inline">\(0.05\)</span>。</p>
+<p>将这一规则用于任意长度为 <span class="math inline">\(T\)</span> 的观察期，我们让累积方差等于 <span class="math inline">\(T\)</span>，即时间长度加倍，累积方差也加倍。由于每段长度为 <span class="math inline">\(\Delta t=T/N\)</span>，每段冲击的方差就应为 <span class="math inline">\(\Delta t\)</span>，标准差为 <span class="math inline">\(\sqrt{\Delta t}\)</span>。各段方差加总后恰好为</p>
+<p><span id="eq-mc-process-brownian-variance"><span class="math display">\[
+N\left(\sqrt{\Delta t}\right)^{2}=N\Delta t=T.
+\tag{11.31}\]</span></span></p>
+<p>按照这一规则，我们用 <span class="math inline">\(W_{t}\)</span> 表示时点 <span class="math inline">\(t\)</span> 的累积冲击，从 <span class="math inline">\(W_{0}=0\)</span> 开始，依次更新：</p>
+<p><span id="eq-mc-process-brownian-grid"><span class="math display">\[
+W_{t_{k+1}}=W_{t_{k}}+\sqrt{\Delta t}\,Z_{k+1},\qquad
+Z_{k+1}\overset{\mathrm{iid}}{\sim}N(0,1).
+\tag{11.32}\]</span></span></p>
+<p>其中 <span class="math inline">\(k=0,1,\ldots,N-1\)</span>，<span class="math inline">\(Z_{k+1}\)</span> 是每一步独立抽取的标准正态随机变量。乘以 <span class="math inline">\(\sqrt{\Delta t}\)</span> 后，新增冲击的均值为零、方差为 <span class="math inline">\(\Delta t\)</span>。与前面的随机游走相比，这里把每步标准差 <span class="math inline">\(\tau\)</span> 换成了随时间长度调整的 <span class="math inline">\(\sqrt{\Delta t}\)</span>。</p>
+<p>上面的更新规则可以用来模拟标准布朗运动在这些时点上的取值。标准布朗运动从 <span class="math inline">\(W_{0}=0\)</span> 开始，路径连续，不重叠时间区间内的增量相互独立。任意长度为 <span class="math inline">\(\Delta t&gt;0\)</span> 的时间区间内，其增量满足</p>
+<p><span id="eq-mc-process-brownian-increment"><span class="math display">\[
+W_{t+\Delta t}-W_{t}\sim N(0,\Delta t).
+\tag{11.33}\]</span></span></p>
+<p>增量就是这一时段新增的冲击。由此可得，整个观察期结束时，<span class="math inline">\(W_{T}\sim N(0,T)\)</span>。我们依次生成各段增量并累加，就得到观测时点上的路径取值。</p>
+<p>布朗运动为我们提供了一个随时间累积的标准随机冲击。接下来，我们将它引入资产价格模型，分别设定价格的平均增长趋势和波动程度。</p>
+<div id="fig-mc-brownian" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mc-brownian-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/monte-carlo-fig16-brownian-sample-paths-20261002-094348.png" class="img-fluid figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mc-brownian-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;11.13: 标准布朗运动模拟路径，横轴为时间，纵轴为累计冲击
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-mc-brownian" class="quarto-xref">图&nbsp;<span>11.13</span></a> 展示同一生成规则产生的不同布朗运动路径。</p>
+</section>
+<section id="几何布朗运动" class="level3" data-number="11.7.3">
+<h3 data-number="11.7.3" class="anchored" data-anchor-id="几何布朗运动"><span class="header-section-number">11.7.3</span> 几何布朗运动</h3>
+<p>前面用 <span class="math inline">\(W_{t}\)</span> 表示随时间累积的随机冲击。为了生成资产价格，我们还需要设定价格的平均增长趋势和波动程度。这里我们采用几何布朗运动 (Geometric Brownian Motion, GBM) 作为价格路径的 DGP。</p>
+<p>设初始价格为 <span class="math inline">\(S_{0}&gt;0\)</span>，时点 <span class="math inline">\(t\)</span> 的价格为 <span class="math inline">\(S_{t}\)</span>。沿用前面的时间划分，我们根据时点 <span class="math inline">\(t_{k}\)</span> 的价格，按下式计算下一时点 <span class="math inline">\(t_{k+1}\)</span> 的价格：</p>
+<p><span id="eq-mc-process-gbm-update"><span class="math display">\[
+S_{t_{k+1}}
+=S_{t_{k}}\exp\left[
+\left(\mu-\frac{1}{2}\sigma^{2}\right)\Delta t
++\sigma\sqrt{\Delta t}\,Z_{k+1}
+\right].
+\tag{11.34}\]</span></span></p>
+<p>其中 <span class="math inline">\(\Delta t=T/N\)</span>，<span class="math inline">\(Z_{k+1}\)</span> 仍为每一步独立抽取的标准正态冲击。<span class="math inline">\(\mu\)</span> 是控制预期价格增长的参数，<span class="math inline">\(\sigma&gt;0\)</span> 是波动率参数。时间以年为单位时，<span class="math inline">\(\mu\)</span> 按年设定，<span class="math inline">\(\sigma\)</span> 表示年化波动率。在这个模型中，下一时点的价格等于当前价格乘以一个随机增长倍数。由于初始价格与指数函数的值都为正，生成的价格也始终为正。</p>
+<p>为了看清增长与波动如何影响价格，我们可以将更新式写成对数价格变化：</p>
+<p><span id="eq-mc-process-gbm-log-return"><span class="math display">\[
+\log\left(\frac{S_{t_{k+1}}}{S_{t_{k}}}\right)
+=\left(\mu-\frac{1}{2}\sigma^{2}\right)\Delta t
++\sigma\sqrt{\Delta t}\,Z_{k+1}.
+\tag{11.35}\]</span></span></p>
+<p>等号左侧是这一时段的对数收益率。右侧第一项为 <span class="math inline">\((\mu-\sigma^{2}/2)\Delta t\)</span>，决定对数收益率的均值；第二项为 <span class="math inline">\(\sigma\sqrt{\Delta t}Z_{k+1}\)</span>，是布朗运动的新增冲击乘以波动率参数，决定对数收益率的随机波动。由于 <span class="math inline">\(Z_{k+1}\)</span> 的均值为零、方差为 1，对数收益率的标准差为 <span class="math inline">\(\sigma\sqrt{\Delta t}\)</span>。在相同时间间隔内，<span class="math inline">\(\sigma\)</span> 越大，波动越强。</p>
+<p>更新式中减去 <span class="math inline">\(\sigma^{2}/2\)</span>，是为了使经过指数变换后的预期价格按 <span class="math inline">\(\mu\)</span> 所设定的速度增长。对于标准正态变量 <span class="math inline">\(Z_{k+1}\)</span>，随机增长倍数中的这一部分具有如下期望：</p>
+<p><span id="eq-mc-process-gbm-exp-mean"><span class="math display">\[
+E\left[\exp\left(\sigma\sqrt{\Delta t}\,Z_{k+1}\right)\right]
+=\exp\left(\frac{1}{2}\sigma^{2}\Delta t\right).
+\tag{11.36}\]</span></span></p>
+<p>将这个期望代入价格更新式，因子 <span class="math inline">\(\exp(\sigma^{2}\Delta t/2)\)</span> 与 <span class="math inline">\(\exp(-\sigma^{2}\Delta t/2)\)</span> 相乘后等于 1。因此，给定当前价格，下一时点的预期价格为 <span class="math inline">\(S_{t_{k}}e^{\mu\Delta t}\)</span>。这里 <span class="math inline">\(\mu\)</span> 控制预期价格的增长，而 <span class="math inline">\(\mu-\sigma^{2}/2\)</span> 是单位时间内对数收益率的均值。</p>
+<p>从 <span class="math inline">\(S_{0}\)</span> 出发，我们依次抽取各步冲击并更新价格，就得到一条价格路径。把各步对数收益率加总，再利用布朗运动的增量累积关系，可以得到价格随时间变化的表达式：</p>
+<p><span id="eq-mc-process-gbm-level"><span class="math display">\[
+S_{t}=S_{0}\exp\left[
+\left(\mu-\frac{1}{2}\sigma^{2}\right)t+\sigma W_{t}
+\right].
+\tag{11.37}\]</span></span></p>
+<p>在模拟中，我们为每条路径生成一组覆盖全部时段的随机冲击，就能得到多条价格路径。在保持初始价格、期限与增长率参数一致的条件下，我们可以改变 <span class="math inline">\(\sigma\)</span>，比较不同波动程度下的价格路径。随后，我们分别统计期末价格高于初始价格的路径比例，以及观测时点上至少一次跌破阈值的路径比例，用来比较终值风险与途中风险。</p>
+<div id="fig-mc-gbm-low" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mc-gbm-low-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/monte-carlo-fig17-gbm-low-volatility-20261002-094348.png" class="img-fluid figure-img" style="width:78.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mc-gbm-low-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;11.14: 年化波动率较低时的 GBM 价格路径
+</figcaption>
+</figure>
+</div>
+<div id="fig-mc-gbm-high" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mc-gbm-high-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/monte-carlo-fig18-gbm-high-volatility-20261002-094348.png" class="img-fluid figure-img" style="width:78.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mc-gbm-high-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;11.15: 年化波动率较高时的 GBM 价格路径
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-mc-gbm-low" class="quarto-xref">图&nbsp;<span>11.14</span></a> 和 <a href="#fig-mc-gbm-high" class="quarto-xref">图&nbsp;<span>11.15</span></a> 分别使用 <span class="math inline">\(\sigma=0.10\)</span> 和 <span class="math inline">\(\sigma=0.35\)</span>，两组均设 <span class="math inline">\(S_{0}=100\)</span>、<span class="math inline">\(\mu=0.08\)</span>、<span class="math inline">\(T=1\)</span>、<span class="math inline">\(N=252\)</span>，各展示 30 条路径。两组使用不同种子，因此不是固定同一组冲击的逐条配对比较。</p>
+</section>
+<section id="终值风险和路径风险" class="level3" data-number="11.7.4">
+<h3 data-number="11.7.4" class="anchored" data-anchor-id="终值风险和路径风险"><span class="header-section-number">11.7.4</span> 终值风险和路径风险</h3>
+<p>有了价格路径的 DGP，我们就可以生成 <span class="math inline">\(B\)</span> 条路径，分别估计期末价格上涨、持有期间曾跌破阈值，以及这两类事件同时发生的概率。沿用初始价格 <span class="math inline">\(S_{0}=100\)</span> 元、持有期 <span class="math inline">\(T=1\)</span> 年和阈值 <span class="math inline">\(H=75\)</span> 元的设定，用 <span class="math inline">\(S_{t_{k}}^{(b)}\)</span> 表示第 <span class="math inline">\(b\)</span> 条路径在时点 <span class="math inline">\(t_{k}\)</span> 的价格，其中 <span class="math inline">\(t_{N}=T\)</span>。每条路径在观测时点上的最低价格为</p>
+<p><span id="eq-mc-process-path-minimum"><span class="math display">\[
+M^{(b)}=\min_{k=0,\ldots,N}S_{t_{k}}^{(b)}.
+\tag{11.38}\]</span></span></p>
+<p>基于期末价格和最低价格，我们可以计算以下三项指标：</p>
+<ul>
+<li><strong>期末上涨的概率</strong>：若 <span class="math inline">\(S_{T}^{(b)}&gt;S_{0}\)</span>，说明这条路径的期末价格高于初始价格。将满足条件的路径条数除以 <span class="math inline">\(B\)</span>，即可得到期末上涨概率的模拟估计。它反映持有至期末时价格上涨的可能性，但无法说明持有期间是否曾出现较大下跌。</li>
+<li><strong>持有期间曾跌破阈值的概率</strong>：若 <span class="math inline">\(M^{(b)}&lt;H\)</span>，说明至少有一个观测时点的价格低于 75 元。将满足条件的路径条数除以 <span class="math inline">\(B\)</span>，即可得到曾跌破阈值概率的模拟估计。它反映持有期间触及预设风险警戒线的可能性，有助于判断单看期末结果会遗漏多少风险信息。</li>
+<li><strong>期末上涨且曾跌破阈值的概率</strong>：显然，也可能存在这种情形：价格在持有期间曾跌破 75 元，随后回升，期末价格高于 100 元。这类路径同时满足 <span class="math inline">\(S_{T}^{(b)}&gt;S_{0}\)</span> 和 <span class="math inline">\(M^{(b)}&lt;H\)</span>。将其条数除以全部路径数 <span class="math inline">\(B\)</span>，即可估计这两件事同时发生的概率。这项指标能直接说明，期末上涨与持有期间发生较大下跌可以出现在同一条路径中。</li>
+</ul>
+<p>主风险实验取 <span class="math inline">\(\mu=0.08\)</span>、<span class="math inline">\(\sigma=0.30\)</span>、<span class="math inline">\(N=252\)</span> 和 <span class="math inline">\(B=5000\)</span>，其余参数沿用上述设定。下面的 <code>barrier</code> 对应阈值 <span class="math inline">\(H=75\)</span>，<code>rng</code> 在实验开始前使用种子 20261001 初始化。</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 每行对应一条路径，每列对应一个时间步的冲击。</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T <span class="op">/</span> N</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>increments <span class="op">=</span> rng.normal(<span class="dv">0</span>, np.sqrt(dt), size<span class="op">=</span>(B, N))</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>brownian <span class="op">=</span> np.column_stack([</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    np.zeros(B), np.cumsum(increments, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>times <span class="op">=</span> np.linspace(<span class="dv">0</span>, T, N <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 在时间网格上计算价格，不用 Euler 近似价格转移。</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>prices <span class="op">=</span> S0 <span class="op">*</span> np.exp(</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    (mu <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> times <span class="op">+</span> sigma <span class="op">*</span> brownian</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>terminal_gain <span class="op">=</span> prices[:, <span class="op">-</span><span class="dv">1</span>] <span class="op">&gt;</span> S0</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>breach <span class="op">=</span> prices.<span class="bu">min</span>(axis<span class="op">=</span><span class="dv">1</span>) <span class="op">&lt;</span> barrier</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co"># 同一批路径分别统计终值、阈值和二者共同发生的比例。</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(terminal_gain.mean(), breach.mean())</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((terminal_gain <span class="op">&amp;</span> breach).mean())</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>代码逐期累加冲击，并使用 GBM 的精确表达式计算网格价格，未采用 Euler 价格更新。按配套 Notebook 重新运行，2749 条路径期末上涨，1402 条路径在观测时点上曾跌破 75 元，133 条路径同时满足两项条件。分别除以全部 5000 条路径，得到 54.98%、28.04% 和 2.66%。第三项是联合事件概率，不是以期末上涨路径为分母的条件概率。</p>
+<p>阈值仅用于风险监测，本例没有模拟跌破后的强制平仓或止损交易，不能将这项概率直接解释为止损后的损益。</p>
+<p>前两项分别从期末结果和持有期间的价格变化评价风险，第三项则把两者联系起来。因此，评估持有风险时，我们需要结合期末结果与路径信息，判断持有期间的价格变化是否可能触及预设风险警戒线。</p>
+<p>这些概率都按选定的观测时点计算。例如，如果只记录每日收盘价，某日为 80 元，次日为 82 元，即使两次记录之间的价格曾跌到 70 元，也不会被记为跌破 75 元。实际分析时，我们需要根据风险监测的目的选择观测频率。</p>
+<p>增加 <span class="math inline">\(B\)</span> 可以减少事件比例的抽样误差，但不能捕捉两个观测时点之间漏记的跌破事件。加密时间网格与增加路径数解决不同的近似问题。</p>
+<div class="callout callout-style-default callout-note callout-titled" title="本案例的 MC 模拟设计要点">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+本案例的 MC 模拟设计要点
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>让生成对象对应风险问题</strong>：终值问题可以只保留终点，途中事件则需要路径信息。</li>
+<li><strong>明确时间与参数单位</strong>：统一年化参数、模拟期限和时间步长，冲击标准差按时间间隔的平方根缩放。</li>
+<li><strong>在同一批路径上比较事件</strong>：同时记录期末表现和阈值事件，保留二者共同发生的比例及分母含义。</li>
+<li><strong>区分抽样与监测误差</strong>：增加路径数与加密时间网格分别解决不同的近似问题，均不能修复价格过程的模型设定错误。</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="扩展阅读：用 Monte Carlo 为欧式看涨期权定价">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+扩展阅读：用 Monte Carlo 为欧式看涨期权定价
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>欧式看涨期权的到期支付只取决于到期价格，因此可以直接模拟终值来估计期权价格。</p>
+<p>欧式看涨期权赋予持有人在到期时以约定价格 <span class="math inline">\(K\)</span> 买入资产的权利。<span class="math inline">\(K\)</span> 称为执行价格，<span class="math inline">\(T\)</span> 为距到期的年数。若到期价格 <span class="math inline">\(S_{T}&gt;K\)</span>，持有人获得的到期支付为 <span class="math inline">\(S_{T}-K\)</span>，否则支付为零，因此到期支付可写为 <span class="math inline">\(\max(S_{T}-K,0)\)</span>。这项支付只取决于到期价格，模拟时可以直接生成 <span class="math inline">\(S_{T}\)</span>。</p>
+<p>这里采用无分红、无交易成本且可连续交易的 Black–Scholes 模型，并假定无风险利率 <span class="math inline">\(r\)</span> 和波动率 <span class="math inline">\(\sigma\)</span> 恒定。定价使用风险中性分布，在该分布下，价格过程中的增长率参数由前面的 <span class="math inline">\(\mu\)</span> 换为无风险利率 <span class="math inline">\(r\)</span>。风险中性分布用于无套利定价，不代表资产未来价格的真实概率分布。</p>
+<p>配套定价实验另设 <span class="math inline">\(S_{0}=K=100\)</span>、<span class="math inline">\(r=0.05\)</span>、<span class="math inline">\(\sigma=0.20\)</span>、<span class="math inline">\(T=1\)</span> 和 <span class="math inline">\(B=100000\)</span>，种子为 20261001。这里的波动率和重复次数不同于主风险实验，风险中性分布用于定价，不用于解释主实验的风险概率。</p>
+<p>按上述定价参数，独立生成 <span class="math inline">\(B\)</span> 个标准正态变量 <span class="math inline">\(Z^{(b)}\)</span>，计算到期价格，再将到期支付的平均值折现：</p>
+<p><span id="eq-mc-process-option-mc"><span class="math display">\[
+\begin{aligned}
+S_{T}^{(b)}&amp;=S_{0}\exp\left[\left(r-\frac{1}{2}\sigma^{2}\right)T+\sigma\sqrt{T}\,Z^{(b)}\right],
+\qquad Z^{(b)}\overset{\mathrm{iid}}{\sim}N(0,1),\\
+\widehat{C}_{0}&amp;=e^{-rT}\frac{1}{B}\sum_{b=1}^{B}\max(S_{T}^{(b)}-K,0).
+\end{aligned}
+\tag{11.39}\]</span></span></p>
+<p>其中 <span class="math inline">\(r\)</span> 采用连续复利的年利率口径，<span class="math inline">\(\widehat{C}_{0}\)</span> 是期权当前价格的 Monte Carlo 估计。下面的代码对应上述计算，参数设定和随机数发生器 <code>rng</code> 的初始化见配套 Notebook。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 在风险中性分布下，直接生成 B 个到期价格。</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>Z <span class="op">=</span> rng.normal(size<span class="op">=</span>B)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>ST <span class="op">=</span> S0 <span class="op">*</span> np.exp(</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    (r <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> T <span class="op">+</span> sigma <span class="op">*</span> np.sqrt(T) <span class="op">*</span> Z</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 计算各情景的到期支付，再对平均支付折现。</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>payoff <span class="op">=</span> np.maximum(ST <span class="op">-</span> K, <span class="dv">0</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>C0_hat <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> payoff.mean()</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>ST</code> 保存 <span class="math inline">\(B\)</span> 个到期价格，<code>payoff</code> 保存对应支付，<code>C0_hat</code> 即模拟得到的期权价格。配套 Notebook 还将它与同一模型下的 Black–Scholes 公式价格对照，用于检查定价计算的准确程度。</p>
+<p>对应的理论价格为</p>
+<p><span id="eq-mc-process-option"><span class="math display">\[
+C_{0}=e^{-rT}E^{Q}[\max(S_{T}-K,0)].
+\tag{11.40}\]</span></span></p>
+<p>其中 <span class="math inline">\(Q\)</span> 表示风险中性测度。上式的理论期望与前面的有限次模拟估计相区别。</p>
+<p>本次复跑的 MC 价格约为 10.4165，Black–Scholes 价格约为 10.4506，MC 标准误约为 0.0463。两者差异处于有限次模拟的抽样误差范围内，这项核对检验计算实现，不证明真实价格过程符合 GBM。</p>
+<div id="fig-mc-option-convergence" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mc-option-convergence-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/monte-carlo-fig19-mc-option-convergence-20261002-094348.png" class="img-fluid figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mc-option-convergence-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+图&nbsp;11.16: 不同重复次数下 MC 期权价格与闭式解的比较
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-mc-option-convergence" class="quarto-xref">图&nbsp;<span>11.16</span></a> 展示不同重复次数下的价格估计。单次随机序列中的误差不必随 <span class="math inline">\(B\)</span> 增大而单调下降。</p>
+<p>这个例子说明，我们应先明确分析目标和支付规则，再决定模拟终值还是完整路径。风险中性模拟可以用于定价，但其中的价格上涨概率不能直接当作前面风险分析中的实际上涨概率。</p>
+</div>
+</div>
+<p><a href="../notebooks/monte-carlo/monte-carlo-cases.html#sec-mc-nb-process">配套 Notebook：案例四</a>。本例为给定模型下的教学模拟。</p>
+</section>
+</section>
+<section id="sec-mc-reliable" class="level2" data-number="11.8">
+<h2 data-number="11.8" class="anchored" data-anchor-id="sec-mc-reliable"><span class="header-section-number">11.8</span> 如何建立一个可信的 Monte Carlo 模型</h2>
+<p>虽然四个案例的分析目标不同，但开展模拟时都需要回答几个基本问题：生成机制如何设定，计算结果是否可靠，这些结果又能支持什么判断。下面将其归纳为五项检查。</p>
+<section id="要点一评价指标能否回答分析问题" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="要点一评价指标能否回答分析问题">要点一：评价指标能否回答分析问题</h3>
+<p>选择指标之前，需要明确分析目标。考察估计量的性质，可以比较偏差和离散程度。评价投资项目，则需要兼顾预期价值与下行损失。分析组合风险或价格路径时，还要明确持有期限，以及关注期末结果还是途中事件。</p>
+<p>目标确定后，应说明指标的具体算法，包括概率的分母、损失的计量单位，以及 VaR 和 ES 对应的期限。比较不同方案时，这些口径必须保持一致。</p>
+</section>
+<section id="要点二概率分布与参数是否有合理依据" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="要点二概率分布与参数是否有合理依据">要点二：概率分布与参数是否有合理依据</h3>
+<p>选择概率分布，需要结合变量的经济含义、取值范围和历史特征，不能只看抽样是否方便。常见的选择包括：</p>
+<div id="mc-distribution-guide">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">变量特征</th>
+<th style="text-align: left;">可考虑的分布或生成方式</th>
+<th style="text-align: left;">需要检查</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">可正可负、近似对称的连续变量</td>
+<td style="text-align: left;">正态分布</td>
+<td style="text-align: left;">能否反映极端值。厚尾情形可比较自由度大于 2 的 t 分布等设定。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0 与 1 之间的连续比例</td>
+<td style="text-align: left;">Beta 分布，或对潜在变量作 logistic 变换</td>
+<td style="text-align: left;">是否需要包含端点，取值集中在何处。两种方式隐含的分布假设不同。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">严格为正的连续变量</td>
+<td style="text-align: left;">对数正态分布、Gamma 分布</td>
+<td style="text-align: left;">偏度、尾部和尺度是否合理，是否需要允许取值为 0。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">非负整数次数</td>
+<td style="text-align: left;">Poisson 分布、负二项分布</td>
+<td style="text-align: left;">Poisson 分布的均值等于方差。方差明显较大时，可考虑负二项分布等设定，并检查零值比例。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">需要保留历史联合特征的观测</td>
+<td style="text-align: left;">整行或区块重抽样</td>
+<td style="text-align: left;">保留了哪些变量间和跨日联系，历史样本是否覆盖相关风险。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>项目估值中的市场份额变换、有界贴现率设定，以及 GBM 的正价格路径，都考虑了变量的取值约束。不过，满足约束并不意味着模型足够合理。例如，正态模型可能低估收益率的尾部风险，历史重抽样也无法自动反映样本中未出现过的风险机制。</p>
+<p>参数的依据同样需要交代清楚。教学设定、历史估计和情景假设不能混为一谈，历史估计值也不能当作已知真值。对于影响结论的关键参数，应进一步考察其取值变化带来的影响。</p>
+</section>
+<section id="要点三是否保留了必要的变量联系和时间信息" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="要点三是否保留了必要的变量联系和时间信息">要点三：是否保留了必要的变量联系和时间信息</h3>
+<p>确定各变量的概率分布后，还需要考虑它们如何共同变化。比如，在投资组合案例中，我们将同一交易日的股票收益整行抽取，并用区块抽样保留连续若干日的记录，以便尽可能保留变量间的内在关联。</p>
+<p>如果关注的是持有期内是否跌破阈值，还必须在 DGP 中刻画观察期内的路径信息，并明确监测频率。只生成期末价格，无法判断持有期间是否曾经跌破阈值。</p>
+</section>
+<section id="要点四代码是否有误模型是否合理" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="要点四代码是否有误模型是否合理">要点四：代码是否有误，模型是否合理</h3>
+<p>检查代码时，应核对计算过程是否符合预设的模型与实验步骤。例如，项目估值中，可以分别用逐年贴现和贴现加权份额公式计算 NPV，检查两种算法的结果是否一致。路径风险中，则要检查代码是否准确识别了目标事件。例如，统计期末上涨且途中曾跌破阈值的概率，应先找出同时满足这两个条件的路径，再用其数量除以全部模拟路径数。</p>
+<p>代码计算正确，并不意味着模型合理。使用真实数据时，还需比较历史与模拟数据的波动、相关性和尾部表现，判断模型是否保留了与分析有关的重要特征。我们人为设定 DGP 时，则应检查模拟结果是否符合预设性质，不能将其当作现实证据。</p>
+<p>为了便于复核，应记录参数、种子、软件环境和数据版本，并保存代码与执行输出，使正文中的数值和图表都有据可查。</p>
+</section>
+<section id="要点五增加模拟次数能改善什么不能解决什么" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="要点五增加模拟次数能改善什么不能解决什么">要点五：增加模拟次数能改善什么，不能解决什么</h3>
+<p>在模型设定不变的情况下，增加重复次数通常可以减小 MC 近似误差，使模拟得到的均值、概率等指标更加稳定。更换种子或计算适用的 MC 标准误，可以帮助判断当前重复次数是否满足精度要求。</p>
+<p>但重复次数再多，也无法弥补不合理的模型设定或数据不足。对此，需要改变相关条件，观察结论如何变化。例如，调整项目估值中的市场规模与固定支出，或比较组合风险的生成方式和区块长度，可以了解结论对关键设定的依赖程度。</p>
+<p>因此，检查模拟结果时，既要看重复次数是否足够，也要看结论是否依赖某些缺乏依据的假设。</p>
+<p>对均值和期望的数值计算，还可以研究抽样方式本身。Hickernell、Kirk 和 Sorokin (<a href="https://doi.org/10.48550/arXiv.2502.03644">2025</a>) 的公开教程介绍了准蒙特卡罗方法，可作为改进计算效率的进阶阅读，不改变本章已有实验的抽样设定。</p>
+<p><span id="sec-mc-agent"></span></p>
+<div class="callout callout-style-default callout-note callout-titled" title="AI 和 Agent 的辅助边界">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+AI 和 Agent 的辅助边界
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>使用 AI 或 Agent 辅助模拟时，可以先写清模型、参数和计算步骤，再让它协助编写代码、整理实验和绘制图表。这样既便于检查生成的代码，也能减少反复修改程序时偏离原定问题的情况。</p>
+<p>模型假设是否合理、指标能否回答问题，仍需结合经济知识和数据判断。AI 生成的数值与解释应以实际执行结果为依据，不能直接作为分析结论。</p>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-mc-summary" class="level2" data-number="11.9">
+<h2 data-number="11.9" class="anchored" data-anchor-id="sec-mc-summary"><span class="header-section-number">11.9</span> 本章小结</h2>
+<p>本章从估计量的重复抽样表现出发，将 MC 模拟用于项目估值、组合损失和价格路径分析。随着问题变化，模拟设计也需要调整：项目估值要沿经营关系计算现金流，组合风险要保留收益之间的联系，路径风险则要在 DGP 中描述价格随时间变化的过程。</p>
+<p>案例四尤其说明，期末上涨的资产仍可能在持有期间经历较大跌幅。评价这类风险，不能只看终值，还需根据价格路径识别途中事件。期权定价作为扩展应用，进一步说明应根据所求结果决定模拟终值还是完整路径。</p>
+</section>
+<section id="sec-mc-references" class="level2" data-number="11.10">
+<h2 data-number="11.10" class="anchored" data-anchor-id="sec-mc-references"><span class="header-section-number">11.10</span> 参考文献与扩展阅读</h2>
+<p>以下资料按学习任务提供阅读入口，不要求通读。在线教材可直接阅读，商业图书的链接不表示可免费取得全文。没有核实公开 PDF 的条目明确标注，不提供不明来源的下载。</p>
+<ol type="1">
+<li><p>Downey, A. B. (<strong>2025</strong>). <em>Think Stats: Exploratory Data Analysis</em> (3rd ed.). O’Reilly Media. <a href="https://allendowney.github.io/ThinkStats/">Link</a> (rep), PDF：未核实第三版完整公开 PDF，<a href="https://scholar.google.com/scholar?q=Think+Stats+Exploratory+Data+Analysis+Downey+third+edition">Google</a>. <a href="https://github.com/AllenDowney/ThinkStats">配套 Notebook</a>。</p>
+<p><strong>数据分析练习 (低—中)</strong>：选读<a href="https://allendowney.github.io/ThinkStats/chap08.html">第 8 章 §8.1–8.2、§8.7</a>。比较均值与中位数的模拟表现，再引入少量计量单位错误，观察方法的优劣如何变化。对应案例一及模型检查，重点学习稳健性分析。</p></li>
+<li><p>Hickernell, F. J., Kirk, N., &amp; Sorokin, A. G. (<strong>2025</strong>). <em>Quasi-Monte Carlo Methods: What, Why, and How?</em> arXiv preprint, arXiv:2502.03644. <a href="https://doi.org/10.48550/arXiv.2502.03644">Link</a>, <a href="https://arxiv.org/pdf/2502.03644">PDF</a>, <a href="https://scholar.google.com/scholar?q=Quasi-Monte+Carlo+Methods+What+Why+and+How+Hickernell+Kirk+Sorokin">Google</a>.</p>
+<p><strong>方法进阶 (中—高)</strong>：选读<a href="https://arxiv.org/html/2502.03644v1">第 2、4、6 节</a>，理解低差异点集、随机化和误差控制。它为项目平均 NPV 与期权定价提供增加 <span class="math inline">\(B\)</span> 以外的精度改进思路，但效果依赖具体问题，不能直接推广到所有阈值事件或尾部风险指标。</p></li>
+<li><p>Hilpisch, Y. (<strong>2018</strong>). <em>Python for Finance: Mastering Data-Driven Finance</em> (2nd ed.). O’Reilly Media. <a href="https://www.oreilly.com/library/view/python-for-finance/9781492024323/">Link</a> (rep), PDF：未核实完整公开版，<a href="https://scholar.google.com/scholar?q=Python+for+Finance+Mastering+Data-Driven+Finance+Hilpisch">Google</a>. <a href="https://github.com/yhilpisch/py4fi2nd">配套代码</a>。</p>
+<p><strong>金融编程 (中)</strong>：从第 12 章的随机过程、风险度量与方差缩减入手，再选读第 18 章的金融模型模拟。对应案例三、四，可进一步比较 GBM 与跳跃模型。公开代码采用较早的 Python 环境，运行前需检查兼容性。</p></li>
+<li><p>Hyndman, R. J., &amp; Athanasopoulos, G. (<strong>2021</strong>). <em>Forecasting: Principles and Practice</em> (3rd ed.). OTexts. <a href="https://otexts.com/fpp3/">Link</a>, PDF：未核实完整公开版，<a href="https://scholar.google.com/scholar?q=Forecasting+Principles+and+Practice+Hyndman+Athanasopoulos">Google</a>.</p>
+<p><strong>时间联系 (中)</strong>：选读<a href="https://otexts.com/fpp3/advanced.html">第 12.5 节</a>。以季度水泥产量为例，先分解序列，再对余项成段重抽样，生成用于预测的多条序列。可对照案例三理解区块方法，但该书的预测与 bagging 目标不同于本章的持有期损失分析。全书免费在线，出版年与在线更新日期分开理解。</p></li>
+<li><p>Morris, T. P., White, I. R., &amp; Crowther, M. J. (<strong>2019</strong>). Using simulation studies to evaluate statistical methods. <em>Statistics in Medicine</em>, 38(11), 2074–2102. <a href="https://doi.org/10.1002/sim.8086">Link</a>, <a href="https://discovery.ucl.ac.uk/id/eprint/10066118/1/2019%20-%20Morris%20-%20simulation%20studies%20tutorial%20-%20stat%20med.pdf">PDF</a>, <a href="https://scholar.google.com/scholar?q=Using+simulation+studies+to+evaluate+statistical+methods">Google</a>.</p>
+<p><strong>实验设计 (中)</strong>：重点读第 3 节的 ADEMP 框架，以及第 5.2–5.3 节的评价指标、MC 误差和重复次数。对应案例一与章末检查，可据此设计自己的方法比较实验。文章开放获取。</p></li>
+<li><p>Pinder, J. P. (<strong>2022</strong>). <em>Introduction to Business Analytics Using Simulation</em> (2nd ed.). Academic Press. <a href="https://shop.elsevier.com/books/introduction-to-business-analytics-using-simulation/pinder/978-0-323-91717-9">Link</a>, PDF：未核实完整公开版，<a href="https://scholar.google.com/scholar?q=Introduction+to+Business+Analytics+Using+Simulation+Pinder">Google</a>.</p>
+<p><strong>商业决策 (低—中)</strong>：先读第 2–3 章的决策树、决策与模拟，再按需选读第 5–7 章的主观、经验和理论概率分布，以及第 8 章的模拟精度。适合在案例二之后系统学习如何将不确定性纳入经营方案比较。</p></li>
+<li><p>Zivot, E. (<strong>2021</strong>). <em>Introduction to Computational Finance and Financial Econometrics with R</em>. Online course text. <a href="https://bookdown.org/compfinezbook/introcompfinr/">Link</a>, PDF：未核实完整公开版，<a href="https://scholar.google.com/scholar?q=Introduction+to+Computational+Finance+and+Financial+Econometrics+with+R+Zivot">Google</a>.</p>
+<p><strong>金融估计入门 (低—中)</strong>：选读<a href="https://bookdown.org/compfinezbook/introcompfinr/Using-Monte-Carlo-Simulation.html">第 7.6 节</a>，优先看均值、方差估计的重复抽样实验。对应案例一，可将书中的样本量与重复次数符号转换为本章的 <span class="math inline">\(n\)</span> 与 <span class="math inline">\(B\)</span>，比较偏差和标准误。免费在线，代码使用 R；年份按所读在线版记录。</p></li>
+</ol>
+</section>
+<section id="sec-mc-notebook" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-mc-notebook">本章案例 Notebook</h2>
+<p><a href="../notebooks/monte-carlo/monte-carlo-cases.html">打开 Monte Carlo 模拟：案例与代码</a>。基础抽样与四个案例在同一页，可通过页内目录快速跳转。网页展示已执行输出，本地复现使用同名 Notebook 和仓库中的处理后数据。</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "已复制");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "已复制");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../notebooks/bootstrap/bootstrap-stata.html" class="pagination-link" aria-label="Bootstrap：Stata 实验">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Bootstrap：Stata 实验</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../notebooks/monte-carlo/monte-carlo-cases.html" class="pagination-link" aria-label="Monte Carlo：案例与代码">
+        <span class="nav-page-text">Monte Carlo：案例与代码</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>LN429 · 中山大学岭南学院</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/lianxhcn/FinEco/edit/main/lectures/monte-carlo.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p><a href="https://www.lianxh.cn">连享会</a> · Quarto Book</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

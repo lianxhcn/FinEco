@@ -1,0 +1,25 @@
+.cell-output { max-width: 100%; overflow-x: auto; }
+.math.display { display: block; max-width: 100%; overflow-x: auto; overflow-y: hidden; padding-block: .15em; }
+.math.display mjx-container[display="true"] {
+  margin: .4em 0 !important;
+  padding: 0;
+  overflow: visible;
+}
+.math.display mjx-assistive-mml {
+  width: 1px !important;
+  height: 1px !important;
+}
+p:has(> .math.display) { margin-block: .35em; }
+pre { max-width: 100%; }
+.quarto-figure img { max-width: 100%; height: auto; }
+#mc-distribution-guide { max-width: 100%; overflow-x: auto; }
+#mc-distribution-guide table { width: 100%; min-width: 36rem; table-layout: fixed; }
+#mc-distribution-guide col:nth-child(1) { width: 22% !important; }
+#mc-distribution-guide col:nth-child(2) { width: 28% !important; }
+#mc-distribution-guide col:nth-child(3) { width: 50% !important; }
+#mc-distribution-guide th:nth-child(1),
+#mc-distribution-guide td:nth-child(1) { width: 22%; }
+#mc-distribution-guide th:nth-child(2),
+#mc-distribution-guide td:nth-child(2) { width: 28%; }
+#mc-distribution-guide th:nth-child(3),
+#mc-distribution-guide td:nth-child(3) { width: 50%; }
