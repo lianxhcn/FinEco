@@ -2,17 +2,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.39">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
 <title>8&nbsp; 线性回归的建模语言：CEF、OLS 与统计推断 – 金融计量经济学</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -21,8 +27,9 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 /* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -33,7 +40,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -66,15 +73,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../">
 <link href="../notebooks/linear-regression/linear-regression-stata.html" rel="next">
 <link href="../notebooks/ols/ols-stata.html" rel="prev">
-<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0626ff4d7a71b55c8707dcae1d04a9b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-5c1318cf63eba56dbef7ba16bc7d56f5.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-d59a9bb4a0246dd4330968064f99cf3e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-a95c78014f407402cafa70654a1b7e57.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -105,7 +113,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="icon" type="image/png" sizes="40x40" href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -118,7 +126,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -137,7 +145,7 @@ window.Quarto = {
 <link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-sidebar docked">
+<body class="nav-sidebar docked quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -161,7 +169,8 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
       <a href="../index.html" class="sidebar-logo-link">
-      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">金融计量经济学</a> 
@@ -459,7 +468,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-本讲要点
+<span class="screen-reader-only">注记</span>本讲要点
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -486,20 +495,20 @@ window.Quarto = {
 <h2 data-number="8.1" class="anchored" data-anchor-id="案例情境一个系数三种读法"><span class="header-section-number">8.1</span> 案例情境：一个系数，三种读法</h2>
 <p>先从一个几乎人人都跑过的回归说起。</p>
 <p>手上是一份劳动经济学的经典数据 (<code>mroz</code>，421 位在业女性)，我们想看看教育和工资的关系，把时薪 <code>wage</code> 对受教育年限 <code>educ</code> 回归：</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"data/linear-regression/mroz.dta"</span>, <span class="kw">clear</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"data/linear-regression/mroz.dta"</span>, <span class="kw">clear</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>* 只保留在职女性(wage&gt;0)，剔除个别极端高薪，并把人数过少的教育年限并组（详见下一节）</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">drop</span> <span class="kw">if</span> wage==0</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">drop</span> <span class="kw">if</span> wage&gt;17</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">replace</span> educ = 9  <span class="kw">if</span> educ&lt;=9</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">replace</span> educ = 14 <span class="kw">if</span> educ==15</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage educ</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------------</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage educ</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------------</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>        wage | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interval]</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>-------------+----------------------------------------------------------------</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        educ |      0.522      0.048    10.76   0.000        0.426       0.617</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>       <span class="dt">_cons</span> |     -2.744      0.624    -4.40   0.000       -3.971      -1.517</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------------</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">N</span> = 421     <span class="fu">F</span>(1, 419) = 115.85     R-squared = 0.217     Root MSE = 2.11</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">N</span> = 421     <span class="fu">F</span>(1, 419) = 115.85     R-squared = 0.217     Root MSE = 2.11</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <blockquote class="blockquote">
 <p>数据说明：<code>mroz</code> 是 官方托管的教学数据。本章使用本地冻结快照，渲染不联网取数。本讲用到的另外两份数据 (<code>xtcs</code>、<code>B1_production</code>) 随本仓库提供，用一个全局宏指到本地数据目录即可读取 (见「代码实操」开头)。</p>
 </blockquote>
@@ -523,12 +532,12 @@ window.Quarto = {
 <h3 data-number="8.2.1" class="anchored" data-anchor-id="条件期望函数按-x-分组求平均"><span class="header-section-number">8.2.1</span> 条件期望函数：按 X 分组求平均</h3>
 <p>抛开公式，先看回归在直觉上做了一件什么事。</p>
 <p>还是教育和工资。为了把「分组平均」看清楚，我们先对数据做一点基础清理 (这也是上一段代码里那几行预处理在做的事)：只留在职女性、剔掉个别极端高薪、把人数太少的教育年限并到相邻组，剩下 421 位、8 个教育档位。然后按受教育年限分组，算出每一组的<strong>平均时薪</strong>：</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"data/linear-regression/mroz.dta"</span>, <span class="kw">clear</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"data/linear-regression/mroz.dta"</span>, <span class="kw">clear</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">drop</span> <span class="kw">if</span> wage==0</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">drop</span> <span class="kw">if</span> wage&gt;17</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">replace</span> educ = 9  <span class="kw">if</span> educ&lt;=9</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">replace</span> educ = 14 <span class="kw">if</span> educ==15</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">bysort</span> educ: <span class="kw">egen</span> wage_m = <span class="kw">mean</span>(wage)   <span class="co">// 每个 educ 组的平均 wage</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">bysort</span> educ: <span class="kw">egen</span> wage_m = <span class="kw">mean</span>(wage)   <span class="co">// 每个 educ 组的平均 wage</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -577,8 +586,8 @@ window.Quarto = {
 \widehat{m}(12)=\overline{wage}_{educ=12}\approx 3.4
 \]</span></p>
 <p>用 Stata 估计某一组的 CEF，可以先求该组的样本均值——下面两条命令给出的常数项是一回事：</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">sum</span> wage <span class="kw">if</span> educ==12   <span class="co">// 直接求 educ=12 这组的平均 wage</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage <span class="kw">if</span> educ==12   <span class="co">// 只含常数项的回归，截距 = 该组均值</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">sum</span> wage <span class="kw">if</span> educ==12   <span class="co">// 直接求 educ=12 这组的平均 wage</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage <span class="kw">if</span> educ==12   <span class="co">// 只含常数项的回归，截距 = 该组均值</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>条件均值回归关注 CEF；选定线性形式后，估计对象是它的线性概括。我们关心教育和工资的关系，本质上就是想知道：<strong>从一个受教育水平挪到另一个，平均工资怎么变。</strong> 这正是 CEF 描述的东西。</p>
 <p>把观测值和 CEF 的关系写清楚，就得到建模的出发点。任何一个 <span class="math inline">\(Y_{i}\)</span>，都可以拆成「它所在组的平均值」加「一个偏离」：</p>
 <p><span class="math display">\[
@@ -593,12 +602,12 @@ Y = m(X) + e, \qquad \mathbb{E}[e \mid X] = 0, \qquad \mathbb{E}[e^{2} \mid X] =
 <h3 data-number="8.2.2" class="anchored" data-anchor-id="个体回归与组均值加权回归"><span class="header-section-number">8.2.2</span> 个体回归与组均值加权回归</h3>
 <p>上面这条 组样本均值 (8 个深蓝点) 和我们一开始跑的那条 OLS 直线 (红线) 到底什么关系？一个小实验能把它讲透。</p>
 <p>我们分别跑三个回归：(1) 对全部 421 个<strong>个体</strong>回归；(2) 只对 8 个<strong>分组平均值</strong>回归；(3) 对 8 个分组平均值回归、但<strong>按每组人数加权</strong> (<code>aweight</code>)：</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage   educ                          <span class="co">// (1) 个体回归</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage   educ                          <span class="co">// (1) 个体回归</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">bysort</span> educ: <span class="kw">egen</span> Nj = <span class="fu">count</span>(wage)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">egen</span> <span class="fu">tag</span> = <span class="fu">tag</span>(educ)</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage_m educ <span class="kw">if</span> <span class="fu">tag</span>                  <span class="co">// (2) 每组一个均值</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage_m educ <span class="kw">if</span> <span class="fu">tag</span> [<span class="kw">aweight</span> = Nj]    <span class="co">// (3) 按组人数加权</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage_m educ <span class="kw">if</span> <span class="fu">tag</span> [<span class="kw">aweight</span> = Nj]    <span class="co">// (3) 按组人数加权</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                  (1)             (2)             (3)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>           individual       groupmean    groupmean_aw</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------</span>
@@ -608,7 +617,7 @@ Y = m(X) + e, \qquad \mathbb{E}[e \mid X] = 0, \qquad \mathbb{E}[e^{2} \mid X] =
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>              (0.624)         (1.334)         (1.331)</span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------</span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="kw">N</span>                 421               8               8</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>看第 (1) 列和第 (3) 列：斜率都是 <strong>0.522</strong>，截距都是 <strong>−2.744</strong>，一模一样。这不是巧合——<strong>当组内解释变量取值相同时，对个体做 OLS 与对组样本均值按人数加权回归的斜率和截距相同。</strong> 个体残差平方和可分为组内离差平方和与组均值的加权拟合误差；前一项不随参数变化，所以最优参数相同。标准误通常不同，也不能据此证明总体 CEF 是直线。</p>
 <p>(第 (2) 列不加权，把人数悬殊的组一视同仁，斜率略有偏离——这也说明权重不是可有可无的。)</p>
 </section>
@@ -637,7 +646,7 @@ Y = m(X) + e, \qquad \mathbb{E}[e \mid X] = 0, \qquad \mathbb{E}[e^{2} \mid X] =
 \]</span></p>
 <p>其中 (4) 里 <span class="math inline">\(D_{i}=\mathbf{1}(educ_{i}&gt;13)\)</span> 是一个 0/1 变量。这些模型描述条件关系，但目标尺度不同：对数模型拟合 <span class="math inline">\(\mathbb{E}[\ln(wage)\mid educ]\)</span>，预测值直接取指数，一般不能还原为 <span class="math inline">\(\mathbb{E}[wage\mid educ]\)</span>。</p>
 <p>把这四种设定的<strong>拟合线</strong>画在同一张散点图上，差别一目了然 (<a href="#fig-lr-four" class="quarto-xref">图&nbsp;<span>8.2</span></a>)：线性是一条直线，平方项让它可以弯曲，对数预测值取指数后得到另一条曲线，分段设定则在某个门槛处折一下。<strong>同一批数据，选不同的 <span class="math inline">\(f(\cdot)\)</span>，得到的拟合值就不一样</strong>——这正是「模型设定」四个字最直观的样子。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>* 四种设定各自的拟合值，叠在一张图上</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>* 四种设定各自的拟合值，叠在一张图上</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage educ</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> yhat_lin                       <span class="co">// (1) 线性</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage educ c.educ#c.educ</span>
@@ -650,7 +659,7 @@ Y = m(X) + e, \qquad \mathbb{E}[e \mid X] = 0, \qquad \mathbb{E}[e^{2} \mid X] =
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> yhat_dum                       <span class="co">// (4) 分段（虚拟变量）</span></span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="kw">twoway</span> (<span class="kw">scatter</span> wage educ, mcolor(gs11) msize(vsmall)) <span class="co">///</span></span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>       (<span class="kw">line</span> yhat_lin educ) (<span class="kw">line</span> yhat_quad educ) <span class="co">///</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>       (<span class="kw">line</span> yhat_log educ) (<span class="kw">line</span> yhat_dum educ), <span class="kw">sort</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>       (<span class="kw">line</span> yhat_log educ) (<span class="kw">line</span> yhat_dum educ), <span class="kw">sort</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="fig-lr-four" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-lr-four-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -668,7 +677,7 @@ Y = m(X) + e, \qquad \mathbb{E}[e \mid X] = 0, \qquad \mathbb{E}[e^{2} \mid X] =
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-扩展：条件期望之外，还有条件分位数、条件概率
+<span class="screen-reader-only">提示</span>扩展：条件期望之外，还有条件分位数、条件概率
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -730,14 +739,14 @@ Y_{i} = \alpha + \beta X_{i} + e_{i} \tag{2}
 <h3 data-number="8.2.9" class="anchored" data-anchor-id="多元回归系数是控制其他变量之后的比较"><span class="header-section-number">8.2.9</span> 多元回归：系数是「控制其他变量之后」的比较</h3>
 <p>前面都是一个自变量。真实研究里，我们会往回归里加控制变量。加了之后，系数的含义会再精细一层——有时还会<strong>面目全非</strong>。</p>
 <p>换一份 Stata 自带数据 <code>nlsw88</code>(1988 年美国女性)，看一个更有戏剧性的例子。我们想知道「在本单位任职越久 (<code>tenure</code>)，工资是不是越高」，先只放 <code>tenure</code>，再逐步加入总工龄 <code>ttl_exp</code> 和受教育程度 <code>grade</code>：</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> nlsw88, <span class="kw">clear</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> nlsw88, <span class="kw">clear</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>eststo <span class="kw">clear</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>eststo n1: <span class="kw">reg</span> wage tenure</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>eststo n2: <span class="kw">reg</span> wage tenure ttl_exp</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>eststo n3: <span class="kw">reg</span> wage tenure ttl_exp grade</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>esttab n1 n2 n3, se <span class="kw">star</span>(* 0.10 ** 0.05 *** 0.01) r2 <span class="co">///</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>       mtitle(<span class="st">"只放 tenure"</span> <span class="st">"+总工龄"</span> <span class="st">"+受教育"</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb9"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>--------------------------------------------------------</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>       mtitle(<span class="st">"只放 tenure"</span> <span class="st">"+总工龄"</span> <span class="st">"+受教育"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>--------------------------------------------------------</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>              只放 tenure       +总工龄        +受教育</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>--------------------------------------------------------</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>tenure           0.186***       0.041          0.038</span>
@@ -749,7 +758,7 @@ Y_{i} = \alpha + \beta X_{i} + e_{i} \tag{2}
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="dt">_cons</span>            6.681***       3.772***      -3.864***</span>
 <span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>--------------------------------------------------------</span>
 <span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="kw">N</span>                 2231           2231           2229</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>--------------------------------------------------------</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>--------------------------------------------------------</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>只看第一列，任职年限每多一年、工资高约 0.19，高度显著。但一旦控制住<strong>总工龄</strong>，<code>tenure</code> 的系数骤降到 0.04、而且<strong>不再显著</strong>！原因不难理解：在本单位待得久的人，往往总的工作经验也长 (两者相关系数约 0.58)，第一列里 <code>tenure</code> 的系数其实「捞」走了大半本属于经验的功劳。控制总工龄后，<code>tenure</code> 的系数才回到它真正的含义——「<strong>在总工龄相同的人之间</strong>，多在本单位待一年对应的工资差异」，这一设定下点估计较小，但不显著不能证明真实关系为零。</p>
 <p>在线性 CEF 正确设定且没有涉及 <span class="math inline">\(X_{j}\)</span> 的平方项或交乘项时，系数可解释为条件均值的偏导数：</p>
 <p><span class="math display">\[
@@ -783,7 +792,7 @@ y_{i}=\alpha+\beta_{1}x_{1i}+\mathbf{z}_{i}'\boldsymbol{\gamma}+u_{i}.
 <li><strong>Step 3</strong>: 将 <span class="math inline">\(\tilde{y}\)</span> 对 <span class="math inline">\(\tilde{x}_{1}\)</span> 做不带常数项回归，斜率恰好等于完整多元回归的 <span class="math inline">\(\hat{\beta}_{1}\)</span>。</li>
 </ol>
 <p>工资残差是扣除总工龄和教育线性关联后的工资部分；任职年限残差扣除了同样关联。任职年限系数就是两个剩余部分之间的斜率。控制变量仅有常数项时，残差化退化为去均值。用现有工资案例核对：</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> nlsw88, <span class="kw">clear</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> nlsw88, <span class="kw">clear</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage tenure ttl_exp grade</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>* 固定完整模型样本，避免各步因缺失值使用不同观测。</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> <span class="kw">byte</span> sample_fwl = <span class="fu">e</span>(<span class="kw">sample</span>)</span>
@@ -793,7 +802,7 @@ y_{i}=\alpha+\beta_{1}x_{1i}+\mathbf{z}_{i}'\boldsymbol{\gamma}+u_{i}.
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> tenure ttl_exp grade <span class="kw">if</span> sample_fwl</span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> <span class="kw">double</span> tenure_r <span class="kw">if</span> sample_fwl, residuals</span>
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage_r tenure_r <span class="kw">if</span> sample_fwl, <span class="kw">noconstant</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="kw">display</span> <span class="st">"两种回归的系数差："</span> _b[tenure_r]-b_full</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="kw">display</span> <span class="st">"两种回归的系数差："</span> _b[tenure_r]-b_full</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>核对的是<strong>系数等价性</strong>。最后一步默认自由度调整与完整回归不同，不能直接使用其默认标准误代替完整模型推断。两边都残差化形成 FWL 的对称表达；只处理 <span class="math inline">\(y\)</span> 再对原始 <span class="math inline">\(x_{1}\)</span> 回归，一般无法恢复该系数。</p>
 <p>残差化扣除给定变量的线性预测部分，不保证未观测混杂消除，也不证明控制变量选得正确。部分回归图与固定效应估计都可从 FWL 理解；双重机器学习也借鉴残差化，但另需处理非线性预测、正交得分和交叉拟合，本章不展开。</p>
 </section>
@@ -820,29 +829,29 @@ y_{i}=\alpha+\beta_{1}x_{1i}+\mathbf{z}_{i}'\boldsymbol{\gamma}+u_{i}.
 <p><a href="../notebooks/linear-regression/linear-regression-stata.html">Stata 实验与真实输出</a> · <a href="../data/linear-regression/README.md">数据说明</a></p>
 <p>概念讲清楚了，这一节动手。代码以 Stata 为主，静态展示、输出已冻结；你把 <a href="../tools/linear-regression/linear-regression.do">完整 do-file</a> 下载下来就能一段段复跑。</p>
 <p>本章使用几份教学数据：<code>mroz</code> 为冻结快照，<code>nlsw88</code>、<code>auto</code> 由已安装 Stata 通过 <code>sysuse</code> 载入；<code>xtcs</code>、<code>B1_production</code> 随本仓库提供，从仓库根目录运行，先指定本地路径再 <code>use</code>：</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">global</span> D <span class="st">"data/linear-regression"</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>* 之后： <span class="kw">use</span> <span class="st">"$D/xtcs.dta"</span>, <span class="kw">clear</span>   <span class="co">// 冻结快照，不实时取数</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">global</span> D <span class="st">"data/linear-regression"</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>* 之后： <span class="kw">use</span> <span class="st">"$D/xtcs.dta"</span>, <span class="kw">clear</span>   <span class="co">// 冻结快照，不实时取数</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <section id="跑第一个回归从命令到拟合值" class="level3" data-number="8.3.1">
 <h3 data-number="8.3.1" class="anchored" data-anchor-id="跑第一个回归从命令到拟合值"><span class="header-section-number">8.3.1</span> 跑第一个回归：从命令到拟合值</h3>
 <p>回归只要一行 <code>reg y x</code>。跑完之后，Stata 在内存里留下了拟合值和残差，用 <code>predict</code> 取出来 (沿用前面清理后的 <code>mroz</code> 样本)：</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"data/linear-regression/mroz.dta"</span>, <span class="kw">clear</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"data/linear-regression/mroz.dta"</span>, <span class="kw">clear</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">drop</span> <span class="kw">if</span> wage==0 | wage&gt;17</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">replace</span> educ = 9 <span class="kw">if</span> educ&lt;=9</span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="kw">replace</span> educ = 14 <span class="kw">if</span> educ==15</span>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage educ</span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> wage_hat            <span class="co">// 拟合值 y-hat = -2.74 + 0.52*educ</span></span>
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="kw">predict</span> e_hat, residual     <span class="co">// 残差 e-hat = y - y-hat</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="ot">list</span> wage wage_hat e_hat <span class="kw">in</span> 1/3, <span class="kw">clean</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="ot">list</span> wage wage_hat e_hat <span class="kw">in</span> 1/3, <span class="kw">clean</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>拟合值 <span class="math inline">\(\hat{y}_{i}=\hat\alpha+\hat\beta x_{i}\)</span> 是模型对第 <span class="math inline">\(i\)</span> 个人的「预测」，残差 <span class="math inline">\(\hat{e}_{i}=y_{i}-\hat{y}_{i}\)</span> 是预测与实际的差。OLS 的目标 (最小化 <span class="math inline">\(\sum \hat{e}_{i}^{2}\)</span>) 保证了这些残差平方和最小，在含常数项的同一样本中，也保证 <span class="math inline">\(\sum_{i}\hat{e}_{i}=0\)</span> 与残差和回归变量样本正交。这是拟合代数，不能检验总体误差外生性。<a href="#fig-lr-cef" class="quarto-xref">图&nbsp;<span>8.1</span></a> 里那条红线就是拟合线，每个灰点到红线的竖直距离就是它的残差。</p>
 </section>
 <section id="读懂一张回归表" class="level3" data-number="8.3.2">
 <h3 data-number="8.3.2" class="anchored" data-anchor-id="读懂一张回归表"><span class="header-section-number">8.3.2</span> 读懂一张回归表</h3>
 <p>做研究时，我们很少只跑一个模型。把几个模型并排放进一张表，是论文的标准做法。用 <code>esttab</code>(<code>estout</code> 包) 可以一键生成：</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>eststo <span class="kw">clear</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>eststo <span class="kw">clear</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>eststo m1: <span class="kw">reg</span> wage educ</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>eststo m2: <span class="kw">reg</span> wage educ exper</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>esttab m1 m2, se <span class="kw">star</span>(* 0.10 ** 0.05 *** 0.01) r2 mtitle(<span class="st">"模型1"</span> <span class="st">"模型2"</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb14"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>--------------------------------------------</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>esttab m1 m2, se <span class="kw">star</span>(* 0.10 ** 0.05 *** 0.01) r2 mtitle(<span class="st">"模型1"</span> <span class="st">"模型2"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>--------------------------------------------</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>                    模型1           模型2</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>--------------------------------------------</span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>educ              0.522***        0.524***</span>
@@ -856,7 +865,7 @@ y_{i}=\alpha+\beta_{1}x_{1i}+\mathbf{z}_{i}'\boldsymbol{\gamma}+u_{i}.
 <span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>R-sq              0.217           0.247</span>
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>--------------------------------------------</span>
 <span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>Standard errors <span class="kw">in</span> parentheses</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>* <span class="kw">p</span>&lt;0.10 ** <span class="kw">p</span>&lt;0.05 *** <span class="kw">p</span>&lt;0.01</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>* <span class="kw">p</span>&lt;0.10 ** <span class="kw">p</span>&lt;0.05 *** <span class="kw">p</span>&lt;0.01</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>一张回归表要会读五样东西：</p>
 <ul>
 <li><strong>系数</strong> (0.524)：偏效应，前面讲过——「其它变量不变时，X 多一单位、Y 平均差多少」；</li>
@@ -870,11 +879,11 @@ y_{i}=\alpha+\beta_{1}x_{1i}+\mathbf{z}_{i}'\boldsymbol{\gamma}+u_{i}.
 <section id="换个单位系数会变吗变量的尺度" class="level3" data-number="8.3.3">
 <h3 data-number="8.3.3" class="anchored" data-anchor-id="换个单位系数会变吗变量的尺度"><span class="header-section-number">8.3.3</span> 换个单位，系数会变吗：变量的尺度</h3>
 <p>初学者常有的困惑：把工资从「美元」换成「美分」，或把教育从「年」换成「月」，系数会不会变？会，但变的只是数字，不是结论。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> wage_cents  = wage*100     <span class="co">// 工资改用美分</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> wage_cents  = wage*100     <span class="co">// 工资改用美分</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> educ_months = educ*12      <span class="co">// 教育改用月</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage       educ            <span class="co">// 原始</span></span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage_cents educ            <span class="co">// 因变量 ×100</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage       educ_months     <span class="co">// 自变量 ×12</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage       educ_months     <span class="co">// 自变量 ×12</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -911,24 +920,24 @@ y_{i}=\alpha+\beta_{1}x_{1i}+\mathbf{z}_{i}'\boldsymbol{\gamma}+u_{i}.
 <h3 data-number="8.3.4" class="anchored" data-anchor-id="对数与标准化系数怎么读"><span class="header-section-number">8.3.4</span> 对数与标准化：系数怎么读</h3>
 <p>变量可以取对数或做标准化。这里补上最要紧的一环：<strong>变换之后，系数该怎么读。</strong> 不同的变换，读法完全不同。</p>
 <p><strong>其一，对数-水平 (log-level)：半弹性。</strong> 把因变量取对数、自变量不变：</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> lwage educ     <span class="co">// lwage = ln(wage)</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb17"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>       lwage | Coefficient  Std. err.      t    P&gt;|t|</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>        educ |      0.116      0.015     7.92   0.000</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> lwage educ     <span class="co">// lwage = ln(wage)</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>       lwage | Coefficient  Std. err.      t    P&gt;|t|</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>        educ |      0.116      0.015     7.92   0.000</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>系数 0.116 要读成<strong>百分比</strong>：受教育每多一年，工资大约高 <span class="math inline">\(100\times0.116=11.6\%\)</span>。这类模型里，<span class="math inline">\(\beta\)</span> 是「X 每增一单位，Y 变化百分之几」，叫<strong>半弹性</strong>。</p>
 <p><strong>其二，对数-对数 (log-log)：弹性。</strong> X 和 Y 都取对数，系数就是<strong>弹性</strong>——X 变化 1%，Y 变化百分之几。用生产函数数据 (<code>B1_production</code>) 估柯布-道格拉斯生产函数最典型：</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"$D/B1_production.dta"</span>, <span class="kw">clear</span>    <span class="co">// $D 见本节开头</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> lnY lnL lnK      <span class="co">// ln产出 对 ln劳动、ln资本</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb19"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>         lnY | Coefficient  Std. err.      t    P&gt;|t|</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"$D/B1_production.dta"</span>, <span class="kw">clear</span>    <span class="co">// $D 见本节开头</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> lnY lnL lnK      <span class="co">// ln产出 对 ln劳动、ln资本</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>         lnY | Coefficient  Std. err.      t    P&gt;|t|</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>         lnL |      0.603      0.126     4.79   0.000</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>         lnK |      0.376      0.085     4.40   0.000</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>         lnK |      0.376      0.085     4.40   0.000</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>lnL</code> 的系数 0.603 读成：<strong>劳动投入每增加 1%，产出大约增加 0.60%</strong>；资本的产出弹性是 0.38。两者相加约等于 0.98，接近 1，说明该拟合与规模报酬不变接近，但原始行业口径未完整说明，仍需检验两系数之和是否等于 1——这类判断，正是弹性系数的用武之地。</p>
 <p><strong>其三，标准化系数：以标准差为单位比较。</strong> 不同自变量单位不同 (教育按年、经验也按年、但收入按元)，系数大小没法直接比谁更「重要」。给 <code>reg</code> 加 <code>beta</code> 选项，得到<strong>标准化系数</strong>：</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"data/linear-regression/mroz.dta"</span>, <span class="kw">clear</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"data/linear-regression/mroz.dta"</span>, <span class="kw">clear</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="kw">drop</span> <span class="kw">if</span> wage==0 | wage&gt;17</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> lwage educ exper, beta</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb21"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>       lwage | Coefficient  Std. err.      t    P&gt;|t|      Beta</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> lwage educ exper, beta</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>       lwage | Coefficient  Std. err.      t    P&gt;|t|      Beta</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>        educ |      0.108      0.013     8.14   0.000     0.361</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>       exper |      0.019      0.004     4.93   0.000     0.219</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>       exper |      0.019      0.004     4.93   0.000     0.219</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>标准化系数 (Beta 列) 读成：<strong>X 每增加一个标准差，Y 变化几个标准差</strong>。这里 <code>educ</code> 的 0.361 大于 <code>exper</code> 的 0.219，表示相同标准差变动下，教育对应更大的拟合变化；不能据此判断因果重要性，也不能直接当作独立方差贡献。<strong>要比较不同变量的相对重要性，才用标准化系数；解释单个变量的实际效应，还是用原始系数更直观。</strong></p>
 </section>
 <section id="虚拟变量与因子变量让不同类别有不同截距" class="level3" data-number="8.3.5">
@@ -985,26 +994,26 @@ y_{i}=\alpha+\gamma D_{i}+\beta x_{i}+u_{i}.
 </table>
 <p>下面落实到 <code>auto</code> 数据。</p>
 <p>性别、行业、地区这类<strong>类别变量</strong>，不能直接当数字放进回归——它们的取值 1、2、3 没有大小含义。正确做法是转成<strong>虚拟变量</strong> (0/1)。Stata 用因子变量前缀 <code>i.</code> 一步到位：</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> auto, <span class="kw">clear</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> price i.foreign <span class="kw">weight</span>    <span class="co">// i.foreign：以国产车为基准，进口车设一个虚拟变量</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb23"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>       price | Coefficient  Std. err.      t    P&gt;|t|</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> auto, <span class="kw">clear</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> price i.foreign <span class="kw">weight</span>    <span class="co">// i.foreign：以国产车为基准，进口车设一个虚拟变量</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>       price | Coefficient  Std. err.      t    P&gt;|t|</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>     foreign |</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>      进口车 |   3637.001    668.583     5.44   0.000</span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>      <span class="kw">weight</span> |      3.321      0.396     8.39   0.000</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>       <span class="dt">_cons</span> |  -4942.844   1345.591    -3.67   0.000</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>       <span class="dt">_cons</span> |  -4942.844   1345.591    -3.67   0.000</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>i.foreign</code> 自动以「国产车」为基准组，报告的是「进口车 vs 国产车」的差异：<strong>车重相同时，进口车平均贵 3637 美元。</strong> 虚拟变量在几何上就是<strong>平移截距</strong>——两组共用一个斜率 (<code>weight</code> 的 3.32)，但各有各的高度。</p>
 </section>
 <section id="交叉项让边际效应随另一个变量变" class="level3" data-number="8.3.6">
 <h3 data-number="8.3.6" class="anchored" data-anchor-id="交叉项让边际效应随另一个变量变"><span class="header-section-number">8.3.6</span> 交叉项：让边际效应随另一个变量变</h3>
 <p>虚拟变量允许截距不同，仍假设共同斜率。若车重与价格的关系也因产地而异，就加入产地与车重的交乘项。<code>##</code> 同时包含两个一阶项和交乘项：</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> price i.foreign##c.<span class="kw">weight</span>   <span class="co">// 允许两组截距、斜率都不同</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> price i.foreign##c.<span class="kw">weight</span>   <span class="co">// 允许两组截距、斜率都不同</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>这时进口车与国产车各有一条自己的拟合线 (<a href="#fig-lr-dummy" class="quarto-xref">图&nbsp;<span>8.3</span></a>)：在图中两组车重重叠的范围内，进口车拟合价格较高，且价格随车重上涨得更快 (斜率更陡)。交乘项系数就是两组的斜率差。画出来看得最清楚：</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">twoway</span> (<span class="kw">scatter</span> price <span class="kw">weight</span> <span class="kw">if</span> foreign==0, mcolor(<span class="bn">navy</span>) <span class="bn">msymbol</span>(O)) <span class="co">///</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">twoway</span> (<span class="kw">scatter</span> price <span class="kw">weight</span> <span class="kw">if</span> foreign==0, mcolor(<span class="bn">navy</span>) <span class="bn">msymbol</span>(O)) <span class="co">///</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>       (<span class="kw">scatter</span> price <span class="kw">weight</span> <span class="kw">if</span> foreign==1, mcolor(<span class="bn">cranberry</span>) <span class="bn">msymbol</span>(T)) <span class="co">///</span></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>       (<span class="kw">lfit</span> price <span class="kw">weight</span> <span class="kw">if</span> foreign==0, lcolor(<span class="bn">navy</span>)) <span class="co">///</span></span>
 <span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>       (<span class="kw">lfit</span> price <span class="kw">weight</span> <span class="kw">if</span> foreign==1, lcolor(<span class="bn">cranberry</span>)), <span class="co">///</span></span>
 <span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>       <span class="bn">legend</span>(<span class="kw">order</span>(1 <span class="st">"国产车"</span> 2 <span class="st">"进口车"</span>) <span class="bn">rows</span>(1) pos(6)) <span class="co">///</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>       <span class="bn">xtitle</span>(<span class="st">"车重 weight"</span>) <span class="bn">ytitle</span>(<span class="st">"价格 price"</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>       <span class="bn">xtitle</span>(<span class="st">"车重 weight"</span>) <span class="bn">ytitle</span>(<span class="st">"价格 price"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="fig-lr-dummy" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-lr-dummy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1034,23 +1043,23 @@ y_{i} = \alpha + (\gamma_{0} + \gamma_{1} z_{i})\, x_{i} + \varepsilon_{i} = \al
 \]</span></p>
 <p><span class="math inline">\(x_{i}\cdot z_{i}\)</span> 这一项就是<strong>交叉项</strong>。它的系数 <span class="math inline">\(\gamma_{1}\)</span> 刻画「<span class="math inline">\(z\)</span> 每高一单位，<span class="math inline">\(x\)</span> 的边际效应变化多少」。</p>
 <p>举个财务学的例子 (数据 <code>xtcs</code>，中国上市公司)：盈利能力 <code>npr</code>(净利润率) 对负债率 <code>tl</code> 的影响，会不会随公司规模 <code>size</code> 而不同？先不加交叉项，再加上：</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"$D/xtcs.dta"</span>, <span class="kw">clear</span>     <span class="co">// $D 见本节开头</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="st">"$D/xtcs.dta"</span>, <span class="kw">clear</span>     <span class="co">// $D 见本节开头</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>xtset code <span class="fu">year</span></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="kw">global</span> zz <span class="st">"tang fr ndts L.tobin i.year"</span></span>
 <span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> tl npr <span class="kw">size</span> <span class="ot">$zz</span>, <span class="kw">robust</span>                 <span class="co">// 不含交叉项</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> tl npr <span class="kw">size</span> c.npr#c.<span class="kw">size</span> <span class="ot">$zz</span>, <span class="kw">robust</span>     <span class="co">// 含交叉项</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb27"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>                     不含交叉项        含交叉项</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> tl npr <span class="kw">size</span> c.npr#c.<span class="kw">size</span> <span class="ot">$zz</span>, <span class="kw">robust</span>     <span class="co">// 含交叉项</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>                     不含交叉项        含交叉项</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>          npr           -0.371          1.729**</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>          <span class="kw">size</span>           0.033          0.040***</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>   c.npr#c.<span class="kw">size</span>                        -0.100**</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>   c.npr#c.<span class="kw">size</span>                        -0.100**</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>于是 <code>npr</code> 对 <code>tl</code> 的边际效应是</p>
 <p><span class="math display">\[
 \frac{\partial\, tl}{\partial\, npr} = 1.729 - 0.100 \times size
 \]</span></p>
 <p>用 <code>margins</code> 和 <code>marginsplot</code> 把它画出来 (<a href="#fig-lr-margins" class="quarto-xref">图&nbsp;<span>8.4</span></a>)：公司规模越大，盈利能力对负债率的 (负向) 作用越强。</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> tl npr <span class="kw">size</span> c.npr#c.<span class="kw">size</span> <span class="ot">$zz</span>, <span class="kw">robust</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> tl npr <span class="kw">size</span> c.npr#c.<span class="kw">size</span> <span class="ot">$zz</span>, <span class="kw">robust</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>margins, <span class="kw">dydx</span>(npr) <span class="fu">at</span>(<span class="kw">size</span>=(19(1)24))    <span class="co">// 不同 size 处 npr 的边际效应</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>marginsplot                               <span class="co">// 画出来，带 95% 置信区间</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>marginsplot                               <span class="co">// 画出来，带 95% 置信区间</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="fig-lr-margins" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-lr-margins-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1078,7 +1087,7 @@ y_{i} = \alpha + (\gamma_{0} + \gamma_{1} z_{i})\, x_{i} + \varepsilon_{i} = \al
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-交互效应可能不是线性的 (进阶)
+<span class="screen-reader-only">注记</span>交互效应可能不是线性的 (进阶)
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1090,12 +1099,12 @@ y_{i} = \alpha + (\gamma_{0} + \gamma_{1} z_{i})\, x_{i} + \varepsilon_{i} = \al
 <h3 data-number="8.3.7" class="anchored" data-anchor-id="平方项允许先升后降"><span class="header-section-number">8.3.7</span> 平方项：允许先升后降</h3>
 <p>平方项是一种特殊的交叉项——变量和它自己交乘 (<span class="math inline">\(x\cdot x = x^{2}\)</span>)。它让「直线」变成「抛物线」，从而能刻画<strong>先升后降</strong> (或先降后升) 的关系。</p>
 <p>工资和工作经验就是典型：入职头些年经验值钱、工资涨得快；到了一定年头，经验的边际回报递减，工资涨势放缓甚至回落。用 <code>nlsw88</code> 数据，把经验的平方项放进去：</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> nlsw88, <span class="kw">clear</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> nlsw88, <span class="kw">clear</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> ttl_exp2 = ttl_exp^2</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage ttl_exp ttl_exp2 hours age tenure married south i.race</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb30"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>        wage | Coefficient  Std. err.      t    P&gt;|t|</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage ttl_exp ttl_exp2 hours age tenure married south i.race</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>        wage | Coefficient  Std. err.      t    P&gt;|t|</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>     ttl_exp |      0.492      0.110     4.49   0.000</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    ttl_exp2 |     -0.009      0.005    -1.99   0.046</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    ttl_exp2 |     -0.009      0.005    -1.99   0.046</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>一阶项为正 (<span class="math inline">\(+0.49\)</span>)、平方项为负 (<span class="math inline">\(-0.009\)</span>)，合起来就是一条开口向下的抛物线 (<a href="#fig-lr-square" class="quarto-xref">图&nbsp;<span>8.5</span></a>)。对于 <span class="math inline">\(y=a x^{2} + b x + c\)</span> 这样的二次式，两个量最有用：</p>
 <p><span class="math display">\[
 \frac{\partial y}{\partial x} = b + 2a x, \qquad x^{*} = -\frac{b}{2a}
@@ -1105,7 +1114,7 @@ y_{i} = \alpha + (\gamma_{0} + \gamma_{1} z_{i})\, x_{i} + \varepsilon_{i} = \al
 x^{*} = -\frac{0.492}{2\times(-0.009)} \approx 27.2 \ \mathrm{years}
 \]</span></p>
 <p>也就是说，经验到约 27 年时工资达到顶点，之后开始回落。</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">di</span> -_b[ttl_exp]/(2*_b[ttl_exp2])    <span class="co">// 算拐点：27.2</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">di</span> -_b[ttl_exp]/(2*_b[ttl_exp2])    <span class="co">// 算拐点：27.2</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="fig-lr-square" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-lr-square-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1123,9 +1132,9 @@ x^{*} = -\frac{0.492}{2\times(-0.009)} \approx 27.2 \ \mathrm{years}
 <p>平方项让我们能刻画「弯曲」的关系。把这个思路再推一步，就能看到一种很有用的因果推断设计——<strong>断点回归 (Regression Discontinuity Design, RDD)</strong>。这里只做一个直观的演示，帮你认识 <code>binscatter</code> 这个画图利器；系统的 RDD 方法留待后续的因果推断专题。</p>
 <p>RDD 的基本想法是：如果某个规则在一个<strong>临界点 (cutoff) </strong>上突然改变待遇，那么就在这个临界点附近，比较<strong>刚好在左边</strong>和<strong>刚好在右边</strong>的对象——他们其它方面都很接近，唯一的差别就是有没有越过临界点。于是临界点处 Y 的<strong>跳跃</strong>，就可以归给这条规则。</p>
 <p>拿一个熟悉的例子：每周 40 小时是「加班」的分界。工作时长刚过 40 小时的人，工资会不会在 40 这个点上出现一个跳跃？用 <code>binscatter</code> 一看便知——它把横轴分成若干个小仓 (bin)，画出每个仓里 Y 的平均值，<code>rd(40)</code> 让它在 40 处断开、两侧分别拟合：</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> nlsw88.dta, <span class="kw">clear</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> nlsw88.dta, <span class="kw">clear</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> lnwage = <span class="fu">ln</span>(wage)</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>binscatter lnwage hours, rd(40) <span class="kw">line</span>(qfit)   <span class="co">// 在 hours=40 处断开，两侧各拟合一条二次曲线</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>binscatter lnwage hours, rd(40) <span class="kw">line</span>(qfit)   <span class="co">// 在 hours=40 处断开，两侧各拟合一条二次曲线</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="fig-lr-rdd" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-lr-rdd-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1137,13 +1146,13 @@ x^{*} = -\frac{0.492}{2\times(-0.009)} \approx 27.2 \ \mathrm{years}
 </figure>
 </div>
 <p><a href="#fig-lr-rdd" class="quarto-xref">图&nbsp;<span>8.6</span></a> 里，40 小时这条虚线的左右两侧，拟合线出现了一个明显的向上跳跃。把这个跳跃估出来，只需要构造一个「是否越过临界点」的虚拟变量 <span class="math inline">\(D_{40}=\mathbf{1}(hours&gt;40)\)</span>，再加上中心化后的距离 <span class="math inline">\(hours_{c}=(hours-40)/10\)</span> 及其平方项：</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> D40        = (hours&gt;40)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> D40        = (hours&gt;40)</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> hours_c    = (hours-40)/10</span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="kw">gen</span> hours_c_sq = hours_c^2</span>
 <span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>eststo m1: <span class="kw">reg</span> lnwage D40 hours_c              <span class="co">// 线性设定</span></span>
 <span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>eststo m2: <span class="kw">reg</span> lnwage D40 hours_c hours_c_sq   <span class="co">// 允许两侧弯曲</span></span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>esttab m1 m2, nogap b(%6.4f) t(%5.2f) mtitle(linear <span class="kw">quad</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb34"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>------------------------------------------</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>esttab m1 m2, nogap b(%6.4f) t(%5.2f) mtitle(linear <span class="kw">quad</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>------------------------------------------</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>                  (1)             (2)</span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>               linear            <span class="kw">quad</span></span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>------------------------------------------</span>
@@ -1156,7 +1165,7 @@ x^{*} = -\frac{0.492}{2\times(-0.009)} \approx 27.2 \ \mathrm{years}
 <span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="dt">_cons</span>          1.8869***       1.8867***</span>
 <span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>------------------------------------------</span>
 <span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a><span class="kw">N</span>                2242            2242</span>
-<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>------------------------------------------</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>------------------------------------------</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>关键系数 <span class="math inline">\(D_{40}\)</span> 度量给定设定下 40 小时处的拟合截距差。本例只有分段拟合演示，没有已论证的外生分配规则，不能识别加班或政策的因果效应。</p>
 <ul>
 <li>线性设定 (1) 里 <span class="math inline">\(D_{40}=0.061\)</span>、不显著；</li>
@@ -1169,13 +1178,13 @@ x^{*} = -\frac{0.492}{2\times(-0.009)} \approx 27.2 \ \mathrm{years}
 <p>前面都在盯着<strong>系数</strong>。但一张回归表能不能支撑结论，一半靠系数，一半靠<strong>标准误</strong>——它决定了 t 值、显著性和置信区间。这一节讲一件要紧事：<strong>同一个回归，点估计不变，但标准误可以有好几种算法，选错了，显著性就是假的。</strong></p>
 <p>标准误取决于总体误差的条件方差与观测间相关结构，样本残差用来估计这些量。最朴素的 OLS 标准误依赖两条很强的假设：总体误差<strong>同方差</strong> (每个观测的波动一样大) 且<strong>互不相关</strong>。现实里这两条常常不成立，于是有了两种放松：</p>
 <p><strong>其一，异方差稳健标准误 (<code>vce(robust)</code>)。</strong> 放松「同方差」，允许每个观测的残差波动不同。截面数据里异方差几乎是常态，所以这是最常用的一档，加一个选项即可：</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> nlsw88, <span class="kw">clear</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">sysuse</span> nlsw88, <span class="kw">clear</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="kw">global</span> x <span class="st">"age ttl_exp union collgrad"</span></span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>* 使用三种标准误与二维聚类都能使用的共同样本。</span>
 <span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="kw">quietly</span> <span class="kw">reg</span> wage <span class="ot">$x</span> i.industry i.occupation</span>
 <span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="kw">keep</span> <span class="kw">if</span> <span class="fu">e</span>(<span class="kw">sample</span>)</span>
 <span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage <span class="ot">$x</span>            <span class="co">// 默认（同方差）标准误</span></span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage <span class="ot">$x</span>, <span class="kw">robust</span>    <span class="co">// 异方差稳健标准误</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage <span class="ot">$x</span>, <span class="kw">robust</span>    <span class="co">// 异方差稳健标准误</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>对比两次结果你会看到：<strong>所有系数一模一样，变的只有标准误。</strong> 因为 <code>robust</code> 调整的是标准误、与系数无关，而 t 值是二者的比值。用矩阵的语言说，异方差允许每个观测的残差方差各不相同 (对角线上的值不再相等)，但对角线以外仍为零 (观测之间不相关)。</p>
 <p><strong>其二，聚类稳健标准误 (<code>vce(cluster id)</code>)。</strong> 更进一步，放松「互不相关」——允许<strong>同一组内部</strong>的误差相关。这在实证里极其常见：同一家公司不同年度、同一个行业里的公司、同一个班级的学生，他们的不可观测因素往往彼此关联。</p>
 <p><code>vce(cluster industry)</code> 这一条命令，背后有三层含义，外加一个隐含假设，务必分清：</p>
@@ -1196,15 +1205,15 @@ x^{*} = -\frac{0.492}{2\times(-0.009)} \approx 27.2 \ \mathrm{years}
 </figcaption>
 </figure>
 </div>
-<div class="sourceCode" id="cb36"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage <span class="ot">$x</span>, <span class="kw">vce</span>(<span class="kw">cluster</span> industry)   <span class="co">// 按行业聚类</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> wage <span class="ot">$x</span>, <span class="kw">vce</span>(<span class="kw">cluster</span> industry)   <span class="co">// 按行业聚类</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>把三种标准误并排看 (点估计已省略，因为三列完全一样)：</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>                     OLS          Robust          Cluster(industry)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>                     OLS          Robust          Cluster(industry)</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>   ttl_exp        (0.0185)        (0.0172)        (0.0236)</span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>   <span class="kw">union</span>          (0.1954)        (0.2065)        (0.4133)</span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>   ——— 括号内为标准误；三列的系数完全相同 ———</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>   ——— 括号内为标准误；三列的系数完全相同 ———</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>看 <code>union</code> 那一行：聚类标准误 (0.41) 是普通标准误 (0.20) 的两倍。<strong>忽略组内相关，会把标准误算得过小、t 值虚高，让本不显著的结果看起来显著。</strong> 这就是为什么聚类是当代实证的标配。</p>
 <p><strong>二维聚类。</strong> 有时残差的相关来自不止一个维度——一家公司既和同行业的公司相关，也和同城市的公司相关。这时可以在两个维度上同时聚类 (用 <code>reghdfe</code> 等命令)：</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>reghdfe wage <span class="ot">$x</span>, noabsorb <span class="kw">cluster</span>(industry occupation)   <span class="co">// 按行业、职业二维聚类</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>reghdfe wage <span class="ot">$x</span>, noabsorb <span class="kw">cluster</span>(industry occupation)   <span class="co">// 按行业、职业二维聚类</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p><a href="#fig-lr-se-2way" class="quarto-xref">图&nbsp;<span>8.8</span></a> 里，两个维度的分块会交叠 (既有同行业的相关，也有同职业的相关)。但二维聚类不是「越多越稳健越好」：</p>
 <div id="fig-lr-se-2way" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1227,7 +1236,7 @@ x^{*} = -\frac{0.492}{2\times(-0.009)} \approx 27.2 \ \mathrm{years}
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-一个自查小技巧
+<span class="screen-reader-only">提示</span>一个自查小技巧
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1299,7 +1308,7 @@ x^{*} = -\frac{0.492}{2\times(-0.009)} \approx 27.2 \ \mathrm{years}
 <section id="训练-1-让-ai-用自然语言解释核心系数" class="level3" data-number="8.5.1">
 <h3 data-number="8.5.1" class="anchored" data-anchor-id="训练-1-让-ai-用自然语言解释核心系数"><span class="header-section-number">8.5.1</span> 训练 1 · 让 AI 用自然语言解释核心系数</h3>
 <p><strong>场景</strong>：拿到一张回归表，想快速、准确地把核心系数说成人话，省去反复斟酌措辞。把回归表连同变量定义一起喂给 AI：</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>你是一位计量经济学助教。下面是一张回归表和变量定义。</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>你是一位计量经济学助教。下面是一张回归表和变量定义。</span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>请逐个解释【核心系数】的含义，要求：</span>
 <span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>(1) 说清楚它的方向、大小和单位；</span>
 <span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>(2) 如果因变量或自变量取了对数，按半弹性/弹性正确解读；</span>
@@ -1307,53 +1316,53 @@ x^{*} = -\frac{0.492}{2\times(-0.009)} \approx 27.2 \ \mathrm{years}
 <span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>(4) 每个系数一句话，通俗但准确。</span>
 <span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>【变量定义】lwage=ln(时薪)；educ=受教育年限；exper=工作经验（年）</span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>【回归表】educ 系数 0.116（0.015）***；exper 0.019（0.004）***</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>【回归表】educ 系数 0.116（0.015）***；exper 0.019（0.004）***</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>AI 大致会回</strong>：「受教育年限每多一年，时薪平均高约 11.6%(因变量取了对数，系数按百分比读)；在此基础上，工作经验每多一年，时薪平均高约 1.9%。二者均为在其他变量给定时的比较，不宜读作因果。」</p>
 <p><strong>你要核对</strong>：方向和量纲对不对——AI 偶尔会把对数系数 (0.116) 直接说成「高 0.116 元」，或把百分比小数点搞错。</p>
 </section>
 <section id="训练-2-让-ai-检查有没有把相关写成因果" class="level3" data-number="8.5.2">
 <h3 data-number="8.5.2" class="anchored" data-anchor-id="训练-2-让-ai-检查有没有把相关写成因果"><span class="header-section-number">8.5.2</span> 训练 2 · 让 AI 检查有没有把相关写成因果</h3>
 <p><strong>场景</strong>：结果段落写完，自己很难发现藏在字里行间的因果化措辞。让 AI 当一个「因果措辞审查员」，逐句挑刺。这一步直接对应上一节的因果护栏：</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>请审查下面这段实证结果的表述，找出其中把【相关关系】写成【因果关系】的地方。</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>请审查下面这段实证结果的表述，找出其中把【相关关系】写成【因果关系】的地方。</span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>对每一处：(1) 指出是哪个词（如"导致""提升""使得"）；</span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>(2) 说明为什么这样写超出了回归能支持的范围；</span>
 <span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>(3) 给出一个"比较/条件"措辞的改写版本。</span>
 <span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>不要改变原文的数字和结论强度以外的内容。</span>
 <span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>【待审查段落】我们发现，教育显著提升了女性工资，多读一年书能让时薪提高约 12%。</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>【待审查段落】我们发现，教育显著提升了女性工资，多读一年书能让时薪提高约 12%。</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>AI 大致会回</strong>：标出「提升」「能让」两处因果化措辞 → 指出回归只识别相关、未处理能力等混淆 → 改写为「教育与女性工资显著正相关，受教育多一年对应时薪高约 12%」。</p>
 <p><strong>你要核对</strong>：AI 有时矫枉过正，把本就恰当的表述 (如「正相关」) 也标成问题；由你判断哪些该改、哪些保留。</p>
 </section>
 <section id="训练-3-让-ai-核对对数标准化的系数解读" class="level3" data-number="8.5.3">
 <h3 data-number="8.5.3" class="anchored" data-anchor-id="训练-3-让-ai-核对对数标准化的系数解读"><span class="header-section-number">8.5.3</span> 训练 3 · 让 AI 核对对数、标准化的系数解读</h3>
 <p><strong>场景</strong>：变量做过对数、标准化之后，系数读法最容易记混 (半弹性？弹性？标准差？)。把<strong>变量字典</strong> (标注每个变量做过什么变换) 连同你的解读草稿交给 AI 交叉核对：</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>下面是变量字典和我对系数的解读草稿。请核对我的解读与变量的【变换方式】是否一致：</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>下面是变量字典和我对系数的解读草稿。请核对我的解读与变量的【变换方式】是否一致：</span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>若因变量是 ln(·)，系数应按"百分比/半弹性"读；</span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>若自变量和因变量都是 ln(·)，系数应按"弹性"读；</span>
 <span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>若变量做了标准化，系数应按"标准差"读。</span>
 <span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>指出不一致之处并改正。</span>
 <span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>【变量字典】lnY=ln(产出)；lnL=ln(劳动)，均取对数</span>
-<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>【我的解读草稿】lnL 系数 0.6，说明劳动每增加 1 单位，产出增加 0.6 单位。</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>【我的解读草稿】lnL 系数 0.6，说明劳动每增加 1 单位，产出增加 0.6 单位。</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>AI 大致会回</strong>：指出错误——两端都是对数，0.6 是<strong>弹性</strong>，应读作「劳动每增加 <strong>1%</strong>，产出增加约 <strong>0.6%</strong>」，而非「1 单位→0.6 单位」。</p>
 <p><strong>你要核对</strong>：变换方式以你的<strong>数据处理代码</strong>为准，别让 AI 凭变量名猜 (有的变量名带 <code>ln</code> 却没真取对数，反之亦然)。</p>
 </section>
 <section id="训练-4-让-ai-把回归代码改写成注释版" class="level3" data-number="8.5.4">
 <h3 data-number="8.5.4" class="anchored" data-anchor-id="训练-4-让-ai-把回归代码改写成注释版"><span class="header-section-number">8.5.4</span> 训练 4 · 让 AI 把回归代码改写成注释版</h3>
 <p><strong>场景</strong>：一段光秃秃的 do 代码，交接或复看时看不懂。让 AI 补上分层大纲注释和逐行说明，方便在 VS Code 里按章节导航 (呼应本书 do 文件的 <code>**#</code> 注释规范)：</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>请为下面这段 Stata 回归代码添加注释，要求：</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>请为下面这段 Stata 回归代码添加注释，要求：</span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>(1) 用 Stata 的 **# / **## 多级大纲注释标出每个分析步骤；</span>
 <span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>(2) 关键命令后加一句行内注释，说明它在做什么、为什么这么做；</span>
 <span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>(3) 不改动代码逻辑本身。</span>
 <span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>【原始代码】</span>
 <span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>reg tl npr size c.npr#c.size tang fr, robust</span>
-<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>margins, dydx(npr) at(size=(19(1)24))</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>margins, dydx(npr) at(size=(19(1)24))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>AI 大致会回</strong>：</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>**# 交叉项回归：盈利能力对负债率的影响是否随规模变化</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>**# 交叉项回归：盈利能力对负债率的影响是否随规模变化</span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="kw">reg</span> tl npr <span class="kw">size</span> c.npr#c.<span class="kw">size</span> tang fr, <span class="kw">robust</span>   <span class="co">// 交乘项 npr#size；robust 应对异方差</span></span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>**## 边际效应：不同规模处 npr 的作用</span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>margins, <span class="kw">dydx</span>(npr) <span class="fu">at</span>(<span class="kw">size</span>=(19(1)24))          <span class="co">// 扫描 size=19..24，看 dtl/dnpr 怎么变</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>margins, <span class="kw">dydx</span>(npr) <span class="fu">at</span>(<span class="kw">size</span>=(19(1)24))          <span class="co">// 扫描 size=19..24，看 dtl/dnpr 怎么变</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>你要核对</strong>：确认 AI 没有顺手「优化」掉你的原设定——比如悄悄改了控制变量、去掉了 <code>robust</code>、或改了 <code>margins</code> 的取值范围。</p>
 <div class="callout callout-style-default callout-note callout-titled" title="想要 Python 版代码？一句话的事">
 <div class="callout-header d-flex align-content-center">
@@ -1361,15 +1370,15 @@ x^{*} = -\frac{0.492}{2\times(-0.009)} \approx 27.2 \ \mathrm{years}
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-想要 Python 版代码？一句话的事
+<span class="screen-reader-only">注记</span>想要 Python 版代码？一句话的事
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <p>本讲的回归、交叉项、平方项，用 Python(<code>statsmodels</code> / <code>linearmodels</code>) 实现都非常直接，因此不再单设 Python 附录。需要时，把 Stata 代码丢给 AI 让它翻译即可：</p>
-<div class="sourceCode" id="cb44"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>请把下面这段 Stata 回归代码改写成等价的 Python 代码，</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>请把下面这段 Stata 回归代码改写成等价的 Python 代码，</span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>使用 pandas 读取数据、statsmodels 做 OLS，</span>
 <span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>并保留稳健标准误（cov_type='HC1'）的设定。</span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>【Stata 代码】reg wage educ exper, robust</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>【Stata 代码】reg wage educ exper, robust</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>得到的 Python 代码同样要自己跑一遍、对一下系数是否与 Stata 一致。</p>
 </div>
 </div>
@@ -1384,12 +1393,12 @@ x^{*} = -\frac{0.492}{2\times(-0.009)} \approx 27.2 \ \mathrm{years}
 <li>用 <code>sysuse nlsw88</code> 数据，跑 <code>reg wage ttl_exp</code>，再跑 <code>reg wage ttl_exp c.ttl_exp#c.ttl_exp</code>(加入总工龄的平方项)。用二次项系数算出拐点 (<span class="math inline">\(-b/2a\)</span>)，并结合 <code>sum ttl_exp</code> 看拐点是否落在样本范围内、有没有实际意义。</li>
 </ol>
 <div class="callout callout-style-default callout-tip callout-titled" title="参考答案">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-参考答案
+<span class="screen-reader-only">提示</span>参考答案
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
@@ -1403,12 +1412,12 @@ x^{*} = -\frac{0.492}{2\times(-0.009)} \approx 27.2 \ \mathrm{years}
 <li>下面这段结果说明有没有过度解释的地方？请改写：「回归显示，企业规模每扩大 1%，研发投入提升 0.3%，说明做大规模能促进创新。」</li>
 </ol>
 <div class="callout callout-style-default callout-tip callout-titled" title="参考答案">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-参考答案
+<span class="screen-reader-only">提示</span>参考答案
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
@@ -1422,12 +1431,12 @@ x^{*} = -\frac{0.492}{2\times(-0.009)} \approx 27.2 \ \mathrm{years}
 <li><strong>(交给 agent)</strong> 找一篇你正在读的论文里的一张主回归表，把它连同变量定义交给 AI(用本讲 AI 协作的第一段提示词)，让它逐个解释核心系数；再用第二段提示词，让 AI 检查你自己写的一段转述有没有把相关写成因果。把 AI 的解读和你自己的理解对照，记下不一致的地方。</li>
 </ol>
 <div class="callout callout-style-default callout-tip callout-titled" title="提示">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-提示
+<span class="screen-reader-only">提示</span>提示
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
@@ -1462,241 +1471,248 @@ x^{*} = -\frac{0.492}{2\times(-0.009)} \approx 27.2 \ \mathrm{years}
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
-    }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const isCodeAnnotation = (el) => {
-    for (const clz of el.classList) {
-      if (clz.startsWith('code-annotation-')) {                     
-        return true;
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
       }
+      return false;
     }
-    return false;
-  }
-  const onCopySuccess = function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "已复制");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "已复制");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
       }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
       for (const childEl of codeEl.children) {
         if (isCodeAnnotation(childEl)) {
           childEl.remove();
         }
       }
       return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
-  });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
-    });
-    clipboardModal.on('success', onCopySuccess);
-  }
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-    var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
-    // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-        // undo the damage that might have been done by quarto-nav.js in the case of
-        // links that we want to consider external
-        if (link.dataset.originalHref !== undefined) {
-          link.href = link.dataset.originalHref;
-        }
-          // target, if specified
-          link.setAttribute("target", "_blank");
-          if (link.getAttribute("rel") === null) {
-            link.setAttribute("rel", "noopener");
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
           }
-      }
-    }
-  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-    const config = {
-      allowHTML: true,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start',
-    };
-    if (contentFn) {
-      config.content = contentFn;
-    }
-    if (onTriggerFn) {
-      config.onTrigger = onTriggerFn;
-    }
-    if (onUntriggerFn) {
-      config.onUntrigger = onUntriggerFn;
-    }
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      if (note) {
-        return note.innerHTML;
-      } else {
-        return "";
-      }
-    });
-  }
-  const xrefs = window.document.querySelectorAll('a.quarto-xref');
-  const processXRef = (id, note) => {
-    // Strip column container classes
-    const stripColumnClz = (el) => {
-      el.classList.remove("page-full", "page-columns");
-      if (el.children) {
-        for (const child of el.children) {
-          stripColumnClz(child);
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
         }
       }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
     }
-    stripColumnClz(note)
-    if (id === null || id.startsWith('sec-')) {
-      // Special case sections, only their first couple elements
-      const container = document.createElement("div");
-      if (note.children && note.children.length > 2) {
-        container.appendChild(note.children[0].cloneNode(true));
-        for (let i = 1; i < note.children.length; i++) {
-          const child = note.children[i];
-          if (child.tagName === "P" && child.innerText === "") {
-            continue;
-          } else {
-            container.appendChild(child.cloneNode(true));
-            break;
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
           }
         }
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(container);
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
         }
-        return container.innerHTML
       } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
         if (window.Quarto?.typesetMath) {
           window.Quarto.typesetMath(note);
         }
-        return note.innerHTML;
-      }
-    } else {
-      // Remove any anchor links if they are present
-      const anchorLink = note.querySelector('a.anchorjs-link');
-      if (anchorLink) {
-        anchorLink.remove();
-      }
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(note);
-      }
-      if (note.classList.contains("callout")) {
-        return note.outerHTML;
-      } else {
-        return note.innerHTML;
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
       }
     }
-  }
-  for (var i=0; i<xrefs.length; i++) {
-    const xref = xrefs[i];
-    tippyHover(xref, undefined, function(instance) {
-      instance.disable();
-      let url = xref.getAttribute('href');
-      let hash = undefined; 
-      if (url.startsWith('#')) {
-        hash = url;
-      } else {
-        try { hash = new URL(url).hash; } catch {}
-      }
-      if (hash) {
-        const id = hash.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note !== null) {
-          try {
-            const html = processXRef(id, note.cloneNode(true));
-            instance.setContent(html);
-          } finally {
-            instance.enable();
-            instance.show();
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
           }
         } else {
-          // See if we can fetch this
-          fetch(url.split('#')[0])
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
           .then(res => res.text())
           .then(html => {
             const parser = new DOMParser();
             const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.getElementById(id);
+            const note = htmlDoc.querySelector('main.content');
             if (note !== null) {
-              const html = processXRef(id, note);
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
               instance.setContent(html);
             } 
           }).finally(() => {
@@ -1704,185 +1720,161 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             instance.show();
           });
         }
-      } else {
-        // See if we can fetch a full url (with no hash to target)
-        // This is a special case and we should probably do some content thinning / targeting
-        fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.querySelector('main.content');
-          if (note !== null) {
-            // This should only happen for chapter cross references
-            // (since there is no id in the URL)
-            // remove the first header
-            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-              note.children[0].remove();
-            }
-            const html = processXRef(null, note);
-            instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
-      }
-    }, function(instance) {
-    });
-  }
-      let selectedAnnoteEl;
-      const selectorForAnnotation = ( cell, annotation) => {
-        let cellAttr = 'data-code-cell="' + cell + '"';
-        let lineAttr = 'data-code-annotation="' +  annotation + '"';
-        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-        return selector;
-      }
-      const selectCodeLines = (annoteEl) => {
-        const doc = window.document;
-        const targetCell = annoteEl.getAttribute("data-target-cell");
-        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-        const lineIds = lines.map((line) => {
-          return targetCell + "-" + line;
-        })
-        let top = null;
-        let height = null;
-        let parent = null;
-        if (lineIds.length > 0) {
-            //compute the position of the single el (top and bottom and make a div)
-            const el = window.document.getElementById(lineIds[0]);
-            top = el.offsetTop;
-            height = el.offsetHeight;
-            parent = el.parentElement.parentElement;
-          if (lineIds.length > 1) {
-            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-            height = bottom - top;
-          }
-          if (top !== null && height !== null && parent !== null) {
-            // cook up a div (if necessary) and position it 
-            let div = window.document.getElementById("code-annotation-line-highlight");
-            if (div === null) {
-              div = window.document.createElement("div");
-              div.setAttribute("id", "code-annotation-line-highlight");
-              div.style.position = 'absolute';
-              parent.appendChild(div);
-            }
-            div.style.top = top - 2 + "px";
-            div.style.height = height + 4 + "px";
-            div.style.left = 0;
-            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-            if (gutterDiv === null) {
-              gutterDiv = window.document.createElement("div");
-              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-              gutterDiv.style.position = 'absolute';
-              const codeCell = window.document.getElementById(targetCell);
-              const gutter = codeCell.querySelector('.code-annotation-gutter');
-              gutter.appendChild(gutterDiv);
-            }
-            gutterDiv.style.top = top - 2 + "px";
-            gutterDiv.style.height = height + 4 + "px";
-          }
-          selectedAnnoteEl = annoteEl;
-        }
-      };
-      const unselectCodeLines = () => {
-        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-        elementsIds.forEach((elId) => {
-          const div = window.document.getElementById(elId);
-          if (div) {
-            div.remove();
-          }
-        });
-        selectedAnnoteEl = undefined;
-      };
-        // Handle positioning of the toggle
-    window.addEventListener(
-      "resize",
-      throttle(() => {
-        elRect = undefined;
-        if (selectedAnnoteEl) {
-          selectCodeLines(selectedAnnoteEl);
-        }
-      }, 10)
-    );
-    function throttle(fn, ms) {
-    let throttle = false;
-    let timer;
-      return (...args) => {
-        if(!throttle) { // first call gets through
-            fn.apply(this, args);
-            throttle = true;
-        } else { // all the others get throttled
-            if(timer) clearTimeout(timer); // cancel #2
-            timer = setTimeout(() => {
-              fn.apply(this, args);
-              timer = throttle = false;
-            }, ms);
-        }
-      };
-    }
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
-          }
-        });
-      }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
-      }
-    } else {
-      return undefined;
-    }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
-          }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+      }, function(instance) {
       });
     }
-  }
-});
-</script>
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="../notebooks/ols/ols-stata.html" class="pagination-link" aria-label="OLS：Stata 实验">

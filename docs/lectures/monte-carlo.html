@@ -2,17 +2,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.39">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
 <title>11&nbsp; Monte Carlo 模拟：不确定性环境下的金融建模与决策分析 – 金融计量经济学</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -21,8 +27,9 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 /* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -33,7 +40,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -66,15 +73,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../">
 <link href="../notebooks/monte-carlo/monte-carlo-cases.html" rel="next">
 <link href="../notebooks/bootstrap/bootstrap-stata.html" rel="prev">
-<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0626ff4d7a71b55c8707dcae1d04a9b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-5c1318cf63eba56dbef7ba16bc7d56f5.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-d59a9bb4a0246dd4330968064f99cf3e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-a95c78014f407402cafa70654a1b7e57.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -105,7 +113,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="icon" type="image/png" sizes="40x40" href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -118,7 +126,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -138,7 +146,7 @@ window.Quarto = {
 <link rel="stylesheet" href="../tools/monte-carlo/monte-carlo.css">
 </head>
 
-<body class="nav-sidebar docked">
+<body class="nav-sidebar docked quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -162,7 +170,8 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
       <a href="../index.html" class="sidebar-logo-link">
-      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../">金融计量经济学</a> 
@@ -469,7 +478,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-本讲要点
+<span class="screen-reader-only">注记</span>本讲要点
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -504,7 +513,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-本章配套案例与代码
+<span class="screen-reader-only">注记</span>本章配套案例与代码
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -577,7 +586,7 @@ E(\hat{\beta}_{1})=\beta_{1}=2.
 =\overline{\hat{\beta}}_{1,B}-2.
 \tag{11.5}\]</span></span></p>
 <p>按照前面介绍的步骤，每次重新生成一个包含 <span class="math inline">\(n\)</span> 个观测的样本，进行 OLS 估计并保存斜率，重复 <span class="math inline">\(B\)</span> 次即可计算上述指标。下面取 <span class="math inline">\(n=100\)</span>、<span class="math inline">\(B=5000\)</span>：</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 设置样本量、重复次数及参数真值。</span></span>
@@ -600,7 +609,7 @@ E(\hat{\beta}_{1})=\beta_{1}=2.
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># 输出估计值的平均值及其与真值之差。</span></span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"估计均值：</span><span class="sc">{</span>bhat<span class="sc">.</span>mean()<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Monte Carlo 偏差：</span><span class="sc">{</span>bhat<span class="sc">.</span>mean() <span class="op">-</span> beta1<span class="sc">:.6f}</span><span class="ss">"</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Monte Carlo 偏差：</span><span class="sc">{</span>bhat<span class="sc">.</span>mean() <span class="op">-</span> beta1<span class="sc">:.6f}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>其中，<code>rng</code> 是在循环开始前初始化的随机数发生器，<code>bhat</code> 用于保存这 <span class="math inline">\(B\)</span> 个斜率估计值。<code>bhat.mean()</code> 给出它们的平均值。</p>
 <p>模拟得到的估计均值为 2.001526，Monte Carlo 偏差为 0.001526。从本例的结果来看，估计均值接近真值 2，与无偏性的理论结论相符。由于重复次数有限，模拟平均值通常不会恰好等于真值。</p>
 <div id="fig-mc-ols-unbiased" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -654,7 +663,7 @@ P\left(\left|\hat{\beta}_{1,n}-2\right|&gt;\varepsilon\right)
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-延伸练习：标准误到底在估计什么？
+<span class="screen-reader-only">提示</span>延伸练习：标准误到底在估计什么？
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -667,7 +676,7 @@ P\left(\left|\hat{\beta}_{1,n}-2\right|&gt;\varepsilon\right)
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-延伸练习：95% 置信区间中的 95% 是什么意思？
+<span class="screen-reader-only">提示</span>延伸练习：95% 置信区间中的 95% 是什么意思？
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -696,7 +705,7 @@ X_{i}=\pi Z_{i}+\delta u_{i}+v_{i}.
 <p>在模拟中，我们设定 <span class="math inline">\(\delta\)</span> 和 <span class="math inline">\(\pi\)</span>，因而知道内生性如何产生、工具变量的相关性如何变化。实际研究中，<span class="math inline">\(u_{i}\)</span> 不可直接观测，通常无法像本例这样确定 <span class="math inline">\(X_{i}\)</span> 中有多少变动来自 <span class="math inline">\(u_{i}\)</span>。工具变量对 <span class="math inline">\(X_{i}\)</span> 的解释力则可以通过第一阶段回归评估。</p>
 <p>需要注意的是，有效且保持相关性的工具变量，可以在常规条件下保证 IV 估计量的一致性，但有限样本中仍可能存在偏差。因此，本节比较 IV 的有限样本表现，不预设其估计均值必然等于真值。</p>
 <p>下面仅保留单组实验的核心代码，省略包导入等准备语句。完整实现见配套 Notebook。函数在同一样本上估计 OLS 与两阶段最小二乘 (2SLS)，分别保存 <span class="math inline">\(\beta\)</span> 的估计值，供两组比较调用。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_iv(pi, delta, seed, n<span class="op">=</span><span class="dv">500</span>, B<span class="op">=</span><span class="dv">1200</span>):</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_iv(pi, delta, seed, n<span class="op">=</span><span class="dv">500</span>, B<span class="op">=</span><span class="dv">1200</span>):</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 每组实验初始化一次，保存两种方法的估计结果。</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> np.random.default_rng(seed)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    estimates <span class="op">=</span> np.empty((B, <span class="dv">2</span>))</span>
@@ -726,19 +735,19 @@ X_{i}=\pi Z_{i}+\delta u_{i}+v_{i}.
 <span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>            outcome, design, instrument<span class="op">=</span>instruments</span>
 <span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>        ).fit().params[<span class="dv">1</span>]</span>
 <span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> estimates</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> estimates</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>其中，<code>design</code> 包含常数项、<span class="math inline">\(X_{i}\)</span> 和 <span class="math inline">\(W_{i}\)</span>。<code>instruments</code> 包含常数项、<span class="math inline">\(Z_{i}\)</span> 和 <span class="math inline">\(W_{i}\)</span>。外生控制变量 <span class="math inline">\(W_{i}\)</span> 同时进入两个矩阵，<span class="math inline">\(X_{i}\)</span> 则使用 <span class="math inline">\(Z_{i}\)</span> 作为工具变量。返回数组的两列分别保存 OLS 和 IV 的估计值。</p>
 <p>运行 IV 代码节选时，配套 Notebook 还提供 <code>from statsmodels.sandbox.regression.gmm import IV2SLS</code> 和 <code>SEED = 20261001</code>，其余导入沿用前面的 OLS 代码。</p>
 </section>
 <section id="实验一改变内生性" class="level4" data-number="11.4.3.2">
 <h4 data-number="11.4.3.2" class="anchored" data-anchor-id="实验一改变内生性"><span class="header-section-number">11.4.3.2</span> 实验一：改变内生性</h4>
 <p>固定 <span class="math inline">\(n=500\)</span>、<span class="math inline">\(B=1200\)</span> 和 <span class="math inline">\(\pi=1\)</span>，依次令 <span class="math inline">\(\delta=0,0.2,0.5,0.8\)</span>。每次生成一个样本，在同一份数据上分别估计 OLS 和 IV，并保存 <span class="math inline">\(\beta\)</span> 的两个估计值。IV 使用 <span class="math inline">\(Z_{i}\)</span> 作为 <span class="math inline">\(X_{i}\)</span> 的工具，同时保留外生控制变量 <span class="math inline">\(W_{i}\)</span>。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 固定工具变量相关性，仅改变内生性参数。</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 固定工具变量相关性，仅改变内生性参数。</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>endogeneity_results <span class="op">=</span> {}</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> delta <span class="kw">in</span> [<span class="fl">0.0</span>, <span class="fl">0.2</span>, <span class="fl">0.5</span>, <span class="fl">0.8</span>]:</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    endogeneity_results[delta] <span class="op">=</span> simulate_iv(</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        pi<span class="op">=</span><span class="fl">1.0</span>, delta<span class="op">=</span>delta, seed<span class="op">=</span>SEED <span class="op">+</span> <span class="bu">int</span>(delta <span class="op">*</span> <span class="dv">1000</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p><a href="#fig-mc-iv-endogeneity" class="quarto-xref">图&nbsp;<span>11.3</span></a> 中的黑色虚线表示参数真值 1。随着 <span class="math inline">\(\delta\)</span> 从 0 增至 0.8，OLS 的估计均值从约 0.999 升至 1.303，IV 的估计均值仍接近 1。这表明，在本组设定下，工具变量保持较强相关性时，IV 的估计均值受内生性变化的影响较小。</p>
 <div id="fig-mc-iv-endogeneity" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -754,12 +763,12 @@ X_{i}=\pi Z_{i}+\delta u_{i}+v_{i}.
 <section id="实验二减弱工具变量相关性" class="level4" data-number="11.4.3.3">
 <h4 data-number="11.4.3.3" class="anchored" data-anchor-id="实验二减弱工具变量相关性"><span class="header-section-number">11.4.3.3</span> 实验二：减弱工具变量相关性</h4>
 <p>固定 <span class="math inline">\(\delta=0.5\)</span>，保持 <span class="math inline">\(n\)</span>、<span class="math inline">\(B\)</span> 及其余设定不变，依次令 <span class="math inline">\(\pi=1,0.5,0.2,0.05\)</span>。按相同流程重复生成样本和估计，重点比较 IV 估计值的离散程度、分位数及极端值。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 固定内生性参数，仅减弱工具变量相关性。</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 固定内生性参数，仅减弱工具变量相关性。</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>weak_results <span class="op">=</span> {}</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> pi <span class="kw">in</span> [<span class="fl">1.0</span>, <span class="fl">0.5</span>, <span class="fl">0.2</span>, <span class="fl">0.05</span>]:</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    weak_results[pi] <span class="op">=</span> simulate_iv(</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        pi<span class="op">=</span>pi, delta<span class="op">=</span><span class="fl">0.5</span>, seed<span class="op">=</span>SEED <span class="op">+</span> <span class="bu">int</span>(pi <span class="op">*</span> <span class="dv">10000</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p><a href="#fig-mc-iv-weak-distribution" class="quarto-xref">图&nbsp;<span>11.4</span></a> 比较不同 <span class="math inline">\(\pi\)</span> 下 IV 估计值的经验累积分布。本例中，<span class="math inline">\(\pi=1\)</span> 时，IV 估计值的 1% 和 99% 分位数约为 0.887 和 1.101。<span class="math inline">\(\pi=0.05\)</span> 时，两者约为 -13.637 和 23.416。这说明，在当前样本量下，减弱工具变量相关性会使 IV 估计结果明显不稳定。图中左侧保留全部估计值，右侧放大真值附近，两图均以全部 1200 次估计为分母。这样既能看清主体分布，也不会遗漏极端估计。</p>
 <div id="fig-mc-iv-weak-distribution" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -777,7 +786,7 @@ X_{i}=\pi Z_{i}+\delta u_{i}+v_{i}.
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-本案例的模拟设计要点
+<span class="screen-reader-only">注记</span>本案例的模拟设计要点
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -944,7 +953,7 @@ NPV^{(b)}=-I_{0}+\sum_{t=1}^{T}\frac{FCF_{t}^{(b)}}{(1+r^{(b)})^{t}},
 <p>下面保留企业估值模拟的核心计算。完整 Notebook 还包括 NPV 分布、经验 CDF、价格网格、NPV = 0 边界和压力测试。</p>
 <p>代码中的 <code>p_ref</code> 对应市场参考价格 <span class="math inline">\(\bar p\)</span>。</p>
 <p>代码中的 <code>rng</code> 是在模拟开始前初始化的随机数发生器，<code>logistic</code> 为前述市场份额函数。其余变量对应表中的参数。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>eps <span class="op">=</span> rng.normal(<span class="dv">0</span>, sigma_eps, size<span class="op">=</span>(B, T))</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>eps <span class="op">=</span> rng.normal(<span class="dv">0</span>, sigma_eps, size<span class="op">=</span>(B, T))</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>share <span class="op">=</span> logistic(alpha <span class="op">-</span> beta_price <span class="op">*</span> np.log(p <span class="op">/</span> p_ref) <span class="op">+</span> eps)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>quantity <span class="op">=</span> share <span class="op">*</span> Q0</span>
@@ -955,7 +964,7 @@ NPV^{(b)}=-I_{0}+\sum_{t=1}^{T}\frac{FCF_{t}^{(b)}}{(1+r^{(b)})^{t}},
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> r_min <span class="op">+</span> (r_max <span class="op">-</span> r_min) <span class="op">*</span> x_r</span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>years <span class="op">=</span> np.arange(<span class="dv">1</span>, T <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>npv <span class="op">=</span> <span class="op">-</span>I0 <span class="op">+</span> np.<span class="bu">sum</span>(fcf <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> r[:, <span class="va">None</span>]) <span class="op">**</span> years, axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>npv <span class="op">=</span> <span class="op">-</span>I0 <span class="op">+</span> np.<span class="bu">sum</span>(fcf <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> r[:, <span class="va">None</span>]) <span class="op">**</span> years, axis<span class="op">=</span><span class="dv">1</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p><a href="../notebooks/monte-carlo/monte-carlo-cases.html#sec-mc-nb-valuation">配套 Notebook：案例二</a>。</p>
 <p>基准价格为 80 元时，平均 NPV 为 3.188 百万元，NPV 为正的概率为 68.365%，5% 分位数为 -7.493 百万元。平均净现值为正，并不意味着下行损失可以忽略。<a href="#fig-mc-valuation-npv" class="quarto-xref">图&nbsp;<span>11.6</span></a> 展示其分布和经验累积概率，NPV 不大于 0 的情景占 31.635%。</p>
 <div id="fig-mc-valuation-npv" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1110,11 +1119,11 @@ NPV=-I_{0}+\left[mpQ_{0}\widetilde{s}(r)-F\right]A(r,T).
 \tag{11.23}\]</span></span></p>
 <p>因此，每个模拟情景都可以用自己的贴现率计算 <span class="math inline">\(\widetilde{s}(r)\)</span>，再与同一贴现率下的 <span class="math inline">\(s^{*}(p,r)\)</span> 比较，准确判断该情景 NPV 的正负。各年份额相同时，加权平均份额就等于前面简化情形中的 <span class="math inline">\(s\)</span>。</p>
 <p>对应的核心计算如下，<code>share</code> 和 <code>r</code> 沿用前面的模拟结果。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>discount <span class="op">=</span> (<span class="dv">1</span> <span class="op">+</span> r[:, <span class="va">None</span>]) <span class="op">**</span> (<span class="op">-</span>years)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>discount <span class="op">=</span> (<span class="dv">1</span> <span class="op">+</span> r[:, <span class="va">None</span>]) <span class="op">**</span> (<span class="op">-</span>years)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>annuity <span class="op">=</span> discount.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>weighted_share <span class="op">=</span> (share <span class="op">*</span> discount).<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>) <span class="op">/</span> annuity</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>critical_share <span class="op">=</span> (F <span class="op">+</span> I0 <span class="op">/</span> annuity) <span class="op">/</span> (m <span class="op">*</span> p <span class="op">*</span> Q0)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>npv_from_share <span class="op">=</span> m <span class="op">*</span> p <span class="op">*</span> Q0 <span class="op">*</span> annuity <span class="op">*</span> (weighted_share <span class="op">-</span> critical_share)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>npv_from_share <span class="op">=</span> m <span class="op">*</span> p <span class="op">*</span> Q0 <span class="op">*</span> annuity <span class="op">*</span> (weighted_share <span class="op">-</span> critical_share)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>在全部 22 个价格、每个价格 20000 个情景中，用贴现加权份额与对应门槛比较，得到的正负分类与逐年计算的 NPV 完全一致。</p>
 <div id="fig-mc-valuation-weighted-boundary" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1133,7 +1142,7 @@ NPV=-I_{0}+\left[mpQ_{0}\widetilde{s}(r)-F\right]A(r,T).
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-本案例的 MC 模拟设计要点
+<span class="screen-reader-only">注记</span>本案例的 MC 模拟设计要点
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1168,7 +1177,7 @@ NPV=-I_{0}+\left[mpQ_{0}\widetilde{s}(r)-F\right]A(r,T).
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-数据说明
+<span class="screen-reader-only">注记</span>数据说明
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1201,11 +1210,11 @@ NPV=-I_{0}+\left[mpQ_{0}\widetilde{s}(r)-F\right]A(r,T).
 \end{aligned}
 \tag{11.25}\]</span></span></p>
 <p>其中，<span class="math inline">\(\hat{\Sigma}\)</span> 使用样本协方差的 <span class="math inline">\(n-1\)</span> 分母。对应的核心代码如下，<code>returns</code> 的每行是一个有效交易日，每列是一只股票：</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 按列计算五只股票的平均日收益率。</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 按列计算五只股票的平均日收益率。</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>mu_hat <span class="op">=</span> returns.mean().to_numpy()</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 计算五只股票的样本协方差矩阵，默认使用 n-1 分母。</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>Sigma_hat <span class="op">=</span> returns.cov().to_numpy()</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>Sigma_hat <span class="op">=</span> returns.cov().to_numpy()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>本样本的平均日收益率如下，以百分比表示，模拟代码中仍使用小数形式：</p>
 <table class="caption-top table">
 <thead>
@@ -1267,18 +1276,18 @@ NPV=-I_{0}+\left[mpQ_{0}\widetilde{s}(r)-F\right]A(r,T).
 \mathbf{R}^{(b)}\sim N_{5}\left(\hat{\boldsymbol{\mu}},\hat{\Sigma}\right).
 \tag{11.27}\]</span></span></p>
 <p>其中，<span class="math inline">\(N_{5}\)</span> 表示五维正态分布，<span class="math inline">\(b=1,\ldots,B\)</span> 为模拟次数。抽样时同时生成五只股票的收益，使它们之间的共同变化由 <span class="math inline">\(\hat{\Sigma}\)</span> 决定。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 每行生成五只股票在一个交易日的收益率。</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 每行生成五只股票在一个交易日的收益率。</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>sim_returns <span class="op">=</span> rng_param.multivariate_normal(</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    mu_hat, Sigma_hat, size<span class="op">=</span>B</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>sim_returns</code> 是一个 <span class="math inline">\(B\times5\)</span> 的数组，每行对应一次模拟，每列对应一只股票。该方法可以生成历史中没有出现过的收益组合，但分布形状由正态假设决定，不能仅凭匹配均值与协方差就保留历史中的偏度和厚尾。</p>
 </section>
 <section id="历史整行重抽样直接利用观察到的联合收益" class="level4" data-number="11.6.3.2">
 <h4 data-number="11.6.3.2" class="anchored" data-anchor-id="历史整行重抽样直接利用观察到的联合收益"><span class="header-section-number">11.6.3.2</span> 历史整行重抽样：直接利用观察到的联合收益</h4>
 <p>另一种做法是将历史收益表中的每一行视为一种可能结果，从中有放回地抽取 <span class="math inline">\(B\)</span> 行。每次选中一个交易日，就同时取出当天五只股票的收益率：</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 随机选择历史行号，同一交易日可以被多次选中。</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 随机选择历史行号，同一交易日可以被多次选中。</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>indices <span class="op">=</span> rng_boot.integers(<span class="dv">0</span>, <span class="bu">len</span>(returns), size<span class="op">=</span>B)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>boot_returns <span class="op">=</span> returns.to_numpy()[indices, :]</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>boot_returns <span class="op">=</span> returns.to_numpy()[indices, :]</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>indices</code> 保存抽中的行号，<code>boot_returns</code> 同样是 <span class="math inline">\(B\times5\)</span> 的数组。整行抽取保留了同一天五只股票的收益组合。若逐列独立抽取，就可能把不同日期的股票收益拼在一起，破坏历史中的共同波动关系。</p>
 <p>这种方法以历史样本的经验联合分布为抽样依据，可以反映样本中的偏度、厚尾及股票间的联系，但结果受已观察到的收益组合限制。两种方法在有限次抽样后，模拟均值、协方差等统计量通常都不会与历史估计值完全相同。</p>
 <p>整行重抽样保留同一交易日五只股票的联系，但不保留相邻日期的先后关系。若要模拟多日累计收益，则可以将抽样单位改为一段连续交易日的联合收益，后文进一步讨论这种区块抽样方法。</p>
@@ -1290,9 +1299,9 @@ NPV=-I_{0}+\left[mpQ_{0}\widetilde{s}(r)-F\right]A(r,T).
 R_{p}^{(b)}=\mathbf{w}'\mathbf{R}^{(b)}.
 \tag{11.28}\]</span></span></p>
 <p>其中，<span class="math inline">\(\mathbf{w}\)</span> 为五维权重向量，与收益表中的股票顺序一致。对应代码为：</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 两种方法使用同一组权重，分别得到 B 个组合收益率。</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 两种方法使用同一组权重，分别得到 B 个组合收益率。</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>parametric_portfolio <span class="op">=</span> sim_returns <span class="op">@</span> weights</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>bootstrap_portfolio <span class="op">=</span> boot_returns <span class="op">@</span> weights</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>bootstrap_portfolio <span class="op">=</span> boot_returns <span class="op">@</span> weights</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>weights</code> 为长度为 5 的权重数组，<code>@</code> 表示矩阵乘法。两个结果各包含 <span class="math inline">\(B\)</span> 个组合收益率，用于绘制分布和计算风险指标。<code>rng_param</code> 与 <code>rng_boot</code> 是在两组抽样开始前初始化的随机数发生器，配套实验分别使用种子 20261001 和 20261002。</p>
 <div id="fig-mc-portfolio-dist" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1384,7 +1393,7 @@ R_{p}^{(b)}=\mathbf{w}'\mathbf{R}^{(b)}.
 <section id="核心-python-代码" class="level4" data-number="11.6.5.3">
 <h4 data-number="11.6.5.3" class="anchored" data-anchor-id="核心-python-代码"><span class="header-section-number">11.6.5.3</span> 核心 Python 代码</h4>
 <p>下面以 <span class="math inline">\(L=5\)</span> 为例。<code>trading_dates</code> 为原始价格表的完整日期索引，<code>weights</code> 为当前组合长度为 5 的期初权重数组。两个随机数发生器均在抽样前初始化。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>H, L, B <span class="op">=</span> <span class="dv">20</span>, <span class="dv">5</span>, <span class="dv">100000</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>H, L, B <span class="op">=</span> <span class="dv">20</span>, <span class="dv">5</span>, <span class="dv">100000</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 恢复原始交易日索引，排除跨过缺失收益日期的窗口。</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>values <span class="op">=</span> returns.reindex(trading_dates).to_numpy()</span>
@@ -1405,7 +1414,7 @@ R_{p}^{(b)}=\mathbf{w}'\mathbf{R}^{(b)}.
 <span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="co"># 买入持有：先计算个股累计价值，再按期初权重加总。</span></span>
 <span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>block_returns <span class="op">=</span> np.prod(<span class="dv">1</span> <span class="op">+</span> block_paths, axis<span class="op">=</span><span class="dv">1</span>) <span class="op">@</span> weights <span class="op">-</span> <span class="dv">1</span></span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>iid_returns <span class="op">=</span> np.prod(<span class="dv">1</span> <span class="op">+</span> iid_paths, axis<span class="op">=</span><span class="dv">1</span>) <span class="op">@</span> weights <span class="op">-</span> <span class="dv">1</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>iid_returns <span class="op">=</span> np.prod(<span class="dv">1</span> <span class="op">+</span> iid_paths, axis<span class="op">=</span><span class="dv">1</span>) <span class="op">@</span> weights <span class="op">-</span> <span class="dv">1</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>两种路径数组的维度均为 <span class="math inline">\(B\times H\times5\)</span>，分别对应路径、持有日和股票。<code>np.prod(1 + ..., axis=1)</code> 对每只股票的每日总收益率连乘，得到期末价值与期初价值之比。按期初权重加总后减去 1，即为组合累计收益率。改变权重数组，可用同一批路径计算另一组合的收益。</p>
 <p>将 <span class="math inline">\(L\)</span> 改为 10 和 20 后，重新构造候选区块及对应的独立抽样对照。这里三个区块长度均可整除持有期限。</p>
 </section>
@@ -1502,7 +1511,7 @@ R_{p}^{(b)}=\mathbf{w}'\mathbf{R}^{(b)}.
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-本案例的 MC 模拟设计要点
+<span class="screen-reader-only">注记</span>本案例的 MC 模拟设计要点
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1641,7 +1650,7 @@ M^{(b)}=\min_{k=0,\ldots,N}S_{t_{k}}^{(b)}.
 <li><strong>期末上涨且曾跌破阈值的概率</strong>：显然，也可能存在这种情形：价格在持有期间曾跌破 75 元，随后回升，期末价格高于 100 元。这类路径同时满足 <span class="math inline">\(S_{T}^{(b)}&gt;S_{0}\)</span> 和 <span class="math inline">\(M^{(b)}&lt;H\)</span>。将其条数除以全部路径数 <span class="math inline">\(B\)</span>，即可估计这两件事同时发生的概率。这项指标能直接说明，期末上涨与持有期间发生较大下跌可以出现在同一条路径中。</li>
 </ul>
 <p>主风险实验取 <span class="math inline">\(\mu=0.08\)</span>、<span class="math inline">\(\sigma=0.30\)</span>、<span class="math inline">\(N=252\)</span> 和 <span class="math inline">\(B=5000\)</span>，其余参数沿用上述设定。下面的 <code>barrier</code> 对应阈值 <span class="math inline">\(H=75\)</span>，<code>rng</code> 在实验开始前使用种子 20261001 初始化。</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 每行对应一条路径，每列对应一个时间步的冲击。</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 每行对应一条路径，每列对应一个时间步的冲击。</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T <span class="op">/</span> N</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>increments <span class="op">=</span> rng.normal(<span class="dv">0</span>, np.sqrt(dt), size<span class="op">=</span>(B, N))</span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>brownian <span class="op">=</span> np.column_stack([</span>
@@ -1658,7 +1667,7 @@ M^{(b)}=\min_{k=0,\ldots,N}S_{t_{k}}^{(b)}.
 <span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co"># 同一批路径分别统计终值、阈值和二者共同发生的比例。</span></span>
 <span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(terminal_gain.mean(), breach.mean())</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((terminal_gain <span class="op">&amp;</span> breach).mean())</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((terminal_gain <span class="op">&amp;</span> breach).mean())</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p>代码逐期累加冲击，并使用 GBM 的精确表达式计算网格价格，未采用 Euler 价格更新。本例生成的 5000 条路径中，2749 条路径期末上涨，1402 条路径在观测时点上曾跌破 75 元，133 条路径同时满足两项条件。分别除以全部 5000 条路径，得到 54.98%、28.04% 和 2.66%。第三项是联合事件概率，不是以期末上涨路径为分母的条件概率。</p>
 <p>阈值仅用于风险监测，本例没有模拟跌破后的强制平仓或止损交易，不能将这项概率直接解释为止损后的损益。</p>
 <p>前两项分别从期末结果和持有期间的价格变化评价风险，第三项则把两者联系起来。因此，评估持有风险时，我们需要结合期末结果与路径信息，判断持有期间的价格变化是否可能触及预设风险警戒线。</p>
@@ -1670,7 +1679,7 @@ M^{(b)}=\min_{k=0,\ldots,N}S_{t_{k}}^{(b)}.
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-本案例的 MC 模拟设计要点
+<span class="screen-reader-only">注记</span>本案例的 MC 模拟设计要点
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1688,7 +1697,7 @@ M^{(b)}=\min_{k=0,\ldots,N}S_{t_{k}}^{(b)}.
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-扩展阅读：用 Monte Carlo 为欧式看涨期权定价
+<span class="screen-reader-only">注记</span>扩展阅读：用 Monte Carlo 为欧式看涨期权定价
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1705,7 +1714,7 @@ S_{T}^{(b)}&amp;=S_{0}\exp\left[\left(r-\frac{1}{2}\sigma^{2}\right)T+\sigma\sqr
 \end{aligned}
 \tag{11.39}\]</span></span></p>
 <p>其中 <span class="math inline">\(r\)</span> 采用连续复利的年利率口径，<span class="math inline">\(\widehat{C}_{0}\)</span> 是期权当前价格的 Monte Carlo 估计。下面的代码对应上述计算，参数设定和随机数发生器 <code>rng</code> 的初始化见配套 Notebook。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 在风险中性分布下，直接生成 B 个到期价格。</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 在风险中性分布下，直接生成 B 个到期价格。</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>Z <span class="op">=</span> rng.normal(size<span class="op">=</span>B)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>ST <span class="op">=</span> S0 <span class="op">*</span> np.exp(</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    (r <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> sigma<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> T <span class="op">+</span> sigma <span class="op">*</span> np.sqrt(T) <span class="op">*</span> Z</span>
@@ -1713,7 +1722,7 @@ S_{T}^{(b)}&amp;=S_{0}\exp\left[\left(r-\frac{1}{2}\sigma^{2}\right)T+\sigma\sqr
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 计算各情景的到期支付，再对平均支付折现。</span></span>
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>payoff <span class="op">=</span> np.maximum(ST <span class="op">-</span> K, <span class="dv">0</span>)</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>C0_hat <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> payoff.mean()</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>C0_hat <span class="op">=</span> np.exp(<span class="op">-</span>r <span class="op">*</span> T) <span class="op">*</span> payoff.mean()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>ST</code> 保存 <span class="math inline">\(B\)</span> 个到期价格，<code>payoff</code> 保存对应支付，<code>C0_hat</code> 即模拟得到的期权价格。配套 Notebook 还将它与同一模型下的 Black–Scholes 公式价格对照，用于检查定价计算的准确程度。</p>
 <p>对应的理论价格为</p>
 <p><span id="eq-mc-process-option"><span class="math display">\[
@@ -1819,7 +1828,7 @@ C_{0}=e^{-rT}E^{Q}[\max(S_{T}-K,0)].
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-AI 和 Agent 的辅助边界
+<span class="screen-reader-only">注记</span>AI 和 Agent 的辅助边界
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1863,241 +1872,248 @@ AI 和 Agent 的辅助边界
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
-    }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const isCodeAnnotation = (el) => {
-    for (const clz of el.classList) {
-      if (clz.startsWith('code-annotation-')) {                     
-        return true;
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
       }
+      return false;
     }
-    return false;
-  }
-  const onCopySuccess = function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "已复制");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "已复制");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
       }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
       for (const childEl of codeEl.children) {
         if (isCodeAnnotation(childEl)) {
           childEl.remove();
         }
       }
       return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
-  });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
-    });
-    clipboardModal.on('success', onCopySuccess);
-  }
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-    var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
-    // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-        // undo the damage that might have been done by quarto-nav.js in the case of
-        // links that we want to consider external
-        if (link.dataset.originalHref !== undefined) {
-          link.href = link.dataset.originalHref;
-        }
-          // target, if specified
-          link.setAttribute("target", "_blank");
-          if (link.getAttribute("rel") === null) {
-            link.setAttribute("rel", "noopener");
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
           }
-      }
-    }
-  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-    const config = {
-      allowHTML: true,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start',
-    };
-    if (contentFn) {
-      config.content = contentFn;
-    }
-    if (onTriggerFn) {
-      config.onTrigger = onTriggerFn;
-    }
-    if (onUntriggerFn) {
-      config.onUntrigger = onUntriggerFn;
-    }
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      if (note) {
-        return note.innerHTML;
-      } else {
-        return "";
-      }
-    });
-  }
-  const xrefs = window.document.querySelectorAll('a.quarto-xref');
-  const processXRef = (id, note) => {
-    // Strip column container classes
-    const stripColumnClz = (el) => {
-      el.classList.remove("page-full", "page-columns");
-      if (el.children) {
-        for (const child of el.children) {
-          stripColumnClz(child);
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
         }
       }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
     }
-    stripColumnClz(note)
-    if (id === null || id.startsWith('sec-')) {
-      // Special case sections, only their first couple elements
-      const container = document.createElement("div");
-      if (note.children && note.children.length > 2) {
-        container.appendChild(note.children[0].cloneNode(true));
-        for (let i = 1; i < note.children.length; i++) {
-          const child = note.children[i];
-          if (child.tagName === "P" && child.innerText === "") {
-            continue;
-          } else {
-            container.appendChild(child.cloneNode(true));
-            break;
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
           }
         }
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(container);
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
         }
-        return container.innerHTML
       } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
         if (window.Quarto?.typesetMath) {
           window.Quarto.typesetMath(note);
         }
-        return note.innerHTML;
-      }
-    } else {
-      // Remove any anchor links if they are present
-      const anchorLink = note.querySelector('a.anchorjs-link');
-      if (anchorLink) {
-        anchorLink.remove();
-      }
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(note);
-      }
-      if (note.classList.contains("callout")) {
-        return note.outerHTML;
-      } else {
-        return note.innerHTML;
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
       }
     }
-  }
-  for (var i=0; i<xrefs.length; i++) {
-    const xref = xrefs[i];
-    tippyHover(xref, undefined, function(instance) {
-      instance.disable();
-      let url = xref.getAttribute('href');
-      let hash = undefined; 
-      if (url.startsWith('#')) {
-        hash = url;
-      } else {
-        try { hash = new URL(url).hash; } catch {}
-      }
-      if (hash) {
-        const id = hash.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note !== null) {
-          try {
-            const html = processXRef(id, note.cloneNode(true));
-            instance.setContent(html);
-          } finally {
-            instance.enable();
-            instance.show();
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
           }
         } else {
-          // See if we can fetch this
-          fetch(url.split('#')[0])
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
           .then(res => res.text())
           .then(html => {
             const parser = new DOMParser();
             const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.getElementById(id);
+            const note = htmlDoc.querySelector('main.content');
             if (note !== null) {
-              const html = processXRef(id, note);
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
               instance.setContent(html);
             } 
           }).finally(() => {
@@ -2105,185 +2121,161 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             instance.show();
           });
         }
-      } else {
-        // See if we can fetch a full url (with no hash to target)
-        // This is a special case and we should probably do some content thinning / targeting
-        fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.querySelector('main.content');
-          if (note !== null) {
-            // This should only happen for chapter cross references
-            // (since there is no id in the URL)
-            // remove the first header
-            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-              note.children[0].remove();
-            }
-            const html = processXRef(null, note);
-            instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
-      }
-    }, function(instance) {
-    });
-  }
-      let selectedAnnoteEl;
-      const selectorForAnnotation = ( cell, annotation) => {
-        let cellAttr = 'data-code-cell="' + cell + '"';
-        let lineAttr = 'data-code-annotation="' +  annotation + '"';
-        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-        return selector;
-      }
-      const selectCodeLines = (annoteEl) => {
-        const doc = window.document;
-        const targetCell = annoteEl.getAttribute("data-target-cell");
-        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-        const lineIds = lines.map((line) => {
-          return targetCell + "-" + line;
-        })
-        let top = null;
-        let height = null;
-        let parent = null;
-        if (lineIds.length > 0) {
-            //compute the position of the single el (top and bottom and make a div)
-            const el = window.document.getElementById(lineIds[0]);
-            top = el.offsetTop;
-            height = el.offsetHeight;
-            parent = el.parentElement.parentElement;
-          if (lineIds.length > 1) {
-            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-            height = bottom - top;
-          }
-          if (top !== null && height !== null && parent !== null) {
-            // cook up a div (if necessary) and position it 
-            let div = window.document.getElementById("code-annotation-line-highlight");
-            if (div === null) {
-              div = window.document.createElement("div");
-              div.setAttribute("id", "code-annotation-line-highlight");
-              div.style.position = 'absolute';
-              parent.appendChild(div);
-            }
-            div.style.top = top - 2 + "px";
-            div.style.height = height + 4 + "px";
-            div.style.left = 0;
-            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-            if (gutterDiv === null) {
-              gutterDiv = window.document.createElement("div");
-              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-              gutterDiv.style.position = 'absolute';
-              const codeCell = window.document.getElementById(targetCell);
-              const gutter = codeCell.querySelector('.code-annotation-gutter');
-              gutter.appendChild(gutterDiv);
-            }
-            gutterDiv.style.top = top - 2 + "px";
-            gutterDiv.style.height = height + 4 + "px";
-          }
-          selectedAnnoteEl = annoteEl;
-        }
-      };
-      const unselectCodeLines = () => {
-        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-        elementsIds.forEach((elId) => {
-          const div = window.document.getElementById(elId);
-          if (div) {
-            div.remove();
-          }
-        });
-        selectedAnnoteEl = undefined;
-      };
-        // Handle positioning of the toggle
-    window.addEventListener(
-      "resize",
-      throttle(() => {
-        elRect = undefined;
-        if (selectedAnnoteEl) {
-          selectCodeLines(selectedAnnoteEl);
-        }
-      }, 10)
-    );
-    function throttle(fn, ms) {
-    let throttle = false;
-    let timer;
-      return (...args) => {
-        if(!throttle) { // first call gets through
-            fn.apply(this, args);
-            throttle = true;
-        } else { // all the others get throttled
-            if(timer) clearTimeout(timer); // cancel #2
-            timer = setTimeout(() => {
-              fn.apply(this, args);
-              timer = throttle = false;
-            }, ms);
-        }
-      };
-    }
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
-          }
-        });
-      }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
-      }
-    } else {
-      return undefined;
-    }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
-          }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+      }, function(instance) {
       });
     }
-  }
-});
-</script>
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="../notebooks/bootstrap/bootstrap-stata.html" class="pagination-link" aria-label="Bootstrap：Stata 实验">

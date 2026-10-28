@@ -2,17 +2,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.39">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
 <title>组合实操 – 金融计量经济学</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -21,8 +27,9 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 /* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -33,7 +40,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -57,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -66,15 +73,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../../">
 <link href="../../notebooks/intro/policy-stata.html" rel="next">
 <link href="../../lectures/intro.html" rel="prev">
-<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-0626ff4d7a71b55c8707dcae1d04a9b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-5c1318cf63eba56dbef7ba16bc7d56f5.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-d59a9bb4a0246dd4330968064f99cf3e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-a95c78014f407402cafa70654a1b7e57.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -102,7 +110,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "搜索"
   }
 }</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
 
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 <link rel="icon" type="image/png" sizes="40x40" href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png">
@@ -111,7 +119,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-sidebar docked">
+<body class="nav-sidebar docked quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -135,7 +143,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
       <a href="../../index.html" class="sidebar-logo-link">
-      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="../../">金融计量经济学</a> 
@@ -404,8 +413,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>把长表转换为“行是日期、列是股票”的价格表，报告每只股票的可用记录和缺失。</li>
 </ol>
 <p>输出的缺失交易日数以这份行情表的日期并集为参照，不是另行取得的交易所日历。程序断言失败时应停下来查数据，不能跳过检查直接优化。</p>
-<div id="0b987cef" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:28:52.885337Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:28:52.884339Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:00.498380Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:00.497230Z&quot;}" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<div id="0b987cef" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:28:52.885337Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:28:52.884339Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:00.498380Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:00.497230Z&quot;}}" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datetime <span class="im">import</span> datetime</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -430,7 +439,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>prices <span class="op">=</span> raw.pivot(index<span class="op">=</span><span class="st">'date'</span>, columns<span class="op">=</span><span class="st">'symbol'</span>, values<span class="op">=</span><span class="st">'close'</span>).sort_index()</span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>names <span class="op">=</span> raw.drop_duplicates(<span class="st">'symbol'</span>).set_index(<span class="st">'symbol'</span>)[<span class="st">'name'</span>]</span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>check <span class="op">=</span> pd.DataFrame({<span class="st">'股票'</span>:names, <span class="st">'有效价格数'</span>:prices.count(), <span class="st">'缺失交易日数'</span>:prices.isna().<span class="bu">sum</span>()})</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>display(check)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>display(check)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>数据来源： Tencent Finance via AKShare ；抓取日期： 2026-09-09</code></pre>
 </div>
@@ -438,7 +447,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div>
 
 
-<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -455,61 +464,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">sh600028</td>
+<th data-quarto-table-cell-role="th">sh600028</th>
 <td>中国石化</td>
 <td>1942</td>
 <td>0</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">sh600030</td>
+<th data-quarto-table-cell-role="th">sh600030</th>
 <td>中信证券</td>
 <td>1925</td>
 <td>17</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">sh600036</td>
+<th data-quarto-table-cell-role="th">sh600036</th>
 <td>招商银行</td>
 <td>1942</td>
 <td>0</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">sh600050</td>
+<th data-quarto-table-cell-role="th">sh600050</th>
 <td>中国联通</td>
 <td>1942</td>
 <td>0</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">sh600519</td>
+<th data-quarto-table-cell-role="th">sh600519</th>
 <td>贵州茅台</td>
 <td>1942</td>
 <td>0</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">sh600900</td>
+<th data-quarto-table-cell-role="th">sh600900</th>
 <td>长江电力</td>
 <td>1931</td>
 <td>11</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">sh601398</td>
+<th data-quarto-table-cell-role="th">sh601398</th>
 <td>工商银行</td>
 <td>1942</td>
 <td>0</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">sz000333</td>
+<th data-quarto-table-cell-role="th">sz000333</th>
 <td>美的集团</td>
 <td>1902</td>
 <td>40</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">sz000651</td>
+<th data-quarto-table-cell-role="th">sz000651</th>
 <td>格力电器</td>
 <td>1936</td>
 <td>6</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">sz000858</td>
+<th data-quarto-table-cell-role="th">sz000858</th>
 <td>五粮液</td>
 <td>1942</td>
 <td>0</td>
@@ -529,8 +538,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>训练期均值和波动</strong>：分别由日收益均值乘 252、日标准差乘平方根 252 得到。</li>
 <li><strong>相关性图</strong>：看对角线之外的股票对，判断风险是否倾向于共同变化。</li>
 </ul>
-<div id="534e71b1" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:00.501084Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:00.500556Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:01.714385Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:01.713065Z&quot;}" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>returns_all <span class="op">=</span> prices.pct_change(fill_method<span class="op">=</span><span class="va">None</span>)</span>
+<div id="534e71b1" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:00.501084Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:00.500556Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:01.714385Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:01.713065Z&quot;}}" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>returns_all <span class="op">=</span> prices.pct_change(fill_method<span class="op">=</span><span class="va">None</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>returns <span class="op">=</span> returns_all.dropna(how<span class="op">=</span><span class="st">'any'</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'价格日期数：</span><span class="sc">{</span><span class="bu">len</span>(prices)<span class="sc">}</span><span class="ss">；共同有效收益日期：</span><span class="sc">{</span><span class="bu">len</span>(returns)<span class="sc">}</span><span class="ss">；删除：</span><span class="sc">{</span><span class="bu">len</span>(prices)<span class="op">-</span><span class="bu">len</span>(returns)<span class="sc">}</span><span class="ss">'</span>)</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'绝对日收益超过 20% 的记录：'</span>, <span class="bu">int</span>(returns.<span class="bu">abs</span>().gt(<span class="fl">0.2</span>).<span class="bu">sum</span>().<span class="bu">sum</span>()))</span>
@@ -548,7 +557,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>ax.set_xticks(<span class="bu">range</span>(<span class="dv">10</span>),labels,rotation<span class="op">=</span><span class="dv">55</span>,ha<span class="op">=</span><span class="st">'right'</span>)<span class="op">;</span> ax.set_yticks(<span class="bu">range</span>(<span class="dv">10</span>),labels)</span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'训练期收益相关性：10 只股票不等于 10 份独立风险'</span>)</span>
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>fig.colorbar(im,ax<span class="op">=</span>ax,shrink<span class="op">=</span><span class="fl">0.8</span>)<span class="op">;</span> fig.tight_layout()</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>fig.savefig(FIG<span class="op">/</span><span class="ss">f'fineco-intro-fig01-correlation-</span><span class="sc">{</span>STAMP<span class="sc">}</span><span class="ss">.png'</span>)<span class="op">;</span> plt.show()</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>fig.savefig(FIG<span class="op">/</span><span class="ss">f'fineco-intro-fig01-correlation-</span><span class="sc">{</span>STAMP<span class="sc">}</span><span class="ss">.png'</span>)<span class="op">;</span> plt.show()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>价格日期数：1942；共同有效收益日期：1857；删除：85
 绝对日收益超过 20% 的记录： 0</code></pre>
@@ -557,7 +566,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <style type="text/css">
 </style>
 
-<table id="T_00da0" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<table id="T_00da0" class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
@@ -574,61 +583,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td id="T_00da0_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">sh600028</td>
+<th id="T_00da0_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">sh600028</th>
 <td id="T_00da0_row0_col0" class="data row0 col0">中国石化</td>
 <td id="T_00da0_row0_col1" class="data row0 col1">5.25%</td>
 <td id="T_00da0_row0_col2" class="data row0 col2">13.54%</td>
 </tr>
 <tr class="even">
-<td id="T_00da0_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">sh600030</td>
+<th id="T_00da0_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">sh600030</th>
 <td id="T_00da0_row1_col0" class="data row1 col0">中信证券</td>
 <td id="T_00da0_row1_col1" class="data row1 col1">4.38%</td>
 <td id="T_00da0_row1_col2" class="data row1 col2">27.78%</td>
 </tr>
 <tr class="odd">
-<td id="T_00da0_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">sh600036</td>
+<th id="T_00da0_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">sh600036</th>
 <td id="T_00da0_row2_col0" class="data row2 col0">招商银行</td>
 <td id="T_00da0_row2_col1" class="data row2 col1">4.58%</td>
 <td id="T_00da0_row2_col2" class="data row2 col2">26.05%</td>
 </tr>
 <tr class="even">
-<td id="T_00da0_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">sh600050</td>
+<th id="T_00da0_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">sh600050</th>
 <td id="T_00da0_row3_col0" class="data row3 col0">中国联通</td>
 <td id="T_00da0_row3_col1" class="data row3 col1">1.50%</td>
 <td id="T_00da0_row3_col2" class="data row3 col2">29.68%</td>
 </tr>
 <tr class="odd">
-<td id="T_00da0_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">sh600519</td>
+<th id="T_00da0_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">sh600519</th>
 <td id="T_00da0_row4_col0" class="data row4 col0">贵州茅台</td>
 <td id="T_00da0_row4_col1" class="data row4 col1">21.39%</td>
 <td id="T_00da0_row4_col2" class="data row4 col2">28.75%</td>
 </tr>
 <tr class="even">
-<td id="T_00da0_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">sh600900</td>
+<th id="T_00da0_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">sh600900</th>
 <td id="T_00da0_row5_col0" class="data row5 col0">长江电力</td>
 <td id="T_00da0_row5_col1" class="data row5 col1">10.09%</td>
 <td id="T_00da0_row5_col2" class="data row5 col2">14.13%</td>
 </tr>
 <tr class="odd">
-<td id="T_00da0_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">sh601398</td>
+<th id="T_00da0_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">sh601398</th>
 <td id="T_00da0_row6_col0" class="data row6 col0">工商银行</td>
 <td id="T_00da0_row6_col1" class="data row6 col1">0.37%</td>
 <td id="T_00da0_row6_col2" class="data row6 col2">11.77%</td>
 </tr>
 <tr class="even">
-<td id="T_00da0_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">sz000333</td>
+<th id="T_00da0_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">sz000333</th>
 <td id="T_00da0_row7_col0" class="data row7 col0">美的集团</td>
 <td id="T_00da0_row7_col1" class="data row7 col1">3.52%</td>
 <td id="T_00da0_row7_col2" class="data row7 col2">29.44%</td>
 </tr>
 <tr class="odd">
-<td id="T_00da0_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">sz000651</td>
+<th id="T_00da0_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">sz000651</th>
 <td id="T_00da0_row8_col0" class="data row8 col0">格力电器</td>
 <td id="T_00da0_row8_col1" class="data row8 col1">-0.81%</td>
 <td id="T_00da0_row8_col2" class="data row8 col2">24.69%</td>
 </tr>
 <tr class="even">
-<td id="T_00da0_level0_row9" class="row_heading level0 row9" data-quarto-table-cell-role="th">sz000858</td>
+<th id="T_00da0_level0_row9" class="row_heading level0 row9" data-quarto-table-cell-role="th">sz000858</th>
 <td id="T_00da0_row9_col0" class="data row9 col0">五粮液</td>
 <td id="T_00da0_row9_col1" class="data row9 col1">17.85%</td>
 <td id="T_00da0_row9_col2" class="data row9 col2">35.89%</td>
@@ -652,8 +661,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>代码中的 <code>mu</code> 对应正文估计年化均值向量，<code>cov</code> 对应估计年化协方差矩阵，<code>base</code> 是每只 10% 的等权起点。<code>bounds</code> 给每个权重设置 0 到 0.2 的范围，<code>constraints</code> 要求权重和为 1；<code>target=0.08</code> 时额外要求估计收益达到 8%。<code>w@cov@w</code> 与 <code>w@mu</code> 分别计算正文的方差和加权均值。</p>
 <p>求解器 SLSQP 用于在限制条件下寻找数值解，本讲不要求掌握其算法细节。程序会检查求解状态与约束，失败时报告“目标不可行或优化失败”；求解失败并不单独证明数学问题不可行，还需排查数值条件。</p>
 <p>权重表每一列是一种配置。先核对每列合计 100% 和单只上限，再看哪些股票接近边界。某只权重较高，表示它在当前样本估计与约束中被选中，不等于它未来一定表现最好。</p>
-<div id="aef8fe40" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:01.718382Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:01.718382Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:01.828210Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:01.827225Z&quot;}" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="bu">len</span>(train.columns)</span>
+<div id="aef8fe40" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:01.718382Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:01.718382Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:01.828210Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:01.827225Z&quot;}}" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="bu">len</span>(train.columns)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> train.mean().to_numpy()<span class="op">*</span><span class="dv">252</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>cov <span class="op">=</span> train.cov().to_numpy()<span class="op">*</span><span class="dv">252</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>base <span class="op">=</span> np.repeat(<span class="dv">1</span><span class="op">/</span>n,n)</span>
@@ -677,12 +686,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(err)</span>
 <span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>weight_table<span class="op">=</span>pd.DataFrame(weights,index<span class="op">=</span>[names[c] <span class="cf">for</span> c <span class="kw">in</span> train.columns])</span>
 <span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>display(weight_table.style.<span class="bu">format</span>(<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>))</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'训练期估计年化收益：'</span>, {k:<span class="bu">round</span>(<span class="bu">float</span>(w<span class="op">@</span>mu),<span class="dv">4</span>) <span class="cf">for</span> k,w <span class="kw">in</span> weights.items()})</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'训练期估计年化收益：'</span>, {k:<span class="bu">round</span>(<span class="bu">float</span>(w<span class="op">@</span>mu),<span class="dv">4</span>) <span class="cf">for</span> k,w <span class="kw">in</span> weights.items()})</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <style type="text/css">
 </style>
 
-<table id="T_c18f2" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<table id="T_c18f2" class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
@@ -693,61 +702,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td id="T_c18f2_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">中国石化</td>
+<th id="T_c18f2_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">中国石化</th>
 <td id="T_c18f2_row0_col0" class="data row0 col0">10.00%</td>
 <td id="T_c18f2_row0_col1" class="data row0 col1">20.00%</td>
 <td id="T_c18f2_row0_col2" class="data row0 col2">20.00%</td>
 </tr>
 <tr class="even">
-<td id="T_c18f2_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">中信证券</td>
+<th id="T_c18f2_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">中信证券</th>
 <td id="T_c18f2_row1_col0" class="data row1 col0">10.00%</td>
 <td id="T_c18f2_row1_col1" class="data row1 col1">2.35%</td>
 <td id="T_c18f2_row1_col2" class="data row1 col2">3.24%</td>
 </tr>
 <tr class="odd">
-<td id="T_c18f2_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">招商银行</td>
+<th id="T_c18f2_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">招商银行</th>
 <td id="T_c18f2_row2_col0" class="data row2 col0">10.00%</td>
 <td id="T_c18f2_row2_col1" class="data row2 col1">3.26%</td>
 <td id="T_c18f2_row2_col2" class="data row2 col2">2.79%</td>
 </tr>
 <tr class="even">
-<td id="T_c18f2_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">中国联通</td>
+<th id="T_c18f2_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">中国联通</th>
 <td id="T_c18f2_row3_col0" class="data row3 col0">10.00%</td>
 <td id="T_c18f2_row3_col1" class="data row3 col1">8.69%</td>
 <td id="T_c18f2_row3_col2" class="data row3 col2">7.29%</td>
 </tr>
 <tr class="odd">
-<td id="T_c18f2_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">贵州茅台</td>
+<th id="T_c18f2_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">贵州茅台</th>
 <td id="T_c18f2_row4_col0" class="data row4 col0">10.00%</td>
 <td id="T_c18f2_row4_col1" class="data row4 col1">10.30%</td>
 <td id="T_c18f2_row4_col2" class="data row4 col2">20.00%</td>
 </tr>
 <tr class="even">
-<td id="T_c18f2_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">长江电力</td>
+<th id="T_c18f2_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">长江电力</th>
 <td id="T_c18f2_row5_col0" class="data row5 col0">10.00%</td>
 <td id="T_c18f2_row5_col1" class="data row5 col1">20.00%</td>
 <td id="T_c18f2_row5_col2" class="data row5 col2">20.00%</td>
 </tr>
 <tr class="odd">
-<td id="T_c18f2_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">工商银行</td>
+<th id="T_c18f2_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">工商银行</th>
 <td id="T_c18f2_row6_col0" class="data row6 col0">10.00%</td>
 <td id="T_c18f2_row6_col1" class="data row6 col1">20.00%</td>
 <td id="T_c18f2_row6_col2" class="data row6 col2">20.00%</td>
 </tr>
 <tr class="even">
-<td id="T_c18f2_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">美的集团</td>
+<th id="T_c18f2_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">美的集团</th>
 <td id="T_c18f2_row7_col0" class="data row7 col0">10.00%</td>
 <td id="T_c18f2_row7_col1" class="data row7 col1">0.00%</td>
 <td id="T_c18f2_row7_col2" class="data row7 col2">0.00%</td>
 </tr>
 <tr class="odd">
-<td id="T_c18f2_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">格力电器</td>
+<th id="T_c18f2_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">格力电器</th>
 <td id="T_c18f2_row8_col0" class="data row8 col0">10.00%</td>
 <td id="T_c18f2_row8_col1" class="data row8 col1">15.40%</td>
 <td id="T_c18f2_row8_col2" class="data row8 col2">5.32%</td>
 </tr>
 <tr class="even">
-<td id="T_c18f2_level0_row9" class="row_heading level0 row9" data-quarto-table-cell-role="th">五粮液</td>
+<th id="T_c18f2_level0_row9" class="row_heading level0 row9" data-quarto-table-cell-role="th">五粮液</th>
 <td id="T_c18f2_row9_col0" class="data row9 col0">10.00%</td>
 <td id="T_c18f2_row9_col1" class="data row9 col1">0.00%</td>
 <td id="T_c18f2_row9_col2" class="data row9 col2">1.36%</td>
@@ -778,15 +787,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-先判断，再看表
+<span class="screen-reader-only">提示</span>先判断，再看表
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <p>在同一股票池中，最小方差方案的波动更小，是否就意味着收益也更高？想好理由，再比较下面三种方案。</p>
 </div>
 </div>
-<div id="10c80ee5" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:01.833210Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:01.832209Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:03.080325Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:03.079273Z&quot;}" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> backtest(r,w,cost<span class="op">=</span><span class="fl">0.001</span>):</span>
+<div id="10c80ee5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:01.833210Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:01.832209Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:03.080325Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:03.079273Z&quot;}}" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> backtest(r,w,cost<span class="op">=</span><span class="fl">0.001</span>):</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    current<span class="op">=</span>w.copy()<span class="op">;</span> result<span class="op">=</span>[]<span class="op">;</span> turnovers<span class="op">=</span>[]<span class="op">;</span> previous<span class="op">=</span><span class="va">None</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> date,row <span class="kw">in</span> r.iterrows():</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        month<span class="op">=</span>(date.year,date.month)</span>
@@ -826,12 +835,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>display(results.style.<span class="bu">format</span>({<span class="st">'CAGR'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>,<span class="st">'年化算术均值'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>,</span>
 <span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a> <span class="st">'年化波动'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>,<span class="st">'Sharpe'</span>:<span class="st">'</span><span class="sc">{:.2f}</span><span class="st">'</span>,<span class="st">'最大回撤'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>,<span class="st">'双边换手'</span>:<span class="st">'</span><span class="sc">{:.2f}</span><span class="st">'</span>,<span class="st">'期末金额'</span>:<span class="st">'</span><span class="sc">{:,.0f}</span><span class="st">'</span>}))</span>
 <span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>results.to_csv(DATA<span class="op">/</span><span class="st">'portfolio-results.csv'</span>,index<span class="op">=</span><span class="va">False</span>,encoding<span class="op">=</span><span class="st">'utf-8-sig'</span>)</span>
-<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>weight_table.to_csv(DATA<span class="op">/</span><span class="st">'portfolio-weights.csv'</span>,encoding<span class="op">=</span><span class="st">'utf-8-sig'</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>weight_table.to_csv(DATA<span class="op">/</span><span class="st">'portfolio-weights.csv'</span>,encoding<span class="op">=</span><span class="st">'utf-8-sig'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <style type="text/css">
 </style>
 
-<table id="T_24f2a" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<table id="T_24f2a" class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
@@ -848,7 +857,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td id="T_24f2a_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">0</td>
+<th id="T_24f2a_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">0</th>
 <td id="T_24f2a_row0_col0" class="data row0 col0">训练</td>
 <td id="T_24f2a_row0_col1" class="data row0 col1">等权</td>
 <td id="T_24f2a_row0_col2" class="data row0 col2">5.19%</td>
@@ -860,7 +869,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td id="T_24f2a_row0_col8" class="data row0 col8">131,709</td>
 </tr>
 <tr class="even">
-<td id="T_24f2a_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">1</td>
+<th id="T_24f2a_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">1</th>
 <td id="T_24f2a_row1_col0" class="data row1 col0">训练</td>
 <td id="T_24f2a_row1_col1" class="data row1 col1">最小方差</td>
 <td id="T_24f2a_row1_col2" class="data row1 col2">4.64%</td>
@@ -872,7 +881,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td id="T_24f2a_row1_col8" class="data row1 col8">128,007</td>
 </tr>
 <tr class="odd">
-<td id="T_24f2a_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">2</td>
+<th id="T_24f2a_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">2</th>
 <td id="T_24f2a_row2_col0" class="data row2 col0">训练</td>
 <td id="T_24f2a_row2_col1" class="data row2 col1">目标8%</td>
 <td id="T_24f2a_row2_col2" class="data row2 col2">7.22%</td>
@@ -884,7 +893,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td id="T_24f2a_row2_col8" class="data row2 col8">146,189</td>
 </tr>
 <tr class="even">
-<td id="T_24f2a_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">3</td>
+<th id="T_24f2a_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">3</th>
 <td id="T_24f2a_row3_col0" class="data row3 col0">验证</td>
 <td id="T_24f2a_row3_col1" class="data row3 col1">等权</td>
 <td id="T_24f2a_row3_col2" class="data row3 col2">23.54%</td>
@@ -896,7 +905,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td id="T_24f2a_row3_col8" class="data row3 col8">122,504</td>
 </tr>
 <tr class="odd">
-<td id="T_24f2a_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">4</td>
+<th id="T_24f2a_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">4</th>
 <td id="T_24f2a_row4_col0" class="data row4 col0">验证</td>
 <td id="T_24f2a_row4_col1" class="data row4 col1">最小方差</td>
 <td id="T_24f2a_row4_col2" class="data row4 col2">21.93%</td>
@@ -908,7 +917,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td id="T_24f2a_row4_col8" class="data row4 col8">120,972</td>
 </tr>
 <tr class="even">
-<td id="T_24f2a_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">5</td>
+<th id="T_24f2a_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">5</th>
 <td id="T_24f2a_row5_col0" class="data row5 col0">验证</td>
 <td id="T_24f2a_row5_col1" class="data row5 col1">目标8%</td>
 <td id="T_24f2a_row5_col2" class="data row5 col2">17.73%</td>
@@ -920,7 +929,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td id="T_24f2a_row5_col8" class="data row5 col8">116,966</td>
 </tr>
 <tr class="odd">
-<td id="T_24f2a_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">6</td>
+<th id="T_24f2a_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">6</th>
 <td id="T_24f2a_row6_col0" class="data row6 col0">测试</td>
 <td id="T_24f2a_row6_col1" class="data row6 col1">等权</td>
 <td id="T_24f2a_row6_col2" class="data row6 col2">0.27%</td>
@@ -932,7 +941,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td id="T_24f2a_row6_col8" class="data row6 col8">100,257</td>
 </tr>
 <tr class="even">
-<td id="T_24f2a_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">7</td>
+<th id="T_24f2a_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">7</th>
 <td id="T_24f2a_row7_col0" class="data row7 col0">测试</td>
 <td id="T_24f2a_row7_col1" class="data row7 col1">最小方差</td>
 <td id="T_24f2a_row7_col2" class="data row7 col2">1.03%</td>
@@ -944,7 +953,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td id="T_24f2a_row7_col8" class="data row7 col8">100,994</td>
 </tr>
 <tr class="odd">
-<td id="T_24f2a_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">8</td>
+<th id="T_24f2a_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">8</th>
 <td id="T_24f2a_row8_col0" class="data row8 col0">测试</td>
 <td id="T_24f2a_row8_col1" class="data row8 col1">目标8%</td>
 <td id="T_24f2a_row8_col2" class="data row8 col2">0.49%</td>
@@ -967,8 +976,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ol>
 <p>当前输出中，最小方差方案的测试期波动为 7.52%，等权为 9.06%；但三个测试 Sharpe 均为负。这个比较支持“在本例测试期降低了波动”，不足以支持“满足所有投资目标”。“双边换手”是区间累计比例，不是平均每天的比例。</p>
 <p>再比较训练与验证的同一指标，观察方案是否稳定。历史表现变化不奇怪，且今天选定的股票篮子仍有样本选择问题。接下来的两张图把表中的净收益展开为金额路径和正的回撤幅度；回撤越高，损失越深，10% 虚线只是情境阈值。</p>
-<div id="02ad2367" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:03.082899Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:03.082899Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:05.046119Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:05.045110Z&quot;}" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>net_returns<span class="op">=</span>pd.DataFrame(paths)</span>
+<div id="02ad2367" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:03.082899Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:03.082899Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:05.046119Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:05.045110Z&quot;}}" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>net_returns<span class="op">=</span>pd.DataFrame(paths)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>wealth<span class="op">=</span>(<span class="dv">1</span><span class="op">+</span>net_returns).cumprod()</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>fig,ax<span class="op">=</span>plt.subplots(figsize<span class="op">=</span>(<span class="dv">9</span>,<span class="fl">4.4</span>))</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>(wealth<span class="op">*</span><span class="dv">100000</span>).plot(ax<span class="op">=</span>ax,linewidth<span class="op">=</span><span class="fl">1.8</span>)</span>
@@ -980,7 +989,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>ax.axhline(<span class="fl">0.1</span>,color<span class="op">=</span><span class="st">'gray'</span>,linestyle<span class="op">=</span><span class="st">'--'</span>,label<span class="op">=</span><span class="st">'10% 情境阈值'</span>)</span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'最大回撤取决于路径，低方差不保证回撤小于 10%'</span>)</span>
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'回撤幅度'</span>)<span class="op">;</span> ax.set_xlabel(<span class="st">'日期'</span>)<span class="op">;</span> ax.legend()<span class="op">;</span> ax.grid(alpha<span class="op">=</span><span class="fl">0.2</span>)</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()<span class="op">;</span> fig.savefig(FIG<span class="op">/</span><span class="ss">f'fineco-intro-fig03-drawdown-</span><span class="sc">{</span>STAMP<span class="sc">}</span><span class="ss">.png'</span>)<span class="op">;</span> plt.show()</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()<span class="op">;</span> fig.savefig(FIG<span class="op">/</span><span class="ss">f'fineco-intro-fig03-drawdown-</span><span class="sc">{</span>STAMP<span class="sc">}</span><span class="ss">.png'</span>)<span class="op">;</span> plt.show()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1001,19 +1010,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="成本敏感性与练习">4. 成本敏感性与练习</h2>
 <p>复杂配置可能依赖交易，因此还要问：结论是否依赖过于便宜的交易假设？下面保持数据、权重和再平衡频率不变，只比较单边成本为零、10 和 30 个基点的情况。分别对应代码中的 0、0.001 和 0.003。</p>
 <p>这是一项单条件敏感性分析。先预测同一方案在成本提高后净收益怎样变化，再读表核对；方案间排名未必必然改变。本例目标权重冻结、月度调整，不能把成本影响外推到高频交易。</p>
-<div id="f5a239ec" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:05.048119Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:05.048119Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:05.365870Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:05.364862Z&quot;}" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sensitivity<span class="op">=</span>[]</span>
+<div id="f5a239ec" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T00:29:05.048119Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T00:29:05.048119Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T00:29:05.365870Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T00:29:05.364862Z&quot;}}" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sensitivity<span class="op">=</span>[]</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fee <span class="kw">in</span> [<span class="dv">0</span>,<span class="fl">0.001</span>,<span class="fl">0.003</span>]:</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> name,w <span class="kw">in</span> weights.items():</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        net,turn<span class="op">=</span>backtest(test,w,fee)</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        sensitivity.append({<span class="st">'单边成本'</span>:fee,<span class="st">'方案'</span>:name,<span class="op">**</span>metrics(net,turn)})</span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame(sensitivity)[[<span class="st">'单边成本'</span>,<span class="st">'方案'</span>,<span class="st">'CAGR'</span>,<span class="st">'Sharpe'</span>,<span class="st">'最大回撤'</span>]].style.<span class="bu">format</span>(</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    {<span class="st">'单边成本'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>,<span class="st">'CAGR'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>,<span class="st">'Sharpe'</span>:<span class="st">'</span><span class="sc">{:.2f}</span><span class="st">'</span>,<span class="st">'最大回撤'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>}))</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    {<span class="st">'单边成本'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>,<span class="st">'CAGR'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>,<span class="st">'Sharpe'</span>:<span class="st">'</span><span class="sc">{:.2f}</span><span class="st">'</span>,<span class="st">'最大回撤'</span>:<span class="st">'</span><span class="sc">{:.2%}</span><span class="st">'</span>}))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <style type="text/css">
 </style>
 
-<table id="T_56d81" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<table id="T_56d81" class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
@@ -1026,7 +1035,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td id="T_56d81_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">0</td>
+<th id="T_56d81_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">0</th>
 <td id="T_56d81_row0_col0" class="data row0 col0">0.00%</td>
 <td id="T_56d81_row0_col1" class="data row0 col1">等权</td>
 <td id="T_56d81_row0_col2" class="data row0 col2">0.40%</td>
@@ -1034,7 +1043,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td id="T_56d81_row0_col4" class="data row0 col4">5.94%</td>
 </tr>
 <tr class="even">
-<td id="T_56d81_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">1</td>
+<th id="T_56d81_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">1</th>
 <td id="T_56d81_row1_col0" class="data row1 col0">0.00%</td>
 <td id="T_56d81_row1_col1" class="data row1 col1">最小方差</td>
 <td id="T_56d81_row1_col2" class="data row1 col2">1.16%</td>
@@ -1042,7 +1051,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td id="T_56d81_row1_col4" class="data row1 col4">4.76%</td>
 </tr>
 <tr class="odd">
-<td id="T_56d81_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">2</td>
+<th id="T_56d81_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">2</th>
 <td id="T_56d81_row2_col0" class="data row2 col0">0.00%</td>
 <td id="T_56d81_row2_col1" class="data row2 col1">目标8%</td>
 <td id="T_56d81_row2_col2" class="data row2 col2">0.62%</td>
@@ -1050,7 +1059,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td id="T_56d81_row2_col4" class="data row2 col4">4.16%</td>
 </tr>
 <tr class="even">
-<td id="T_56d81_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">3</td>
+<th id="T_56d81_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">3</th>
 <td id="T_56d81_row3_col0" class="data row3 col0">0.10%</td>
 <td id="T_56d81_row3_col1" class="data row3 col1">等权</td>
 <td id="T_56d81_row3_col2" class="data row3 col2">0.27%</td>
@@ -1058,7 +1067,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td id="T_56d81_row3_col4" class="data row3 col4">5.94%</td>
 </tr>
 <tr class="odd">
-<td id="T_56d81_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">4</td>
+<th id="T_56d81_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">4</th>
 <td id="T_56d81_row4_col0" class="data row4 col0">0.10%</td>
 <td id="T_56d81_row4_col1" class="data row4 col1">最小方差</td>
 <td id="T_56d81_row4_col2" class="data row4 col2">1.03%</td>
@@ -1066,7 +1075,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td id="T_56d81_row4_col4" class="data row4 col4">4.77%</td>
 </tr>
 <tr class="even">
-<td id="T_56d81_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">5</td>
+<th id="T_56d81_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">5</th>
 <td id="T_56d81_row5_col0" class="data row5 col0">0.10%</td>
 <td id="T_56d81_row5_col1" class="data row5 col1">目标8%</td>
 <td id="T_56d81_row5_col2" class="data row5 col2">0.49%</td>
@@ -1074,7 +1083,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td id="T_56d81_row5_col4" class="data row5 col4">4.26%</td>
 </tr>
 <tr class="odd">
-<td id="T_56d81_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">6</td>
+<th id="T_56d81_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">6</th>
 <td id="T_56d81_row6_col0" class="data row6 col0">0.30%</td>
 <td id="T_56d81_row6_col1" class="data row6 col1">等权</td>
 <td id="T_56d81_row6_col2" class="data row6 col2">-0.00%</td>
@@ -1082,7 +1091,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td id="T_56d81_row6_col4" class="data row6 col4">5.95%</td>
 </tr>
 <tr class="even">
-<td id="T_56d81_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">7</td>
+<th id="T_56d81_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">7</th>
 <td id="T_56d81_row7_col0" class="data row7 col0">0.30%</td>
 <td id="T_56d81_row7_col1" class="data row7 col1">最小方差</td>
 <td id="T_56d81_row7_col2" class="data row7 col2">0.77%</td>
@@ -1090,7 +1099,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td id="T_56d81_row7_col4" class="data row7 col4">4.78%</td>
 </tr>
 <tr class="odd">
-<td id="T_56d81_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">8</td>
+<th id="T_56d81_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">8</th>
 <td id="T_56d81_row8_col0" class="data row8 col0">0.30%</td>
 <td id="T_56d81_row8_col1" class="data row8 col1">目标8%</td>
 <td id="T_56d81_row8_col2" class="data row8 col2">0.23%</td>
@@ -1107,7 +1116,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-课后小实验：只改交易成本
+<span class="screen-reader-only">提示</span>课后小实验：只改交易成本
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1127,241 +1136,248 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
-    }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const isCodeAnnotation = (el) => {
-    for (const clz of el.classList) {
-      if (clz.startsWith('code-annotation-')) {                     
-        return true;
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
       }
+      return false;
     }
-    return false;
-  }
-  const onCopySuccess = function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "已复制");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "已复制");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
       }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
       for (const childEl of codeEl.children) {
         if (isCodeAnnotation(childEl)) {
           childEl.remove();
         }
       }
       return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
-  });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
-    });
-    clipboardModal.on('success', onCopySuccess);
-  }
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-    var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
-    // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-        // undo the damage that might have been done by quarto-nav.js in the case of
-        // links that we want to consider external
-        if (link.dataset.originalHref !== undefined) {
-          link.href = link.dataset.originalHref;
-        }
-          // target, if specified
-          link.setAttribute("target", "_blank");
-          if (link.getAttribute("rel") === null) {
-            link.setAttribute("rel", "noopener");
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
           }
-      }
-    }
-  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-    const config = {
-      allowHTML: true,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start',
-    };
-    if (contentFn) {
-      config.content = contentFn;
-    }
-    if (onTriggerFn) {
-      config.onTrigger = onTriggerFn;
-    }
-    if (onUntriggerFn) {
-      config.onUntrigger = onUntriggerFn;
-    }
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      if (note) {
-        return note.innerHTML;
-      } else {
-        return "";
-      }
-    });
-  }
-  const xrefs = window.document.querySelectorAll('a.quarto-xref');
-  const processXRef = (id, note) => {
-    // Strip column container classes
-    const stripColumnClz = (el) => {
-      el.classList.remove("page-full", "page-columns");
-      if (el.children) {
-        for (const child of el.children) {
-          stripColumnClz(child);
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
         }
       }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
     }
-    stripColumnClz(note)
-    if (id === null || id.startsWith('sec-')) {
-      // Special case sections, only their first couple elements
-      const container = document.createElement("div");
-      if (note.children && note.children.length > 2) {
-        container.appendChild(note.children[0].cloneNode(true));
-        for (let i = 1; i < note.children.length; i++) {
-          const child = note.children[i];
-          if (child.tagName === "P" && child.innerText === "") {
-            continue;
-          } else {
-            container.appendChild(child.cloneNode(true));
-            break;
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
           }
         }
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(container);
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
         }
-        return container.innerHTML
       } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
         if (window.Quarto?.typesetMath) {
           window.Quarto.typesetMath(note);
         }
-        return note.innerHTML;
-      }
-    } else {
-      // Remove any anchor links if they are present
-      const anchorLink = note.querySelector('a.anchorjs-link');
-      if (anchorLink) {
-        anchorLink.remove();
-      }
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(note);
-      }
-      if (note.classList.contains("callout")) {
-        return note.outerHTML;
-      } else {
-        return note.innerHTML;
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
       }
     }
-  }
-  for (var i=0; i<xrefs.length; i++) {
-    const xref = xrefs[i];
-    tippyHover(xref, undefined, function(instance) {
-      instance.disable();
-      let url = xref.getAttribute('href');
-      let hash = undefined; 
-      if (url.startsWith('#')) {
-        hash = url;
-      } else {
-        try { hash = new URL(url).hash; } catch {}
-      }
-      if (hash) {
-        const id = hash.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note !== null) {
-          try {
-            const html = processXRef(id, note.cloneNode(true));
-            instance.setContent(html);
-          } finally {
-            instance.enable();
-            instance.show();
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
           }
         } else {
-          // See if we can fetch this
-          fetch(url.split('#')[0])
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
           .then(res => res.text())
           .then(html => {
             const parser = new DOMParser();
             const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.getElementById(id);
+            const note = htmlDoc.querySelector('main.content');
             if (note !== null) {
-              const html = processXRef(id, note);
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
               instance.setContent(html);
             } 
           }).finally(() => {
@@ -1369,185 +1385,161 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             instance.show();
           });
         }
-      } else {
-        // See if we can fetch a full url (with no hash to target)
-        // This is a special case and we should probably do some content thinning / targeting
-        fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.querySelector('main.content');
-          if (note !== null) {
-            // This should only happen for chapter cross references
-            // (since there is no id in the URL)
-            // remove the first header
-            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-              note.children[0].remove();
-            }
-            const html = processXRef(null, note);
-            instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
-      }
-    }, function(instance) {
-    });
-  }
-      let selectedAnnoteEl;
-      const selectorForAnnotation = ( cell, annotation) => {
-        let cellAttr = 'data-code-cell="' + cell + '"';
-        let lineAttr = 'data-code-annotation="' +  annotation + '"';
-        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-        return selector;
-      }
-      const selectCodeLines = (annoteEl) => {
-        const doc = window.document;
-        const targetCell = annoteEl.getAttribute("data-target-cell");
-        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-        const lineIds = lines.map((line) => {
-          return targetCell + "-" + line;
-        })
-        let top = null;
-        let height = null;
-        let parent = null;
-        if (lineIds.length > 0) {
-            //compute the position of the single el (top and bottom and make a div)
-            const el = window.document.getElementById(lineIds[0]);
-            top = el.offsetTop;
-            height = el.offsetHeight;
-            parent = el.parentElement.parentElement;
-          if (lineIds.length > 1) {
-            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-            height = bottom - top;
-          }
-          if (top !== null && height !== null && parent !== null) {
-            // cook up a div (if necessary) and position it 
-            let div = window.document.getElementById("code-annotation-line-highlight");
-            if (div === null) {
-              div = window.document.createElement("div");
-              div.setAttribute("id", "code-annotation-line-highlight");
-              div.style.position = 'absolute';
-              parent.appendChild(div);
-            }
-            div.style.top = top - 2 + "px";
-            div.style.height = height + 4 + "px";
-            div.style.left = 0;
-            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-            if (gutterDiv === null) {
-              gutterDiv = window.document.createElement("div");
-              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-              gutterDiv.style.position = 'absolute';
-              const codeCell = window.document.getElementById(targetCell);
-              const gutter = codeCell.querySelector('.code-annotation-gutter');
-              gutter.appendChild(gutterDiv);
-            }
-            gutterDiv.style.top = top - 2 + "px";
-            gutterDiv.style.height = height + 4 + "px";
-          }
-          selectedAnnoteEl = annoteEl;
-        }
-      };
-      const unselectCodeLines = () => {
-        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-        elementsIds.forEach((elId) => {
-          const div = window.document.getElementById(elId);
-          if (div) {
-            div.remove();
-          }
-        });
-        selectedAnnoteEl = undefined;
-      };
-        // Handle positioning of the toggle
-    window.addEventListener(
-      "resize",
-      throttle(() => {
-        elRect = undefined;
-        if (selectedAnnoteEl) {
-          selectCodeLines(selectedAnnoteEl);
-        }
-      }, 10)
-    );
-    function throttle(fn, ms) {
-    let throttle = false;
-    let timer;
-      return (...args) => {
-        if(!throttle) { // first call gets through
-            fn.apply(this, args);
-            throttle = true;
-        } else { // all the others get throttled
-            if(timer) clearTimeout(timer); // cancel #2
-            timer = setTimeout(() => {
-              fn.apply(this, args);
-              timer = throttle = false;
-            }, ms);
-        }
-      };
-    }
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
-          }
-        });
-      }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
-      }
-    } else {
-      return undefined;
-    }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
-          }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+      }, function(instance) {
       });
     }
-  }
-});
-</script>
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="../../lectures/intro.html" class="pagination-link" aria-label="研究流程">

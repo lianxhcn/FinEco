@@ -32,3 +32,38 @@ table { font-size:.92rem; }
   margin: .5rem 0 1.5rem;
   border-radius: 6px;
 }
+
+/* Keep long formulas inside their own horizontal scroll area. */
+.math.display {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: .15em;
+}
+.math.display mjx-container[display="true"] {
+  margin: .4em 0 !important;
+  padding: 0;
+  overflow: visible;
+}
+.math.display mjx-assistive-mml {
+  width: 1px !important;
+  height: 1px !important;
+}
+
+/* Preserve mathematical table content with local scrolling on small screens. */
+@media screen and (max-width: 767px) {
+  main table.table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  main :not(pre) > code {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}
