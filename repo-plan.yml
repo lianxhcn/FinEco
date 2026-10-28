@@ -105,7 +105,7 @@ local_continuity_plan_20261028:
   deferred_scope: "FinEco 中 CSMAR 相关文件与执行；当前数据整理归 D:/github_lianxh/dsed-data，未来按确认版本只读接入"
   preserve_unrelated_changes: true
   environment_state: "项目 .venv 已建立，12 项根版本和 84 项完整锁定包匹配，新终端启动通过，不使用迁移环境"
-  stages: "S1–S4 已完成；S5 接回与本地发布快照检查通过，正在精确提交，推送部署待本机 Git 登录；S6 新章内容可先行"
+  stages: "S1–S5 已完成：本机精确提交推送、Pages 和公开资源验收通过；下一步按教师内容要求进入 S6"
   git_write_this_maintenance: "无提交、推送或部署；不把规划登记当作已有差异可直接发布"
   s2_classification:
     evidence: logs/migration-20261028/s2-change-classification-20261028/S2_REPORT.md
@@ -152,4 +152,7 @@ local_continuity_plan_20261028:
     static_pages: 26
     rebuild_references: 4579
     published_snapshot_references: 4578
-    status: "本地接回和快照检查通过；正在精确提交，本机 Git 登录、推送及部署核验待完成"
+    content_commits: [83f2ac9, d06319c]
+    pages_run: https://github.com/lianxhcn/FinEco/actions/runs/40727646483
+    public_verified_resources: 13
+    status: "已完成：本机普通快进推送成功，d06319c 的 Pages build/deploy、公开字节和代表页行为通过；状态登记提交仅更新文档"

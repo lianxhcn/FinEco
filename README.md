@@ -51,4 +51,4 @@ Monte Carlo 单元：[理论正文](lectures/monte-carlo.qmd)与[统一案例 No
 
 自 2026-10-28 起，以当前 FinEco 目录为日常工作主目录，迁移收尾步骤与验收条件见 [新机承接计划](resources/writing-tasks/new-machine-continuity-plan.md)。CSMAR 数据整理暂由当前 `dsed-data` 项目推进，FinEco 相关修改与执行暂缓；其他章节正常规划和写作。后续需要时只接入数据项目的已确认版本，不以整理中数据替换已有教学结果。
 
-项目环境已在 `.venv` 建立，完整依赖锁为 `requirements-lock.txt`。重建用 `tools/Initialize-FinEcoEnvironment.ps1`，启用后可运行 `python -B tools/check_environment.py` 自检；依赖和启动已验收，课程案例及发布仍分阶段检查，不使用旧机迁移环境作为日常入口。
+项目环境已在 `.venv` 建立，完整依赖锁为 `requirements-lock.txt`。重建用 `tools/Initialize-FinEcoEnvironment.ps1`，启用后可运行 `python -B tools/check_environment.py` 自检。2026-10-29 已完成 MC/OLS 代表性执行、静态构建、本机精确提交推送与 Pages 发布验收；后续具体章节继续按任务核验，不使用旧机迁移环境作为日常入口。最新发布与保留范围见 [当前交接入口](PROJECT_HANDOFF.md)。
