@@ -13,3 +13,6 @@
 
 # Local OLS execution artifacts
 /output/ols/
+
+# Isolated migration render tests (local only)
+/00-temp-test-*/

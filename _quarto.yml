@@ -43,6 +43,7 @@ project:
     - resources/submission-template.md
     - "!00[0-9]-*/**"
     - "!logs/**"
+    - "!00-temp-test-*/**"
 execute:
   enabled: false
 book:

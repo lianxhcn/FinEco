@@ -86,3 +86,70 @@ monte_carlo_reader_revision_publication:
   pages_source: "main /docs"
   preserve_unrelated_changes: true
   verification_limit: "桌面页面与折叠框通过；窄屏结构通过，手机实机视觉走读未完成"
+
+continuity_20261028:
+  handoff: PROJECT_HANDOFF.md
+  environment: resources/new-computer-environment.md
+  workflow_authority: RULES.md
+  scope: "新会话按现行规范承接；内容确认后技术验收与整合发布沿用约定，多窗口唯一整合者"
+  maintenance_run: "仅本地规则和交接更新；本次不提交、不推送、不发布"
+  static_build: "新电脑隔离构建 26 页成功；未重跑全部 Notebook、未逐页视觉核验"
+
+local_continuity_plan_20261028:
+  plan: resources/writing-tasks/new-machine-continuity-plan.md
+  work_root: "D:/github_lianxh/FinEco"
+  repository_mode: single
+  target: "以当前新机目录继续写作、技术验收和 main:/docs 发布；旧机迁移资料仅按缺口溯源"
+  authorization_basis: "教师接受盘点建议并要求编制新机承接规划；后续内容确认后的发布沿用 RULES"
+  maintenance_scope: "AGENTS、RULES、PROJECT_PLAN、PROJECT_HANDOFF、README、环境入口、当前计划与变更日志"
+  deferred_scope: "FinEco 中 CSMAR 相关文件与执行；当前数据整理归 D:/github_lianxh/dsed-data，未来按确认版本只读接入"
+  preserve_unrelated_changes: true
+  environment_state: "项目 .venv 已建立，12 项根版本和 84 项完整锁定包匹配，新终端启动通过，不使用迁移环境"
+  stages: "S1–S4 已完成；S5 接回与本地发布快照检查通过，正在精确提交，推送部署待本机 Git 登录；S6 新章内容可先行"
+  git_write_this_maintenance: "无提交、推送或部署；不把规划登记当作已有差异可直接发布"
+  s2_classification:
+    evidence: logs/migration-20261028/s2-change-classification-20261028/S2_REPORT.md
+    total_entries: 255
+    non_csmar_entries: 218
+    deferred_csmar_paths_only: 37
+    first_commit_candidates: 29
+    candidate_manifest: logs/migration-20261028/s2-change-classification-20261028/first-commit-manifest.json
+    candidate_scope: "规则、交接、写作规范、模板与必要引用；不含 docs、CSMAR、课程执行产物或内部讨论"
+    status: "分类完成，未暂存/提交；公开发布及运行验收在后续阶段完成"
+  s3_environment:
+    evidence: logs/migration-20261028/s3-project-environment-20261028/S3_REPORT.md
+    python: .venv/Scripts/python.exe
+    lockfile: requirements-lock.txt
+    root_pins: 12
+    locked_packages: 84
+    activation: tools/Use-FinEcoEnvironment.ps1
+    rebuild: tools/Initialize-FinEcoEnvironment.ps1
+    check: tools/check_environment.py
+    status: "安装、一致性、导入、新终端启动及离线复查通过；未执行课程案例/构建/发布"
+    current_candidates: logs/migration-20261028/s3-project-environment-20261028/current-commit-manifest.json
+  s4_validation:
+    evidence: logs/migration-20261028/s4-case-site-validation-20261028/S4_REPORT.md
+    mc_cells: 66
+    matching_saved_tables: 31
+    ols_stata: "PASS; N=428，系数/SE/代数和独立 NumPy 核对通过"
+    static_pages: 26
+    local_references_checked: 4579
+    browser_scope: "七个代表页，1280/390 双视口；九个折叠框与实际搜索通过，非手机实机或全书逐页走读"
+    css_candidate: logs/migration-20261028/s4-case-site-validation-20261028/styles-preview.patch
+    current_candidates: logs/migration-20261028/s4-case-site-validation-20261028/current-commit-manifest.json
+    pending_promotions: logs/migration-20261028/s4-case-site-validation-20261028/pending-promotions.json
+    status: "隔离验收通过；正式源文件/styles/docs 未接回，未提交推送"
+  s5_release:
+    evidence: logs/migration-20261028/s5-release-20261029/S5_REPORT.md
+    authorization: "教师在 S4 完成后要求进行下一步，按既定 S5 计划提交、推送及核验 Pages"
+    repository_mode: single
+    remote: https://github.com/lianxhcn/FinEco.git
+    visibility: public
+    license: pending
+    pages_source: main:/docs
+    scope: "33 项规则/环境、3 项验收候选、6 张当前线性回归原图、必要网页；分别精确提交"
+    excluded: "CSMAR 工作区、历史 MC 分册/ZIP 差异、印刷图、私有记录与草稿"
+    static_pages: 26
+    rebuild_references: 4579
+    published_snapshot_references: 4578
+    status: "本地接回和快照检查通过；正在精确提交，本机 Git 登录、推送及部署核验待完成"
