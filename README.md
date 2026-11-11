@@ -8,6 +8,18 @@
 
 金融数据单元：[流程与获取](https://lianxhcn.github.io/FinEco/lectures/financial-data.html) → [数据管理](https://lianxhcn.github.io/FinEco/lectures/financial-data-management.html) → [清洗与审计](https://lianxhcn.github.io/FinEco/lectures/financial-data-cleaning.html) → [CSMAR 实战](https://lianxhcn.github.io/FinEco/notebooks/financial-data/financial-data.html)。运行与数据下载见 [学生说明](data/financial-data/README.md)。
 
+## CAPM 本轮成果
+
+CAPM 正文与配套实验覆盖市场风险暴露、参数估计、文献应用和滚动风险；包含 1926—2021 年资产比较表、证券市场线、α 图解和滚动窗口时间轴。
+
+- [在线讲义](https://lianxhcn.github.io/FinEco/lectures/capm.html)
+- [配套 Stata 实验](https://lianxhcn.github.io/FinEco/notebooks/capm/capm-stata.html) (独立可读、无章号)
+- [PDF 讲义](lectures/capm-lecture.pdf) (21 页)
+- [Notebook 源文件](notebooks/capm/capm-stata.ipynb)与[数据说明](data/capm/README.md)
+
+2026-11-11，教师已明确授权将 revised8 接入并发布。完整实验 12 个单元和正文 11 个片段执行通过，固定输入及原估计结果保持；GUIDE 0.2.5-fineco、FORMAT 1.6。旧阅读版和执行证据留在本地交接目录。
+
+
 ## 学员入口
 
 第一次使用请读[讲义与仓库使用指南](https://lianxhcn.github.io/FinEco/getting-started.html)：提供 GitHub Desktop 与 Agent 两条可选路线。第一次课可直接读网页，之后克隆一次、课前更新。教师课件副本与个人作业仓库分开保存；一学期一个个人仓库，各次作业使用 hw-01 等目录。

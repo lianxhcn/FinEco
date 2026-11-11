@@ -1,0 +1,62 @@
+{
+  "retrieved_at": "2026-10-29T01:21:05.539986+08:00",
+  "sample": [
+    "1990-01",
+    "2025-12"
+  ],
+  "observations": 432,
+  "assets": "10 US value-weighted industry portfolios including dividends",
+  "units": "Percent per month; beta dimensionless; alpha percent per month",
+  "market": "Mkt-RF is already excess market return; do not subtract RF again",
+  "rf": "Monthly RF from the same Fama/French factor file, not annual yield",
+  "raw_headers": {
+    "factors": [
+      "This file was created using the 202609 CRSP database.",
+      "The 1-month TBill rate data until 202405 are from Ibbotson Associates. Starting from 202406, the 1-month TBill rate is from ICE BofA US 1-Month Treasury Bill Index. ",
+      "The annual TBill return is compounded from the monthly T-bill rates from January to December. ",
+      "",
+      ",Mkt-RF,SMB,HML,RF"
+    ],
+    "industries": [
+      "This file was created using the 202609 CRSP database.",
+      "It contains value- and equal-weighted returns for 10 industry portfolios.",
+      "",
+      "The portfolios are constructed at the end of June.",
+      "",
+      "The annual returns are from January to December.",
+      "",
+      "Missing data are indicated by -99.99 or -999.",
+      "",
+      "",
+      "  Average Value Weighted Returns -- Monthly",
+      ",NoDur,Durbl,Manuf,Enrgy,HiTec,Telcm,Shops,Hlth,Utils,Other"
+    ]
+  },
+  "sources": [
+    {
+      "file": "factors.zip",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_CSV.zip",
+      "bytes": 13078,
+      "sha256": "b03d39e4bb253dda0f14893db3b78e64b40b8d6549a0fc0fd4111dae84c98618",
+      "content_type": "application/x-zip-compressed",
+      "status": "OK"
+    },
+    {
+      "file": "industries.zip",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/10_Industry_Portfolios_CSV.zip",
+      "bytes": 118931,
+      "sha256": "cee051709825e60cc38f2aff01c2dec52265aa7ea4a1fefa023a2c8114a5166e",
+      "content_type": "application/x-zip-compressed",
+      "status": "OK"
+    }
+  ],
+  "files": {
+    "industry_monthly.dta": {
+      "sha256": "1bf9d33be2e877a6c609584a9cb21c805e1e02f4e9b3c907b61b83a3da739642",
+      "bytes": 55779
+    }
+  },
+  "identity": "This is a US industry example, not the earlier A-share stock basket.",
+  "point_in_time": "Latest downloaded historical vintage, not a reconstructed real-time vintage.",
+  "rights": "Provider retains rights; local educational analysis. No claim of an open redistribution license."
+}

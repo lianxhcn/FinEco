@@ -67,3 +67,9 @@ table { font-size:.92rem; }
     overflow-wrap: anywhere;
   }
 }
+
+/* Indent only the two companion labs; link titles remain unchanged. */
+#quarto-sidebar a.sidebar-link[href$="notebooks/monte-carlo/monte-carlo-cases.html"],
+#quarto-sidebar a.sidebar-link[href$="notebooks/capm/capm-stata.html"] {
+  padding-inline-start: 0.6em;
+}

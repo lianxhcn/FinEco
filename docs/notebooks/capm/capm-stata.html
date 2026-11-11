@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>CAPM：Stata 完整实验 – 金融计量经济学</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../resources/references.html" rel="next">
+<link href="../../lectures/capm.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-5c1318cf63eba56dbef7ba16bc7d56f5.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-a95c78014f407402cafa70654a1b7e57.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<link rel="icon" type="image/png" sizes="40x40" href="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/capm.html">收益与风险</a></li><li class="breadcrumb-item"><a href="../../notebooks/capm/capm-stata.html">CAPM：Stata 完整实验</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../../index.html" class="sidebar-logo-link">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="https://fig-lianxh.oss-cn-shenzhen.aliyuncs.com/fineco-fig02-icon-40-20260909-150949.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">金融计量经济学</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/lianxhcn/FinEco" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="切换阅读器模式">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🏠 前言</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📚 课程资料</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../getting-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📌 课件使用</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../syllabus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📅 课程安排</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../homework.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">作业</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../exercises/hw-01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">hw-01</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../exercises/hw-02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">第二次作业：金融数据分析</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">🛠️ 环境配置</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">软件配置</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../publishing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">同步与发布</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">研究基础</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">研究流程</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/intro/portfolio-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">组合实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/intro/policy-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">政策实操</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/financial-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">数据流程与获取</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/financial-data-management.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">数据管理</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/financial-data-cleaning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">数据清洗与审计</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/financial-data/financial-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">CSMAR：Agent 实战</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/ols.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">条件期望与 OLS</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/ols/ols-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">OLS：Stata 实验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/linear-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">线性回归：解释与设定</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/linear-regression/linear-regression-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">线性回归：Stata 实验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/bootstrap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Bootstrap</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/bootstrap/bootstrap-demo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Python 实验</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/bootstrap/bootstrap-stata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap：Stata 实验</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/monte-carlo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Monte Carlo 模拟</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/monte-carlo/monte-carlo-cases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monte Carlo：案例与代码</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">收益与风险</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/capm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">资本资产定价模型</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notebooks/capm/capm-stata.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">CAPM：Stata 完整实验</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">附录</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../resources/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">公共书目</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目录</h2>
+   
+  <ul>
+  <li><a href="#sec-capm-lab" id="toc-sec-capm-lab" class="nav-link active" data-scroll-target="#sec-capm-lab">实验说明</a></li>
+  <li><a href="#模型与变量" id="toc-模型与变量" class="nav-link" data-scroll-target="#模型与变量">模型与变量</a></li>
+  <li><a href="#数据核对" id="toc-数据核对" class="nav-link" data-scroll-target="#数据核对">数据核对</a></li>
+  <li><a href="#估计与推断" id="toc-估计与推断" class="nav-link" data-scroll-target="#估计与推断">估计与推断</a></li>
+  <li><a href="#整理回归结果" id="toc-整理回归结果" class="nav-link" data-scroll-target="#整理回归结果">整理回归结果</a></li>
+  <li><a href="#行业比较" id="toc-行业比较" class="nav-link" data-scroll-target="#行业比较">行业比较</a></li>
+  <li><a href="#市场回归图" id="toc-市场回归图" class="nav-link" data-scroll-target="#市场回归图">市场回归图</a></li>
+  <li><a href="#组合风险" id="toc-组合风险" class="nav-link" data-scroll-target="#组合风险">组合风险</a></li>
+  <li><a href="#滚动估计" id="toc-滚动估计" class="nav-link" data-scroll-target="#滚动估计">滚动估计</a></li>
+  <li><a href="#参数变化与估计噪声" id="toc-参数变化与估计噪声" class="nav-link" data-scroll-target="#参数变化与估计噪声">参数变化与估计噪声</a></li>
+  <li><a href="#习题" id="toc-习题" class="nav-link" data-scroll-target="#习题">习题</a></li>
+  <li><a href="#文献联系" id="toc-文献联系" class="nav-link" data-scroll-target="#文献联系">文献联系</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.dev/lianxhcn/FinEco/blob/main/notebooks/capm/capm-stata.ipynb" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/capm.html">收益与风险</a></li><li class="breadcrumb-item"><a href="../../notebooks/capm/capm-stata.html">CAPM：Stata 完整实验</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">CAPM：Stata 完整实验</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- Keep the unnumbered chapter heading for book metadata. -->
+<p><a href="../../lectures/capm.html">理论讲义</a> · <a href="../../data/capm/README.md">数据说明</a> · <a href="https://github.com/lianxhcn/FinEco">项目仓库</a></p>
+<section id="sec-capm-lab" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-capm-lab">实验说明</h2>
+<p>理论讲义中的代码片段用于解释关键运算和图表来源；本 Notebook 将数据核对、估计、循环和绘图串成完整执行流程，读取同样的两份冻结输入。</p>
+<p>本实验用同源美国十行业组合、市场超额收益与月度无风险收益，估计市场风险暴露和风险调整收益，再比较滚动窗口和已知参数的模拟。固定样本为 1990 年 1 月至 2025 年 12 月，共 432 个月。</p>
+<p>收益单位为每月百分数，<span class="math inline">\(\beta\)</span> 无单位，<span class="math inline">\(\alpha\)</span> 的单位为每月百分数。Mkt-RF 已是超额收益，不能再减 RF。真实行业组合、市场代理和模拟分别说明，不与首讲 A 股篮子混用。</p>
+<p>从 FinEco 根目录启用项目环境后运行 <code>python tools/capm/run_notebook.py</code>。运行器设置根目录、Stata 内核和图片时间戳，从第一个单元开始执行；不依赖旧电脑或先前交互状态。本页保存实际输出，网页渲染不取数、不执行代码。</p>
+<p>图形部分单列 <code>%set graph_height</code> 显示设置，只控制本 Notebook 的画布高度；随后执行的 Stata 代码与 <code>capm.do</code> 一致，不修改全局配置或估计条件。</p>
+<p>两个固定输入为 <a href="../../data/capm/industry_monthly-README.md">industry_monthly.dta 的说明</a> (真实行业数据) 和 <a href="../../data/capm/beta_sim-README.md">beta_sim.dta 的说明</a> (教学模拟)。各次分析只读这两份数据；本地重跑所需文件见 <a href="../../tools/capm/README.md">运行说明</a>，仓库中的通用入口见 <a href="https://github.com/lianxhcn/FinEco/tree/main/notebooks">notebooks 目录</a> 与 <a href="https://github.com/lianxhcn/FinEco/tree/main/tools">tools 目录</a>。本页可以独立阅读已保存的代码与输出，重新执行仍需完整项目环境与输入。</p>
+<p>结果整理使用 <code>estout</code> 包中的外部命令 <code>esttab</code>，首次使用前可在 Stata 运行 <code>ssc install estout</code>。本 Notebook 不自动安装或更新命令；开始前请用 <code>which esttab</code> 核对。参数表仍读取 <code>newey</code> 的 HAC(6) 估计，分别显示标准误、95% 置信区间，并导出 <code>logs/capm/regression.rtf</code>；RTF 可用 Word 打开。</p>
+</section>
+<section id="模型与变量" class="level2">
+<h2 class="anchored" data-anchor-id="模型与变量">模型与变量</h2>
+<p>记行业与市场的超额收益分别为 <span class="math inline">\(r_{i,t}=R_{i,t}-R_{f,t}\)</span> 和 <span class="math inline">\(r_{m,t}=R_{m,t}-R_{f,t}\)</span>。其中 <span class="math inline">\(i\)</span> 表示行业，<span class="math inline">\(t\)</span> 表示月份，<span class="math inline">\(R_{f,t}\)</span> 为同月无风险收益。带截距的市场回归为</p>
+<p><span class="math display">\[
+r_{i,t}=\alpha_{i}+\beta_{i}r_{m,t}+\varepsilon_{i,t}.
+\]</span></p>
+<p><span class="math inline">\(\alpha_{i}\)</span> 是截距，<span class="math inline">\(\beta_{i}\)</span> 衡量对市场共同波动的暴露，<span class="math inline">\(\varepsilon_{i,t}\)</span> 是单一市场因素未解释的随机干扰项。<span class="math inline">\(\beta\)</span> 是资产与市场超额收益协方差除以市场超额收益方差，不衡量资产的全部波动。CAPM 在相应均衡与稳定参数条件下增加零截距限制；能估出 <span class="math inline">\(\beta\)</span>，不等于定价关系已成立。</p>
+<p>实验依次核对数据、比较点估计与推断、观察行业差异、检查组合恒等式，最后比较滚动窗口和模拟真值。改变一个设置时，先说明其他哪些条件保持不变。</p>
+</section>
+<section id="数据核对" class="level2">
+<h2 class="anchored" data-anchor-id="数据核对">数据核对</h2>
+<p>先确认冻结输入、月份连续性、样本量和收益单位，再列出原始行业文件的前六行。mdate 是月份；hitec、utils 是尚未扣除无风险收益的行业收益；mktrf 已是市场超额收益；rf 是同月无风险收益。行业列减 rf 一次生成 ex_hitec、ex_utils，mktrf 不再扣减。所有收益列均以每月百分数存储。</p>
+<div id="ece725a4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-11T07:54:19.021113Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-11T07:54:19.021113Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-11T07:54:21.560128Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-11T07:54:21.560128Z&quot;}}" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">version</span> 19</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">clear</span> <span class="ot">all</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">set</span> <span class="kw">more</span> <span class="kw">off</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">set</span> <span class="dv">linesize</span> 76</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">capture</span> <span class="kw">mkdir</span> logs/capm</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">capture</span> <span class="kw">mkdir</span> figs/raw</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> root : <span class="ot">environment</span> FINECO_ROOT</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">if</span> <span class="st">"`root'"</span> != <span class="st">""</span> {</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    cd <span class="st">"`root'"</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> stamp : <span class="ot">environment</span> CAPM_RUN_STAMP</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="kw">if</span> <span class="st">"`stamp'"</span> == <span class="st">""</span> {</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">display</span> <span class="kw">as</span> <span class="kw">error</span> <span class="st">"请从本章运行器启动以设置图片时间戳"</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">exit</span> 198</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="kw">global</span> CAPM_STAMP <span class="st">"`stamp'"</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="kw">set</span> <span class="dv">scheme</span> s2color</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="kw">data</span>/capm/industry_monthly.dta, <span class="kw">clear</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="kw">format</span> mdate %tm</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="kw">tsset</span> mdate, <span class="fu">monthly</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="kw">assert</span> _N == 432</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="kw">assert</span> mdate == tm(1990m1) + <span class="dt">_n</span> - 1</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>* 前六行保留原始行业收益  mktrf 已扣 rf</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="ot">list</span> mdate hitec utils mktrf rf <span class="kw">in</span> 1/6, <span class="kw">noobs</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="kw">foreach</span> a <span class="kw">in</span> nodur durbl manuf enrgy hitec telcm shops hlth utils other {</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="kw">generate</span> <span class="kw">double</span> ex_<span class="ot">`a'</span> = <span class="ot">`a'</span> - rf</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="kw">summarize</span> mktrf rf ex_hitec ex_utils</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Running D:\stata19/profile.do ...
+</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<style>div.jp-Notebook .datagrid-container {min-height: 448px; }</style>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>D:\github_lianxh\FinEco
+(US monthly returns in percent, 1990-2025)
+
+Time variable: mdate, 1990m1 to 2025m12
+        Delta: 1 month
+
+  +--------------------------------------+
+  |  mdate   hitec   utils   mktrf    rf |
+  |--------------------------------------|
+  | 1990m1   -1.47   -5.35    -7.8   .57 |
+  | 1990m2    4.04     .21    1.12   .57 |
+  | 1990m3    4.63    -.75    1.83   .64 |
+  | 1990m4   -1.94   -5.52   -3.36   .69 |
+  | 1990m5   12.41    5.43    8.43   .68 |
+  |--------------------------------------|
+  | 1990m6   -1.27     .75   -1.09   .63 |
+  +--------------------------------------+
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       mktrf |        432     .738588    4.389314      -17.2       13.6
+          rf |        432    .2233796    .1873609          0        .69
+    ex_hitec |        432    1.093843     6.68164     -26.45      20.31
+    ex_utils |        432    .6063426        4.04     -13.17      11.16</code></pre>
+</div>
+</div>
+</section>
+<section id="估计与推断" class="level2">
+<h2 class="anchored" data-anchor-id="估计与推断">估计与推断</h2>
+<p>先显示 ex_hitec 与 mktrf 的样本协方差矩阵 V，再用 V[1,2]/V[2,2] 算出斜率。V 的顺序与 correlate 中的变量顺序相同；它不是回归系数估计的方差矩阵 e(V)。相同样本与解释变量下，三种方差估计的 <span class="math inline">\(\alpha\)</span>、<span class="math inline">\(\beta\)</span> 应相同，标准误可以不同。HAC 最大滞后 6 个月仅为本例教学选择，不是所有月度数据的固定规则。分别检验 <span class="math inline">\(\alpha=0\)</span> 和 <span class="math inline">\(\beta=1\)</span>。</p>
+<div id="32d63ac8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-11T07:54:21.562510Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-11T07:54:21.562510Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-11T07:54:23.031010Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-11T07:54:23.030498Z&quot;}}" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>* 相同样本比较三种方差估计  点估计必须相同</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>* <span class="kw">V</span> 是两种超额收益的样本协方差矩阵  不是 <span class="fu">e</span>(<span class="kw">V</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>correlate ex_hitec mktrf, <span class="kw">covariance</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">matrix</span> <span class="kw">V</span> = <span class="fu">r</span>(C)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">matrix</span> <span class="ot">list</span> <span class="kw">V</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">display</span> <span class="st">"beta = "</span> %7.3f (<span class="kw">V</span>[1,2] / <span class="kw">V</span>[2,2])</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="kw">regress</span> ex_hitec mktrf</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">estimates</span> <span class="kw">store</span> conventional</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">regress</span> ex_hitec mktrf, <span class="kw">vce</span>(<span class="kw">robust</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="kw">estimates</span> <span class="kw">store</span> <span class="kw">robust</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="kw">newey</span> ex_hitec mktrf, lag(6)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="kw">estimates</span> <span class="kw">store</span> hac6</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="kw">estimates</span> <span class="kw">table</span> conventional <span class="kw">robust</span> hac6, <span class="co">///</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    b(%9.4f) se(%9.4f) <span class="kw">stats</span>(<span class="kw">N</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="kw">test</span> <span class="dt">_cons</span> = 0</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="kw">test</span> mktrf = 1</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(obs=432)
+
+             | ex_hitec    mktrf
+-------------+------------------
+    ex_hitec |  44.6443
+       mktrf |  25.3669  19.2661
+
+
+symmetric V[2,2]
+           ex_hitec      mktrf
+ex_hitec   44.64431
+   mktrf  25.366888  19.266073
+beta =   1.317
+
+      Source |       SS           df       MS      Number of obs   =       4
+&gt; 32
+-------------+----------------------------------   F(1, 430)       =   1277.
+&gt; 21
+       Model |  14395.2248         1  14395.2248   Prob &gt; F        =    0.00
+&gt; 00
+    Residual |  4846.47262       430  11.2708665   R-squared       =    0.74
+&gt; 81
+-------------+----------------------------------   Adj R-squared   =    0.74
+&gt; 75
+       Total |  19241.6974       431  44.6443096   Root MSE        =    3.35
+&gt; 72
+
+----------------------------------------------------------------------------
+&gt; --
+    ex_hitec | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interva
+&gt; l]
+-------------+--------------------------------------------------------------
+&gt; --
+       mktrf |      1.317      0.037    35.74   0.000        1.244       1.3
+&gt; 89
+       _cons |      0.121      0.164     0.74   0.459       -0.201       0.4
+&gt; 43
+----------------------------------------------------------------------------
+&gt; --
+
+Linear regression                               Number of obs     =        4
+&gt; 32
+                                                F(1, 430)         =     791.
+&gt; 63
+                                                Prob &gt; F          =     0.00
+&gt; 00
+                                                R-squared         =     0.74
+&gt; 81
+                                                Root MSE          =     3.35
+&gt; 72
+
+----------------------------------------------------------------------------
+&gt; --
+             |               Robust
+    ex_hitec | Coefficient  std. err.      t    P&gt;|t|     [95% conf. interva
+&gt; l]
+-------------+--------------------------------------------------------------
+&gt; --
+       mktrf |      1.317      0.047    28.14   0.000        1.225       1.4
+&gt; 09
+       _cons |      0.121      0.168     0.72   0.471       -0.209       0.4
+&gt; 52
+----------------------------------------------------------------------------
+&gt; --
+
+Regression with Newey–West standard errors      Number of obs     =        4
+&gt; 32
+Maximum lag = 6                                 F(  1,       430) =     337.
+&gt; 96
+                                                Prob &gt; F          =     0.00
+&gt; 00
+
+----------------------------------------------------------------------------
+&gt; --
+             |             Newey–West
+    ex_hitec | Coefficient  std. err.      t    P&gt;|t|     [95% conf. interva
+&gt; l]
+-------------+--------------------------------------------------------------
+&gt; --
+       mktrf |      1.317      0.072    18.38   0.000        1.176       1.4
+&gt; 57
+       _cons |      0.121      0.184     0.66   0.510       -0.241       0.4
+&gt; 83
+----------------------------------------------------------------------------
+&gt; --
+
+--------------------------------------------------
+    Variable | convent~l    robust       hac6     
+-------------+------------------------------------
+       mktrf |    1.3167      1.3167      1.3167  
+             |    0.0368      0.0468      0.0716  
+       _cons |    0.1214      0.1214      0.1214  
+             |    0.1638      0.1680      0.1842  
+-------------+------------------------------------
+           N |       432         432         432  
+--------------------------------------------------
+                                      Legend: b/se
+
+ ( 1)  _cons = 0
+
+       F(  1,   430) =    0.43
+            Prob &gt; F =    0.5102
+
+ ( 1)  mktrf = 1
+
+       F(  1,   430) =   19.55
+            Prob &gt; F =    0.0000</code></pre>
+</div>
+</div>
+</section>
+<section id="整理回归结果" class="level2">
+<h2 class="anchored" data-anchor-id="整理回归结果">整理回归结果</h2>
+<p>先用 newey 估计并保存两个行业，再用 esttab 分别报告系数与标准误、系数与 95% 置信区间。它读取已保存的系数、方差和自由度，不改变估计方法。区间仍用自由度 430 的 <span class="math inline">\(t\)</span> 临界值，与后面的手动端点计算一致。最后导出 RTF 文件，便于继续整理实证结果。</p>
+<div id="dc707fac" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-11T07:54:23.033014Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-11T07:54:23.032018Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-11T07:54:23.291128Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-11T07:54:23.291128Z&quot;}}" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>* 外部命令只整理结果  标准误口径仍由 <span class="kw">newey</span> 决定</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>which esttab</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">quietly</span> <span class="kw">newey</span> ex_hitec mktrf, lag(6)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">estimates</span> <span class="kw">store</span> capm_hitec</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">quietly</span> <span class="kw">newey</span> ex_utils mktrf, lag(6)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="kw">estimates</span> <span class="kw">store</span> capm_utils</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>esttab capm_hitec capm_utils, b(3) se(3) nostar</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>esttab capm_hitec capm_utils, b(3) <span class="kw">ci</span>(3) <span class="dv">level</span>(95) nostar</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>esttab capm_hitec capm_utils <span class="kw">using</span> <span class="st">"logs/capm/regression.rtf"</span>, <span class="co">///</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> b(3) se(3) nostar</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>D:/stata/plus\e\esttab.ado
+*! version 2.1.1  10jun2022  Ben Jann
+*! wrapper for estout
+
+--------------------------------------
+                      (1)          (2)
+                 ex_hitec     ex_utils
+--------------------------------------
+mktrf               1.317        0.439
+                  (0.072)      (0.056)
+
+_cons               0.121        0.282
+                  (0.184)      (0.179)
+--------------------------------------
+N                     432          432
+--------------------------------------
+Standard errors in parentheses
+
+----------------------------------------------------------
+                                (1)                    (2)
+                           ex_hitec               ex_utils
+----------------------------------------------------------
+mktrf                         1.317                  0.439
+                      [1.176,1.457]          [0.328,0.549]
+
+_cons                         0.121                  0.282
+                     [-0.241,0.483]         [-0.069,0.634]
+----------------------------------------------------------
+N                               432                    432
+----------------------------------------------------------
+95% confidence intervals in brackets
+(output written to logs/capm/regression.rtf)</code></pre>
+</div>
+</div>
+<div id="a4d1eeda" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-11T07:54:23.293135Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-11T07:54:23.293135Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-11T07:54:23.294964Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-11T07:54:23.294964Z&quot;}}" data-tags="[&quot;capm-display-settings&quot;]" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>%<span class="kw">set</span> graph_height = 4.5in</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="行业比较" class="level2">
+<h2 class="anchored" data-anchor-id="行业比较">行业比较</h2>
+<p>比较均值、波动、<span class="math inline">\(\beta\)</span> 与拟合优度的不同含义。下表各行业均用 432 个月、相同市场代理和 HAC(6) 口径。十个单独检验不等于联合模型检验，也未作多重检验校正。</p>
+<div id="54ef84d9" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-11T07:54:23.297213Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-11T07:54:23.295972Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-11T07:54:34.357385Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-11T07:54:34.357385Z&quot;}}" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>* 循环不改变数据  每个行业均使用同一 432 个月</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">capture</span> <span class="kw">postclose</span> capm_results</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">postfile</span> capm_results str8 industry <span class="kw">double</span> <span class="kw">mean</span> <span class="kw">double</span> <span class="fu">sd</span> <span class="co">///</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">double</span> <span class="kw">alpha</span> <span class="kw">double</span> beta <span class="kw">double</span> se_alpha <span class="kw">double</span> se_beta <span class="co">///</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">double</span> alpha_lo <span class="kw">double</span> alpha_hi <span class="kw">double</span> beta_lo <span class="kw">double</span> beta_hi <span class="co">///</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">double</span> p_alpha <span class="kw">double</span> p_beta1 <span class="kw">double</span> r2 <span class="kw">int</span> n <span class="co">///</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">using</span> logs/capm/<span class="kw">estimates</span>.dta, <span class="kw">replace</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="kw">foreach</span> a <span class="kw">in</span> nodur durbl manuf enrgy hitec telcm shops hlth utils other {</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">quietly</span> <span class="kw">summarize</span> <span class="ot">`a'</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scalar</span> mean_r = <span class="fu">r</span>(<span class="kw">mean</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scalar</span> sd_r = <span class="fu">r</span>(<span class="fu">sd</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">quietly</span> <span class="kw">regress</span> ex_<span class="ot">`a'</span> mktrf</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scalar</span> fit_r2 = <span class="fu">e</span>(r2)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">quietly</span> <span class="kw">newey</span> ex_<span class="ot">`a'</span> mktrf, lag(6)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scalar</span> a0 = _b[<span class="dt">_cons</span>]</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scalar</span> b0 = _b[mktrf]</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scalar</span> sa = _se[<span class="dt">_cons</span>]</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scalar</span> sb = _se[mktrf]</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scalar</span> cv = <span class="fu">invttail</span>(<span class="fu">e</span>(df_r), .025)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scalar</span> pa = 2 * <span class="fu">ttail</span>(<span class="fu">e</span>(df_r), <span class="fu">abs</span>(a0 / sa))</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scalar</span> pb = 2 * <span class="fu">ttail</span>(<span class="fu">e</span>(df_r), <span class="fu">abs</span>((b0 - 1) / sb))</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">post</span> capm_results (<span class="st">"`a'"</span>) (mean_r) (sd_r) (a0) (b0) <span class="co">///</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>        (sa) (sb) (a0-cv*sa) (a0+cv*sa) <span class="co">///</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>        (b0-cv*sb) (b0+cv*sb) (pa) (pb) (fit_r2) (<span class="fu">e</span>(<span class="kw">N</span>))</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="kw">postclose</span> capm_results</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="kw">preserve</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> logs/capm/<span class="kw">estimates</span>.dta, <span class="kw">clear</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="kw">format</span> <span class="kw">mean</span> <span class="fu">sd</span> <span class="kw">alpha</span> beta se_* %9.4f</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="ot">list</span> industry <span class="kw">mean</span> <span class="fu">sd</span> <span class="kw">alpha</span> beta se_beta p_alpha r2, <span class="kw">noobs</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="kw">export</span> delimited <span class="kw">using</span> logs/capm/<span class="kw">estimates</span>.csv, <span class="kw">replace</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a><span class="kw">generate</span> <span class="ot">row</span> = <span class="dt">_n</span></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="kw">twoway</span> (rcap beta_lo beta_hi <span class="ot">row</span>, horizontal lcolor(<span class="bn">navy</span>)) <span class="co">///</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>    (<span class="kw">scatter</span> <span class="ot">row</span> beta, mcolor(<span class="bn">navy</span>) <span class="bn">msymbol</span>(Oh)), <span class="co">///</span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>    <span class="kw">ylabel</span>(1 <span class="st">"NoDur"</span> 2 <span class="st">"Durbl"</span> 3 <span class="st">"Manuf"</span> 4 <span class="st">"Enrgy"</span> <span class="co">///</span></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>    5 <span class="st">"HiTec"</span> 6 <span class="st">"Telcm"</span> 7 <span class="st">"Shops"</span> 8 <span class="st">"Hlth"</span> <span class="co">///</span></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>    9 <span class="st">"Utils"</span> 10 <span class="st">"Other"</span>, angle(0) <span class="bn">labsize</span>(medium)) <span class="co">///</span></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>    <span class="kw">xlabel</span>(0(.5)1.5, <span class="bn">labsize</span>(medium)) <span class="co">///</span></span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>    <span class="bn">yscale</span>(<span class="fu">reverse</span>) <span class="bn">ytitle</span>(<span class="st">""</span>) <span class="bn">xtitle</span>(<span class="st">"Market beta"</span>) <span class="co">///</span></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>    <span class="bn">xline</span>(1, lpattern(<span class="kw">dash</span>) lcolor(gs8)) <span class="bn">legend</span>(<span class="kw">off</span>) <span class="co">///</span></span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>    graphregion(<span class="kw">color</span>(<span class="bn">white</span>)) <span class="bn">xsize</span>(6.4) <span class="bn">ysize</span>(4.5) <span class="co">///</span></span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>    <span class="bn">name</span>(betas, <span class="kw">replace</span>)</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="st">"figs/raw/capm-fig02-betas-${CAPM_STAMP}.png"</span>, <span class="co">///</span></span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> <span class="kw">width</span>(2400)</span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="st">"figs/raw/capm-fig02-betas-${CAPM_STAMP}.svg"</span>, <span class="co">///</span></span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> fontface(<span class="st">"Times New Roman"</span>)</span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="st">"figs/raw/capm-fig02-betas-${CAPM_STAMP}.pdf"</span>, <span class="co">///</span></span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> fontface(<span class="st">"Times New Roman"</span>)</span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a><span class="kw">restore</span></span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Note: Below code run with echo to enable preserve/restore functionality.)
+
+
+
+
+
+
+
+
+
+
+  +---------------------------------------------------------------------+
+  | industry |   mean |     sd |   alpha |   beta | se_beta |   p_alpha |
+  |    nodur | 0.8481 | 3.8078 |  0.1655 | 0.6217 |  0.0467 | .25339347 |
+  |---------------------------------------------------------------------|
+  |                                     r2                              |
+  |                              .51295126                              |
+  +---------------------------------------------------------------------+
+
+  +---------------------------------------------------------------------+
+  | industry |   mean |     sd |   alpha |   beta | se_beta |   p_alpha |
+  |    durbl | 1.1798 | 8.5376 | -0.0797 | 1.4028 |  0.0994 |  .7671453 |
+  |---------------------------------------------------------------------|
+  |                                     r2                              |
+  |                              .51862495                              |
+  +---------------------------------------------------------------------+
+
+  +---------------------------------------------------------------------+
+  | industry |   mean |     sd |   alpha |   beta | se_beta |   p_alpha |
+  |    manuf | 0.9980 | 4.8494 |  0.0323 | 1.0051 |  0.0366 | .77546923 |
+  |---------------------------------------------------------------------|
+  |                                     r2                              |
+  |                              .82618292                              |
+  +---------------------------------------------------------------------+
+
+  +---------------------------------------------------------------------+
+  | industry |   mean |     sd |   alpha |   beta | se_beta |   p_alpha |
+  |    enrgy | 0.9249 | 6.4294 |  0.0796 | 0.8419 |  0.0987 | .78107868 |
+  |---------------------------------------------------------------------|
+  |                                     r2                              |
+  |                              .32998781                              |
+  +---------------------------------------------------------------------+
+
+  +---------------------------------------------------------------------+
+  | industry |   mean |     sd |   alpha |   beta | se_beta |   p_alpha |
+  |    hitec | 1.3172 | 6.6820 |  0.1214 | 1.3167 |  0.0716 | .51019443 |
+  |---------------------------------------------------------------------|
+  |                                     r2                              |
+  |                              .74812656                              |
+  +---------------------------------------------------------------------+
+
+  +---------------------------------------------------------------------+
+  | industry |   mean |     sd |   alpha |   beta | se_beta |   p_alpha |
+  |    telcm | 0.6516 | 5.1348 | -0.2417 | 0.9070 |  0.0456 | .14952142 |
+  |---------------------------------------------------------------------|
+  |                                     r2                              |
+  |                              .59993933                              |
+  +---------------------------------------------------------------------+
+
+  +---------------------------------------------------------------------+
+  | industry |   mean |     sd |   alpha |   beta | se_beta |   p_alpha |
+  |    shops | 1.0470 | 4.6742 |  0.1518 | 0.9097 |  0.0376 | .22282246 |
+  |---------------------------------------------------------------------|
+  |                                     r2                              |
+  |                              .72804509                              |
+  +---------------------------------------------------------------------+
+
+  +---------------------------------------------------------------------+
+  | industry |   mean |     sd |   alpha |   beta | se_beta |   p_alpha |
+  |     hlth | 1.0009 | 4.4159 |  0.2569 | 0.7049 |  0.0463 | .07897576 |
+  |---------------------------------------------------------------------|
+  |                                     r2                              |
+  |                              .49255468                              |
+  +---------------------------------------------------------------------+
+
+  +---------------------------------------------------------------------+
+  | industry |   mean |     sd |   alpha |   beta | se_beta |   p_alpha |
+  |    utils | 0.8297 | 4.0421 |  0.2825 | 0.4385 |  0.0561 | .11540244 |
+  |---------------------------------------------------------------------|
+  |                                     r2                              |
+  |                              .22699575                              |
+  +---------------------------------------------------------------------+
+
+  +---------------------------------------------------------------------+
+  | industry |   mean |     sd |   alpha |   beta | se_beta |   p_alpha |
+  |    other | 0.9255 | 5.1978 | -0.0852 | 1.0660 |  0.0431 | .51529412 |
+  |---------------------------------------------------------------------|
+  |                                     r2                              |
+  |                              .80977139                              |
+  +---------------------------------------------------------------------+
+
+file logs/capm/estimates.csv saved
+
+
+
+(file figs/raw/capm-fig02-betas-20261111-155412.png not found)
+file figs/raw/capm-fig02-betas-20261111-155412.png written in PNG format
+
+(file figs/raw/capm-fig02-betas-20261111-155412.svg not found)
+file figs/raw/capm-fig02-betas-20261111-155412.svg saved as SVG format
+
+file figs/raw/capm-fig02-betas-20261111-155412.pdf saved as PDF format
+
+
+</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capm-stata_files/figure-html/cell-6-output-2.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>科技行业 <span class="math inline">\(\beta\)</span> 约为 1.317，公用事业行业约为 0.439。它们的原始月均收益分别约为 1.317% 和 0.830%，但截距分别约为每月 0.121% 和 0.282%。<span class="math inline">\(\beta\)</span> 与均值的数字恰好接近，不代表两者具有相同单位或含义。</p>
+<p>两行业 <span class="math inline">\(\alpha\)</span> 的 HAC 标准误分别约为 0.184、0.179，双侧检验 <span class="math inline">\(p\)</span> 值约为 0.510、0.115。因此，这组样本与推断设置未在 5% 水平拒绝零截距。公用事业截距点估计较高，不能据此直接断言其具有稳定的超额表现。行业表中的 <span class="math inline">\(R^{2}\)</span> 说明拟合程度，也不检验定价关系。</p>
+<p>95% 置信区间采用</p>
+<p><span class="math display">\[
+\mathrm{CI}_{95}=\widehat{\beta}\pm c\cdot \operatorname{se}(\widehat{\beta}).
+\]</span></p>
+<p>这里省略当前行业的下标。<span class="math inline">\(\widehat{\beta}\)</span> 为斜率估计，<span class="math inline">\(\operatorname{se}(\widehat{\beta})\)</span> 为 HAC(6) 标准误，<span class="math inline">\(c\)</span> 为自由度 <span class="math inline">\(T-2=430\)</span> 的 <span class="math inline">\(t\)</span> 分布的 97.5% 分位数；减号和加号分别给出区间下限与上限。<span class="math inline">\(\alpha\)</span> 的区间同理。该推断依赖大样本近似，不保证任意相关误差下的精确小样本覆盖率。</p>
+<div id="23c0b820" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-11T07:54:34.358860Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-11T07:54:34.358860Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-11T07:54:34.361337Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-11T07:54:34.361337Z&quot;}}" data-tags="[&quot;capm-display-settings&quot;]" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>%<span class="kw">set</span> graph_height = 3.2in</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>graph size was (6.4in, 4.5in), is now (6.4in, 3.2in).</code></pre>
+</div>
+</div>
+</section>
+<section id="市场回归图" class="level2">
+<h2 class="anchored" data-anchor-id="市场回归图">市场回归图</h2>
+<p>两幅图横纵坐标口径相同。散点是每月已实现超额收益，拟合线斜率为样本 <span class="math inline">\(\beta\)</span>，不是证券市场线。图中所有月份保留，不裁掉极端值。</p>
+<div id="aceaa46a" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-11T07:54:34.363342Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-11T07:54:34.362342Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-11T07:54:36.711874Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-11T07:54:36.711398Z&quot;}}" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>* 两个面板的横纵坐标范围一致  便于比较斜率和离散程度</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">twoway</span> (<span class="kw">scatter</span> ex_hitec mktrf, <span class="bn">msymbol</span>(Oh) msize(small) <span class="co">///</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    mlcolor(<span class="bn">navy</span>%60) mfcolor(<span class="kw">none</span>)) <span class="co">///</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    (<span class="kw">lfit</span> ex_hitec mktrf, lcolor(<span class="bn">navy</span>)), <span class="co">///</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="bn">title</span>(<span class="st">"(a) HiTec"</span>, <span class="kw">size</span>(medium)) <span class="co">///</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="bn">xtitle</span>(<span class="st">"Market excess return (%)"</span>) <span class="co">///</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="bn">ytitle</span>(<span class="st">"Industry excess return (%)"</span>) <span class="co">///</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">xlabel</span>(-20(10)20) <span class="kw">ylabel</span>(-40(20)40, angle(0)) <span class="co">///</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    aspectratio(1) <span class="bn">legend</span>(<span class="kw">off</span>) <span class="co">///</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    graphregion(<span class="kw">color</span>(<span class="bn">white</span>)) <span class="bn">name</span>(hitec, <span class="kw">replace</span>)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="kw">twoway</span> (<span class="kw">scatter</span> ex_utils mktrf, <span class="bn">msymbol</span>(Oh) msize(small) <span class="co">///</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    mlcolor(<span class="bn">dkorange</span>%60) mfcolor(<span class="kw">none</span>)) <span class="co">///</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    (<span class="kw">lfit</span> ex_utils mktrf, lcolor(<span class="bn">dkorange</span>)), <span class="co">///</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="bn">title</span>(<span class="st">"(b) Utilities"</span>, <span class="kw">size</span>(medium)) <span class="co">///</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="bn">xtitle</span>(<span class="st">"Market excess return (%)"</span>) <span class="co">///</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    <span class="bn">ytitle</span>(<span class="st">"Industry excess return (%)"</span>) <span class="co">///</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">xlabel</span>(-20(10)20) <span class="kw">ylabel</span>(-40(20)40, angle(0)) <span class="co">///</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    aspectratio(1) <span class="bn">legend</span>(<span class="kw">off</span>) <span class="co">///</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    graphregion(<span class="kw">color</span>(<span class="bn">white</span>)) <span class="bn">name</span>(utils, <span class="kw">replace</span>)</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="bn">combine</span> hitec utils, <span class="bn">cols</span>(2) <span class="bn">xcommon</span> <span class="bn">ycommon</span> iscale(1.20) <span class="co">///</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    <span class="bn">imargin</span>(0) graphregion(<span class="kw">color</span>(<span class="bn">white</span>) <span class="bn">margin</span>(<span class="bn">zero</span>)) <span class="co">///</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    <span class="bn">xsize</span>(6.4) <span class="bn">ysize</span>(3.2)</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="st">"figs/raw/capm-fig01-market-${CAPM_STAMP}.png"</span>, <span class="co">///</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> <span class="kw">width</span>(2800)</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="st">"figs/raw/capm-fig01-market-${CAPM_STAMP}.svg"</span>, <span class="co">///</span></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> fontface(<span class="st">"Times New Roman"</span>)</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="st">"figs/raw/capm-fig01-market-${CAPM_STAMP}.pdf"</span>, <span class="co">///</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> fontface(<span class="st">"Times New Roman"</span>)</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(note:  named style 0 not found in class margin, default attributes used)
+(note:  named style 0 not found in class margin, default attributes used)
+(file figs/raw/capm-fig01-market-20261111-155412.png not found)
+file figs/raw/capm-fig01-market-20261111-155412.png written in PNG format
+(file figs/raw/capm-fig01-market-20261111-155412.svg not found)
+file figs/raw/capm-fig01-market-20261111-155412.svg saved as SVG format
+file figs/raw/capm-fig01-market-20261111-155412.pdf saved as PDF format</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capm-stata_files/figure-html/cell-8-output-2.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capm-stata_files/figure-html/cell-8-output-3.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capm-stata_files/figure-html/cell-8-output-4.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="组合风险" class="level2">
+<h2 class="anchored" data-anchor-id="组合风险">组合风险</h2>
+<p>两行业每月各占一半，相当于按月恢复固定权重，尚未扣除交易成本。在线性回归使用同一样本与截距项时，组合 <span class="math inline">\(\beta\)</span> 等于成分 <span class="math inline">\(\beta\)</span> 的加权和。这是线性代数性质，不是 CAPM 定价关系成立的独立证据。</p>
+<div id="b84ec6db" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-11T07:54:36.714247Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-11T07:54:36.713722Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-11T07:54:36.784146Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-11T07:54:36.784146Z&quot;}}" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>* 固定权重的线性恒等式不是 CAPM 的独立验证</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">quietly</span> <span class="kw">regress</span> ex_hitec mktrf</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> bh = _b[mktrf]</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="kw">quietly</span> <span class="kw">regress</span> ex_utils mktrf</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> bu = _b[mktrf]</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="kw">generate</span> <span class="kw">double</span> ex_portfolio = .5*ex_hitec + .5*ex_utils</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="kw">regress</span> ex_portfolio mktrf</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="fu">scalar</span> beta_gap = _b[mktrf] - (.5*bh + .5*bu)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="kw">display</span> <span class="st">"固定权重组合 beta 的代数误差 = "</span> %16.12f beta_gap</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="kw">assert</span> <span class="fu">abs</span>(beta_gap) &lt; 1e-10</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+      Source |       SS           df       MS      Number of obs   =       4
+&gt; 32
+-------------+----------------------------------   F(1, 430)       =   1765.
+&gt; 92
+       Model |  6395.23401         1  6395.23401   Prob &gt; F        =    0.00
+&gt; 00
+    Residual |  1557.23799       430  3.62148369   R-squared       =    0.80
+&gt; 42
+-------------+----------------------------------   Adj R-squared   =    0.80
+&gt; 37
+       Total |    7952.472       431  18.4512111   Root MSE        =     1.9
+&gt; 03
+
+----------------------------------------------------------------------------
+&gt; --
+ex_portfolio | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interva
+&gt; l]
+-------------+--------------------------------------------------------------
+&gt; --
+       mktrf |      0.878      0.021    42.02   0.000        0.837       0.9
+&gt; 19
+       _cons |      0.202      0.093     2.17   0.030        0.019       0.3
+&gt; 84
+----------------------------------------------------------------------------
+&gt; --
+固定权重组合 beta 的代数误差 =  -0.000000000000</code></pre>
+</div>
+</div>
+<div id="acab3304" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-11T07:54:36.786355Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-11T07:54:36.786355Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-11T07:54:36.788723Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-11T07:54:36.788723Z&quot;}}" data-tags="[&quot;capm-display-settings&quot;]" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>%<span class="kw">set</span> graph_height = 3.2in</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="滚动估计" class="level2">
+<h2 class="anchored" data-anchor-id="滚动估计">滚动估计</h2>
+<p>先以 2025 年 12 月为目标月，显示只使用此前 60 个月的单次回归；随后循环构造两条序列。目标月 <span class="math inline">\(t\)</span> 的 <span class="math inline">\(\beta\)</span> 只用此前 36 或 60 个月。两窗口统一从 1995 年 1 月开始比较，末次输入为 <span class="math inline">\(t-1\)</span>。窗口重叠造成相邻估计相关，曲线波动不能独自证明真实 <span class="math inline">\(\beta\)</span> 在变。</p>
+<div id="ca4fa288" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-11T07:54:36.789729Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-11T07:54:36.789729Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-11T07:54:44.098856Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-11T07:54:44.098856Z&quot;}}" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>* 目标月份为 i  只使用 i-<span class="kw">window</span> 至 i-1 的已观察收益</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>* 单个月份先核验  命令无需在 76 列以内另起续行</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> t = tm(2025m12)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="kw">regress</span> ex_hitec mktrf <span class="kw">if</span> <span class="fu">inrange</span>(mdate, <span class="ot">`t'</span>-60, <span class="ot">`t'</span>-1)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="kw">display</span> <span class="st">"beta = "</span> %7.3f _b[mktrf]</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="kw">capture</span> <span class="kw">postclose</span> capm_roll</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="kw">postfile</span> capm_roll str8 industry <span class="kw">int</span> <span class="kw">window</span> mdate end_used <span class="co">///</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">double</span> beta <span class="kw">using</span> logs/capm/<span class="kw">rolling</span>.dta, <span class="kw">replace</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="kw">foreach</span> a <span class="kw">in</span> hitec utils {</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">foreach</span> <span class="fu">w</span> <span class="kw">in</span> 36 60 {</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>        <span class="kw">forvalues</span> i = 61/432 {</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>            <span class="kw">local</span> first = <span class="ot">`i'</span> - <span class="ot">`w'</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>            <span class="kw">local</span> <span class="fu">last</span> = <span class="ot">`i'</span> - 1</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>            <span class="kw">quietly</span> <span class="kw">regress</span> ex_<span class="ot">`a'</span> mktrf <span class="kw">in</span> <span class="ot">`first'</span>/<span class="ot">`last'</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>            <span class="kw">post</span> capm_roll (<span class="st">"`a'"</span>) (<span class="ot">`w'</span>) (mdate[<span class="ot">`i'</span>]) <span class="co">///</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>                (mdate[<span class="ot">`last'</span>]) (_b[mktrf])</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="kw">postclose</span> capm_roll</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a><span class="kw">preserve</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> logs/capm/<span class="kw">rolling</span>.dta, <span class="kw">clear</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a><span class="kw">format</span> mdate end_used %tm</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a><span class="kw">assert</span> end_used == mdate - 1</span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a><span class="kw">assert</span> _N == 1488</span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a><span class="kw">sort</span> industry <span class="kw">window</span> mdate</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a><span class="kw">export</span> delimited <span class="kw">using</span> logs/capm/<span class="kw">rolling</span>.csv, <span class="kw">replace</span></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a><span class="kw">foreach</span> a <span class="kw">in</span> hitec utils {</span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>    <span class="kw">twoway</span> (<span class="kw">line</span> beta mdate <span class="kw">if</span> industry==<span class="st">"`a'"</span> &amp; <span class="kw">window</span>==36, <span class="co">///</span></span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>        lcolor(<span class="bn">navy</span>) lpattern(solid)) <span class="co">///</span></span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>        (<span class="kw">line</span> beta mdate <span class="kw">if</span> industry==<span class="st">"`a'"</span> &amp; <span class="kw">window</span>==60, <span class="co">///</span></span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>        lcolor(<span class="bn">dkorange</span>) lpattern(<span class="kw">dash</span>)), <span class="co">///</span></span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>        <span class="bn">title</span>(<span class="st">"`a'"</span>, <span class="kw">size</span>(medium)) <span class="bn">xtitle</span>(<span class="st">""</span>) <span class="co">///</span></span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a>        <span class="bn">ytitle</span>(<span class="st">"Estimated beta"</span>) <span class="kw">ylabel</span>(0(.5)2, angle(0)) <span class="co">///</span></span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>        <span class="kw">xlabel</span>(420 540 660 780, <span class="kw">format</span>(%tmCCYY)) <span class="co">///</span></span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>        <span class="bn">legend</span>(<span class="kw">order</span>(1 <span class="st">"36 months"</span> 2 <span class="st">"60 months"</span>) <span class="bn">rows</span>(1) <span class="co">///</span></span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>        region(lstyle(<span class="kw">none</span>))) <span class="co">///</span></span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a>        aspectratio(1) graphregion(<span class="kw">color</span>(<span class="bn">white</span>)) <span class="co">///</span></span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a>        <span class="bn">name</span>(roll_<span class="ot">`a'</span>, <span class="kw">replace</span>)</span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="bn">combine</span> roll_hitec roll_utils, <span class="bn">cols</span>(2) <span class="bn">ycommon</span> iscale(1.20) <span class="co">///</span></span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a>    <span class="bn">imargin</span>(0) graphregion(<span class="kw">color</span>(<span class="bn">white</span>) <span class="bn">margin</span>(<span class="bn">zero</span>)) <span class="co">///</span></span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a>    <span class="bn">xsize</span>(6.4) <span class="bn">ysize</span>(3.2)</span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="st">"figs/raw/capm-fig03-rolling-${CAPM_STAMP}.png"</span>, <span class="co">///</span></span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> <span class="kw">width</span>(2800)</span>
+<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="st">"figs/raw/capm-fig03-rolling-${CAPM_STAMP}.svg"</span>, <span class="co">///</span></span>
+<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> fontface(<span class="st">"Times New Roman"</span>)</span>
+<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="st">"figs/raw/capm-fig03-rolling-${CAPM_STAMP}.pdf"</span>, <span class="co">///</span></span>
+<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> fontface(<span class="st">"Times New Roman"</span>)</span>
+<span id="cb18-50"><a href="#cb18-50" aria-hidden="true" tabindex="-1"></a><span class="ot">list</span> <span class="kw">in</span> 1/4, <span class="kw">noobs</span></span>
+<span id="cb18-51"><a href="#cb18-51" aria-hidden="true" tabindex="-1"></a><span class="kw">restore</span></span>
+<span id="cb18-52"><a href="#cb18-52" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Note: Below code run with echo to enable preserve/restore functionality.)
+
+
+
+
+      Source |       SS           df       MS      Number of obs   =        
+&gt; 60
+-------------+----------------------------------   F(1, 58)        =    265.
+&gt; 97
+       Model |  1646.52388         1  1646.52388   Prob &gt; F        =    0.00
+&gt; 00
+    Residual |   359.05314        58  6.19057137   R-squared       =    0.82
+&gt; 10
+-------------+----------------------------------   Adj R-squared   =    0.81
+&gt; 79
+       Total |  2005.57702        59  33.9928308   Root MSE        =    2.48
+&gt; 81
+
+----------------------------------------------------------------------------
+&gt; --
+    ex_hitec | Coefficient  Std. err.      t    P&gt;|t|     [95% conf. interva
+&gt; l]
+-------------+--------------------------------------------------------------
+&gt; --
+       mktrf |      1.187      0.073    16.31   0.000        1.042       1.3
+&gt; 33
+       _cons |      0.300      0.329     0.91   0.365       -0.358       0.9
+&gt; 58
+----------------------------------------------------------------------------
+&gt; --
+
+beta =   1.187
+
+
+
+
+
+
+
+
+
+
+
+file logs/capm/rolling.csv saved
+
+
+(note:  named style 0 not found in class margin, default attributes used)
+(note:  named style 0 not found in class margin, default attributes used)
+
+(file figs/raw/capm-fig03-rolling-20261111-155412.png not found)
+file figs/raw/capm-fig03-rolling-20261111-155412.png written in PNG format
+
+(file figs/raw/capm-fig03-rolling-20261111-155412.svg not found)
+file figs/raw/capm-fig03-rolling-20261111-155412.svg saved as SVG format
+
+file figs/raw/capm-fig03-rolling-20261111-155412.pdf saved as PDF format
+
+
+  +---------------------------------------------------+
+  | industry   window    mdate   end_used        beta |
+  |---------------------------------------------------|
+  |    hitec       36   1995m1    1994m12   1.2930961 |
+  |    hitec       36   1995m2     1995m1   1.2921635 |
+  |    hitec       36   1995m3     1995m2   1.3049862 |
+  |    hitec       36   1995m4     1995m3   1.2747823 |
+  +---------------------------------------------------+
+
+
+</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capm-stata_files/figure-html/cell-11-output-2.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capm-stata_files/figure-html/cell-11-output-3.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capm-stata_files/figure-html/cell-11-output-4.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="0b235f78" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-11T07:54:44.100868Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-11T07:54:44.100868Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-11T07:54:44.103149Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-11T07:54:44.103149Z&quot;}}" data-tags="[&quot;capm-display-settings&quot;]" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>%<span class="kw">set</span> graph_height = 3.2in</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="参数变化与估计噪声" class="level2">
+<h2 class="anchored" data-anchor-id="参数变化与估计噪声">参数变化与估计噪声</h2>
+<p>读取固定文件 beta_sim.dta。数据在首次生成时包含 240 个月的模拟市场超额收益 <span class="math inline">\(x=0.5+4z\)</span>，随机干扰项 <span class="math inline">\(u=4v\)</span>，<span class="math inline">\(z\)</span>、<span class="math inline">\(v\)</span> 独立标准正态。第一条序列 <span class="math inline">\(\alpha=0\)</span>、<span class="math inline">\(\beta=1\)</span> 始终固定；第二条 <span class="math inline">\(\beta\)</span> 前 120 月为 1，之后为 1.8。每次演示只读取固定文件；两条序列共用 <span class="math inline">\(x\)</span> 和 <span class="math inline">\(u\)</span>，只改变斜率规则。滚动估计均只用过去 60 月。真实参数已知，便于分辨估计波动与参数变化；这不是实际市场的历史结果。</p>
+<div id="f611eb62" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-11T07:54:44.104304Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-11T07:54:44.104304Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-11T07:54:47.399804Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-11T07:54:47.399804Z&quot;}}" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>* 同一市场收益和扰动  只改变 beta 的生成规则</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="kw">data</span>/capm/beta_sim.dta, <span class="kw">clear</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="kw">format</span> mdate %tm</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="kw">assert</span> _N == 240</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="kw">assert</span> mdate == tm(2000m1) + <span class="dt">_n</span> - 1</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="kw">save</span> logs/capm/simulation-input.dta, <span class="kw">replace</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="kw">export</span> delimited <span class="kw">using</span> logs/capm/simulation-input.csv, <span class="kw">replace</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="kw">capture</span> <span class="kw">postclose</span> capm_sim</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="kw">postfile</span> capm_sim <span class="kw">int</span> mdate <span class="kw">double</span> b_fixed <span class="kw">double</span> b_change <span class="co">///</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">double</span> beta_true <span class="co">///</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">using</span> logs/capm/simulation.dta, <span class="kw">replace</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="kw">forvalues</span> i = 61/240 {</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">local</span> first = <span class="ot">`i'</span> - 60</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">local</span> <span class="fu">last</span> = <span class="ot">`i'</span> - 1</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">quietly</span> <span class="kw">regress</span> ex_fixed mktrf <span class="kw">in</span> <span class="ot">`first'</span>/<span class="ot">`last'</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scalar</span> bf = _b[mktrf]</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">quietly</span> <span class="kw">regress</span> ex_change mktrf <span class="kw">in</span> <span class="ot">`first'</span>/<span class="ot">`last'</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">post</span> capm_sim (mdate[<span class="ot">`i'</span>]) (bf) (_b[mktrf]) (beta_true[<span class="ot">`i'</span>])</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a><span class="kw">postclose</span> capm_sim</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> logs/capm/simulation.dta, <span class="kw">clear</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a><span class="kw">format</span> mdate %tm</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a><span class="kw">generate</span> fixed_true = 1</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a><span class="kw">assert</span> _N == 180</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a><span class="kw">export</span> delimited <span class="kw">using</span> logs/capm/simulation.csv, <span class="kw">replace</span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a><span class="kw">twoway</span> (<span class="kw">line</span> b_fixed mdate, lcolor(<span class="bn">navy</span>)) <span class="co">///</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>    (<span class="kw">line</span> fixed_true mdate, lcolor(gs5) lpattern(<span class="kw">dash</span>)), <span class="co">///</span></span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>    <span class="bn">title</span>(<span class="st">"(a) Constant beta"</span>, <span class="kw">size</span>(medium)) <span class="co">///</span></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>    <span class="bn">ytitle</span>(<span class="st">"Beta"</span>) <span class="bn">xtitle</span>(<span class="st">""</span>) <span class="kw">ylabel</span>(0(.5)2, angle(0)) <span class="co">///</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>    <span class="kw">xlabel</span>(540 600 660 720, <span class="kw">format</span>(%tmCCYY)) <span class="co">///</span></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>    <span class="bn">legend</span>(<span class="kw">order</span>(1 <span class="st">"Estimated"</span> 2 <span class="st">"True"</span>) <span class="bn">rows</span>(1) <span class="co">///</span></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>    region(lstyle(<span class="kw">none</span>))) <span class="co">///</span></span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>    aspectratio(1) graphregion(<span class="kw">color</span>(<span class="bn">white</span>)) <span class="co">///</span></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>    <span class="bn">name</span>(sim_fixed, <span class="kw">replace</span>)</span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a><span class="kw">twoway</span> (<span class="kw">line</span> b_change mdate, lcolor(<span class="bn">navy</span>)) <span class="co">///</span></span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>    (<span class="kw">line</span> beta_true mdate, lcolor(gs5) lpattern(<span class="kw">dash</span>)), <span class="co">///</span></span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>    <span class="bn">title</span>(<span class="st">"(b) Changing beta"</span>, <span class="kw">size</span>(medium)) <span class="co">///</span></span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>    <span class="bn">ytitle</span>(<span class="st">"Beta"</span>) <span class="bn">xtitle</span>(<span class="st">""</span>) <span class="kw">ylabel</span>(0(.5)2, angle(0)) <span class="co">///</span></span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>    <span class="kw">xlabel</span>(540 600 660 720, <span class="kw">format</span>(%tmCCYY)) <span class="co">///</span></span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>    <span class="bn">legend</span>(<span class="kw">order</span>(1 <span class="st">"Estimated"</span> 2 <span class="st">"True"</span>) <span class="bn">rows</span>(1) <span class="co">///</span></span>
+<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a>    region(lstyle(<span class="kw">none</span>))) <span class="co">///</span></span>
+<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a>    aspectratio(1) graphregion(<span class="kw">color</span>(<span class="bn">white</span>)) <span class="co">///</span></span>
+<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a>    <span class="bn">name</span>(sim_change, <span class="kw">replace</span>)</span>
+<span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="bn">combine</span> sim_fixed sim_change, <span class="bn">cols</span>(2) <span class="bn">ycommon</span> iscale(1.20) <span class="co">///</span></span>
+<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a>    <span class="bn">imargin</span>(0) graphregion(<span class="kw">color</span>(<span class="bn">white</span>) <span class="bn">margin</span>(<span class="bn">zero</span>)) <span class="co">///</span></span>
+<span id="cb21-46"><a href="#cb21-46" aria-hidden="true" tabindex="-1"></a>    <span class="bn">xsize</span>(6.4) <span class="bn">ysize</span>(3.2)</span>
+<span id="cb21-47"><a href="#cb21-47" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="st">"figs/raw/capm-fig04-simulation-${CAPM_STAMP}.png"</span>, <span class="co">///</span></span>
+<span id="cb21-48"><a href="#cb21-48" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> <span class="kw">width</span>(2800)</span>
+<span id="cb21-49"><a href="#cb21-49" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="st">"figs/raw/capm-fig04-simulation-${CAPM_STAMP}.svg"</span>, <span class="co">///</span></span>
+<span id="cb21-50"><a href="#cb21-50" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> fontface(<span class="st">"Times New Roman"</span>)</span>
+<span id="cb21-51"><a href="#cb21-51" aria-hidden="true" tabindex="-1"></a><span class="kw">graph</span> <span class="kw">export</span> <span class="st">"figs/raw/capm-fig04-simulation-${CAPM_STAMP}.pdf"</span>, <span class="co">///</span></span>
+<span id="cb21-52"><a href="#cb21-52" aria-hidden="true" tabindex="-1"></a>    <span class="kw">replace</span> fontface(<span class="st">"Times New Roman"</span>)</span>
+<span id="cb21-53"><a href="#cb21-53" aria-hidden="true" tabindex="-1"></a><span class="kw">summarize</span> b_fixed b_change</span>
+<span id="cb21-54"><a href="#cb21-54" aria-hidden="true" tabindex="-1"></a><span class="kw">display</span> <span class="st">"CAPM 运行完成  模拟与真实数据的输出分别保存"</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>file logs/capm/simulation-input.dta saved
+file logs/capm/simulation-input.csv saved
+file logs/capm/simulation.csv saved
+(note:  named style 0 not found in class margin, default attributes used)
+(note:  named style 0 not found in class margin, default attributes used)
+(file figs/raw/capm-fig04-simulation-20261111-155412.png not found)
+file figs/raw/capm-fig04-simulation-20261111-155412.png written in PNG forma
+&gt; t
+(file figs/raw/capm-fig04-simulation-20261111-155412.svg not found)
+file figs/raw/capm-fig04-simulation-20261111-155412.svg saved as SVG
+    format
+file figs/raw/capm-fig04-simulation-20261111-155412.pdf saved as PDF
+    format
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+     b_fixed |        180    .9186673    .1343704   .6070185   1.193304
+    b_change |        180    1.303332    .2627182   .8844001   1.661002
+CAPM 运行完成 模拟与真实数据的输出分别保存</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capm-stata_files/figure-html/cell-13-output-2.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capm-stata_files/figure-html/cell-13-output-3.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capm-stata_files/figure-html/cell-13-output-4.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>左图真值始终为 1，估计仍约在 0.607 至 1.193 之间变化。这是固定参数下的一条模拟路径，说明滚动曲线波动可以由估计噪声产生；它不是所有模型下误差范围的一般结论。</p>
+<p>右图真值在第 121 月跳到 1.8。目标月只用过去 60 月估计，旧状态观测逐步退出窗口，因此估计对变化有滞后。日期从 2000 年开始仅为展示时间轴，不对应真实市场事件。真实行业数据没有可直接观察的 <span class="math inline">\(\beta\)</span> 真值，不能仅凭曲线把参数变化和估计噪声区分开。</p>
+</section>
+<section id="习题" class="level2">
+<h2 class="anchored" data-anchor-id="习题">习题</h2>
+<p>回到行业表，分别用均值、波动、<span class="math inline">\(\beta\)</span>、<span class="math inline">\(\alpha\)</span> 区间和 <span class="math inline">\(R^{2}\)</span> 写出一句有明确口径的判断。<span class="math inline">\(\beta\)</span> 不衡量全部风险，<span class="math inline">\(\alpha\)</span> 的解释依赖市场代理、样本与模型。<span class="math inline">\(\alpha\)</span> 不显著不等于模型已被证明。</p>
+<p>固定模型与样本，改变 HAC 最大滞后；再固定数据，改变滚动窗口。运行前先说明预计哪些结果不变，哪些可能变化。模拟中真值已知，真实行业数据中真值未知。</p>
+</section>
+<section id="文献联系" class="level2">
+<h2 class="anchored" data-anchor-id="文献联系">文献联系</h2>
+<ol type="1">
+<li>Fama and French (<a href="https://doi.org/10.1111/j.1540-6261.1992.tb04398.x">1992</a>) 研究了股票平均收益差异。在其 1963—1990 年样本与检验设计下，市场 <span class="math inline">\(\beta\)</span> 的解释力很弱，规模和账面市值比则能共同解释主要差异。其组合 <span class="math inline">\(\beta\)</span> 用于个股横截面定价检验，不是历史时点均可获得的风险预测。</li>
+<li>Baker et al.&nbsp;(<a href="https://doi.org/10.2469/faj.v67.n1.4">2011</a>) 发现了低波动、低 <span class="math inline">\(\beta\)</span> 组合相对高风险组合的收益优势，并用风险偏好和基准考核约束提出解释。历史收益证据与解释机制应分别理解。</li>
+<li>Frazzini and Pedersen (<a href="https://doi.org/10.1016/j.jfineco.2013.10.005">2014</a>) 用事前 <span class="math inline">\(\beta\)</span> 调整多空规模，构建近似市场中性的 BAB 因子，发现其具有正的风险调整收益，且在融资条件收紧时表现较差。<span class="math inline">\(\beta\)</span> 的估计直接影响头寸规模。</li>
+<li>Ang and Chen (<a href="https://doi.org/10.1016/j.jempfin.2005.12.001">2007</a>) 估计了长期样本中的条件 CAPM，发现所设定模型下价值策略的条件 <span class="math inline">\(\alpha\)</span> 缺乏显著异于零的证据。该推断依赖完整条件模型，不等于简单滚动 OLS。</li>
+<li>Gormsen and Jensen (<a href="https://doi.org/10.1016/j.jfineco.2024.103933">2024</a>) 发现条件风险能够解释多项股票策略的部分无条件 <span class="math inline">\(\alpha\)</span>，但仍不足以解释全部异常收益，条件 CAPM 仍被拒绝。</li>
+<li>Drobetz et al.&nbsp;(<a href="https://doi.org/10.1017/S0022109024000036">2025</a>) 发现机器学习 <span class="math inline">\(\beta\)</span> 预测在统计和投资组合应用中优于所比较的传统基准，其中随机森林总体最好；非线性和交互关系有助于预测。</li>
+</ol>
+<p>这些是不同研究用途的例子，本实验没有复现六篇论文的完整设计。完整文献信息见理论讲义；输入与处理见数据说明。不要将本例行业结果外推为 A 股个股结论。</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/lianxhcn\.github\.io\/FinEco\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../lectures/capm.html" class="pagination-link" aria-label="资本资产定价模型">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">资本资产定价模型</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../resources/references.html" class="pagination-link" aria-label="公共书目">
+        <span class="nav-page-text">公共书目</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>LN429 · 中山大学岭南学院</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.dev/lianxhcn/FinEco/blob/main/notebooks/capm/capm-stata.ipynb" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/lianxhcn/FinEco/issues/new" class="toc-action"><i class="bi empty"></i>反馈问题</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p><a href="https://www.lianxh.cn">连享会</a> · Quarto Book</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

@@ -41,6 +41,50 @@ project:
     - requirements.txt
     - resources/environment-agent.md
     - resources/submission-template.md
+    # CAPM revised8: exact public asset list.
+    - notebooks/capm/capm-stata.ipynb
+    - figs/raw/capm-fig01-market-20261029-145025.png
+    - figs/raw/capm-fig01-market-20261029-145025.svg
+    - figs/raw/capm-fig01-market-20261029-145025.pdf
+    - figs/raw/capm-fig05-sml-20261111-155706.png
+    - figs/raw/capm-fig05-sml-20261111-155706.svg
+    - figs/raw/capm-fig05-sml-20261111-155706.pdf
+    - figs/raw/capm-fig06-alpha-20261111-155706.png
+    - figs/raw/capm-fig06-alpha-20261111-155706.svg
+    - figs/raw/capm-fig06-alpha-20261111-155706.pdf
+    - figs/raw/capm-fig02-betas-20261029-145025.png
+    - figs/raw/capm-fig02-betas-20261029-145025.svg
+    - figs/raw/capm-fig02-betas-20261029-145025.pdf
+    - figs/raw/capm-fig07-rolling-20261111-155706.png
+    - figs/raw/capm-fig07-rolling-20261111-155706.svg
+    - figs/raw/capm-fig07-rolling-20261111-155706.pdf
+    - figs/raw/capm-fig03-rolling-20261029-145025.png
+    - figs/raw/capm-fig03-rolling-20261029-145025.svg
+    - figs/raw/capm-fig03-rolling-20261029-145025.pdf
+    - figs/raw/capm-fig04-simulation-20261029-145025.png
+    - figs/raw/capm-fig04-simulation-20261029-145025.svg
+    - figs/raw/capm-fig04-simulation-20261029-145025.pdf
+    - data/capm/README.md
+    - data/capm/source.json
+    - data/capm/industry_monthly.dta
+    - data/capm/beta_sim.dta
+    - data/capm/industry_monthly-README.md
+    - data/capm/beta_sim-README.md
+    - data/capm/industry_monthly-source.json
+    - data/capm/asset-comparison-berk2024-20261111.csv
+    - data/capm/asset-comparison-berk2024-20261111.md
+    - tools/capm/README.md
+    - tools/capm/capm.do
+    - tools/capm/run_notebook.py
+    - tools/capm/validate_results.py
+    - tools/capm/build_preview.py
+    - tools/capm/fetch_sources.py
+    - tools/capm/prepare_data.py
+    - tools/capm/make_beta_sim.do
+    - tools/capm/teaching_figures_20261111.py
+    - tools/capm/asset_comparison_berk2024.py
+    - tools/capm/capm.css
+    - lectures/capm-lecture.pdf
     - "!00[0-9]-*/**"
     - "!logs/**"
     - "!00-temp-test-*/**"
@@ -110,6 +154,11 @@ book:
           text: Monte Carlo 模拟
         - href: notebooks/monte-carlo/monte-carlo-cases.ipynb
           text: Monte Carlo：案例与代码
+    - part: "收益与风险"
+      chapters:
+        - lectures/capm.qmd
+        - href: notebooks/capm/capm-stata.ipynb
+          text: CAPM：Stata 完整实验
     - part: "附录"
       chapters:
         - resources/references.qmd

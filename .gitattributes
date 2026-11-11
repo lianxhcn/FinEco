@@ -3,3 +3,5 @@
 *.png binary
 *.woff binary
 *.ps1 text eol=crlf
+*.pdf binary
+*.dta binary

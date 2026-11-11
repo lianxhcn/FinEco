@@ -44,7 +44,7 @@ S4 结果：MC 66 单元与 OLS/Stata 原代码副本执行、数值核对通过
 | 04 | 研究基础 | 模型设定 | `model-specification.qmd` | 原规划任务保留；当前另有 linear-regression.qmd 及实验，不能重复新建前先忽略现稿 |
 | 05 | 研究基础 | Bootstrap | `bootstrap.qmd` | 正文及 Python/Stata 实验已接入导航；版本交接 logs/bootstrap/published-v10-72fd19b/handoff.md 记录 2026-09-15 执行与发布，新机执行仍待验证 |
 | 06 | 研究基础 | 蒙特卡洛 | `monte-carlo.qmd` | 2026-10-19 完成 V2、统一 Notebook 与七项阅读资料整合；依赖、执行、两轮整书构建及页面核验通过，本轮按 MC 范围发布 |
-| 07 | 收益与风险 | CAPM | `capm.qmd` | 规划 |
+| 07 | 收益与风险 | CAPM | `capm.qmd` | 2026-11-11 教师授权推送发布 revised8；网站正文第12章与无编号独立实验已接入，21页PDF、冻结数据和下载就绪；28页静态构建及5394项引用通过。GUIDE0.2.5/FORMAT1.6。发布证据见本地 logs/capm/release-20261111/，旧稿与无关修改保留。 |
 | 08 | 收益与风险 | 投资组合 | `portfolio.qmd` | 规划 |
 | 09 | 收益与风险 | ARMA | `arma.qmd` | 规划 |
 | 10 | 收益与风险 | GARCH与VaR | `garch-var.qmd` | 规划 |

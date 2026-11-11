@@ -1,6 +1,15 @@
 # FinEco 当前交接入口
 
-更新：2026-10-29。本文件是当前新机继续工作的入口，不代替 RULES 或全书规划。教师已要求以 `D:/github_lianxh/FinEco` 为唯一日常工作主目录，后续从这里写作并发布；旧机迁移目录、旧 worktree 和旧聊天保留为按具体缺口查阅的备份。S1–S5 已完成，可以从当前目录继续新章设计、实验与验收后的发布。
+更新：2026-11-11。本文件是当前新机继续工作的入口，不代替 RULES 或全书规划。教师已要求以 `D:/github_lianxh/FinEco` 为唯一日常工作主目录，后续从这里写作并发布；旧机迁移目录、旧 worktree 和旧聊天保留为按具体缺口查阅的备份。S1–S5 已完成，可以从当前目录继续新章设计、实验与验收后的发布。
+
+## CAPM 本轮成果
+
+2026-11-11 教师明确要求推送发布 revised8。CAPM 已接入收益与风险 Part，正文为第 12 章，配套实验无编号且不占正文章号；MC 与 CAPM 两个实验入口增加视觉缩进。当前源稿和固定输入原位保留，普通正文/12 个实验单元/11 个片段的模型与数值未改。
+
+公开入口：[正文](https://lianxhcn.github.io/FinEco/lectures/capm.html)、[独立实验](https://lianxhcn.github.io/FinEco/notebooks/capm/capm-stata.html)、[21 页 PDF](lectures/capm-lecture.pdf)、[数据说明](data/capm/README.md)。静态构建 28 页，5,394 项本地引用及桌面/390 px 预览通过；当前发布范围和后续部署核验记录保存在本地 `logs/capm/release-20261111/`。
+
+使用现有 `main:/docs`，精确发布当前 CAPM 与相关规则/导航；CSMAR 待整理源和附件、历史 MC 变更、原教材和本地日志保留原状。下文 S1–S5 为 2026-10-29 已完成的迁移记录，不代表本轮重新执行这些历史步骤。
+
 
 ## S5 最新状态
 

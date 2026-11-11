@@ -156,3 +156,20 @@ local_continuity_plan_20261028:
     pages_run: https://github.com/lianxhcn/FinEco/actions/runs/40727646483
     public_verified_resources: 13
     status: "已完成：本机普通快进推送成功，d06319c 的 Pages build/deploy、公开字节和代表页行为通过；状态登记提交仅更新文档"
+
+
+capm_publication_20261111:
+  retrieved_date: "2026-11-11"
+  repository_mode: single
+  authorization: "教师在本聊天明确要求：推送，发布"
+  repository: lianxhcn/FinEco
+  branch: main
+  visibility: public
+  license: pending
+  pages_source: "main:/docs"
+  work_scope: "当前 CAPM 源稿、已执行无编号 Notebook、两份冻结DTA及说明、历史表汇总、当前7图同源文件、必要工具、21页PDF、章节专用CSS、最小导航与MC/CAPM实验缩进、对应规则和静态网页"
+  preserve_unrelated_changes: true
+  excluded: "009禁用目录、CSMAR待整理工作区、历史MC附件和旧图、logs/QA、原教材和论文全文、凭据、依赖环境"
+  release_manifest: "logs/capm/release-20261111/release-manifest.json"
+  execution_evidence: "logs/capm/review-20261111-20comments/REVISION_REPORT.md"
+  publication_gate: "隔离全书静态构建、精确暂存范围、CAPM编号/实验不占章号、来源和下载核验通过后普通快进推送"

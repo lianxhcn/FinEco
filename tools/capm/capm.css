@@ -1,0 +1,56 @@
+/* CAPM theory page only. Loaded by lectures/capm.qmd, not globally. */
+/* GUIDE 0.2.5-fineco / FORMAT 1.6; adapted from the accepted preview.css. */
+body { color: #252b30; }
+main p, main figcaption, main .quarto-float-caption { text-align: left; }
+main figcaption.quarto-float-caption {
+  text-align: center !important;
+  font-size: 0.916667rem;
+}
+main figcaption .float-number { font-weight: 700; white-space: nowrap; }
+main .capm-figure { margin-top: 0.85rem; margin-bottom: 1.7rem; }
+main .capm-table { margin-block: 1.7rem; }
+main .capm-figure .quarto-float,
+main .capm-table .quarto-float { margin-block: 0; }
+main .figure-note, main .table-note {
+  font-size: 0.833333rem;
+  line-height: 1.5;
+  margin-top: 0.85rem;
+}
+main .figure-note p, main .table-note p { margin-block: 0; }
+/* A book chapter keeps the source H2/H3 levels; the isolated preview shifts them. */
+main section.level2 > h2, main section.level3 > h3 {
+  margin-top: 1.7rem;
+  margin-bottom: 1.7rem;
+}
+.callout { border: 0.5px solid #BFC4C8; border-left-width: 3.67px; }
+.callout-note { border-left-color: #2878BD; background: #F4F8FC; }
+.callout-note .callout-header { background: #EAF3FB; }
+.callout-tip { border-left-color: #45892D; background: #F6FAF3; }
+.callout-tip .callout-header { background: #EFF7E9; }
+.callout-warning { border-left-color: #9A642D; background: #F9EFDF; }
+.callout-warning .callout-header { background: #F9EFDF; }
+.callout-reading { border-left-color: #806298; background: #F9F6FC; }
+.callout-reading .callout-header { background: #F1EBF7; }
+.callout-title-container { color: #424B52; }
+main figure.quarto-float, main .quarto-float-tbl { margin-block: 0.85rem; }
+main figure img { max-width: 100%; height: auto; }
+main table { font-variant-numeric: tabular-nums; }
+/* Keep the visible image-to-caption / table-to-note half-line gap. */
+main .capm-figure figure > p { margin-bottom: 0.85rem; }
+main .capm-figure figcaption { margin-top: 0.85rem; }
+main .capm-table table {
+  border-collapse: collapse;
+  border-top: 1.5px solid #333;
+  border-bottom: 1.5px solid #333;
+}
+main .capm-table th, main .capm-table td { border: 0 !important; }
+main .capm-table thead { border-bottom: 1px solid #333; }
+main .capm-table tbody, main .capm-table tbody tr { border: 0 !important; }
+main pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+main :not(pre) > code { font-size: 1em; }
+/* 10.5 / 12 retains the accepted callout-to-body ratio on screen. */
+main .callout.callout-style-default .callout-title-container,
+main .callout.callout-style-default .callout-body-container {
+  font-size: 0.875rem !important;
+}
+main .callout .callout-body-container p { font-size: 1em; }
